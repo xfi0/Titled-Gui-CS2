@@ -37,7 +37,7 @@ This project is for **educational use only**. You are responsible for any action
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourname/cs2-external-cheat.git
+   git clone https://github.com/xfi0/Titled-Gui-CS2.git
    cd cs2-external-cheat
    ```
 2. Run The Src

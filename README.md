@@ -20,7 +20,7 @@ This project is for **educational use only**. You are responsible for any action
   - No memory writing to the game
 - 🧩 **Modular**
   - Toggle features with a bunch of settings
-  - Easy Ttocustomize
+  - Easy to customize
 
 ---
 

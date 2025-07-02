@@ -31,7 +31,6 @@ This project is for **educational use only**. You are responsible for any action
 - Windows 10/11 (x64)
 - Visual Studio 2022
 - .NET 8.0 
-- [Swed64](https://github.com/swedish-shark/Swed64) or your memory library of choice
 - Up to date offsets using a2x
 
 ### Build

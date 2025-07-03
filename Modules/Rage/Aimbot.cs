@@ -1,6 +1,7 @@
 ﻿using Swed64;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -10,6 +11,9 @@ using System.Threading.Tasks;
 using Titled_Gui.Data;
 using static Titled_Gui.Data.Entity;
 using static Titled_Gui.Data.GameState;
+using System.Windows.Input;
+using Titled_Gui.ModuleHelpers;
+
 namespace Titled_Gui.Modules.Rage
 {
     public class Aimbot
@@ -21,7 +25,7 @@ namespace Titled_Gui.Modules.Rage
         public static Vector4 FovColor = new Vector4(1f, 0f, 0f, 1f); // color of the fov circle
         public static bool DrawFOV = true;
         static Swed swed = new Swed("cs2");
-        public const int AIMBOT_KEY = 0x46; // F key
+        public const int AIMBOT_KEY = 0x04; // F key
 
         // other stuff
         Entity entity = new Entity();
@@ -37,19 +41,14 @@ namespace Titled_Gui.Modules.Rage
                 if (!AimbotEnable || GetAsyncKeyState(AIMBOT_KEY) >= 0)
                     return;
 
-                if (localPlayer == null || Entities == null)
+
+                if (Entities == null)
                 {
-                    Console.WriteLine("LocalPlayer or Entities is null");
                     return;
                 }
 
                 foreach (var e in Entities)
                 {
-                    if (e == null)
-                    {
-                        continue;
-                    }
-
                     if (e.head2D == new Vector2(-99, -99))
                     {
                         continue;
@@ -67,20 +66,17 @@ namespace Titled_Gui.Modules.Rage
                         {
                             Vector3 headBone = e.bones[2];  // head
                             Vector3 neckBone = e.bones[1];  // neck
-                            
-                            if (headBone != Vector3.Zero && neckBone != Vector3.Zero)
+
+                            if (headBone != Vector3.Zero)
                             {
-                                Vector3 forward = Vector3.Normalize(headBone - neckBone);
-                                Vector3 facePos = headBone + forward * 2.5f;
-                                
-                                newAngles = Calculate.CalculateAngles(playerView, facePos);
+                                newAngles = Calculate.CalculateAngles(playerView, headBone);
                             }
                             else
                             {
                                 newAngles = Calculate.CalculateAngles(playerView, e.head);
                             }
                         }
-                        catch (Exception boneEx)
+                        catch (Exception)
                         {
                             newAngles = Calculate.CalculateAngles(playerView, e.head);
                         }
@@ -99,12 +95,12 @@ namespace Titled_Gui.Modules.Rage
 
                     newAnglesVec3.X = Math.Clamp(newAnglesVec3.X, -89f, 89f);
                     newAnglesVec3.Y = NormalizeAngle(newAnglesVec3.Y);
-                    
+                    //ModuleHelpers.MoveMousePos.MoveRelative((int)newAnglesVec3.X, (int)newAnglesVec3.Y);
                     swed.WriteVec(client, Offsets.dwViewAngles, newAnglesVec3);
                     break;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }
@@ -114,12 +110,6 @@ namespace Titled_Gui.Modules.Rage
             while (angle > 180.0f) angle -= 360.0f;
             while (angle < -180.0f) angle += 360.0f;
             return angle;
-        }
-
-        private static bool FovCheck(Vector2 screenCenter, Vector2 targetPos, float fovSize)
-        {
-            float distance = Vector2.Distance(screenCenter, targetPos);
-            return distance <= fovSize;
         }
     }
 }

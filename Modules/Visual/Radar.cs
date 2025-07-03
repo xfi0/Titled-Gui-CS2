@@ -15,7 +15,8 @@ namespace Titled_Gui.Modules.Visual
         public static bool EnableRadarBool = false;
         public static void EnableRadar()
         {
-           swed.WriteBool(GameState.currentPawn, Offsets.m_entitySpottedState + Offsets.m_bSpotted, true); //sets the spotted bool to true enabling them on radar
+            //doesnt work plus writing is detecdd by vac
+            //swed.WriteBool(GameState.currentPawn, Offsets.m_entitySpottedState + Offsets.m_bSpotted, true); //sets the spotted bool to true enabling them on radar, but doesnt work and writing mem is detected
         }
     }
 }

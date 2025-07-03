@@ -12,13 +12,15 @@ using Titled_Gui.Modules.Legit;
 using System.Windows.Input;
 using Titled_Gui.Modules.Visual;
 using Titled_Gui.Modules.Rage;
+using System.Windows.Forms;
+using Titled_Gui.ModuleHelpers;
 
 namespace Titled_Gui
 {
     public class Renderer : Overlay
     {
         // renderer variables  
-        public Vector2 screenSize = new Vector2(2560, 1440); // maybe make this dynamic later?  
+        public Vector2 screenSize = new Vector2(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height); // should automatically be the size of anyones screen
 
         //entity copy  
         public ConcurrentQueue<Entity> entities = new ConcurrentQueue<Entity>();
@@ -26,10 +28,7 @@ namespace Titled_Gui
         private readonly object entityLock = new object();
 
         // Gui Variables  
-        private bool enableESP = false; // bool to enable/disable ESP  
-
-        private bool enableFovChanger = false; // Checkbox state
-        private FovChanger fovChanger = new FovChanger(); // FovChanger instance
+        private bool tabWasPressed = false; //bool to fix tab holding
 
         // GUI Navigation
         private int selectedTab = 0; // 0 = Legit, 1 = Rage, 2 = Config
@@ -39,16 +38,8 @@ namespace Titled_Gui
 
         //mod bools
         public static bool DrawWindow = true;
-        public static bool Tracers = true;
-        public static bool TeamCheck = false;
-
-        //mod floats
-        public static float BoneThickness = 5f; // thickness of the bones
-
-        //mod colors
-        public static Vector4 BoneColor = new Vector4(1f, 1f, 1f, 1f); // color of the bones
-        private Vector4 enemyColor = new Vector4(1, 0, 0, 1); // color for enemy ESP, default is red  
-        private Vector4 teamColor = new Vector4(0, 1, 0, 1); // color for team ESP, default is green  
+        private bool enableFovChanger = false; // Checkbox state
+        private FovChanger fovChanger = new FovChanger(); // FovChanger instance
 
         //entity methods
         public void UpdateEntities(IEnumerable<Entity> newEntities) // update entities
@@ -88,7 +79,7 @@ namespace Titled_Gui
             drawList = ImGui.GetWindowDrawList();
 
             // esp
-            if (enableESP)
+            if (Modules.Visual.BoxESP.enableESP)
             {
                 foreach (var entity in entities)
                 {
@@ -97,20 +88,27 @@ namespace Titled_Gui
                         bool isEnemy = entity.team != localPlayer.team;
 
                         //draw team and entity if team check is false
-                        if (!TeamCheck || (TeamCheck && isEnemy))
+                        if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck && isEnemy))
                         {
-                            DrawBox(entity);
-                        }
+                            BoxESP.DrawBoxESP(entity, this);
 
-                        if (Tracers)
-                        {
-                            if (!TeamCheck || (TeamCheck && isEnemy))
+                            if (DistanceTracker.EnableDistanceTracker)
                             {
-                                DrawLine(entity);
+                                string distText = $"{(int)entity.distance}m";
+                                Vector2 textPos = new Vector2(entity.position2D.X + 5, entity.position2D.Y);
+                                drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), distText);
                             }
                         }
 
-                        if (Modules.Visual.HealthBar.EnableHealthBar)
+                        if (Tracers.enableTracers && (!Tracers.DrawOnSelf || entity != localPlayer))
+                        {
+                            if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck && isEnemy))
+                            {
+                                Tracers.DrawTracers(entity, this);
+                            }
+                        }
+
+                        if (Modules.Visual.HealthBar.EnableHealthBar && (!Modules.Visual.HealthBar.DrawOnSelf || entity != localPlayer))
                         {
                             float entityHeight = entity.position2D.Y - entity.viewPosition2D.Y;
                             float barWidth = 5f;
@@ -126,10 +124,12 @@ namespace Titled_Gui
             ImGui.End();
 
             // settings overlay
-            if (ImGui.IsKeyPressed(ImGuiKey.Tab))// close gui on tab
+            if (ImGui.IsKeyPressed(ImGuiKey.Tab, false))
             {
                 DrawWindow = !DrawWindow;
+                tabWasPressed = true;
             }
+
             if (DrawWindow)
             {
                 // Set window rounding and colors
@@ -143,8 +143,8 @@ namespace Titled_Gui
                 style.TabRounding = 4.0f;
                 style.Colors[(int)ImGuiCol.WindowBg] = new Vector4(0.13f, 0.14f, 0.15f, 1.0f);
                 style.Colors[(int)ImGuiCol.ChildBg] = new Vector4(0.16f, 0.18f, 0.20f, 1.0f);
-                style.Colors[(int)ImGuiCol.TitleBg] = new Vector4(0.18f, 0.10f, 0.22f, 1.0f); 
-                style.Colors[(int)ImGuiCol.TitleBgActive] = new Vector4(0.35f, 0.0f, 0.45f, 1.0f); 
+                style.Colors[(int)ImGuiCol.TitleBg] = new Vector4(0.18f, 0.10f, 0.22f, 1.0f);
+                style.Colors[(int)ImGuiCol.TitleBgActive] = new Vector4(0.35f, 0.0f, 0.45f, 1.0f);
 
                 style.Colors[(int)ImGuiCol.Button] = new Vector4(0.20f, 0.22f, 0.24f, 1.0f);
                 style.Colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.24f, 0.26f, 0.28f, 1.0f);
@@ -157,9 +157,9 @@ namespace Titled_Gui
                 ImGui.BeginChild("Sidebar", new Vector2(150, 0), ImGuiChildFlags.Border);
                 {
                     ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(8, 8));
-                    ImGui.PushStyleVar(ImGuiStyleVar.ButtonTextAlign, new Vector2(0.0f, 0.5f)); 
+                    ImGui.PushStyleVar(ImGuiStyleVar.ButtonTextAlign, new Vector2(0.0f, 0.5f));
 
-                    Vector4 activeColor = new Vector4(0.90f, 0.26f, 0.26f, 1.0f); 
+                    Vector4 activeColor = new Vector4(0.90f, 0.26f, 0.26f, 1.0f);
                     Vector4 inactiveColor = new Vector4(0.20f, 0.22f, 0.24f, 1.0f);
 
                     if (selectedTab == 0)
@@ -200,41 +200,52 @@ namespace Titled_Gui
                     switch (selectedTab)
                     {
                         case 0: // legit
-                            ImGui.Text("Legit Settings");
+                            ImGui.Text("Legit");
                             ImGui.Separator();
                             ImGui.Spacing();
 
-                            ImGui.Checkbox("Enable Box ESP", ref enableESP);
+                            ImGui.Checkbox("Enable Box ESP", ref BoxESP.enableESP);
                             ImGui.Checkbox("Enable Bone ESP", ref Modules.Visual.BoneESP.EnableBoneESP);
 
-                            if (enableESP)
+                            if (BoxESP.enableESP)
                             {
                                 ImGui.Spacing();
                                 if (ImGui.CollapsingHeader("Box ESP Settings"))
                                 {
                                     ImGui.Indent();
-                                    ImGui.Checkbox("Enable Tracers", ref Tracers);
+                                    ImGui.Checkbox("Enable Tracers", ref Tracers.enableTracers);
+                                    ImGui.Checkbox("Draw On Self", ref Tracers.DrawOnSelf);
                                     ImGui.Checkbox("Enable Health Bar", ref Modules.Visual.HealthBar.EnableHealthBar);
-                                    ImGui.Checkbox("Team Check", ref TeamCheck);
-
-                                    ImGui.Spacing();
-                                    if (ImGui.CollapsingHeader("Colors"))
-                                    {
-                                        ImGui.Indent();
-                                        ImGui.Text("Enemy Color:");
-                                        ImGui.ColorEdit4("##Enemy Color", ref enemyColor);
-                                        ImGui.Spacing();
-                                        ImGui.Text("Team Color:");
-                                        ImGui.ColorEdit4("##Team Color", ref teamColor);
-                                        ImGui.Unindent();
-                                    }
+                                    ImGui.Checkbox("Draw On Self", ref Modules.Visual.HealthBar.DrawOnSelf);
+                                    ImGui.Checkbox("Team Check", ref BoxESP.TeamCheck);
+                                    ImGui.Checkbox("Show Distance Text", ref DistanceTracker.EnableDistanceTracker);
+                                    ImGui.Checkbox("Enable RGB", ref Colors.RGB);
                                     ImGui.Unindent();
                                 }
                             }
-                            break; 
+                            if (Modules.Visual.BoneESP.EnableBoneESP)
+                            {
+                                ImGui.Spacing();
+                                if (ImGui.CollapsingHeader("Bone ESP Settings"))
+                                {
+                                    ImGui.Indent();
+                                    ImGui.Checkbox("Enable Tracers", ref Tracers.enableTracers);
+                                    ImGui.Checkbox("Draw On Self", ref Tracers.DrawOnSelf);
+                                    ImGui.Checkbox("Enable Health Bar", ref Modules.Visual.HealthBar.EnableHealthBar);
+                                    ImGui.Checkbox("Draw On Self", ref Modules.Visual.HealthBar.DrawOnSelf);
+                                    ImGui.SliderFloat("Bone Thickness", ref BoneESP.BoneThickness, 1f, 10f);
+                                    ImGui.ColorEdit4("Bone Color", ref Colors.BoneColor);
+                                    ImGui.Checkbox("Enable RGB", ref Colors.RGB);
+                                    ImGui.Unindent();
+                                }
+                            }
+                            ImGui.Checkbox("Enable Bomb Timer", ref Modules.Visual.BombTimerOverlay.EnableTimeOverlay);
+                            ImGui.Checkbox("Anti Flash", ref Modules.Visual.NoFlash.NoFlashEnable);
+                            ImGui.Checkbox("Auto BHOP", ref Modules.Legit.Bhop.BhopEnable);
+                            break;
 
-                        case 1: // reage
-                            ImGui.Text("Rage Settings");
+                        case 1: // rage
+                            ImGui.Text("Rage");
                             ImGui.Separator();
                             ImGui.Spacing();
 
@@ -255,6 +266,13 @@ namespace Titled_Gui
                                     ImGui.Unindent();
                                 }
                             }
+                            if (ImGui.Checkbox("CV Triggerbot", ref Modules.Rage.CVTriggerBot.Enabled))
+                            {
+                                if (Modules.Rage.CVTriggerBot.Enabled)
+                                {
+                                    Modules.Rage.CVTriggerBot.Start(this);
+                                }
+                            }
 
                             if (Modules.Rage.Aimbot.DrawFOV && Modules.Rage.Aimbot.AimbotEnable)
                             {
@@ -262,8 +280,8 @@ namespace Titled_Gui
                             }
                             break;
 
-                        case 2: //config
-                            ImGui.Text("Configuration");
+                        case 2: // config
+                            ImGui.Text("Configs");
                             ImGui.Separator();
                             ImGui.Spacing();
 
@@ -293,61 +311,43 @@ namespace Titled_Gui
                 ImGui.EndChild();
 
                 ImGui.End();
+
                 if (Modules.Rage.Aimbot.DrawFOV && Modules.Rage.Aimbot.AimbotEnable)
                 {
                     DrawCircle(Modules.Rage.Aimbot.FovSize, Modules.Rage.Aimbot.FovColor);
                 }
-                if (Modules.Rage.Aimbot.DrawFOV && Modules.Rage.Aimbot.AimbotEnable)
+                if (Modules.Visual.NoFlash.NoFlashEnable)
                 {
-                    DrawCircle(Modules.Rage.Aimbot.FovSize, Modules.Rage.Aimbot.FovColor);
+                    Modules.Visual.NoFlash.RemoveFlash();
+                }
+                if (Modules.Visual.BombTimerOverlay.EnableTimeOverlay)
+                {
+                    Modules.Visual.BombTimerOverlay.TimeOverlay(this);
                 }
                 if (Modules.Visual.BoneESP.EnableBoneESP)
                 {
-                    if (!Aimbot.Team)
+                    foreach (Entity entity in entities)
                     {
-                        foreach (Entity entity in entities)
+                        if ((!Modules.Rage.Aimbot.Team || entity.team == localPlayer.team) && (!BoneESP.DrawOnSelf || entity != localPlayer))
                         {
                             Modules.Visual.BoneESP.DrawBoneLines(entity, this);
-                        }
-                    }
-                    else if (Aimbot.Team)
-                    {
-                        foreach (Entity entity in entities)
-                        {
-                            if (entity.team == localPlayer.team)
+                            if (DistanceTracker.EnableDistanceTracker)
                             {
-                                Modules.Visual.BoneESP.DrawBoneLines(entity, this);
+                                string distText = $"{(int)entity.distance}m";
+                                Vector2 textPos = new Vector2(entity.position2D.X + 5, entity.position2D.Y);
+                                drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), distText);
                             }
                         }
                     }
-                    ImGui.Spacing();
-                    if (ImGui.CollapsingHeader("Bone ESP Settings"))
-                    {
-                        ImGui.Indent();
-                        ImGui.SliderFloat("Bone Thickness", ref BoneThickness, 1f, 10f);
-                        ImGui.ColorEdit4("Bone Color", ref BoneColor);
-                        ImGui.Unindent();
-                    }
+                }
+                if( Modules.Legit.Bhop.BhopEnable)
+                {
+                    Modules.Legit.Bhop.AutoBhop();
                 }
             }
         }
 
-        public void DrawBox(Entity entity) // draw box around entity  
-        {
-            // make sure color is set based on team  
-            Vector4 boxColor = localPlayer.team == entity.team ? teamColor : enemyColor; // set the box color based on the team  
-
-            // calculate box size  
-            float entityHeight = entity.position2D.Y - entity.viewPosition2D.Y; // size of the box  
-
-            // dimensions  
-            Vector2 rectTTop = new Vector2(entity.viewPosition2D.X - entityHeight / 3, entity.viewPosition2D.Y);
-            Vector2 rectBottom = new Vector2(entity.position2D.X + entityHeight / 3, entity.position2D.Y); // bottom of the box  
-
-            // draw box  
-            drawList.AddRect(rectTTop, rectBottom, ImGui.ColorConvertFloat4ToU32(boxColor));
-        }
-        public void DrawCircle(int Size, Vector4 color) // draw circle around entity  
+        public void DrawCircle(int Size, Vector4 color) // draw fov circle 
         {
             Vector4 circleColor = color; // set the circle color based on the team  
             float radius = Size; // use the size to determine radius
@@ -362,43 +362,21 @@ namespace Titled_Gui
             Vector2 rectBottom = new Vector2(entity.position2D.X + entityHeight / 3, entity.position2D.Y); // bottom of the box  
             drawList.AddRectFilled(rectTTop, rectBottom, ImGui.ColorConvertFloat4ToU32(boxColor));
         }
-        // draw lines for entities  
-        public void DrawLine(Entity entity)
-        {
-            // make sure color is set based on team  
-            Vector4 lineColor = localPlayer.team == entity.team ? teamColor : enemyColor; // set the lines color based on the team  
 
-            // draw list  
-            drawList.AddLine(new Vector2(screenSize.X / 2, screenSize.Y / 2), entity.position2D, ImGui.ColorConvertFloat4ToU32(lineColor), 1.0f);
-        }
         //actually draw the overlay 
         void DrawOverlay(Vector2 screenSize) //overlay
         {
             ImGui.SetNextWindowSize(screenSize); // set the size to the screen size
             ImGui.SetNextWindowPos(Vector2.Zero); // start in middle of the screen
             ImGui.Begin("Titled Gui",
-            ImGuiWindowFlags.NoTitleBar | 
-            ImGuiWindowFlags.NoResize | 
-            ImGuiWindowFlags.NoScrollbar | 
-            ImGuiWindowFlags.NoScrollWithMouse | 
-            ImGuiWindowFlags.NoCollapse | 
-            ImGuiWindowFlags.NoBackground | 
-            ImGuiWindowFlags.NoSavedSettings 
+            ImGuiWindowFlags.NoTitleBar |
+            ImGuiWindowFlags.NoResize |
+            ImGuiWindowFlags.NoScrollbar |
+            ImGuiWindowFlags.NoScrollWithMouse |
+            ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoBackground |
+            ImGuiWindowFlags.NoSavedSettings
             );
-        }
-
-        public void DrawHealthBars(float health, float maxHealth, Vector2 size)
-        {
-            while (true)
-            {
-                float healthPercentage = health / maxHealth;
-                float healthBarWidth = size.X * healthPercentage;
-
-                foreach (var entity in entities)
-                {
-                    DrawSolidBox(entity, new Vector4(1f, 0f, 0f, 1f));
-                }
-            }
         }
     }
 }

@@ -6,6 +6,8 @@ using Titled_Gui.Modules.Visual;
 using System.Threading;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
+using Titled_Gui.ModuleHelpers;
+using static Titled_Gui.ModuleHelpers.GetGunName;
 
 // initialization
 Swed swed = new Swed("cs2");
@@ -19,12 +21,12 @@ renderThread.Start();
 // entities
 List<Entity> entities = new List<Entity>();
 
-// loop for the ESP
+// loop for mods and gettings sum stuff
 while (true)
 {
     entities = entityManager.GetEntities(); // get all entities
     Entity localPlayer = entityManager.GetLocalPlayer(); // get the local player
-    GameState.localPlayer = localPlayer; // <-- Add this line
+    GameState.localPlayer = localPlayer; 
 
     renderer.UpdateLocalPlayer(localPlayer); // update local player
     renderer.UpdateEntities(entities); //update entites
@@ -38,5 +40,7 @@ while (true)
     {
         BombTimerOverlay.TimeOverlay(renderer);
     }
+    GetGunNameFunction(localPlayer);
+    Console.WriteLine($"sensitivity:{localPlayer.Sensitivity}DWSensitivity:{localPlayer.dwSensitivity}");
     Thread.Sleep(1); // you may want to adjust this if you dont got a great computer, works for me tho
 }

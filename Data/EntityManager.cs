@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Titled_Gui.Data;
+using Titled_Gui.ModuleHelpers;
 using Titled_Gui.Modules.Visual;
 
 namespace Titled_Gui.Data
@@ -44,6 +44,7 @@ namespace Titled_Gui.Data
                 if (lifeState != 256) continue;
 
                 Entity entity = PopulateEntity(GameState.currentPawn);
+                GameState.WeaponIndex = swed.ReadShort(entity.HeldWeapon, Offsets.m_AttributeManager + Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
                 entities.Add(entity);
             }
 
@@ -72,7 +73,9 @@ namespace Titled_Gui.Data
             float[] viewMatrix = swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
             IntPtr sceneNode = swed.ReadPointer(GameState.currentPawn, Offsets.m_pGameSceneNode);
             IntPtr boneMatrix = swed.ReadPointer(sceneNode, Offsets.m_modelState + 0x80);
-
+            bool VisibleTest = swed.ReadInt(GameState.LocalPlayerPawn, Offsets.m_iIDEntIndex) > 0;
+            IntPtr dwSensitivity = swed.ReadPointer(GameState.client + Offsets.dwSensitivity);
+            float sensitivity = swed.ReadFloat(dwSensitivity + Offsets.dwSensitivity_sensitivity);
 
             Entity entity = new Entity
             {
@@ -84,15 +87,20 @@ namespace Titled_Gui.Data
                 view = swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset),
                 position2D = Calculate.WorldToScreen(viewMatrix, swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), renderer.screenSize),
                 viewPosition2D = Calculate.WorldToScreen(viewMatrix, Vector3.Add(swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)), renderer.screenSize),
-                Visible = swed.ReadBool(pawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted),
+                Visible = VisibleTest,
                 head = Vector3.Add(swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)),
                 head2D = Calculate.WorldToScreen(viewMatrix, Vector3.Add(swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)), renderer.screenSize),
                 distance = Vector3.Distance(swed.ReadVec(GameState.LocalPlayerPawn, Offsets.m_vOldOrigin), swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
                 bones = Calculate.ReadBones(boneMatrix, swed),
-                bones2D = Calculate.ReadBones2D(Calculate.ReadBones(boneMatrix, swed), viewMatrix, renderer.screenSize)
+                bones2D = Calculate.ReadBones2D(Calculate.ReadBones(boneMatrix, swed), viewMatrix, renderer.screenSize),
+                HeldWeapon = swed.ReadShort(GameState.currentPawn, Offsets.m_pClippingWeapon),
+                dwSensitivity = dwSensitivity,
+                WeaponIndex = GameState.WeaponIndex,
+                Sensitivity = sensitivity
             };
 
             return entity;
         }
+
     }
 }

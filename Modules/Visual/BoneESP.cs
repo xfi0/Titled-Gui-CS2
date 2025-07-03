@@ -7,12 +7,15 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Titled_Gui.Data;
+using Titled_Gui.ModuleHelpers;
 
 namespace Titled_Gui.Modules.Visual
 {
     public static class BoneESP
     {
         public static bool AimOnTeam = false;
+        public static float BoneThickness = 5f;
+        public static bool DrawOnSelf = false;
         private static readonly (int, int)[] BoneConnections = new (int, int)[]
         {
             (0, 1), // Waist to Neck
@@ -46,14 +49,14 @@ namespace Titled_Gui.Modules.Visual
             FeetRight = 27,
         }
 
-        public static bool EnableBoneESP = false; // toggle for bone ESP
+        public static bool EnableBoneESP = false;
         public static void DrawBoneLines(Entity entity, Renderer renderer)
         {
             if (entity == null || entity.bones2D == null)
                 return;
 
-            float thickness = Math.Clamp(Renderer.BoneThickness / (entity.distance * 0.1f), 0.5f, 2f);
-            uint boneColor = ImGui.GetColorU32(Renderer.BoneColor);
+            float thickness = Math.Clamp(BoneESP.BoneThickness / (entity.distance * 0.1f), 0.5f, 2f); // calculate thickness based on distance, minimum 0.5f and maximum 2f stops it from being massive
+            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb(0.5f) : Colors.BoneColor); //get color
 
             foreach (var (a, b) in BoneConnections)
             {
@@ -65,7 +68,8 @@ namespace Titled_Gui.Modules.Visual
 
                 if (IsValidScreenPoint(boneA) && IsValidScreenPoint(boneB))
                 {
-                    renderer.drawList.AddLine(boneA, boneB, boneColor, thickness);
+                    renderer.drawList.AddLine(boneA, boneB, boneColor, thickness); //draw a line between the bones
+                    renderer.drawList.AddCircleFilled(boneA, thickness * 2, boneColor); //draw a circle at the start bone
                 }
             }
 
@@ -74,15 +78,13 @@ namespace Titled_Gui.Modules.Visual
                 Vector2 headPos = entity.bones2D[2];
                 if (IsValidScreenPoint(headPos))
                 {
-                    float radius = Math.Clamp(8f / (entity.distance * 0.05f), 3f, 10f); //circle radius
-                    renderer.drawList.AddCircleFilled(headPos, radius, boneColor); //head bone
+                    float radius = Math.Clamp(10f / (entity.distance * 0.05f), 3f, 10f);
+                    renderer.drawList.AddCircleFilled(headPos, radius, boneColor); // draw a circle at the head bone extra big
                 }
             }
         }
 
-
-        //this was a null check that i thought confirmed why it was broken but no it was a wrong offset!
-        private static bool IsValidScreenPoint(Vector2 pt)
+        public static bool IsValidScreenPoint(Vector2 pt)
         {
             return !float.IsNaN(pt.X) && !float.IsNaN(pt.Y) &&
                    !float.IsInfinity(pt.X) && !float.IsInfinity(pt.Y) &&

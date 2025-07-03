@@ -29,5 +29,21 @@ namespace Titled_Gui.Data
         public static int m_flFlashBangTime = 0x13F8;
         public static int m_modelState = 0x170;
         public static int m_pGameSceneNode = 0x328;
+        public static int dwCSGOInput = 0x1A75250;
+        public static int m_flC4Blow = 0xFC0;
+        public static int current_time = 0x5C0;
+        public static int dwGlobalVars = 0x1849EB0;
+        public static int dwPlantedC4 = 0x1A702F8;
+        public static int m_bBombPlanted = 0x1B7B;
+        public static int dwGameRules = 0x1A66B38;
+        public static int dwSensitivity_sensitivity = 0x40;
+        public static int dwSensitivity = 0x1A67858;
+        public static int m_iszPlayerName = 0x660;
+        public static int m_pClippingWeapon = 0x13A0;
+        public static int m_Item = 0x50;
+        public static int m_iItemDefinitionIndex = 0x1BA;
+        public static int m_AttributeManager = 0x1148;
+        public static int attack = 0x184E8F0;
+        public static int jump = 0x184EE00;
     }
 }

@@ -19,7 +19,6 @@ namespace Titled_Gui.Modules.Visual
             float FlashBangDuration = swed.ReadFloat(GameState.client, Offsets.m_flFlashBangTime);
             if (NoFlashEnable && FlashBangDuration > 0)
             {
-                
                 swed.WriteInt(GameState.LocalPlayerPawn, Offsets.m_flFlashBangTime, 0);
             }
         }

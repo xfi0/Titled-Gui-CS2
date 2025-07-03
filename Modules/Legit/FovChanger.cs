@@ -24,7 +24,7 @@ namespace Titled_Gui.Modules.Legit
            if (!isScoped && GameState.CurrentFov != DesiredFov)
            {
                GameState.CameraServices = swed.ReadPointer(GameState.LocalPlayerPawn, Offsets.m_pCameraServices);
-               swed.WriteUInt(GameState.CameraServices + Offsets.m_iFOV, DesiredFov); // set fov if not scoped & not equal to desired fov
+               //swed.WriteUInt(GameState.CameraServices + Offsets.m_iFOV, DesiredFov); // set fov if not scoped & not equal to desired fov
                //Console.WriteLine($"Current FOV: {DesiredFov}");
            }
         }

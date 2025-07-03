@@ -8,25 +8,25 @@ using System.Text;
 using System.Threading.Tasks;
 using static Titled_Gui.Modules.Visual.BoneESP;
 
-namespace Titled_Gui.Data
+namespace Titled_Gui.ModuleHelpers
 {
     public static class Calculate
     {
         public static Vector2 WorldToScreen(float[] matrix, Vector3 pos, Vector2 windowSize)
         {
             // ccalculate w aka depth
-            float screenW = (matrix[12] * pos.X) + (matrix[13] * pos.Y) + (matrix[14] * pos.Z) + matrix[15];
+            float screenW = matrix[12] * pos.X + matrix[13] * pos.Y + matrix[14] * pos.Z + matrix[15];
 
             // if entity is visible
             if (screenW > 0.001f)
             {
                 //calculate screen x and y
-                float screenX = (matrix[0] * pos.X) + (matrix[1] * pos.Y) + (matrix[2] * pos.Z) + matrix[3];
-                float screenY = (matrix[4] * pos.X) + (matrix[5] * pos.Y) + (matrix[6] * pos.Z) + matrix[7];
+                float screenX = matrix[0] * pos.X + matrix[1] * pos.Y + matrix[2] * pos.Z + matrix[3];
+                float screenY = matrix[4] * pos.X + matrix[5] * pos.Y + matrix[6] * pos.Z + matrix[7];
 
                 //prespective division 
-                float X = (windowSize.X / 2) + (windowSize.X / 2) * screenX / screenW;
-                float Y = (windowSize.Y / 2) - (windowSize.Y / 2) * screenY / screenW;
+                float X = windowSize.X / 2 + windowSize.X / 2 * screenX / screenW;
+                float Y = windowSize.Y / 2 - windowSize.Y / 2 * screenY / screenW;
 
                 //now return the Cordinates
                 return new Vector2(X, Y);
@@ -74,7 +74,7 @@ namespace Titled_Gui.Data
 
             return CalculateAngles(src, dst);
         }
-        public static List<Vector3> ReadBones(IntPtr boneAddress, Swed swed)
+        public static List<Vector3> ReadBones(nint boneAddress, Swed swed)
         {
             byte[] boneBytes = swed.ReadBytes(boneAddress, 27 * 32 + 16);
             List<Vector3> bones = new List<Vector3>();
@@ -94,7 +94,7 @@ namespace Titled_Gui.Data
             List<Vector2> bones2d = new List<Vector2>();
             foreach (Vector3 bone in bones)
             {
-                Vector2 bone2d = Calculate.WorldToScreen(viewMatrix, bone, new Vector2((int)screenSize.X, (int)screenSize.Y));
+                Vector2 bone2d = WorldToScreen(viewMatrix, bone, new Vector2((int)screenSize.X, (int)screenSize.Y));
                 bones2d.Add(bone2d);
             }
             return bones2d;

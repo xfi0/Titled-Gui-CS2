@@ -24,6 +24,12 @@ namespace Titled_Gui.Data
         public IntPtr PawnAddress { get; set; } // pointer to the entity's pawn address
         public List<Vector3> bones { get; set; } // list of bones for the entity
         public List<Vector2> bones2D { get; set; } // list of bones in 2D space (screen space)
+        public IntPtr dwSensitivity { get; set; } // sensitivity for the local player
+        public float Sensitivity { get; set; } // sensitivity for the local player
+        public string Name { get; set; }
+        public IntPtr HeldWeapon { get; set; }
+        public string HeldWeaponName { get; set; }
+        public IntPtr WeaponIndex { get; set; }
 
     }
 }

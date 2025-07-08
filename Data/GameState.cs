@@ -6,7 +6,7 @@ namespace Titled_Gui.Data
 {
     public static class GameState
     {
-        public static Swed swed = new Swed("cs2"); // Swed instance for reading memory
+        public static Swed swed = new Swed("cs2"); // public swed instance to use all arround
         public static IntPtr client = swed.GetModuleBase("client.dll"); // public client
         public static IntPtr LocalPlayerPawn { get; set; } // local player pawn pointer
         public static IntPtr EntityList { get; set; } // entity list pointer
@@ -21,6 +21,7 @@ namespace Titled_Gui.Data
         public static short WeaponIndex { get; set; }
         public static IntPtr ForceAttack { get; set; } // sensitivity pointer
         public static IntPtr ForceJump { get; set; } // sensitivity pointer
+        public static uint fflag  { get; set; }
         public static uint Standing = 65665;
         public static uint Crouching = 655667; // crouching state
 

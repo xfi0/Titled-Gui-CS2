@@ -1,12 +1,14 @@
-﻿using System;
+﻿using ImGuiNET;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
+using Titled_Gui.Data;
+using Titled_Gui.ModuleHelpers;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class Chams //gonna be hard cause its external but wtv
+    internal class Chams // fake chams soon
     {
+        
     }
 }

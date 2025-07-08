@@ -9,13 +9,9 @@ using Titled_Gui.Data;
 
 namespace Titled_Gui.Modules.Rage
 {
-    public class CVTriggerBot
+    public class CVTriggerBot //was gonna be cv but nah
     {
         public static bool Enabled = false;
-
-        private static Thread? scanThread;
-        private static bool stopRequested = false;
-        private static Image<Bgr, byte>? targetTemplate;
 
         public static void Start(Renderer renderer)
         {
@@ -29,7 +25,7 @@ namespace Titled_Gui.Modules.Rage
                 {
                     GameState.swed.WriteInt(GameState.ForceAttack, 65537);
                     Thread.Sleep(1);
-                    GameState.swed.WriteInt(GameState.ForceAttack, 250);
+                    GameState.swed.WriteInt(GameState.ForceAttack, 256);
                 }
             }
         }

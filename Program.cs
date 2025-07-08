@@ -13,6 +13,7 @@ using static Titled_Gui.ModuleHelpers.GetGunName;
 Swed swed = new Swed("cs2");
 Renderer renderer = new Renderer();
 EntityManager entityManager = new EntityManager(swed, renderer);
+await OffsetGetter.UpdateOffsetsAsync();
 
 Thread renderThread = new Thread(() => renderer.Start().Wait());
 renderThread.IsBackground = true;
@@ -21,26 +22,35 @@ renderThread.Start();
 // entities
 List<Entity> entities = new List<Entity>();
 
-// loop for mods and gettings sum stuff
+// entity thread
+Thread entityUpdateThread = new Thread(() =>
+{
+    var timer = System.Diagnostics.Stopwatch.StartNew();
+
+    while (true)
+    {
+        long frameStart = timer.ElapsedMilliseconds;
+
+        entities = entityManager.GetEntities();
+        Entity localPlayer = entityManager.GetLocalPlayer();
+        GameState.localPlayer = localPlayer;
+        renderer.UpdateLocalPlayer(localPlayer);
+        renderer.UpdateEntities(entities);
+        GameState.Entities = new List<Entity>(entities);
+        GetGunNameFunction(localPlayer);
+
+        long frameTime = timer.ElapsedMilliseconds - frameStart;
+        if (frameTime < 1)
+        {
+            Thread.SpinWait(50);
+        }
+    }
+});
+entityUpdateThread.IsBackground = true;
+entityUpdateThread.Priority = ThreadPriority.Highest;
+entityUpdateThread.Start();
+
 while (true)
 {
-    entities = entityManager.GetEntities(); // get all entities
-    Entity localPlayer = entityManager.GetLocalPlayer(); // get the local player
-    GameState.localPlayer = localPlayer; 
-
-    renderer.UpdateLocalPlayer(localPlayer); // update local player
-    renderer.UpdateEntities(entities); //update entites
-    GameState.Entities = new List<Entity>(entities);
-
-    if (Titled_Gui.Modules.Rage.Aimbot.AimbotEnable)
-    {
-        Titled_Gui.Modules.Rage.Aimbot.EnableAimbot();
-    }
-    if (Titled_Gui.Modules.Visual.BombTimerOverlay.EnableTimeOverlay)
-    {
-        BombTimerOverlay.TimeOverlay(renderer);
-    }
-    GetGunNameFunction(localPlayer);
-    Console.WriteLine($"sensitivity:{localPlayer.Sensitivity}DWSensitivity:{localPlayer.dwSensitivity}");
-    Thread.Sleep(1); // you may want to adjust this if you dont got a great computer, works for me tho
+    Thread.Sleep(1);
 }

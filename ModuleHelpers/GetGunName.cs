@@ -7,7 +7,7 @@ using static Titled_Gui.Data.GameState;
 
 namespace Titled_Gui.ModuleHelpers
 {
-    public class GetGunName
+    public class GetGunName // TODO fix
     {
         public static string GetGunNameFunction(Entity entity)
         {

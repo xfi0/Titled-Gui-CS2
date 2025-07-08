@@ -33,7 +33,7 @@ namespace Titled_Gui.ModuleHelpers
             }
             else
             {
-                // if entity is not visible, return a negative vector
+                // if entity is not visible, return a negative vector idk why but eveyone does it sao
                 //Console.WriteLine("Entity is not visible, screenW is too low: " + screenW);
                 return new Vector2(-99, -99);
             }
@@ -62,17 +62,6 @@ namespace Titled_Gui.ModuleHelpers
                 angle += 360;
 
             return angle;
-        }
-
-        public static Vector2 Angles(Vector3 src, Vector3 dst)
-        {
-            Vector3 delta = dst - src;
-            Vector3 direction = delta;
-
-            float pitch = (float)(-Math.Atan2(direction.Z, Math.Sqrt(direction.X * direction.X + direction.Y * direction.Y)) * (180.0f / Math.PI));
-            float yaw = (float)(Math.Atan2(direction.Y, direction.X) * (180.0f / Math.PI));
-
-            return CalculateAngles(src, dst);
         }
         public static List<Vector3> ReadBones(nint boneAddress, Swed swed)
         {

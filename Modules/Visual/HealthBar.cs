@@ -12,7 +12,7 @@ using Titled_Gui.ModuleHelpers;
 
 namespace Titled_Gui.Modules.Visual
 {
-    public class HealthBar
+    public class HealthBar 
     {
         public static bool EnableHealthBar = false;
         public static bool DrawOnSelf = false;

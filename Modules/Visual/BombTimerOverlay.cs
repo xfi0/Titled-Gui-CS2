@@ -5,7 +5,7 @@ using Titled_Gui.Data;
 
 namespace Titled_Gui.Modules.Visual
 {
-    public class BombTimerOverlay
+    public class BombTimerOverlay // TODO fix this it draw the overlay and time, but time is wrong
     {
         public static bool EnableTimeOverlay = false;
         private static readonly uint BackgroundColor = 0xAA333333;

@@ -11,11 +11,10 @@ namespace Titled_Gui.Data
 {
     public class MatrixSetting
     {
-        static Swed swed = new Swed("cs2");
         ViewMatrix viewMatrix(IntPtr Matrix)
         {
             var matrix = new ViewMatrix();
-            var viewmatrix = swed.ReadMatrix(Matrix);
+            var viewmatrix = GameState.swed.ReadMatrix(Matrix);
 
             matrix.m11 = viewmatrix[0];
             matrix.m12 = viewmatrix[1];

@@ -13,10 +13,9 @@ namespace Titled_Gui.Modules.Visual
 {
     public static class BoneESP
     {
-        public static bool AimOnTeam = false;
         public static float BoneThickness = 5f;
         public static bool DrawOnSelf = false;
-        private static readonly (int, int)[] BoneConnections = new (int, int)[]
+        public static readonly (int, int)[] BoneConnections = new (int, int)[]
         {
             (0, 1), // Waist to Neck
             (1, 2), // Neck to Head

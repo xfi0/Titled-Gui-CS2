@@ -17,7 +17,7 @@ This project is for **educational use only**. You are responsible for any action
 - 🧠 **Recoil Control System (RCS)** // coming soon
   - No recoil/spread with humanized patterns
 - 🕵️ **Stealth**
-  - No memory writing to the game
+  - No memory writing to the game unless you use anti flash or aimbot may change aimbot soon to just use mouse movement
 - 🧩 **Modular**
   - Toggle features with a bunch of settings
   - Easy to customize

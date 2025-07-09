@@ -31,7 +31,7 @@ This project is for **educational use only**. You are responsible for any action
 - Windows 10/11 (x64)
 - Visual Studio 2022
 - .NET 8.0 
-- Up to date offsets using a2x
+- Internet Connection For The Auto Updating Offsets
 
 ### Build
 

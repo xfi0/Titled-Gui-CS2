@@ -1,26 +1,39 @@
-# CS2 External Cheat
+<p align="center">
+  <img src="https://github.com/xfi0/Titled-Gui-CS2/blob/master/Resources/MenuLogo.png?raw=true" alt="CS2 Cheat Logo" width="300">
+</p>
 
-An advanced **external cheat** for Counter-Strike 2 (CS2), focused on high performance, and not getting banned from private servers ;). Designed for educational and personal testing purposes only.
+<h1 align="center">CS2 External Cheat</h1>
+
+<p align="center">
+  An advanced <strong>external cheat</strong> for Counter-Strike 2 (CS2) focused on high performance and avoiding detection
+</p>
+
+<div align="center">
+  
+  ![GitHub](https://img.shields.io/github/license/xfi0/Titled-Gui-CS2?style=flat-square)
+  ![GitHub last commit](https://img.shields.io/github/last-commit/xfi0/Titled-Gui-CS2?style=flat-square)
+  ![GitHub stars](https://img.shields.io/github/stars/xfi0/Titled-Gui-CS2?style=flat-square)
+
+</div>
 
 ## ❗ Disclaimer
 
-This project is for **educational use only**. You are responsible for any actions taken using this code. The author does **not condone cheating in multiplayer games** and is not liable for misuse.
+> ⚠️ **This project is for educational purposes only.**  
+> The author does not condone cheating in multiplayer games.  
+> Using this in online matches may result in account bans.  
+> You are solely responsible for any consequences of using this software.
 
 ---
 
 ## 🛠 Features
 
-- 🔍 **ESP (Wallhack)**
-  - Boxes, Health bars, names (coming soon), weapon names (soon), Bones,
-- 🎯 **Aimbot**
-  - Smooth aim, FOV check, visibility checks
-- 🧠 **Recoil Control System (RCS)** // coming soon
-  - No recoil/spread with humanized patterns
-- 🕵️ **Stealth**
-  - No memory writing to the game unless you use anti flash or aimbot may change aimbot soon to just use mouse movement
-- 🧩 **Modular**
-  - Toggle features with a bunch of settings
-  - Easy to customize
+| Category       | Features                                                                 |
+|----------------|--------------------------------------------------------------------------|
+| **ESP**        | Boxes, Health bars, Bones (Names & Weapons coming soon)                  |
+| **Aimbot**     | Smooth aiming, FOV check, Visibility checks                              |
+| **RCS**        | Recoil Control System with humanized patterns (Coming Soon)              |
+| **Stealth**    | No game memory writing (except anti-flash)                               |
+| **Modular**    | Toggleable features with customizable settings                           |
 
 ---
 
@@ -30,14 +43,12 @@ This project is for **educational use only**. You are responsible for any action
 
 - Windows 10/11 (x64)
 - Visual Studio 2022
-- .NET 8.0 
-- Internet Connection For The Auto Updating Offsets
+- .NET 8.0
+- Internet connection for auto-updating offsets
 
-### Build
+### Installation
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/xfi0/Titled-Gui-CS2.git
-   cd cs2-external-cheat
-   ```
-2. Run The Src
+   cd Titled-Gui-CS2

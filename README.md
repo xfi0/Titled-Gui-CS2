@@ -52,9 +52,9 @@
    ```bash
    git clone https://github.com/xfi0/Titled-Gui-CS2.git
    cd Titled-Gui-CS2
+   ```
    Build the solution in Release mode (x64)
    Run TitledGui.exe as Administrator
-   ```
 
 ## 🤝 Contributing
 ### We welcome contributions! Please follow these steps:

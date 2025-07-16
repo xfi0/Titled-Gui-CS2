@@ -57,7 +57,7 @@
    ```
 
 ## 🤝 Contributing
-We welcome contributions! Please follow these steps:
+### We welcome contributions! Please follow these steps:
 
 Fork the project
 

@@ -52,3 +52,19 @@
    ```bash
    git clone https://github.com/xfi0/Titled-Gui-CS2.git
    cd Titled-Gui-CS2
+   Build the solution in Release mode (x64)
+   Run TitledGui.exe as Administrator
+   ```
+
+## 🤝 Contributing
+We welcome contributions! Please follow these steps:
+
+Fork the project
+
+Create your feature branch (git checkout -b feature/AmazingFeature)
+
+Commit your changes (git commit -m 'Add some AmazingFeature')
+
+Push to the branch (git push origin feature/AmazingFeature)
+
+Open a Pull Request

@@ -1,24 +1,28 @@
-﻿using System;
+﻿using ClickableTransparentOverlay;
+using ImGuiNET;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using ClickableTransparentOverlay;
-using ImGuiNET;
-using Titled_Gui.Data;
-using Titled_Gui.Modules.Legit;
-using System.Windows.Input;
-using Titled_Gui.Modules.Visual;
-using Titled_Gui.Modules.Rage;
 using System.Windows.Forms;
+using System.Windows.Input;
+using Titled_Gui.Data;
 using Titled_Gui.ModuleHelpers;
+using Titled_Gui.Modules.Legit;
+using Titled_Gui.Modules.Rage;
+using Titled_Gui.Modules.Visual;
 
 namespace Titled_Gui
 {
     public class Renderer : Overlay
     {
+        // imoports
+        [DllImport("user32.dll")]
+        private static extern short GetAsyncKeyState(Keys vKey);
         // renderer variables  
         public Vector2 screenSize = new Vector2(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height); // should automatically be the size of anyones screen
         private IntPtr menuLogoTexture;
@@ -29,7 +33,7 @@ namespace Titled_Gui
         private uint CogHeight;
 
         //entity copy  
-        public ConcurrentQueue<Entity> entities = new ConcurrentQueue<Entity>();
+        public List<Entity> entities = new List<Entity>();
         public Entity localPlayer = new Entity();
         private readonly object entityLock = new object();
 
@@ -42,9 +46,11 @@ namespace Titled_Gui
         //draw list  
         public ImDrawListPtr drawList;
 
-        //mod bools
+        //mod variabls
         public static bool DrawWindow = true;
         private bool enableFovChanger = false;
+        private static bool isWaitingForKey = false;
+        private static string keybindLabel = $"Keybind: {Modules.Rage.TriggerBot.TriggerKey}";
 
         // UI variables
         private Vector4 accentColor = new Vector4(0.26f, 0.59f, 0.98f, 1.00f);
@@ -54,9 +60,9 @@ namespace Titled_Gui
         //entity methods
         public void UpdateEntities(IEnumerable<Entity> newEntities) // update entities
         {
-            entities = new ConcurrentQueue<Entity>(newEntities);
+            entities = newEntities.ToList();
         }
-        public static class FontManager
+    public static class FontManager
         {
             public static ImFontPtr BoldFont;
             public static ImFontPtr IconFont;
@@ -88,16 +94,26 @@ namespace Titled_Gui
                 return localPlayer;
             }
         }
-
-        protected override void Render() // esp overlay
+        protected override void Render()
         {
+            var io = ImGui.GetIO();
+            io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard; // keyboard nav
+            io.ConfigFlags |= ImGuiConfigFlags.NavEnableGamepad;  // gamepad nav
+
+            io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
+
+            //uncap fps
+            io.Framerate = 0;
+
+            //no vsync maybe should be on idk
+            io.ConfigViewportsNoAutoMerge = true;
+            io.ConfigViewportsNoTaskBarIcon = true;
             RenderESPOverlay();
             RenderMainWindow();
         }
 
         private void RenderESPOverlay()
         {
-            // ESP overlay rendering
             ImGui.SetNextWindowSize(screenSize);
             ImGui.SetNextWindowPos(Vector2.Zero);
             ImGui.Begin("TitledOverlay",
@@ -112,28 +128,31 @@ namespace Titled_Gui
                 ImGuiWindowFlags.NoMove
             );
             drawList = ImGui.GetWindowDrawList();
-
+            ImGui.ShowMetricsWindow();
             // esp
             if (Modules.Visual.BoxESP.enableESP)
             {
                 foreach (var entity in entities)
                 {
-                    if (entity != null && entity != localPlayer)
+                    if (entity != null) 
                     {
                         bool isEnemy = entity.team != localPlayer.team;
+
+                        // skip if its local and we should draw on self
+                        if (entity.PawnAddress == localPlayer.PawnAddress && !BoxESP.DrawOnSelf)
+                            continue;
 
                         //draw team and entity if team check is false
                         if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck && isEnemy))
                         {
-                            BoxESP.DrawBoxESP(entity, this);
-
-                            if (DistanceTracker.EnableDistanceTracker)
+                            BoxESP.DrawBoxESP(entity, localPlayer, this);
+                        }
+                        if (DistanceTracker.EnableDistanceTracker)
                             {
                                 string distText = $"{(int)entity.distance}m";
                                 Vector2 textPos = new Vector2(entity.position2D.X + 5, entity.position2D.Y);
                                 drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), distText);
                             }
-                        }
 
                         if (Tracers.enableTracers && (!Tracers.DrawOnSelf || entity != localPlayer))
                         {
@@ -196,6 +215,13 @@ namespace Titled_Gui
 
                 ImGui.BeginChild("Sidebar", new Vector2(120, 550), ImGuiChildFlags.Border | ImGuiChildFlags.AutoResizeY);
                 {
+                    float logoWidth = 120; // Your logo width
+                    float availableWidth = ImGui.GetContentRegionAvail().X;
+                    float offset = (availableWidth - logoWidth) * 0.5f;
+
+                    // Apply the offset
+                    ImGui.SetCursorPosX(ImGui.GetCursorPosX() + offset);
+
                     AddOrGetImagePointer("C:\\Users\\papsb\\Downloads\\Titled Gui\\Resources\\MenuLogo.png", true, out menuLogoTexture, out Width, out Height);
                     ImGui.Image(menuLogoTexture, new Vector2(120, 120));
                     ImGui.Spacing();
@@ -285,17 +311,44 @@ namespace Titled_Gui
                                 });
                             }
 
-                            RenderModuleToggle("CV Triggerbot", ref Modules.Rage.CVTriggerBot.Enabled, () => {
-                                if (Modules.Rage.CVTriggerBot.Enabled)
-                                {
-                                    Modules.Rage.CVTriggerBot.Start(this);
-                                }
-                            });
+                            RenderModuleToggle("Triggerbot", ref Modules.Rage.TriggerBot.Enabled);
 
-                            if (Modules.Rage.Aimbot.DrawFOV && Modules.Rage.Aimbot.AimbotEnable)
+                            if (Modules.Rage.TriggerBot.RequireKeybind)
                             {
-                                DrawCircle(Modules.Rage.Aimbot.FovSize, Modules.Rage.Aimbot.FovColor);
+                                if (isWaitingForKey)
+                                {
+                                    ImGui.Text("Press any key...");
+                                    if (ImGui.Button("Cancel"))
+                                    {
+                                        isWaitingForKey = false;
+                                    }
+
+                                    foreach (Keys key in Enum.GetValues(typeof(Keys)))
+                                    {
+                                        if ((GetAsyncKeyState(key) & 0x8000) != 0 && key != Keys.Escape)
+                                        {
+                                            Modules.Rage.TriggerBot.TriggerKey = key;
+                                            keybindLabel = $"Keybind: {key}";
+                                            isWaitingForKey = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (ImGui.Button(keybindLabel))
+                                    {
+                                        isWaitingForKey = true;
+                                    }
+                                }
                             }
+                                RenderSettingsSection("Trigger Bot Settings", () =>
+                                {
+                                    ImGui.SliderInt("Delay", ref Modules.Rage.TriggerBot.Delay, 10, 1000, "%d");
+                                    ImGui.Checkbox("Require Keybind", ref Modules.Rage.TriggerBot.RequireKeybind);
+                                    ImGui.Checkbox("Shoot At Team", ref Modules.Rage.TriggerBot.ShootAtTeam);
+                                });
+
                             break;
 
                         case 2: // visuals
@@ -308,10 +361,10 @@ namespace Titled_Gui
                                     RenderModuleToggle("Enable Tracers", ref Tracers.enableTracers);
                                     RenderModuleToggle("Draw On Self", ref Tracers.DrawOnSelf);
                                     RenderModuleToggle("Enable Health Bar", ref Modules.Visual.HealthBar.EnableHealthBar);
-                                    RenderModuleToggle("Draw On Self", ref Modules.Visual.HealthBar.DrawOnSelf);
                                     RenderModuleToggle("Team Check", ref BoxESP.TeamCheck);
                                     RenderModuleToggle("Show Distance Text", ref DistanceTracker.EnableDistanceTracker);
                                     RenderModuleToggle("Enable RGB", ref Colors.RGB);
+                                    ImGui.SliderFloat("Box Fill Opacity", ref BoxESP.BoxFillOpacity, 0.0f, 1.0f, "%.2f"); 
                                 });
                             }
 
@@ -322,13 +375,25 @@ namespace Titled_Gui
                                     RenderModuleToggle("Enable Tracers", ref Tracers.enableTracers);
                                     RenderModuleToggle("Draw On Self", ref Tracers.DrawOnSelf);
                                     RenderModuleToggle("Enable Health Bar", ref Modules.Visual.HealthBar.EnableHealthBar);
-                                    RenderModuleToggle("Draw On Self", ref Modules.Visual.HealthBar.DrawOnSelf);
                                     ImGui.SliderFloat("Bone Thickness", ref BoneESP.BoneThickness, 1f, 10f, "%.1f");
                                     ImGui.ColorEdit4("Bone Color", ref Colors.BoneColor);
                                     RenderModuleToggle("Enable RGB", ref Colors.RGB);
                                 });
                             }
-
+                            RenderModuleToggle("Enable Chams", ref Modules.Visual.Chams.EnableChams);
+                            if (Modules.Visual.Chams.EnableChams)
+                            {
+                                RenderSettingsSection("Chams Settings", () =>
+                                {
+                                    RenderModuleToggle("Enable Tracers", ref Tracers.enableTracers);
+                                    RenderModuleToggle("Draw On Self", ref Tracers.DrawOnSelf);
+                                    RenderModuleToggle("Enable Health Bar", ref Modules.Visual.HealthBar.EnableHealthBar);
+                                    RenderModuleToggle("Draw On Self", ref Modules.Visual.HealthBar.DrawOnSelf);
+                                    ImGui.SliderFloat("Bone Thickness", ref Chams.BoneThickness, 1f, 20f, "%.1f");
+                                    //ImGui.ColorEdit4("Bone Color", ref Chams.colo);
+                                    RenderModuleToggle("Enable RGB", ref Colors.RGB);
+                                });
+                            }
                             RenderModuleToggle("Enable Bomb Timer", ref Modules.Visual.BombTimerOverlay.EnableTimeOverlay);
                             RenderModuleToggle("Anti Flash", ref Modules.Visual.NoFlash.NoFlashEnable);
                             break;
@@ -361,12 +426,12 @@ namespace Titled_Gui
                         case 4: // settings
                             RenderCategoryHeader("SETTINGS");
 
-                            ImGui.Text("Application Settings");
+                            ImGui.Text("GUI Settings");
                             ImGui.Spacing();
 
                             ImGui.SliderFloat("Window Alpha", ref windowAlpha, 0.1f, 1.0f, "%.2f");
                             ImGui.ColorEdit4("Accent Color", ref accentColor);
-                            ImGui.SliderFloat("Animation Speed", ref animationSpeed, 0.01f, 1.0f, "%.2f");
+                            ImGui.SliderFloat("Animation Speed", ref animationSpeed, 0.01f, 1.0f, "%.2f"); // TODO make like open and close anim maybe tab swtichs
 
                             ImGui.Spacing();
                             ImGui.Separator();
@@ -379,8 +444,8 @@ namespace Titled_Gui
                             ImGui.Separator();
                             ImGui.Spacing();
 
-                            ImGui.Text("About");
-                            ImGui.Text("Titled Gui v1.0");
+                            ImGui.Text("About:");
+                            ImGui.Text("Titled Gui v1.1");
                             ImGui.Text("External Cheat Made By domok.");
                             break;
                     }
@@ -412,7 +477,7 @@ namespace Titled_Gui
                     {
                         if ((!Modules.Rage.Aimbot.Team || entity.team == localPlayer.team) && (!BoneESP.DrawOnSelf || entity != localPlayer))
                         {
-                            Modules.Visual.BoneESP.DrawBoneLines(entity, this);
+                                Modules.Visual.BoneESP.DrawBoneLines(entity, this);
                         }
                     }
                 }
@@ -438,13 +503,28 @@ namespace Titled_Gui
                 {
                     Modules.Legit.Bhop.AutoBhop();
                 }
-            }
+                if (Modules.Rage.TriggerBot.Enabled)
+                {
+                    Modules.Rage.TriggerBot.Start();
+                }
+                if (Modules.Rage.Aimbot.DrawFOV && Modules.Rage.Aimbot.AimbotEnable)
+                {
+                    DrawCircle(Modules.Rage.Aimbot.FovSize, Modules.Rage.Aimbot.FovColor);
+                }
+                if (Modules.Visual.Chams.EnableChams)
+                {
+                    foreach (Entity entity in entities)
+                    {
+                        Chams.DrawChams(entity, this);
+                    }
+                }
+                }
         }
 
         private void DrawGearIcon(Vector2 center, uint color)
         {
             const float radius = 8f; 
-            const int teeth = 100;
+            const int teeth = 8;
             const float innerRadius = radius * 0.6f;
             const float toothHeight = radius * 0.3f;
             const float toothWidth = 0.3f;

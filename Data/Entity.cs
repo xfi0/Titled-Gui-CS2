@@ -31,5 +31,6 @@ namespace Titled_Gui.Data
         public string HeldWeaponName { get; set; }
         public short WeaponIndex { get; set; }
         public int PlayerIndex { get; set; }
+        public Vector3 Velocity { get; set; }
     }
 }

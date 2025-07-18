@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 
 namespace Titled_Gui.Modules.Legit
 {
-    public class Bhop
+    public class Bhop // TODO make it use the jump action, i tried wouldnt work well
     {
         [DllImport ("user32.dll")]
         static extern short GetAsyncKeyState(int vKey);
@@ -23,17 +23,15 @@ namespace Titled_Gui.Modules.Legit
             if ((GetAsyncKeyState(HopKey) < 0))
             {
                 GameState.ForceJump = client + Offsets.jump;
-                GameState.fflag = GameState.swed.ReadUInt(GameState.LocalPlayerPawn, 0x3EC);
+                GameState.fflag = GameState.swed.ReadUInt(GameState.LocalPlayerPawn, Offsets.m_fFlags);
                 if (fflag == 65665 || fflag == 65667)
                 {
-                    Thread.Sleep(1); // sleep
                     GameState.swed.WriteInt(GameState.ForceJump, 65537); // write the value to ForceJump to make the player jump
-                    Console.WriteLine($"1 {fflag}");
+                    Thread.Sleep(1); // sleep
                 }
                 else
                 {
                     GameState.swed.WriteInt(GameState.ForceJump, 256); // undo jump 
-                    Console.WriteLine($"2 {fflag}");
                     Thread.Sleep(1); //sleep
                 }
             }

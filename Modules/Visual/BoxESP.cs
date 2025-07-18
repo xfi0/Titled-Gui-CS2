@@ -1,15 +1,14 @@
 ﻿using ImGuiNET;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Titled_Gui.Data;
-using Titled_Gui;
+using Titled_Gui.ModuleHelpers;
 using static Titled_Gui.Data.Entity;
 using static Titled_Gui.Data.GameState;
-using Titled_Gui.ModuleHelpers;
 
 namespace Titled_Gui.Modules.Visual
 {
@@ -19,19 +18,34 @@ namespace Titled_Gui.Modules.Visual
         public static bool TeamCheck = false;
         public static bool enableESP = false;
         public static bool DrawOnSelf = false;
-
-        public static void DrawBoxESP(Entity entity, Renderer renderer)
+        public static float BoxFillOpacity = 0.2f; // 20%
+        public static void DrawBoxESP(Entity entity, Entity localPlayer, Renderer renderer)
         {
-            //  get color
-            Vector4 boxColor = Colors.RGB ? Colors.Rgb(0.5f) : (GameState.localPlayer.team == entity.team ? Colors.teamColor : Colors.enemyColor);
-            float entityHeight = entity.position2D.Y - entity.viewPosition2D.Y;
+            if (!enableESP || (TeamCheck && GameState.localPlayer.team == entity.team))
+                return;
+            try
+            {
+                if (entity.PawnAddress == localPlayer.PawnAddress && !DrawOnSelf)
+                    return;
+                Vector4 boxColor = Colors.RGB ? Colors.Rgb(0.5f) :
+                        (GameState.localPlayer.team == entity.team ? Colors.teamColor : Colors.enemyColor);
 
-            // get the dimenstions and pos
-            Vector2 rectTTop = new Vector2(entity.viewPosition2D.X - entityHeight / 3, entity.viewPosition2D.Y);
-            Vector2 rectBottom = new Vector2(entity.position2D.X + entityHeight / 3, entity.position2D.Y);
+                float entityHeight = entity.position2D.Y - entity.viewPosition2D.Y;
 
-            //draw a hollow box around the entity, maybee add a like semi transparent box in the middle?
-            renderer.drawList.AddRect(rectTTop, rectBottom, ImGui.ColorConvertFloat4ToU32(boxColor));
+                // pos and dementions
+                Vector2 rectTTop = new Vector2(entity.viewPosition2D.X - entityHeight / 3, entity.viewPosition2D.Y);
+                Vector2 rectBottom = new Vector2(entity.position2D.X + entityHeight / 3, entity.position2D.Y);
+                //ModuleHelpers.GetGunName.GetGunNameFunction(entity);
+                renderer.drawList.AddRect(rectTTop, rectBottom, ImGui.ColorConvertFloat4ToU32(boxColor));
+
+                // add semi transparent fill
+                Vector4 fillColor = boxColor;
+                fillColor.W = BoxFillOpacity; 
+                renderer.drawList.AddRectFilled(rectTTop, rectBottom, ImGui.ColorConvertFloat4ToU32(fillColor));
+            }
+            catch
+            {
+            }
         }
     }
 }

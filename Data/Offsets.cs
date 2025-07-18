@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Titled_Gui.Data
 {
     //okay so shouldve put offsets here the whole time but wtv
-    public class Offsets //TODO 2 of these dont auto update, i think theyre unused tho
+    public class Offsets 
     {
         public static int m_pCameraServices = 0x11E0; // camera services pointer
         public static int m_iFOV = 0x210; //local player fov
@@ -49,5 +49,7 @@ namespace Titled_Gui.Data
         public static int m_bSpottedByMask = 0xC;
         public static int m_pWeaponServices = 0x11A8;
         public static int m_hActiveWeapon = 0x58;
+        public static int m_vecAbsVelocity = 0x3F0;
+        public static int m_fFlags = 0x3EC;
     }
 }

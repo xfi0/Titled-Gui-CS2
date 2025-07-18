@@ -58,7 +58,11 @@ namespace Titled_Gui.ModuleHelpers
             {"m_Item", new List<string> {"m_Item", "m_hActiveWeapon"}},
             {"m_iItemDefinitionIndex", new List<string> {"m_iItemDefinitionIndex"}},
             {"m_AttributeManager", new List<string> {"m_AttributeManager"}},
-            {"m_bSpottedByMask", new List<string> { "m_bSpottedByMask" }}
+            {"m_bSpottedByMask", new List<string> { "m_bSpottedByMask" }},
+            {"m_pWeaponServices", new List<string> { "m_pWeaponServices" }},
+            {"m_hActiveWeapon", new List<string> { "m_hActiveWeapon" }},
+            {"m_vecAbsVelocity", new List<string> { "m_vecAbsVelocity" }},
+            {"m_fFlags", new List<string> { "m_fFlags" }},
         };
 
         public static async Task UpdateOffsetsAsync()
@@ -155,9 +159,9 @@ namespace Titled_Gui.ModuleHelpers
             int updatedCount = 0;
             foreach (FieldInfo field in fields)
             {
-                string yourFieldName = field.Name;
+                string FieldName = field.Name;
 
-                if (_fieldNameMapping.TryGetValue(yourFieldName, out List<string> possibleNames))
+                if (_fieldNameMapping.TryGetValue(FieldName, out List<string> possibleNames))
                 {
                     bool found = false;
                     foreach (string dumperFieldName in possibleNames)
@@ -166,7 +170,7 @@ namespace Titled_Gui.ModuleHelpers
                         {
                             int currentValue = (int)field.GetValue(null);
                             field.SetValue(null, value);
-                            Console.WriteLine($"[OFFSET FINDER] Updated {yourFieldName} from 0x{currentValue:X} to 0x{value:X} (source: {dumperFieldName})");
+                            Console.WriteLine($"[OFFSET FINDER] Updated {FieldName} from 0x{currentValue:X} to 0x{value:X} (source: {dumperFieldName})");
                             updatedCount++;
                             found = true;
                             break;
@@ -175,12 +179,12 @@ namespace Titled_Gui.ModuleHelpers
 
                     if (!found)
                     {
-                        Console.WriteLine($"[OFFSET FINDER] ERROR: No Offset Found {yourFieldName} (tried: {string.Join(", ", possibleNames)})");
+                        Console.WriteLine($"[OFFSET FINDER] ERROR: No Offset Found {FieldName} (tried: {string.Join(", ", possibleNames)})");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"[OFFSET FINDER] ERROR: No Map For {yourFieldName}");
+                    Console.WriteLine($"[OFFSET FINDER] ERROR: No Map For {FieldName}");
                 }
             }
 

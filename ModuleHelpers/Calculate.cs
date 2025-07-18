@@ -34,8 +34,7 @@ namespace Titled_Gui.ModuleHelpers
             else
             {
                 // if entity is not visible, return a negative vector idk why but eveyone does it sao
-                //Console.WriteLine("Entity is not visible, screenW is too low: " + screenW);
-                return new Vector2(-99, -99);
+               return new Vector2(-99, -99);
             }
         }
 

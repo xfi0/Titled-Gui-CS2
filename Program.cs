@@ -37,12 +37,13 @@ Thread entityUpdateThread = new Thread(() =>
         renderer.UpdateLocalPlayer(localPlayer);
         renderer.UpdateEntities(entities);
         GameState.Entities = new List<Entity>(entities);
-        GetGunNameFunction(localPlayer);
+        //GetGunNameFunction(localPlayer);
 
         long frameTime = timer.ElapsedMilliseconds - frameStart;
-        if (frameTime < 1)
+        int targetFrameTime = 5; 
+        if (frameTime < targetFrameTime)
         {
-            Thread.SpinWait(50);
+            Thread.Sleep(targetFrameTime - (int)frameTime);
         }
     }
 });

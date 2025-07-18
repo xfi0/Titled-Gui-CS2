@@ -25,7 +25,7 @@ namespace Titled_Gui.Modules.Rage
         public static Vector4 FovColor = new Vector4(1f, 0f, 0f, 1f);
         public static bool DrawFOV = true;
         static Swed swed = new Swed("cs2");
-        public const int AIMBOT_KEY = 0x04; // mmb
+        public const int AIMBOT_KEY = 0x04; // mmb TODO Make Changable
 
         Entity entity = new Entity();
         [DllImport("user32.dll")]
@@ -97,7 +97,7 @@ namespace Titled_Gui.Modules.Rage
                     newAnglesVec3.X = Math.Clamp(newAnglesVec3.X, -89f, 89f);
                     newAnglesVec3.Y = NormalizeAngle(newAnglesVec3.Y);
 
-                    swed.WriteVec(client, Offsets.dwViewAngles, newAnglesVec3);
+                    swed.WriteVec(client, Offsets.dwViewAngles, newAnglesVec3); // move the viewangle TODO make mouse movement
                     break; //one ent
                 }
             }

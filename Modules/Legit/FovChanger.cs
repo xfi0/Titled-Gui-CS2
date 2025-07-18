@@ -9,7 +9,7 @@ using Titled_Gui;
 
 namespace Titled_Gui.Modules.Legit
 {
-    public class FovChanger
+    public class FovChanger // hella detected
     {
         public static uint DesiredFov = 60; // uint for the fov  
         public static int FOV = 60; // default fov int
@@ -24,7 +24,6 @@ namespace Titled_Gui.Modules.Legit
            {
                GameState.CameraServices = GameState.swed.ReadPointer(GameState.LocalPlayerPawn, Offsets.m_pCameraServices);
                GameState.swed.WriteUInt(GameState.CameraServices + Offsets.m_iFOV, DesiredFov); // set fov if not scoped & not equal to desired fov
-               //Console.WriteLine($"Current FOV: {DesiredFov}");
            }
         }
     }

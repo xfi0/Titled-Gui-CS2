@@ -16,7 +16,6 @@ namespace Titled_Gui.Data
         {
             this.renderer = renderer;
         }
-
         //get all entities
         public List<Entity> GetEntities()
         {
@@ -93,7 +92,8 @@ namespace Titled_Gui.Data
                 HeldWeapon = GameState.swed.ReadShort(GameState.currentPawn, Offsets.m_pClippingWeapon),
                 dwSensitivity = dwSensitivity,
                 WeaponIndex = GameState.WeaponIndex,
-                Sensitivity = sensitivity
+                Sensitivity = sensitivity,
+                Velocity = GameState.swed.ReadVec(GameState.LocalPlayerPawn, Offsets.m_vecAbsVelocity)
             };
 
             return entity;

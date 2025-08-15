@@ -19,7 +19,7 @@
 ## ❗ Disclaimer
 
 > ⚠️ **This project is for educational purposes only.**  
-> The author does not condone cheating in multiplayer games.  
+> I do not condone cheating in multiplayer games.  
 > Using this in online matches may result in account bans.  
 > You are solely responsible for any consequences of using this software.
 
@@ -53,11 +53,11 @@
    git clone https://github.com/xfi0/Titled-Gui-CS2.git
    cd Titled-Gui-CS2
    ```
-  2. Build the solution in Release mode (x64) 
+  2. Build / run the solution in debug mode (x64) 
   3. Run TitledGui.exe as Administrator
 
 ## 🤝 Contributing
-### We welcome contributions! Please follow these steps:
+### I accept contributions! Please follow these steps:
 
 - Fork the project
 

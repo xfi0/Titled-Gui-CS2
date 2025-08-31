@@ -30,7 +30,7 @@
 | Category       | Features                                                                 |
 |----------------|--------------------------------------------------------------------------|
 | **ESP**        | Boxes, Health bars, Bones (Names & Weapons coming soon)                  |
-| **Aimbot**     | Smooth aiming, FOV check, Visibility checks                              |
+| **Aimbot**     | Fov Check, Keybind                                                       |
 | **RCS**        | Recoil Control System with humanized patterns (Coming Soon)              |
 | **Stealth**    | Minimal Memory Writing                                                   |
 | **Modular**    | Toggleable features with customizable settings                           |

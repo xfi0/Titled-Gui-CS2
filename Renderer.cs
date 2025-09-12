@@ -403,7 +403,7 @@ namespace Titled_Gui
                                 RenderModuleToggle("Draw On Self", ref BoneESP.DrawOnSelf);
                                 RenderModuleToggle("Team Check", ref BoneESP.TeamCheck);
                                 ImGui.SliderFloat("Bone Thickness", ref BoneESP.BoneThickness, 1f, 10f, "%.1f");
-                                ImGui.ColorEdit4("Bone Color", ref Colors.BoneColor);
+                                ImGui.ColorEdit4("Bone Color", ref BoneESP.BoneColor);
                                 RenderModuleToggle("Enable RGB", ref Colors.RGB);
                             });
 
@@ -440,7 +440,7 @@ namespace Titled_Gui
 
                             ImGui.BeginChild("ConfigList", new Vector2(0, 200), ImGuiChildFlags.Border);
                             {
-                                foreach (string? config in Configs.SavedConfigs)
+                                foreach (var config in Configs.SavedConfigs.Keys)
                                 {
                                     if (ImGui.Selectable(config))
                                     {
@@ -459,13 +459,13 @@ namespace Titled_Gui
                             if (ImGui.Button("Save Config", new Vector2(120, 30)))
                             {
                                 Configs.SaveConfig(Configs.ConfigName);
-                                if (!Configs.SavedConfigs.Contains(Configs.ConfigName))
+                                if (!Configs.SavedConfigs.ContainsKey(Configs.ConfigName))
                                 {
-                                    Configs.SavedConfigs.Add(Configs.ConfigName); // add if it doesnt exsist
+                                    Configs.SavedConfigs.TryAdd(Configs.ConfigName, false); 
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Config Already Exsists.");
+                                    Console.WriteLine("Config Already Exists.");
                                 }
                             }
 
@@ -501,7 +501,7 @@ namespace Titled_Gui
                             ImGui.Spacing();
 
                             ImGui.Text("About:");
-                            ImGui.Text($"Titled Gui v{Configs.version}");
+                            ImGui.Text($"Titled Gui v{Configs.Version}");
                             ImGui.Text("External Cheat Made By xfi0 / domok.");
                             break;
                     }
@@ -526,7 +526,7 @@ namespace Titled_Gui
                     NameDisplay.DrawName(e, this);
                 }
             }
-            if (Aimbot.DrawFov)
+            if (Aimbot.DrawFov && Aimbot.AimbotEnable)
                 Aimbot.DrawCircle(Aimbot.FovSize, Aimbot.FovColor);
             if (Modules.Visual.BoneESP.EnableBoneESP)
             {
@@ -538,16 +538,7 @@ namespace Titled_Gui
                     }
                 }
             }
-            if (Modules.Legit.JumpHack.JumpHackEnabled)
-            {
-                Modules.Legit.JumpHack.JumpShot();
-            }
-            if (Modules.Visual.BoneESP.EnableBoneESP)
-            {
-                foreach (Entity entity in entities)
-                {
-                }
-            }
+            EyeRay.DrawEyeRay();
             if (Modules.Rage.TriggerBot.Enabled)
             {
                 Modules.Rage.TriggerBot.Start();
@@ -565,7 +556,7 @@ namespace Titled_Gui
                 {
                     float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
                     Vector2 rectTTop = new(entity.ViewPosition2D.X - entityHeight / 3, entity.ViewPosition2D.Y);
-                    Vector2 barTopLeft = new(rectTTop.X + 2f, entity.ViewPosition2D.Y);
+                    Vector2 barTopLeft = new(rectTTop.X = ArmorBar.ArmorBarWidth + 2f, entity.ViewPosition2D.Y);
 
                     float barHeight = entityHeight;
                     ArmorBar.DrawArmorBar(this, entity.Armor, 100, barTopLeft, barHeight, entity);

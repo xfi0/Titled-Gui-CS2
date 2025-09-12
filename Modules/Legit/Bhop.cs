@@ -22,11 +22,11 @@ namespace Titled_Gui.Modules.Legit
         {
             if (User32.GetAsyncKeyState(HopKey) < 0)
             {
-                for (int i = 0; i < 100; i++) // thanks stack overflow i dontg know how to do this outside unity
-                {
-                    int randomValueBetween0And99 = RandomGen.Next(100);
-                    if (randomValueBetween0And99 < Chance)
-                    {
+                //for (int i = 0; i < 100; i++) // thanks stack overflow i dontg know how to do this outside unity
+                //{
+                //    //int randomValueBetween0And99 = RandomGen.Next(100);
+                    //if (randomValueBetween0And99 < Chance)
+                    //{
                         if (fflag == 65665 || fflag == 65667)
                         {
                             GameState.swed.WriteInt(GameState.ForceJump, 65537); // write the value to ForceJump to make the player jump
@@ -37,8 +37,8 @@ namespace Titled_Gui.Modules.Legit
                             GameState.swed.WriteInt(GameState.ForceJump, 256); // undo jump 
                             Thread.Sleep(1); //sleep
                         }
-                    }
-                }
+                    //}
+                //}
             }
         }
         protected override void FrameAction()

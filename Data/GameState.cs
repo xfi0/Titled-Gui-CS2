@@ -28,6 +28,7 @@ namespace Titled_Gui.Data
         public static bool BombPlanted { get; set; }
         public static IntPtr MoneyServices { get; set; }
         public static IntPtr currentController = IntPtr.Zero;
+        public static bool IsScoped { get; set; }
 
     }
 }

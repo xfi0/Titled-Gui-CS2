@@ -1,0 +1,42 @@
+{
+  "0": {
+    "Name": "Titled",
+    "Version": "1.0.2",
+    "Author": "github.com/xfi0",
+    "Link": "https://github.com/xfi0/Titled-Gui-CS2"
+  },
+  "ESP": {
+    "ESP Enabled": true,
+    "ESP Current Shape": 0,
+    "ESP Rounding": 3.0,
+    "ESP Outline": false,
+    "ESP Team Check": false,
+    "ESP Draw On Self": false,
+    "Outline Thickness": {
+      "X": 1.0,
+      "Y": 1.0
+    },
+    "ESP Opacity": 0.2
+  },
+  "Bone ESP": {
+    "Bone ESP Enabled": false,
+    "Bone ESP Thickness": 5.0,
+    "Bone ESP Team Check": false,
+    "Bone ESP Draw On Self": false
+  },
+  "HealthBar": {
+    "HealthBar Enabled": false,
+    "HealthBar Rounding": 2.3,
+    "HealthBar Width": 5.0
+  },
+  "Aimbot": {
+    "Aimbot Enabled": false,
+    "Aimbot Aim On Team": false,
+    "Aimbot Selected Bone": 2,
+    "Aimbot Aim Method": 0
+  },
+  "RCS": {
+    "Bhop Enabled": false,
+    "Bhop Keybind": 32
+  }
+}

@@ -40,6 +40,11 @@ namespace Titled_Gui.Data
         public Vector3 EyeDirection { get; set; }
         public Vector3 ViewDirection { get; set; }
         public Vector3 AimPunchAngle { get; set; }
+        public Vector3 AimPunchAngleVel { get; set; }
+        public int AimPunchCache { get; set; }
+        public int AimPunchTickBase { get; set; }
+        public int AimPunchTickFraction { get; set; }
         public bool IsShooting { get; set; }
+        public bool IsBuyMenuOpen { get; set; }
     }
 }

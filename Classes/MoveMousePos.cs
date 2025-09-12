@@ -1,13 +1,43 @@
-﻿using Microsoft.VisualBasic.ApplicationServices;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Titled_Gui.Classes;
 using static Titled_Gui.Classes.User32;
 
-namespace Titled_Gui.Classes
+internal static class MoveMouse
 {
-    internal class MoveMousePos
+    public static void MouseMove(int dx, int dy)
     {
-      
+        var inputs = new Input[1];
+        inputs[0].type = INPUT_MOUSE;
+        inputs[0].mi = new MouseInput
+        {
+            dx = dx,
+            dy = dy,
+            dwFlags = MOUSEEVENTF_MOVE
+        };
+        SendInput(1, inputs, Marshal.SizeOf(typeof(Input)));
+    }
+
+    public static void MouseLeftDown()
+    {
+        var inputs = new Input[1];
+        inputs[0].type = INPUT_MOUSE;
+        inputs[0].mi = new MouseInput
+        {
+            dwFlags = MOUSEEVENTF_LEFTDOWN
+        };
+        SendInput(1, inputs, Marshal.SizeOf(typeof(Input)));
+    }
+
+    public static void MouseLeftUp()
+    {
+        var inputs = new Input[1];
+        inputs[0].type = INPUT_MOUSE;
+        inputs[0].mi = new MouseInput
+        {
+            dwFlags = MOUSEEVENTF_LEFTUP
+        };
+        SendInput(1, inputs, Marshal.SizeOf(typeof(Input)));
     }
 }

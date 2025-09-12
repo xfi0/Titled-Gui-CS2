@@ -1,6 +1,7 @@
-﻿using System.Runtime.InteropServices;
-using System.Threading;
+﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using Titled_Gui.Classes;
 using Titled_Gui.Data;
 using static Titled_Gui.Classes.User32;
 
@@ -12,36 +13,68 @@ namespace Titled_Gui.Modules.Rage
         public static int Delay = 10;
         public static bool ShootAtTeam = true;
         public static Keys TriggerKey = Keys.XButton2;
-        public static bool RequireKeybind = true; // if enabled keybing is needed
+        public static bool RequireKeybind = true; // if enabled keybind is needed
+        public static bool OnTarget = false;
+        public static Stopwatch reacquireTimer = new();
+        public static Stopwatch targetGraceTimer = new();
+        public const float MaxVelocityThreshold = 18f;
+        public const int TriggerDelayMs = 5;
+        public const int EntityListMultiplier = 0x8;
+        public const int EntityEntryOffset = 0x10;
+        public const int EntityStride = 120;
+        public const int EntityIndexMask = 0x1FF;
+        public const int EntityIndexShift = 9;
 
-        private static bool OnTarget = false;
-        private static Stopwatch reacquireTimer = new();
-        private static Stopwatch targetGraceTimer = new();
-
-        public static void Start() // kinda buggy with like the delay and stuff TODO: fires on Teamates still
+        protected override void FrameAction()
         {
-            if (!Enabled || (RequireKeybind && (GetAsyncKeyState((int)TriggerKey) & 0x8000) == 0) || GameState.localPlayer.Health == 0)
-                return;
+            Start();
+        }
 
-            GameState.crosshairEnt = GameState.swed.ReadInt(GameState.LocalPlayerPawn + Offsets.m_iIDEntIndex);
-            var entity = GameState.swed.ReadPointer(GameState.client, Offsets.dwEntityList + (GameState.crosshairEnt - 1) * 0x10);
-
-            int targetTeam = GameState.swed.ReadInt(entity + Offsets.m_iTeamNum);
-
-            bool isValidTarget = ShootAtTeam || targetTeam != GameState.localPlayer.Team;
-
-            if (GameState.crosshairEnt != -1 && isValidTarget && entity != IntPtr.Zero) // check that the crosshair ent is not empty (-1) TODO: Make it not shoot at chickens
+        public static void Start()
+        {
+            try
             {
+                if (!Enabled || (RequireKeybind && (GetAsyncKeyState((int)TriggerKey) & 0x8000) == 0) || GameState.localPlayer.Health == 0)
+                    return;
+
+                int crosshairEnt = GameState.swed.ReadInt(GameState.LocalPlayerPawn + Offsets.m_iIDEntIndex);
+
+                if (crosshairEnt < 0)
+                {
+                    ClearTargetState();
+                    return;
+                }
+
+                IntPtr entityList = IntPtr.Zero;
+
+                entityList = GameState.swed.ReadPointer(GameState.client + Offsets.dwEntityList);
+
+                if (entityList == IntPtr.Zero)
+                {
+                    entityList = EntityManager.listEntry;
+                }
+
+                IntPtr entityEntry = GameState.swed.ReadPointer(entityList + EntityListMultiplier * (crosshairEnt >> EntityIndexShift) + EntityEntryOffset);
+                
+
+                IntPtr entityPtr = GameState.swed.ReadPointer(entityEntry + EntityStride * (crosshairEnt & EntityIndexMask));
+               
+                int EntityTeam = GameState.swed.ReadInt(entityPtr + Offsets.m_iTeamNum);
+
+                if ((!ShootAtTeam && GameState.localPlayer.Team != EntityTeam) || entityPtr == IntPtr.Zero || entityEntry == IntPtr.Zero || entityList == IntPtr.Zero)
+                {
+                    ClearTargetState();
+                    return;
+                }
+
                 if (!OnTarget)
                 {
                     if (!reacquireTimer.IsRunning)
-                    {
                         reacquireTimer.Start();
-                    }
 
                     if (reacquireTimer.ElapsedMilliseconds >= Delay)
                     {
-                        Click();
+                        ExecuteTriggerAsync();
                         OnTarget = true;
                         reacquireTimer.Reset();
                         targetGraceTimer.Restart();
@@ -49,26 +82,32 @@ namespace Titled_Gui.Modules.Rage
                 }
                 else
                 {
-                    Click();
+                    ExecuteTriggerAsync();
                     targetGraceTimer.Restart();
                 }
             }
-            else
+            catch (Exception ex)
             {
-                if (OnTarget && targetGraceTimer.ElapsedMilliseconds < 100)
-                {
-                    return;
-                }
-
-                OnTarget = false;
-                reacquireTimer.Reset();
-                targetGraceTimer.Reset();
+                Debug.WriteLine(ex.ToString());
             }
         }
 
-        protected override void FrameAction()
+        private static async void ExecuteTriggerAsync()
         {
-            Start();
+            await Task.Delay(TriggerDelayMs);
+            User32.Click();
+        }
+
+        private static void ClearTargetState()
+        {
+            if (OnTarget && targetGraceTimer.ElapsedMilliseconds < 100)
+            {
+                return;
+            }
+
+            OnTarget = false;
+            reacquireTimer.Reset();
+            targetGraceTimer.Reset();
         }
     }
 }

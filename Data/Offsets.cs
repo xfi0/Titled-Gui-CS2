@@ -53,7 +53,7 @@ namespace Titled_Gui.Data
         public static int m_fFlags = 0x3EC;
         // im giving some offsets 0x0 cause my offset getter will fill them in either way.
         public static int m_hMyWeapons = 0x0;
-        public static int m_AimPunchAngle = 0x00;
+        public static int m_aimPunchAngle = 0x00;
         public static int m_nCurrentTickThisFrame = 0x0;
         public static int m_ArmorValue = 0x275C;
         public static int m_pInGameMoneyServices = 0x0;
@@ -61,5 +61,6 @@ namespace Titled_Gui.Data
         public static int m_iTotalCashSpent = 0x0;
         public static int m_iCashSpentThisRound = 0x0;
         public static int m_aimPunchCache = 0x0;
+        public static int m_bIsBuyMenuOpen = 0x0;
     }
 }

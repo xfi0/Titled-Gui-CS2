@@ -64,7 +64,7 @@ namespace Titled_Gui.Classes
             {"m_vecAbsVelocity", new List<string> { "m_vecAbsVelocity" }},
             {"m_fFlags", new List<string> { "m_fFlags" }},
             {"m_hMyWeapons", new List<string> { "m_hMyWeapons" }},
-            {"m_AimPunchAngle", new List<string> { "m_AimPunchAngle" }},
+            {"m_aimPunchAngle", new List<string> { "m_aimPunchAngle" }},
             {"m_nCurrentTickThisFrame", new List<string> { "m_nCurrentTickThisFrame" }},
             {"m_ArmorValue", new List<string> { "m_ArmorValue" }},
             {"m_pInGameMoneyServices", new List<string> { "m_pInGameMoneyServices" }},
@@ -72,6 +72,7 @@ namespace Titled_Gui.Classes
             {"m_iTotalCashSpent", new List<string> { "m_iTotalCashSpent" }},
             {"m_iCashSpentThisRound", new List<string> { "m_iCashSpentThisRound" }},
             {"m_aimPunchCache", new List<string> { "m_aimPunchCache" }},
+            {"m_bIsBuyMenuOpen ", new List<string> { "m_bIsBuyMenuOpen " }},
         };
 
         public static async Task UpdateOffsetsAsync()

@@ -20,12 +20,12 @@ namespace Titled_Gui.Modules.Visual
             float DistanceFactor = entity.Distance * 0.05f;
             float thickness = Math.Clamp(30f / DistanceFactor, 20f, 30f); // much thicker to mimic body
 
-            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb(0.5f) : Colors.BoneColor);
+            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb(0.5f) : BoneESP.BoneColor);
             uint backColor = ImGui.GetColorU32(new System.Numerics.Vector4(0f, 0f, 0f, 0.4f)); // back black outline
 
             foreach (var (a, b) in BoneESP.BoneConnections)
             {
-                if (a >= entity?.Bones2D?.Count || b >= entity?.Bones2D?.Count || entity != null)
+                if (a >= entity?.Bones2D?.Count || b >= entity?.Bones2D?.Count)
                     continue;
 
                 Vector2 boneA = entity.Bones2D[a];

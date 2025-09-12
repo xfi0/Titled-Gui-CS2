@@ -28,11 +28,20 @@ Thread entityUpdateThread = new(() =>
     {
         try
         {
-            foreach (var file in Directory.GetFiles(Configs.ConfigDirPath))
+            if (!Directory.Exists(Configs.ConfigDirPath))
             {
-                if (!Configs.SavedConfigs.Contains(file))
+                Directory.CreateDirectory(Configs.ConfigDirPath);
+            }
+            var files = Directory.EnumerateFiles(Configs.ConfigDirPath).Select(Path.GetFileName).Where(f => f != null).ToHashSet(); // refresh so if any thing changes the dic updates
+            foreach (var file in files)
+            {
+                Configs.SavedConfigs.TryAdd(file!, true);
+            }
+            foreach (var key in Configs.SavedConfigs.Keys)
+            {
+                if (!files.Contains(key))
                 {
-                    Configs.SavedConfigs.Add(file.Replace(Configs.ConfigDirPath, ""));
+                    Configs.SavedConfigs.TryRemove(key, out _);
                 }
             }
             entities = entityManager.GetEntities();
@@ -41,10 +50,11 @@ Thread entityUpdateThread = new(() =>
             GameState.renderer.UpdateLocalPlayer(localPlayer);
             GameState.renderer.UpdateEntities(entities);
             GameState.Entities = new List<Entity>(entities);
-            foreach (Entity entity in entities)
-            {
-                //Console.WriteLine(GetAllGuns(entity));
-            }
+            //foreach (Entity entity in entities)
+            //{
+            //    if (entity.PawnAddress == GameState.localPlayer.PawnAddress) return;
+            //    //Console.WriteLine(entity.IsBuyMenuOpen);
+            //}
         }
         catch (Exception e)
         {
@@ -58,6 +68,7 @@ Thread entityUpdateThread = new(() =>
 };
 entityUpdateThread.Start();
 ThreadService.StartAllThreadServices();
+
 while (true)
 {
     Thread.Sleep(1);

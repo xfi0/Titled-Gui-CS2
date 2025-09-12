@@ -17,6 +17,8 @@ namespace Titled_Gui.Modules.Visual
         public static bool DrawOnSelf = false;
         public static bool EnableBoneESP = false;
         public static bool TeamCheck = false;
+        public static Vector4 BoneColor = new Vector4(1f, 1f, 1f, 1f); // color of the Bones
+
 
         public static readonly (int, int)[] BoneConnections =  // short simple
         [
@@ -54,7 +56,7 @@ namespace Titled_Gui.Modules.Visual
             if (!EnableBoneESP || entity == null || entity.Bones2D == null || TeamCheck && entity.Team == GameState.localPlayer.Team || !DrawOnSelf && entity.PawnAddress == GameState.localPlayer.PawnAddress) return; 
 
             float thickness = Math.Clamp(BoneESP.BoneThickness / (entity.Distance * 0.1f), 0.5f, 2f); // calculate thickness based on Distance, minimum 0.5f and maximum 2f stops it from being massive
-            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb(0.5f) : Colors.BoneColor); //get color
+            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb(0.5f) : BoneColor); //get color
 
             foreach (var (a, b) in BoneConnections)
             {

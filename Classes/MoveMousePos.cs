@@ -18,26 +18,4 @@ internal static class MoveMouse
         };
         SendInput(1, inputs, Marshal.SizeOf(typeof(Input)));
     }
-
-    public static void MouseLeftDown()
-    {
-        var inputs = new Input[1];
-        inputs[0].type = INPUT_MOUSE;
-        inputs[0].mi = new MouseInput
-        {
-            dwFlags = MOUSEEVENTF_LEFTDOWN
-        };
-        SendInput(1, inputs, Marshal.SizeOf(typeof(Input)));
-    }
-
-    public static void MouseLeftUp()
-    {
-        var inputs = new Input[1];
-        inputs[0].type = INPUT_MOUSE;
-        inputs[0].mi = new MouseInput
-        {
-            dwFlags = MOUSEEVENTF_LEFTUP
-        };
-        SendInput(1, inputs, Marshal.SizeOf(typeof(Input)));
-    }
 }

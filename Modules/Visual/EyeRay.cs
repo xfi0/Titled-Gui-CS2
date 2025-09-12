@@ -16,7 +16,7 @@ namespace Titled_Gui.Modules.Visual
         public static float Length = 50f;
         public static bool DrawOnSelf = false;
         public static bool DrawOnTeam = true;
-        public static bool Enabled = true;
+        public static bool Enabled = false;
         public static Vector4 EyeRayColor = new(1, 0 , 0, 1);
         public static void DrawEyeRay()
         {

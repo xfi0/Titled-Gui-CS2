@@ -70,6 +70,7 @@ namespace Titled_Gui.Classes
                     ["Aimbot Aim On Team"] = Aimbot.Team,
                     ["Aimbot Selected Bone"] = Aimbot.CurrentBoneIndex,
                     ["Aimbot Aim Method"] = Aimbot.CurrentAimMethod,
+                    ["Aimbot FOV Size"] = Aimbot.FovSize,
                 },
                 ["RCS"] = new JObject
                 {
@@ -96,7 +97,8 @@ namespace Titled_Gui.Classes
                 ["Chams"] = new JObject
                 {
                     ["Chams Enabled"] = Chams.EnableChams,
-
+                    ["Chams Thickness"] = Chams.BoneThickness,
+                    ["Chams Draw On Self"] = Chams.DrawOnSelf
                 }
             };
 
@@ -177,6 +179,7 @@ namespace Titled_Gui.Classes
             Aimbot.Team = configData["Aimbot"]?["Aimbot Aim On Team"]?.ToObject<bool>() ?? Aimbot.Team;
             Aimbot.CurrentBoneIndex = configData["Aimbot"]?["Aimbot Selected Bone"]?.ToObject<int>() ?? Aimbot.CurrentBoneIndex;
             Aimbot.CurrentAimMethod = configData["Aimbot"]?["Aimbot Aim Method"]?.ToObject<int>() ?? Aimbot.CurrentAimMethod;
+            Aimbot.FovSize = configData["Aimbot"]?["Aimbot FOV Size"]?.ToObject<int>() ?? Aimbot.FovSize;
             #endregion
 
             #region RCS

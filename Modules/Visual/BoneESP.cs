@@ -6,8 +6,8 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Titled_Gui.Classes;
 using Titled_Gui.Data;
-using Titled_Gui.ModuleHelpers;
 
 namespace Titled_Gui.Modules.Visual
 {
@@ -15,8 +15,11 @@ namespace Titled_Gui.Modules.Visual
     {
         public static float BoneThickness = 5f;
         public static bool DrawOnSelf = false;
-        public static readonly (int, int)[] BoneConnections = new (int, int)[]
-        {
+        public static bool EnableBoneESP = false;
+        public static bool TeamCheck = false;
+
+        public static readonly (int, int)[] BoneConnections =  // short simple
+        [
             (0, 1), // Waist to Neck
             (1, 2), // Neck to Head
             (1, 3), // Neck to ShoulderLeft
@@ -29,9 +32,8 @@ namespace Titled_Gui.Modules.Visual
             (9, 10), // KneeLeft to FeetLeft
             (0, 11), // Waist to KneeRight
             (11, 12), // KneeRight to FeetRight
-        };
-
-        public enum BoneIds
+        ];
+        public enum BoneIds // short simple 
         {
             Waist = 0,
             Neck = 5,
@@ -47,47 +49,43 @@ namespace Titled_Gui.Modules.Visual
             KneeRight = 26,
             FeetRight = 27,
         }
-
-        public static bool EnableBoneESP = false;
         public static void DrawBoneLines(Entity entity, Renderer renderer)
         {
-            if (entity == null || entity.bones2D == null)
-                return;
+            if (!EnableBoneESP || entity == null || entity.Bones2D == null || TeamCheck && entity.Team == GameState.localPlayer.Team || !DrawOnSelf && entity.PawnAddress == GameState.localPlayer.PawnAddress) return; 
 
-            float thickness = Math.Clamp(BoneESP.BoneThickness / (entity.distance * 0.1f), 0.5f, 2f); // calculate thickness based on distance, minimum 0.5f and maximum 2f stops it from being massive
+            float thickness = Math.Clamp(BoneESP.BoneThickness / (entity.Distance * 0.1f), 0.5f, 2f); // calculate thickness based on Distance, minimum 0.5f and maximum 2f stops it from being massive
             uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb(0.5f) : Colors.BoneColor); //get color
 
             foreach (var (a, b) in BoneConnections)
             {
-                if (a >= entity.bones2D.Count || b >= entity.bones2D.Count)
+                if (a >= entity.Bones2D.Count || b >= entity.Bones2D.Count)
                     continue;
 
-                Vector2 boneA = entity.bones2D[a];
-                Vector2 boneB = entity.bones2D[b];
+                Vector2 boneA = entity.Bones2D[a];
+                Vector2 boneB = entity.Bones2D[b];
 
                 if (IsValidScreenPoint(boneA) && IsValidScreenPoint(boneB))
                 {
-                    renderer.drawList.AddLine(boneA, boneB, boneColor, thickness); //draw a line between the bones
+                    renderer.drawList.AddLine(boneA, boneB, boneColor, thickness); //draw a line between the Bones
                     renderer.drawList.AddCircleFilled(boneA, thickness * 2, boneColor); //draw a circle at the start bone
                 }
             }
 
-            if ((int)BoneIds.Head < entity.bones2D.Count)
+            Vector2 HeadPos = entity.Bones2D[2];
+            if (IsValidScreenPoint(HeadPos))
             {
-                Vector2 headPos = entity.bones2D[2];
-                if (IsValidScreenPoint(headPos))
-                {
-                    float radius = Math.Clamp(10f / (entity.distance * 0.05f), 3f, 10f);
-                    renderer.drawList.AddCircleFilled(headPos, radius, boneColor); // draw a circle at the head bone extra big
-                }
+                float radius = Math.Clamp(10f / (entity.Distance * 0.05f), 3f, 10f);
+                renderer.drawList.AddCircleFilled(HeadPos, radius, boneColor); // draw a circle at the Head bone extra big
             }
         }
 
         public static bool IsValidScreenPoint(Vector2 pt)
         {
-            return !float.IsNaN(pt.X) && !float.IsNaN(pt.Y) &&
-                   !float.IsInfinity(pt.X) && !float.IsInfinity(pt.Y) &&
-                   pt.X > 0 && pt.Y > 0;
+            return !float.IsNaN(pt.X) && !float.IsNaN(pt.Y) && !float.IsInfinity(pt.X) && !float.IsInfinity(pt.Y) && pt.X > 0 && pt.Y > 0;
+        }
+        public static bool IsValidScreenPoint(Vector3 pt)
+        {
+            return !float.IsNaN(pt.X) && !float.IsNaN(pt.Y) && !float.IsNaN(pt.Z) && !float.IsInfinity(pt.X) && !float.IsInfinity(pt.Y) && !float.IsInfinity(pt.Z) && pt.X > 0 && pt.Y > 0 && pt.Z > 0;
         }
     }
 }

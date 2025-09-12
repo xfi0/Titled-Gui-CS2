@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Titled_Gui.ModuleHelpers
+namespace Titled_Gui.Classes
 {
     public class Colors
     {
         public static Vector4 enemyColor = new Vector4(1, 0, 0, 1); // red
-        public static Vector4 teamColor = new Vector4(0, 1, 0, 1);   // green 
-        public static Vector4 BoneColor = new Vector4(1f, 1f, 1f, 1f); // color of the bones
+        public static Vector4 TeamColor = new Vector4(0, 1, 0, 1);   // green 
+        public static Vector4 BoneColor = new Vector4(1f, 1f, 1f, 1f); // color of the Bones
 
         public static bool RGB = false; // toggle for RGB color
         public static Vector4 Rgb(float speed1)

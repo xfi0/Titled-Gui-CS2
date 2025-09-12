@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Titled_Gui.Modules.Visual.BoneESP;
 
-namespace Titled_Gui.ModuleHelpers
+namespace Titled_Gui.Classes
 {
     public static class Calculate
     {
@@ -42,9 +42,9 @@ namespace Titled_Gui.ModuleHelpers
         {
             Vector3 delta = new Vector3(to.X - from.X, to.Y - from.Y, to.Z - from.Z);
 
-            float distance = (float)Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
+            float Distance = (float)Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
 
-            float pitch = (float)(-Math.Atan2(delta.Z, distance) * 180 / Math.PI);
+            float pitch = (float)(-Math.Atan2(delta.Z, Distance) * 180 / Math.PI);
             float yaw = (float)(Math.Atan2(delta.Y, delta.X) * 180 / Math.PI);
 
             pitch = NormalizeAngle(pitch);
@@ -65,27 +65,27 @@ namespace Titled_Gui.ModuleHelpers
         public static List<Vector3> ReadBones(nint boneAddress, Swed swed)
         {
             byte[] boneBytes = swed.ReadBytes(boneAddress, 27 * 32 + 16);
-            List<Vector3> bones = new List<Vector3>();
+            List<Vector3> Bones = new();
             foreach (var boneId in Enum.GetValues(typeof(BoneIds)))
             {
                 float x = BitConverter.ToSingle(boneBytes, (int)boneId * 32 + 0);
                 float y = BitConverter.ToSingle(boneBytes, (int)boneId * 32 + 4);
                 float z = BitConverter.ToSingle(boneBytes, (int)boneId * 32 + 8);
                 Vector3 currentBone = new Vector3(x, y, z);
-                bones.Add(currentBone);
+                Bones.Add(currentBone);
             }
-            return bones;
+            return Bones;
         }
 
-        public static List<Vector2> ReadBones2D(List<Vector3> bones, float[] viewMatrix, Vector2 screenSize)
+        public static List<Vector2> ReadBones2D(List<Vector3> Bones, float[] ViewMatrix, Vector2 screenSize)
         {
-            List<Vector2> bones2d = new List<Vector2>();
-            foreach (Vector3 bone in bones)
+            List<Vector2> Bones2d = new List<Vector2>();
+            foreach (Vector3 bone in Bones)
             {
-                Vector2 bone2d = WorldToScreen(viewMatrix, bone, new Vector2((int)screenSize.X, (int)screenSize.Y));
-                bones2d.Add(bone2d);
+                Vector2 bone2d = WorldToScreen(ViewMatrix, bone, new Vector2((int)screenSize.X, (int)screenSize.Y));
+                Bones2d.Add(bone2d);
             }
-            return bones2d;
+            return Bones2d;
         }
     }
 }

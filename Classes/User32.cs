@@ -4,12 +4,32 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Threading;
 
-namespace Titled_Gui.ModuleHelpers
+namespace Titled_Gui.Classes
 {
-    internal class Actions
+    internal class User32 // what is SYSLIB1054 pls help
     {
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool ClientToScreen(IntPtr hWnd, out System.Drawing.Point lpPoint);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern uint SetWindowDisplayAffinity(IntPtr hWnd, uint dwAffinity);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool UnhookWindowsHookEx(IntPtr hInstance);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern short GetAsyncKeyState(int vKey);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, IntPtr lParam);
+
         [DllImport("user32.dll")]
         private static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, int dwExtraInfo);
         [DllImport("user32.dll")]

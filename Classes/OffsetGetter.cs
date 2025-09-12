@@ -7,19 +7,19 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Titled_Gui.ModuleHelpers
+namespace Titled_Gui.Classes
 {
     internal class OffsetGetter
     {
         private static readonly Dictionary<string, int> offsets = new Dictionary<string, int>();
-        private static readonly HttpClient httpClient = new HttpClient();
+        private static readonly HttpClient httpClient = new();
 
         private const string OffsetsUrl = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.cs";
         private const string ClientDllUrl = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/client_dll.cs";
         private const string ButtonsUrl = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/buttons.cs";
+        private const string Engine2Url = "https://github.com/a2x/cs2-dumper/blob/b7f46588ef258949eb38014268cec1698bfe2071/output/engine2_dll.cs#L39";
 
-        //dictionary of the offsets i think im missing three
-        private static readonly Dictionary<string, List<string>> _fieldNameMapping = new Dictionary<string, List<string>>
+        private static readonly Dictionary<string, List<string>> FieldNameMappings = new Dictionary<string, List<string>>
         {
             {"dwViewMatrix", new List<string> {"dwViewMatrix"}},
             {"dwEntityList", new List<string> {"dwEntityList"}},
@@ -63,6 +63,15 @@ namespace Titled_Gui.ModuleHelpers
             {"m_hActiveWeapon", new List<string> { "m_hActiveWeapon" }},
             {"m_vecAbsVelocity", new List<string> { "m_vecAbsVelocity" }},
             {"m_fFlags", new List<string> { "m_fFlags" }},
+            {"m_hMyWeapons", new List<string> { "m_hMyWeapons" }},
+            {"m_AimPunchAngle", new List<string> { "m_AimPunchAngle" }},
+            {"m_nCurrentTickThisFrame", new List<string> { "m_nCurrentTickThisFrame" }},
+            {"m_ArmorValue", new List<string> { "m_ArmorValue" }},
+            {"m_pInGameMoneyServices", new List<string> { "m_pInGameMoneyServices" }},
+            {"m_iAccount", new List<string> { "m_iAccount" }},
+            {"m_iTotalCashSpent", new List<string> { "m_iTotalCashSpent" }},
+            {"m_iCashSpentThisRound", new List<string> { "m_iCashSpentThisRound" }},
+            {"m_aimPunchCache", new List<string> { "m_aimPunchCache" }},
         };
 
         public static async Task UpdateOffsetsAsync()
@@ -75,17 +84,9 @@ namespace Titled_Gui.ModuleHelpers
                 await DownloadAndParseFile(OffsetsUrl, ParseOffsetsFile);
                 await DownloadAndParseFile(ClientDllUrl, ParseClientDllFile);
                 await DownloadAndParseFile(ButtonsUrl, ParseButtonsFile);
+                await DownloadAndParseFile(Engine2Url, ParseEngine2File);
 
                 Console.WriteLine($"[OFFSET FINDER] Found: {offsets.Count}");
-                if (offsets.Count > 0)
-                {
-                    Console.WriteLine("[OFFSET FINDER] Dumping first 10 offsets for debugging:");
-                    foreach (var offset in offsets.Take(10))
-                    {
-                        Console.WriteLine($"[OFFSET FINDER] {offset.Key} = 0x{offset.Value:X}");
-                    }
-                }
-
                 UpdateOffsetsClass();
                 Console.WriteLine("[OFFSET FINDER] Offsets Updated Succesfully!");
             }
@@ -113,7 +114,7 @@ namespace Titled_Gui.ModuleHelpers
         {
             // regex to match the offsets
             var matches = Regex.Matches(content, @"public (?:const|static) nint (\w+) = (0x[0-9A-Fa-f]+);");
-            Console.WriteLine($"[OFFSET FINDER] Found {matches.Count} offsets in offsets.cs");
+            Console.WriteLine($"[OFFSET FINDER] Found {matches.Count} Offsets In File offsets.cs");
 
             foreach (Match match in matches)
             {
@@ -125,9 +126,36 @@ namespace Titled_Gui.ModuleHelpers
 
         private static void ParseClientDllFile(string content)
         {
-            // regex to match the offsets
+            ParseClassOffsets(content, "C_BaseEntity");
+
+            // regex fallback
             var matches = Regex.Matches(content, @"public (?:const|static) nint (\w+) = (0x[0-9A-Fa-f]+);");
-            Console.WriteLine($"[OFFSET FINDER] Found {matches.Count} offsets in client_dll.cs");
+            Console.WriteLine($"[OFFSET FINDER] Found {matches.Count} additional offsets in client_dll.cs");
+
+            foreach (Match match in matches)
+            {
+                string name = match.Groups[1].Value;
+                int value = Convert.ToInt32(match.Groups[2].Value, 16);
+                if (!offsets.ContainsKey(name))
+                {
+                    offsets[name] = value;
+                }
+            }
+        }
+        private static void ParseClassOffsets(string content, string className) // if it nees a explicit class
+        {
+            string classPattern = $@"public static class {className} \\{{([\\s\\S]*?)\\}}";
+            var classMatch = Regex.Match(content, classPattern, RegexOptions.Multiline);
+
+            if (!classMatch.Success)
+            {
+                Console.WriteLine($"[OFFSET FINDER] Could Not Find Class {className}");
+                return;
+            }
+
+            var matches = Regex.Matches(classMatch.Groups[1].Value, @"public const nint (\w+) = (0x[0-9A-Fa-f]+);");
+
+            Console.WriteLine($"[OFFSET FINDER] Found {matches.Count} offsets in class {className}");
 
             foreach (Match match in matches)
             {
@@ -141,7 +169,7 @@ namespace Titled_Gui.ModuleHelpers
         {
             // regex to match the offsets
             var matches = Regex.Matches(content, @"public const nint ([\w\+]+) = (0x[0-9A-Fa-f]+);");
-            Console.WriteLine($"[OFFSET FINDER] Found {matches.Count} offsets in buttons.cs");
+            Console.WriteLine($"[OFFSET FINDER] Found {matches.Count}  Offsets In File buttons.cs");
 
             foreach (Match match in matches)
             {
@@ -150,7 +178,19 @@ namespace Titled_Gui.ModuleHelpers
                 offsets[name] = value;
             }
         }
+        private static void ParseEngine2File(string content)
+        {
+            // regex to match the offsets
+            var matches = Regex.Matches(content, @"public const nint ([\w\+]+) = (0x[0-9A-Fa-f]+);");
+            Console.WriteLine($"[OFFSET FINDER] Found {matches.Count}  Offsets In File engine2.cs");
 
+            foreach (Match match in matches)
+            {
+                string name = match.Groups[1].Value;
+                int value = Convert.ToInt32(match.Groups[2].Value, 16);
+                offsets[name] = value;
+            }
+        }
         private static void UpdateOffsetsClass()
         {
             Type offsetsType = typeof(Titled_Gui.Data.Offsets);
@@ -161,19 +201,23 @@ namespace Titled_Gui.ModuleHelpers
             {
                 string FieldName = field.Name;
 
-                if (_fieldNameMapping.TryGetValue(FieldName, out List<string> possibleNames))
+                if (FieldNameMappings.TryGetValue(FieldName, out List<string>? possibleNames))
                 {
                     bool found = false;
                     foreach (string dumperFieldName in possibleNames)
                     {
                         if (offsets.TryGetValue(dumperFieldName, out int value))
                         {
-                            int currentValue = (int)field.GetValue(null);
-                            field.SetValue(null, value);
-                            Console.WriteLine($"[OFFSET FINDER] Updated {FieldName} from 0x{currentValue:X} to 0x{value:X} (source: {dumperFieldName})");
-                            updatedCount++;
-                            found = true;
-                            break;
+                            if (field != null)
+                            {
+                                int? currentValue = (int?)field?.GetValue(null);
+
+                                field?.SetValue(null, value);
+                                Console.WriteLine($"[OFFSET FINDER] Updated {FieldName} from 0x{currentValue:X} to 0x{value:X} (source: {dumperFieldName})");
+                                updatedCount++;
+                                found = true;
+                                break;
+                            }
                         }
                     }
 
@@ -184,11 +228,11 @@ namespace Titled_Gui.ModuleHelpers
                 }
                 else
                 {
-                    Console.WriteLine($"[OFFSET FINDER] ERROR: No Map For {FieldName}");
+                    Console.WriteLine($"[OFFSET FINDER] ERROR: {FieldName} Is Not Mapped");
                 }
             }
 
-            Console.WriteLine($"[OFFSET FINDER] Successfully Updated: {updatedCount}/{fields.Length} Offsets");
+            Console.WriteLine($"[OFFSET FINDER] Updated: {updatedCount}/{fields.Length} Offsets");
         }
     }
 }

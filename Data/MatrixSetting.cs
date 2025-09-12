@@ -11,27 +11,27 @@ namespace Titled_Gui.Data
 {
     public class MatrixSetting
     {
-        ViewMatrix viewMatrix(IntPtr Matrix)
+        ViewMatrix ViewMatrix(IntPtr Matrix)
         {
             var matrix = new ViewMatrix();
-            var viewmatrix = GameState.swed.ReadMatrix(Matrix);
+            var Viewmatrix = GameState.swed.ReadMatrix(Matrix);
 
-            matrix.m11 = viewmatrix[0];
-            matrix.m12 = viewmatrix[1];
-            matrix.m13 = viewmatrix[2];
-            matrix.m14 = viewmatrix[3];
-            matrix.m21 = viewmatrix[4];
-            matrix.m22 = viewmatrix[5];
-            matrix.m23 = viewmatrix[6];
-            matrix.m24 = viewmatrix[7];
-            matrix.m31 = viewmatrix[8];
-            matrix.m32 = viewmatrix[9];
-            matrix.m33 = viewmatrix[10];
-            matrix.m34 = viewmatrix[11];
-            matrix.m41 = viewmatrix[12];
-            matrix.m42 = viewmatrix[13];
-            matrix.m43 = viewmatrix[14];
-            matrix.m44 = viewmatrix[15];
+            matrix.m11 = Viewmatrix[0];
+            matrix.m12 = Viewmatrix[1];
+            matrix.m13 = Viewmatrix[2];
+            matrix.m14 = Viewmatrix[3];
+            matrix.m21 = Viewmatrix[4];
+            matrix.m22 = Viewmatrix[5];
+            matrix.m23 = Viewmatrix[6];
+            matrix.m24 = Viewmatrix[7];
+            matrix.m31 = Viewmatrix[8];
+            matrix.m32 = Viewmatrix[9];
+            matrix.m33 = Viewmatrix[10];
+            matrix.m34 = Viewmatrix[11];
+            matrix.m41 = Viewmatrix[12];
+            matrix.m42 = Viewmatrix[13];
+            matrix.m43 = Viewmatrix[14];
+            matrix.m44 = Viewmatrix[15];
             return matrix;
         }
     }

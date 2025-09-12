@@ -65,6 +65,6 @@
 
 - Commit your changes (git commit -m 'Add some AmazingFeature')
 
-- Push to the branch (git push origin feature/AmazingFeature)
+- Push to the branch (git push Origin feature/AmazingFeature)
 
 - Open a Pull Request

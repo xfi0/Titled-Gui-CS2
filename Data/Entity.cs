@@ -9,28 +9,37 @@ namespace Titled_Gui.Data
 {
     public class Entity
     {
-        public Vector3 position { get; set; } //entity position in 3D space
-        public Vector3 view { get; set; } // view offset of the entity
-        public Vector3 origin { get; set; } // origin of the entity
-        public Vector2 position2D { get; set; } // entity position in 2D space (screen space)
-        public Vector2 viewPosition2D { get; set; } // view offset position in 2D space (screen space)
-        public Vector2 head2D { get; set; } // head position in 2D space (screen space)
-        public Vector3 head { get; set; } // head position of the entity in 3D space
+        public Vector3 Position { get; set; } //entity Position in 3D space
+        public Vector3 View { get; set; } // View offset of the entity
+        public Vector3 Origin { get; set; } // Origin of the entity
+        public Vector2 Position2D { get; set; } // entity Position in 2D space (screen space)
+        public Vector2 ViewPosition2D { get; set; } // View offset Position in 2D space (screen space)
+        public Vector2 Head2D { get; set; } // Head Position in 2D space (screen space)
+        public Vector3 Head { get; set; } // Head Position of the entity in 3D space
         public int LifeState { get; set; } // life state of the entity
-        public int team { get; set; } //team of the entity
-        public int health { get; set; } // health of the entity
+        public int Team { get; set; } //Team of the entity
+        public int Health { get; set; } // Health of the entity
         public bool Visible { get; set; } // visibility of the entity
-        public float distance { get; set; } // distance to the entity,from the local player
+        public float Distance { get; set; } // Distance to the entity,from the local player
         public IntPtr PawnAddress { get; set; } // pointer to the entity's pawn address
-        public List<Vector3> bones { get; set; } // list of bones for the entity
-        public List<Vector2> bones2D { get; set; } // list of bones in 2D space (screen space)
+        public List<Vector3>? Bones { get; set; } // list of Bones for the entity
+        public List<Vector2>? Bones2D { get; set; } // list of Bones in 2D space (screen space)
         public IntPtr dwSensitivity { get; set; } // sensitivity for the local player
         public float Sensitivity { get; set; } // sensitivity for the local player
-        public string Name { get; set; }
-        public IntPtr HeldWeapon { get; set; }
-        public string HeldWeaponName { get; set; }
-        public short WeaponIndex { get; set; }
+        public string? Name { get; set; }
+        public int Ammo { get; set; }
+        public int Account, CashSpent, CashSpentTotal; 
+        public bool IsScoped { get; set; }
+        public IntPtr? CurrentWeapon { get; set; }
+        public short? WeaponIndex { get; set; }
+        public string? CurrentWeaponName { get; set; }
         public int PlayerIndex { get; set; }
+        public int Armor {  get; set; }
         public Vector3 Velocity { get; set; }
+        public Vector3 ViewAngles { get; set; }
+        public Vector3 EyeDirection { get; set; }
+        public Vector3 ViewDirection { get; set; }
+        public Vector3 AimPunchAngle { get; set; }
+        public bool IsShooting { get; set; }
     }
 }

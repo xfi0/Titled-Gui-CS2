@@ -1,0 +1,15 @@
+// IF YOU ARE A DEV FEEL FREE TO DO ANY OF THESE AND SUBMIT A PULL REQUEST
+# Important
+Fix Mouse Movement Aimbot
+Make RCS
+
+# Middle Ground
+visual tab should be better
+ESP Preview
+
+# Least Important
+Radar Hack, 
+Configs,
+Bhop Using Keyboard Input,
+VSYNC Toggleable
+For Visuals Color Picker With Transparency If Applicable

@@ -7,7 +7,7 @@ using Titled_Gui;
 using Titled_Gui.Data;
 using static Titled_Gui.Data.Entity;
 using static Titled_Gui.Data.EntityManager;
-using Titled_Gui.ModuleHelpers;
+using Titled_Gui.Classes;
 using System.Runtime.InteropServices;
 
 namespace Titled_Gui.Modules.Legit
@@ -16,14 +16,13 @@ namespace Titled_Gui.Modules.Legit
     {
         public static bool JumpHackEnabled = false;
         public static int JumpHotkey = 0x20;
-        [DllImport("user32.dll")]
-        static extern short GetAsyncKeyState(int vKey);
-
         public static void JumpShot()
         {
+            if (!JumpHackEnabled) return; //i gotta get better at returning before anything else
+
             GameState.fflag = GameState.swed.ReadUInt(GameState.LocalPlayerPawn, Offsets.m_fFlags);
             GameState.ForceAttack = GameState.client + Offsets.attack;
-            if (JumpHackEnabled && GetAsyncKeyState(JumpHotkey) < 0)
+            if (User32.GetAsyncKeyState(JumpHotkey) < 0)
             {
                 if (GameState.fflag == 65665 || GameState.fflag == 65667)
                 {

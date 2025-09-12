@@ -2,11 +2,11 @@
 using System.Threading;
 using System.Diagnostics;
 using Titled_Gui.Data;
-using static Titled_Gui.ModuleHelpers.Actions;
+using static Titled_Gui.Classes.User32;
 
 namespace Titled_Gui.Modules.Rage
 {
-    public class TriggerBot
+    public class TriggerBot : Classes.ThreadService
     {
         public static bool Enabled = false;
         public static int Delay = 10;
@@ -15,40 +15,23 @@ namespace Titled_Gui.Modules.Rage
         public static bool RequireKeybind = true; // if enabled keybing is needed
 
         private static bool OnTarget = false;
-        private static Stopwatch reacquireTimer = new Stopwatch();
-        private static Stopwatch targetGraceTimer = new Stopwatch();
-        [DllImport("user32.dll")]
-        private static extern short GetAsyncKeyState(Keys vKey);
+        private static Stopwatch reacquireTimer = new();
+        private static Stopwatch targetGraceTimer = new();
 
-        public static void Update()
+        public static void Start() // kinda buggy with like the delay and stuff TODO: fires on Teamates still
         {
-            if (!RequireKeybind)
-            {
+            if (!Enabled || (RequireKeybind && (GetAsyncKeyState((int)TriggerKey) & 0x8000) == 0) || GameState.localPlayer.Health == 0)
                 return;
-            }
-            Enabled = (GetAsyncKeyState(TriggerKey) & 0x8000) != 0;
-        }
 
-        public static void Start() // kinda buggy with like the delay and stuff TODO: fires on teamates still
-        {
-            if (!Enabled || (RequireKeybind && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0))
-                return;
-            var localPlayer = GameState.swed.ReadPointer(GameState.client, Offsets.dwLocalPlayerPawn);
-            if (localPlayer == 0) return; // if dead return
-
-            int crosshairEnt = GameState.swed.ReadInt(localPlayer + Offsets.m_iIDEntIndex);
-            var entity = GameState.swed.ReadPointer(GameState.client, Offsets.dwEntityList + (crosshairEnt - 1) * 0x10);
+            GameState.crosshairEnt = GameState.swed.ReadInt(GameState.LocalPlayerPawn + Offsets.m_iIDEntIndex);
+            var entity = GameState.swed.ReadPointer(GameState.client, Offsets.dwEntityList + (GameState.crosshairEnt - 1) * 0x10);
 
             int targetTeam = GameState.swed.ReadInt(entity + Offsets.m_iTeamNum);
-            int localTeam = GameState.swed.ReadInt(localPlayer + Offsets.m_iTeamNum);
 
-            bool isValidTarget = ShootAtTeam || targetTeam != localTeam;
+            bool isValidTarget = ShootAtTeam || targetTeam != GameState.localPlayer.Team;
 
-            if (crosshairEnt == -1 || entity == 0) return;
-            Console.WriteLine(crosshairEnt);
-            if (crosshairEnt != -1) // if its a entity TODO: Make it not shoot at chickens
+            if (GameState.crosshairEnt != -1 && isValidTarget && entity != IntPtr.Zero) // check that the crosshair ent is not empty (-1) TODO: Make it not shoot at chickens
             {
-
                 if (!OnTarget)
                 {
                     if (!reacquireTimer.IsRunning)
@@ -81,6 +64,11 @@ namespace Titled_Gui.Modules.Rage
                 reacquireTimer.Reset();
                 targetGraceTimer.Reset();
             }
+        }
+
+        protected override void FrameAction()
+        {
+            Start();
         }
     }
 }

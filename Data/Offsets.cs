@@ -13,14 +13,14 @@ namespace Titled_Gui.Data
         public static int m_pCameraServices = 0x11E0; // camera services pointer
         public static int m_iFOV = 0x210; //local player fov
         public static int m_bIsScoped = 0x23E8; // scoped in a sniper
-        public static int m_iHealth = 0x344; // entitys health
+        public static int m_iHealth = 0x344; // entitys Health
         public static int m_entitySpottedState = 0x1B58; // entity spotted state
         public static int m_bSpotted = 0x8; // spotted bool
         public static int m_iIDEntIndex = 0x1458; // entity index
         public static int m_pSceneNode = 0x8; // scene node pointer
-        public static int dwViewMatrix = 0x1A6D260; // view matrix address
-        public static int m_vecViewOffset = 0xCB0; // view offset of the entity
-        public static int dwViewAngles = 0x1A774D0; // view angles address
+        public static int dwViewMatrix = 0x1A6D260; // View matrix address
+        public static int m_vecViewOffset = 0xCB0; // View offset of the entity
+        public static int dwViewAngles = 0x1A774D0; // View angles address
         public static int m_lifeState = 0x348;
         public static int m_vOldOrigin = 0x1324;
         public static int m_iTeamNum = 0x3E3;
@@ -36,7 +36,7 @@ namespace Titled_Gui.Data
         public static int dwGlobalVars = 0x1849EB0;
         public static int dwPlantedC4 = 0x1A702F8;
         public static int m_bBombPlanted = 0x1B7B;
-        public static int dwGameRules = 0x1A66B38;
+        public static int dwGameRules = 0x9A5;
         public static int dwSensitivity_sensitivity = 0x40;
         public static int dwSensitivity = 0x1A67858;
         public static int m_iszPlayerName = 0x660;
@@ -51,5 +51,15 @@ namespace Titled_Gui.Data
         public static int m_hActiveWeapon = 0x58;
         public static int m_vecAbsVelocity = 0x3F0;
         public static int m_fFlags = 0x3EC;
+        // im giving some offsets 0x0 cause my offset getter will fill them in either way.
+        public static int m_hMyWeapons = 0x0;
+        public static int m_AimPunchAngle = 0x00;
+        public static int m_nCurrentTickThisFrame = 0x0;
+        public static int m_ArmorValue = 0x275C;
+        public static int m_pInGameMoneyServices = 0x0;
+        public static int m_iAccount = 0x0;
+        public static int m_iTotalCashSpent = 0x0;
+        public static int m_iCashSpentThisRound = 0x0;
+        public static int m_aimPunchCache = 0x0;
     }
 }

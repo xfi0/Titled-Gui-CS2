@@ -1,70 +1,90 @@
-﻿using System;
+﻿using ImGuiNET;
+using System;
 using System.Numerics;
-using System.Windows.Forms;
+using System.Threading;
 using Titled_Gui.Data;
+using static Titled_Gui.Renderer;
 
 namespace Titled_Gui.Modules.Visual
 {
-    public class BombTimerOverlay // TODO fix this it draw the overlay and time, but time is wrong
+    public class BombTimerOverlay : Classes.ThreadService
     {
         public static bool EnableTimeOverlay = false;
-        private static readonly uint BackgroundColor = 0xAA333333;
-        private static readonly uint TextColor = 0xFF0000FF;
-        private static readonly float BackgroundPadding = 5f;
-        private static int bombCountdown = 40;
-        private static bool wasPlanted = false;
+        public static bool BombPlanted = false;
+        public static int? TimePlanted = 0;
+        private static Thread? TimerThread;
+        private static bool ThreadRunning = false;
 
-        public static void TimeOverlay(Renderer renderer)
+        public static void Initialize()
         {
             try
             {
-                if (GameState.GameRules == IntPtr.Zero) //get game rules if not done already
+                // counting
+                GameState.GameRules = GameState.swed.ReadPointer(GameState.client, Offsets.dwGameRules);
+
+                if (GameState.GameRules == IntPtr.Zero)
                 {
-                    GameState.GameRules = GameState.swed.ReadPointer(GameState.client + Offsets.dwGameRules);
-                    if (GameState.GameRules == IntPtr.Zero) return;
+                    Thread.Sleep(10);
                 }
 
-                bool planted = GameState.swed.ReadBool(GameState.GameRules + Offsets.m_bBombPlanted);
+                BombPlanted = GameState.swed.ReadBool(GameState.GameRules, 0x9A5);
 
-                if (planted && !wasPlanted)
+                if (BombPlanted)
                 {
-                    bombCountdown = 40;
-                    wasPlanted = true;
-                }
-                else if (!planted && wasPlanted)
-                {
-                    wasPlanted = false;
-                    bombCountdown = 40;  
-                    return;
-                }
-
-                // only draw if bomb is planted
-                if (planted)
-                {
-                    string displayText = Math.Max(0, bombCountdown).ToString("0.00") + "s";
-                    float screenWidth = Screen.PrimaryScreen.Bounds.Width;
-                    Vector2 textPosition = new Vector2(screenWidth / 2 - 100f, 20f);
-                    Vector2 backgroundSize = new Vector2(100f, 30f);
-
-                    // draw background and text
-                    renderer.drawList.AddRectFilled(
-                        textPosition - new Vector2(BackgroundPadding, BackgroundPadding),
-                        textPosition + backgroundSize + new Vector2(BackgroundPadding, BackgroundPadding),
-                        BackgroundColor);
-                    renderer.drawList.AddText(textPosition, TextColor, displayText);
-
-                    if (bombCountdown > 0)
+                    for (int i = 0; i < 40; i++) // if bomb gets planted start counting
                     {
-                        bombCountdown--;
+                        BombPlanted = GameState.swed.ReadBool(GameState.GameRules, 0x9A5); // UH THIS WILL BREAK ON UPDATE BUT AUTO UPDATER GRABS FROM WRONG STRUCT OR SUM
+                        if (!BombPlanted) { TimePlanted = 40; break; } // defusal
+
+                        TimePlanted = 40 - i;
+                        Thread.Sleep(1000); // sleep 1 sec on success
                     }
                 }
+                else
+                {
+                    Thread.Sleep(100);
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                GameState.GameRules = IntPtr.Zero;
-                wasPlanted = false;
-                bombCountdown = 40;  //if error reset
+                Console.WriteLine(ex.Message);
+                Thread.Sleep(1000);
             }
+        }
+        
+
+        public static void TimeOverlay() // TODO diplay more info
+        {
+            if (!EnableTimeOverlay) return; // if false dont draw
+
+            // overlay
+            var style = ImGui.GetStyle();
+            style.WindowRounding = 5f;
+            style.Colors[(int)ImGuiCol.WindowBg] = new Vector4(0.09f, 0.09f, 0.10f, 1);
+            style.Colors[(int)ImGuiCol.ChildBg] = new Vector4(0.11f, 0.11f, 0.12f, 1);
+            style.Colors[(int)ImGuiCol.TitleBg] = new Vector4(0.08f, 0.08f, 0.09f, 1);
+            style.Colors[(int)ImGuiCol.TitleBgActive] = new Vector4(0.11f, 0.11f, 0.12f, 1);
+            style.Colors[(int)ImGuiCol.Border] = new Vector4(0.15f, 0.15f, 0.16f, 1);
+            style.Colors[(int)ImGuiCol.Button] = new Vector4(0.18f, 0.18f, 0.19f, 1);
+            style.Colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.22f, 0.22f, 0.23f, 1);
+            style.Colors[(int)ImGuiCol.ButtonActive] = accentColor;
+            style.Colors[(int)ImGuiCol.Header] = new Vector4(accentColor.X, accentColor.Y, accentColor.Z, 0.4f);
+            style.Colors[(int)ImGuiCol.HeaderHovered] = new Vector4(accentColor.X, accentColor.Y, accentColor.Z, 0.6f);
+            style.Colors[(int)ImGuiCol.HeaderActive] = accentColor;
+            Vector2 windowSize = new(240f, 100f);
+            ImGui.SetNextWindowSize(windowSize, ImGuiCond.Once); // ensure that the like size doesnt reset to the defualt on resize
+            ImGui.SetNextWindowPos(new Vector2((GameState.renderer.screenSize.X - windowSize.X) / 2, 10));
+            ImGui.Begin(BombPlanted ? "C4 Has Been Planted" : "C4 Has Not Been Planted", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar);
+
+            ImDrawListPtr imDrawList = ImGui.GetWindowDrawList();
+            imDrawList.AddText(Renderer.FontManager.BoldFont, 18f, ImGui.GetWindowPos() + new Vector2(10, 0), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), BombPlanted ? "C4 Has Been Planted" : "C4 Has Not Been Planted");
+            imDrawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 20), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), TimePlanted.ToString());
+            ImGui.End();
+        }
+
+        protected override void FrameAction()
+        {
+            Initialize(); // call everyframe without checking if its enabled to keep timer up to date holy smart
         }
     }
 }

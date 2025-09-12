@@ -8,33 +8,45 @@ using Titled_Gui.Data;
 using Swed64;
 using static Titled_Gui.Data.GameState;
 using System.Runtime.InteropServices;
+using Titled_Gui.Classes;
 
 namespace Titled_Gui.Modules.Legit
 {
-    public class Bhop // TODO make it use the jump action, i tried wouldnt work well
+    public class Bhop : Classes.ThreadService // TODO make it use the jump action, i tried wouldnt work well
     {
-        [DllImport ("user32.dll")]
-        static extern short GetAsyncKeyState(int vKey);
         public static bool BhopEnable = false;
+        public static float Chance = 100;
         public static int HopKey = 0x20; // space
-
-        public static void AutoBhop()
+        private static Random RandomGen = new();
+        public static void AutoBhop() 
         {
-            if ((GetAsyncKeyState(HopKey) < 0))
+            if (User32.GetAsyncKeyState(HopKey) < 0)
             {
-                GameState.ForceJump = client + Offsets.jump;
-                GameState.fflag = GameState.swed.ReadUInt(GameState.LocalPlayerPawn, Offsets.m_fFlags);
-                if (fflag == 65665 || fflag == 65667)
+                for (int i = 0; i < 100; i++) // thanks stack overflow i dontg know how to do this outside unity
                 {
-                    GameState.swed.WriteInt(GameState.ForceJump, 65537); // write the value to ForceJump to make the player jump
-                    Thread.Sleep(1); // sleep
-                }
-                else
-                {
-                    GameState.swed.WriteInt(GameState.ForceJump, 256); // undo jump 
-                    Thread.Sleep(1); //sleep
+                    int randomValueBetween0And99 = RandomGen.Next(100);
+                    if (randomValueBetween0And99 < Chance)
+                    {
+                        if (fflag == 65665 || fflag == 65667)
+                        {
+                            GameState.swed.WriteInt(GameState.ForceJump, 65537); // write the value to ForceJump to make the player jump
+                            Thread.Sleep(1); // sleep
+                        }
+                        else
+                        {
+                            GameState.swed.WriteInt(GameState.ForceJump, 256); // undo jump 
+                            Thread.Sleep(1); //sleep
+                        }
+                    }
                 }
             }
+        }
+        protected override void FrameAction()
+        {
+            GameState.ForceJump = client + Offsets.jump;
+            GameState.fflag = GameState.swed.ReadUInt(GameState.LocalPlayerPawn, Offsets.m_fFlags);
+            if (!BhopEnable) return;
+            AutoBhop();
         }
     }
 }

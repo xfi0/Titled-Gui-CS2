@@ -53,7 +53,7 @@ namespace Titled_Gui.Modules.Visual
         }
         public static void DrawBoneLines(Entity entity, Renderer renderer)
         {
-            if (!EnableBoneESP || entity == null || entity.Bones2D == null || TeamCheck && entity.Team == GameState.localPlayer.Team || !DrawOnSelf && entity.PawnAddress == GameState.localPlayer.PawnAddress) return; 
+            if (!EnableBoneESP || entity == null || entity.Bones2D == null || TeamCheck && entity.Team == GameState.localPlayer.Team || !DrawOnSelf && entity.PawnAddress == GameState.localPlayer.PawnAddress || entity.Bones == null || entity.Health == 0) return; 
 
             float thickness = Math.Clamp(BoneESP.BoneThickness / (entity.Distance * 0.1f), 0.5f, 2f); // calculate thickness based on Distance, minimum 0.5f and maximum 2f stops it from being massive
             uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb(0.5f) : BoneColor); //get color

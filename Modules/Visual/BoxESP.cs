@@ -23,10 +23,6 @@ namespace Titled_Gui.Modules.Visual
         {
             if (!enableESP || DrawOnSelf && entity.PawnAddress != GameState.localPlayer.PawnAddress) return;
 
-            bool Cull = !DrawOnSelf && (entity.Position2D.X < -150 || entity.Position2D.X > GameState.renderer.screenSize.X + 150 || entity.ViewPosition2D.X < -150 || entity.ViewPosition2D.X > GameState.renderer.screenSize.X + 150 || entity.Position2D.Y < -150 || entity.Position2D.Y > GameState.renderer.screenSize.Y + 150 || entity.ViewPosition2D.Y < -150 || entity.ViewPosition2D.Y > GameState.renderer.screenSize.Y + 150);
-
-            if (Cull)
-                return;
 
             try
             {

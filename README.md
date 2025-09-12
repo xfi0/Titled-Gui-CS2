@@ -29,7 +29,7 @@
 
 | Category       | Features                                                                 |
 |----------------|--------------------------------------------------------------------------|
-| **ESP**        | Boxes, Health bars, Bones (Names & Weapons coming soon)                  |
+| **ESP**        | Boxes, Health bars, Bones (Weapons coming soon)                          |
 | **Aimbot**     | Fov Check, Keybind                                                       |
 | **RCS**        | Recoil Control System with humanized patterns (Coming Soon)              |
 | **Stealth**    | Minimal Memory Writing                                                   |

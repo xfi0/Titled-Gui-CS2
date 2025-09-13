@@ -393,6 +393,8 @@ namespace Titled_Gui
                             RenderModuleToggle("Show Distance Text", ref BoxESP.EnableDistanceTracker);
 
                             RenderModuleToggle("Enable Tracers", ref Tracers.enableTracers);
+                            ImGui.Combo("##Tracer Start Position", ref Tracers.CurrentStartPos, Tracers.StartPositions, Tracers.StartPositions.Length);
+                            ImGui.Combo("##Tracer End Position", ref Tracers.CurrentEndPos, Tracers.EndPositions, Tracers.EndPositions.Length);
                             ImGui.SliderFloat("Tracer Thickness", ref Tracers.LineThickness, 0.05f, 5f);
 
                             RenderModuleToggle("Show Name", ref NameDisplay.Enabled);
@@ -472,7 +474,7 @@ namespace Titled_Gui
                             ImGui.SameLine();
                             if (ImGui.Button("Load Config", new Vector2(120, 30)))
                             {
-                                Configs.LoadConfig(Configs.SelectedConfig); // load 
+                                Configs.LoadConfig(Configs.SelectedConfig); 
                             }
                             ImGui.EndChild();
                             ImGui.Columns(1);
@@ -562,7 +564,7 @@ namespace Titled_Gui
                     ArmorBar.DrawArmorBar(this, entity.Armor, 100, barTopLeft, barHeight, entity);
                 }
             }
-
+            Radar.DrawRadar();
             if (Modules.Visual.BoxESP.enableESP)
             {
                 foreach (var entity in entities)

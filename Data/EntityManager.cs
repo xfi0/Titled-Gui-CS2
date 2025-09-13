@@ -63,6 +63,8 @@ namespace Titled_Gui.Data
                 Origin = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
                 Team = GameState.swed.ReadInt(localPlayerPawn + Offsets.m_iTeamNum),
                 View = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset),
+                Position = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
+                ViewAngles = GameState.swed.ReadVec(Offsets.dwViewAngles),
                 AimPunchAngle = GameState.swed.ReadVec(localPlayerPawn + Offsets.m_aimPunchAngle),
                 AimPunchAngleVel = GameState.swed.ReadVec(localPlayerPawn + Offsets.m_aimPunchCache),
                 Health = Health

@@ -106,7 +106,7 @@ namespace Titled_Gui.Classes
             string fullPath = Path.Combine(ConfigDirPath, fileName);
             File.WriteAllText(fullPath, configData.ToString());
 
-            Console.WriteLine($"Wrote {fileName} at {fullPath}");
+            //Console.WriteLine($"Wrote {fileName} At {fullPath}");
 
             SavedConfigs.TryAdd(fileName, true);
         }
@@ -119,14 +119,14 @@ namespace Titled_Gui.Classes
             string fullPath = Path.Combine(ConfigDirPath, fileName);
             if (!File.Exists(fullPath))
             {
-                Console.WriteLine($"Config Not Found at {fullPath}");
+                //Console.WriteLine($"Config Not Found At {fullPath}");
                 return;
             }
 
             JsonString = File.ReadAllText(fullPath);
             if (string.IsNullOrWhiteSpace(JsonString))
             {
-                Console.WriteLine("Config is empty.");
+                //Console.WriteLine("Config Is Empty.");
                 return;
             }
 
@@ -137,7 +137,7 @@ namespace Titled_Gui.Classes
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading config: {ex.Message}");
+                //Console.WriteLine($"Error Loading Config: {ex.Message}");
                 return;
             }
 

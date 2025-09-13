@@ -2,7 +2,7 @@
 using System;
 using System.Numerics;
 using System.Threading;
-using Titled_Gui.Data;
+using Titled_Gui.Data.Game;
 using static Titled_Gui.Renderer;
 
 namespace Titled_Gui.Modules.Visual

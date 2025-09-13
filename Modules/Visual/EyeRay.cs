@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Titled_Gui.Classes;
 using Titled_Gui.Data;
+using Titled_Gui.Data.Entity;
 
 namespace Titled_Gui.Modules.Visual
 {

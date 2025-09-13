@@ -70,7 +70,21 @@ namespace Titled_Gui.Data
 
             return localPlayer;
         }
-
+        public static Entity? ReturnLocalPlayer()
+        {
+            foreach (var e in GameState.Entities)
+            {
+                if (e != null)
+                {
+                    if (e.PawnAddress == GameState.localPlayer.PawnAddress) return e;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return null;
+        }
         //asign all the entity variables to something
         private Entity? PopulateEntity(IntPtr pawnAddress)
         {

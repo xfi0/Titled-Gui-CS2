@@ -1,30 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Titled_Gui.Data;
+using ImGuiNET;
+using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
 {
+  
     internal class Radar 
     {
-        public static bool IsEnabled = false;
-        public static float Size = 10f; // idk size
+        public static bool IsEnabled = true;
+        public static Vector4 PointColor = new Vector4(1f, 1f, 1f, 1f);
+
         public static void DrawRadar()
         {
             if (!IsEnabled) return;
+            DrawPoints();
 
-            var DrawList = GameState.renderer.drawList;
+        }
+        public static void DrawPoints()
+        {
+            if (!IsEnabled) return;
 
             foreach (var e in GameState.Entities)
             {
-                if (e != null && e.Health != 0 && e.Team != GameState.localPlayer.Team)
-                {
-
-                }
             }
         }
+
     }
 }

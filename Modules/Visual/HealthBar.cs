@@ -9,6 +9,7 @@ using ImGuiNET;
 using Titled_Gui;
 using Titled_Gui.Data;
 using Titled_Gui.Classes;
+using Titled_Gui.Data.Entity;
 
 namespace Titled_Gui.Modules.Visual
 {

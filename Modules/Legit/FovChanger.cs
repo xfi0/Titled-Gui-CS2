@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Titled_Gui.Data;
 using Titled_Gui;
+using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Legit
 {

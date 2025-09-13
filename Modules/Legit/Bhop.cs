@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Titled_Gui;
-using Titled_Gui.Data;
 using Swed64;
-using static Titled_Gui.Data.GameState;
+using static Titled_Gui.Data.Game.GameState;
 using System.Runtime.InteropServices;
 using Titled_Gui.Classes;
+using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Legit
 {

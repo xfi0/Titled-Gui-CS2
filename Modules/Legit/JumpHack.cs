@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Titled_Gui;
 using Titled_Gui.Data;
 using static Titled_Gui.Data.Entity;
-using static Titled_Gui.Data.EntityManager;
+using static Titled_Gui.Data.Entity.EntityManager;
 using Titled_Gui.Classes;
 using System.Runtime.InteropServices;
 

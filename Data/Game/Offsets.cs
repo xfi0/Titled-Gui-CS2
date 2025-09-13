@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Titled_Gui.Data
+namespace Titled_Gui.Data.Game
 {
     //okay so shouldve put offsets here the whole time but wtv
     public class Offsets 

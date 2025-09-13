@@ -5,12 +5,14 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Numerics;
 using Titled_Gui.Classes;
-using static Titled_Gui.Data.GameState;
+using static Titled_Gui.Data.Game.GameState;
+using static Titled_Gui.Data.Game.Offsets;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
 using System.Diagnostics;
+using Titled_Gui.Data.Game;
 
-namespace Titled_Gui.Data
+namespace Titled_Gui.Data.Entity
 {
     public class EntityManager
     {

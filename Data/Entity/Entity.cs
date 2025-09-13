@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Titled_Gui.Data
+namespace Titled_Gui.Data.Entity
 {
     public class Entity
     {

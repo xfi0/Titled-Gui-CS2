@@ -2,7 +2,7 @@ using Swed64;
 using System;
 using System.Collections.Generic;
 
-namespace Titled_Gui.Data
+namespace Titled_Gui.Data.Game
 {
     public static class GameState
     {
@@ -14,8 +14,8 @@ namespace Titled_Gui.Data
         public static IntPtr CameraServices { get; set; } // camera services pointer
         public static uint CurrentFov { get; set; } = 60; // default FOV
         public static IntPtr currentPawn { get; set; } // get current pawn pointer
-        public static List<Entity> Entities { get; set; } = new List<Entity>();
-        public static Entity localPlayer { get; set; } = new Entity(); // local player entity
+        public static List<Entity.Entity> Entities { get; set; } = new List<Entity.Entity>();
+        public static Entity.Entity localPlayer { get; set; } = new Entity.Entity(); // local player entity
         public static IntPtr BoneMatrix { get; set; } // bone matrix pointer
         public static IntPtr SceneNode { get; set; } // scene node pointer
         public static IntPtr GameRules { get; set; } // game rules pointer

@@ -15,6 +15,8 @@ using Titled_Gui.Classes;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
+using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Entity;
 
 namespace Titled_Gui
 {
@@ -532,7 +534,7 @@ namespace Titled_Gui
                 Aimbot.DrawCircle(Aimbot.FovSize, Aimbot.FovColor);
             if (Modules.Visual.BoneESP.EnableBoneESP)
             {
-                foreach (Entity entity in entities)
+                foreach (Data.Entity.Entity entity in entities)
                 {
                     if ((!BoneESP.TeamCheck || entity.Team == localPlayer.Team) && (!BoneESP.DrawOnSelf || entity != localPlayer))
                     {

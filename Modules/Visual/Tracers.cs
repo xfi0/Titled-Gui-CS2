@@ -7,10 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Titled_Gui.Data;
 using Titled_Gui.Classes;
-using static Titled_Gui.Data.Entity;
-using static Titled_Gui.Data.GameState;
+using static Titled_Gui.Data.Game.GameState;
+using static Titled_Gui.Data.Entity.Entity;
+using static Titled_Gui.Data.Entity.EntityManager;
 using static Titled_Gui.Classes.Colors;
 using static Titled_Gui.Renderer;
+using Titled_Gui.Data.Entity;
 
 namespace Titled_Gui.Modules.Visual
 {

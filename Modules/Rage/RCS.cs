@@ -1,8 +1,6 @@
-﻿using ClickableTransparentOverlay;
-using System;
-using System.Numerics;
+﻿using System.Numerics;
 using Titled_Gui.Classes;
-using Titled_Gui.Data;
+using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Rage
 {

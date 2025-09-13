@@ -194,7 +194,7 @@ namespace Titled_Gui.Classes
         }
         private static void UpdateOffsetsClass()
         {
-            Type offsetsType = typeof(Titled_Gui.Data.Offsets);
+            Type offsetsType = typeof(Titled_Gui.Data.Game.Offsets);
             FieldInfo[] fields = offsetsType.GetFields(BindingFlags.Public | BindingFlags.Static);
 
             int updatedCount = 0;

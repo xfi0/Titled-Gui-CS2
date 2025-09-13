@@ -1,21 +1,9 @@
 ﻿using ImGuiNET;
-using Swed64;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using Titled_Gui.Classes;
-using Titled_Gui.Data;
-using Titled_Gui.Modules.Visual;
-using static Titled_Gui.Data.Entity;
-using static Titled_Gui.Data.GameState;
-using Point = System.Drawing.Point;
+using static Titled_Gui.Data.Game.GameState;
+using Titled_Gui.Data.Entity;
+using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Rage 
 {

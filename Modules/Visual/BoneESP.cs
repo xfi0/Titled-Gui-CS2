@@ -1,13 +1,7 @@
 ﻿using ImGuiNET;
-using Swed64;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using Titled_Gui.Classes;
-using Titled_Gui.Data;
+using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
 {
@@ -51,7 +45,7 @@ namespace Titled_Gui.Modules.Visual
             KneeRight = 26,
             FeetRight = 27,
         }
-        public static void DrawBoneLines(Entity entity, Renderer renderer)
+        public static void DrawBoneLines(Data.Entity.Entity entity, Renderer renderer)
         {
             if (!EnableBoneESP || entity == null || entity.Bones2D == null || TeamCheck && entity.Team == GameState.localPlayer.Team || !DrawOnSelf && entity.PawnAddress == GameState.localPlayer.PawnAddress || entity.Bones == null || entity.Health == 0) return; 
 

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Titled_Gui.Classes;
-using Titled_Gui.Data;
+using Titled_Gui.Data.Entity;
+using Titled_Gui.Data.Game;
 using static Titled_Gui.Classes.User32;
 
 namespace Titled_Gui.Modules.Rage

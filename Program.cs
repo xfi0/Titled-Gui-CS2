@@ -1,14 +1,16 @@
 ﻿using Swed64;
 using System.Numerics;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using Titled_Gui;
 using Titled_Gui.Classes;
-using Titled_Gui.Data;
+using Titled_Gui.Data.Entity;
+using Titled_Gui.Data.Game;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
-using static Titled_Gui.Classes.GetGunName;
+using static Titled_Gui.Data.Game.GameState;
 
 // initialization
 EntityManager entityManager = new EntityManager(GameState.swed,GameState.renderer);
@@ -49,12 +51,12 @@ Thread entityUpdateThread = new(() =>
             GameState.localPlayer = localPlayer;
             GameState.renderer.UpdateLocalPlayer(localPlayer);
             GameState.renderer.UpdateEntities(entities);
-            GameState.Entities = new List<Entity>(entities);
-            //foreach (Entity entity in entities)
-            //{
-            //    if (entity.PawnAddress == GameState.localPlayer.PawnAddress) return;
-            //    //Console.WriteLine(entity.IsBuyMenuOpen);
-            //}
+            GameState.Entities = new List<Titled_Gui.Data.Entity.Entity>(entities);
+            foreach (Entity entity in entities)
+            {
+                WeaponReader.UpdateEntityWeaponName(entity);
+            }
+
         }
         catch (Exception e)
         {
@@ -68,6 +70,7 @@ Thread entityUpdateThread = new(() =>
 };
 entityUpdateThread.Start();
 ThreadService.StartAllThreadServices();
+
 
 while (true)
 {

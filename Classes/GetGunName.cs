@@ -1,11 +1,4 @@
-﻿using Swed64;
-using System;
-using System.Text;
-using System.Xml.Linq;
-using Titled_Gui.Data;
-using static Titled_Gui.Data.GameState;
-
-namespace Titled_Gui.Classes
+﻿namespace Titled_Gui.Classes
 {
     public class GetGunName
     {
@@ -251,16 +244,5 @@ namespace Titled_Gui.Classes
             CUSTOMPLAYER_CTM_SAS_VARIANTF,
             CUSTOMPLAYER_CTM_SAS_VARIANTG
         };
-        public static string? GetAllGuns(Entity e)
-        {
-            if (e != null && e.CurrentWeaponName != null)
-            {
-                return e.Name + e?.CurrentWeaponName;
-            }
-            else
-            {
-                return "Shit Was Null";
-            }
-        }
     }
 }

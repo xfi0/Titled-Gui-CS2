@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Titled_Gui;
-using Titled_Gui.Data;
-using static Titled_Gui.Data.Entity;
-using static Titled_Gui.Data.Entity.EntityManager;
+﻿using Titled_Gui.Data.Game;
 using Titled_Gui.Classes;
-using System.Runtime.InteropServices;
+using Titled_Gui.Data.Entity;
 
 namespace Titled_Gui.Modules.Legit
 {

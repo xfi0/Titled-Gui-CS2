@@ -29,24 +29,22 @@
     Visual
   </summary>
     <ul dir="auto">
-      <li>
-        Boxes
-        Box Type
-        Team Check
-        Box Fill Opacity
-        Box Fill Gradient
-        Box Rounding
-        Box Glow
-        Tracers
-        Change Tracer Start Position
-        Change Tracer End Position
-        Healthbar
-        Armorbar
-        Name
-        Skeletons
-        Visual Color
-        Etc.
-      </li>
+      <li>Boxes</li>
+        <li>Box Type</li>
+        <li>Team Check</li>
+        <li>Box Fill Opacity</li>
+        <li>Box Fill Gradient</li>
+        <li>Box Rounding</li>
+        <li>Box Glow</li>
+        <li>Tracers</li>
+        <li>Change Tracer Start Position</li>
+        <li>Change Tracer End Position</li>
+        <li>Healthbar</li>
+        <li>Armorbar</li>
+        <li>Name</li>
+        <li>Skeletons</li>
+        <li>Visual Color</li>
+        <li>Etc.</li>
     </ul>
 </details>
 

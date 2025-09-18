@@ -21,6 +21,7 @@
 > You are solely responsible for any consequences of using this software.
 
 <hr></hr>
+
 ## 🛠 Features
 
 <details>
@@ -29,7 +30,22 @@
   </summary>
     <ul dir="auto">
       <li>
-        
+        Boxes
+        Box Type
+        Team Check
+        Box Fill Opacity
+        Box Fill Gradient
+        Box Rounding
+        Box Glow
+        Tracers
+        Change Tracer Start Position
+        Change Tracer End Position
+        Healthbar
+        Armorbar
+        Name
+        Skeletons
+        Visual Color
+        Etc.
       </li>
     </ul>
 </details>

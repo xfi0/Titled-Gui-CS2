@@ -1,13 +1,6 @@
 <p align="center">
   <img src="https://github.com/xfi0/Titled-Gui-CS2/blob/master/Resources/MenuLogo.png?raw=true" alt="CS2 Cheat Logo" width="300">
 </p>
-
-<h1 align="center">CS2 External Cheat</h1>
-
-<p align="center">
-  An advanced <strong>external cheat</strong> for Counter-Strike 2 (CS2) focused on high performance and avoiding detection
-</p>
-
 <div align="center">
   
   ![GitHub](https://img.shields.io/github/license/xfi0/Titled-Gui-CS2?style=flat-square)
@@ -15,6 +8,10 @@
   ![GitHub stars](https://img.shields.io/github/stars/xfi0/Titled-Gui-CS2?style=flat-square)
 
 </div>
+
+<p align="center">Titled is a advanced external cheat with minimal memory writing and great features.</p>
+
+<hr></hr>
 
 ## ❗ Disclaimer
 
@@ -24,7 +21,7 @@
 > You are solely responsible for any consequences of using this software.
 
 ---
-
+<hr></hr>
 ## 🛠 Features
 
 | Category       | Features                                                                 |

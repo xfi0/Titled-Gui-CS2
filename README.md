@@ -64,6 +64,11 @@
         <li>Scoped Check</li>
         <li>FOV Size</li>
         <li>FOV Color</li>
+        <li>Trigger Bot</li>
+        <li>Trigger Bot Min Delay</li>
+        <li>Trigger Bot Max Delay</li>
+        <li>Require Keybind</li>
+        <li>Change Keybind</li>
     </ul>
 </details>
 <details>

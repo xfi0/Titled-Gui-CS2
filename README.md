@@ -44,11 +44,41 @@
         <li>Name</li>
         <li>Skeletons</li>
         <li>Visual Color</li>
+        <li>Bomb Overlay</li>
         <li>Etc.</li>
     </ul>
 </details>
-
-
+<details>
+  <summary>
+    Aim
+  </summary>
+    <ul dir="auto">
+      <li>Aimbot</li>
+        <li>Change Aimbot Bone</li>
+        <li>Change From Move Mouse Pos To Memory Write (Better acc but higher detec)</li>
+        <li>Aim On Team</li>
+        <li>Smoothing X</li>
+        <li>Smoothing Y</li>
+        <li>Draw FOV</li>
+        <li>Use FOV</li>
+        <li>Scoped Check</li>
+        <li>FOV Size</li>
+        <li>FOV Color</li>
+    </ul>
+</details>
+<details>
+  <summary>
+    Aim
+  </summary>
+    <ul dir="auto">
+      <li>Legit</li>
+        <li>Hit Sound</li>
+        <li>Change Hit Sound Volume</li>
+        <li>Change Hit Sound Sound/li>
+        <li>Headshot Text</li>
+        <li>Change Headshot Text Color</li>
+    </ul>
+</details>
 ## 🚀 Getting Started
 
 ### Prerequisites

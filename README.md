@@ -84,6 +84,7 @@
         <li>Change Headshot Text Color</li>
     </ul>
 </details>
+
 ## 🚀 Getting Started
 
 ### Prerequisites

@@ -25,7 +25,6 @@
 
 <details>
   <summary>
-    ::marker
     Visual
   </summary>
     <ul dir="auto">

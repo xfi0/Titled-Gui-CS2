@@ -20,19 +20,21 @@
 > Using this in online matches may result in account bans.  
 > You are solely responsible for any consequences of using this software.
 
----
 <hr></hr>
 ## 🛠 Features
 
-| Category       | Features                                                                 |
-|----------------|--------------------------------------------------------------------------|
-| **ESP**        | Boxes, Health bars, Bones (Weapons coming soon)                          |
-| **Aimbot**     | Fov Check, Keybind                                                       |
-| **RCS**        | Recoil Control System with humanized patterns (Coming Soon)              |
-| **Stealth**    | Minimal Memory Writing                                                   |
-| **Modular**    | Toggleable features with customizable settings                           |
+<details>
+  <summary>
+    ::marker
+    Visual
+  </summary>
+    <ul dir="auto">
+      <li>
+        
+      </li>
+    </ul>
+</details>
 
----
 
 ## 🚀 Getting Started
 

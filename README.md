@@ -73,7 +73,7 @@
 </details>
 <details>
   <summary>
-    Aim
+    Legit
   </summary>
     <ul dir="auto">
       <li>Legit</li>

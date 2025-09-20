@@ -1,22 +1,17 @@
 ﻿using ClickableTransparentOverlay;
 using ImGuiNET;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+using NAudio.Gui;
 using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Input;
-using Titled_Gui.Data;
+using System.Xml.Linq;
 using Titled_Gui.Classes;
+using Titled_Gui.Data.Entity;
+using Titled_Gui.Data.Game;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
-using Titled_Gui.Data.Game;
-using Titled_Gui.Data.Entity;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace Titled_Gui
 {
@@ -36,35 +31,95 @@ namespace Titled_Gui
         private int selectedTab = 0; // 0 = legit, 1 = rage, 2 = visuals, 3 = config, 4 = settings
 
         public ImDrawListPtr drawList;
+        public ImDrawListPtr BGdrawList;
+        public ImDrawListPtr FGdrawList;
+        public static Vector2 tabSize;
 
-        public static bool DrawWindow = true;
+        public static bool DrawWindow = false;
         private static bool isWaitingForKey = false;
         private static string keybindLabel = $"Keybind: {Modules.Rage.TriggerBot.TriggerKey}";
-
-        public static Vector4 accentColor = new Vector4(0.26f, 0.59f, 0.98f, 1.00f);
+        public static float fpsUpdateInterval = 1.0f;
+        public static float timeSinceLastUpdate = 0.0f;
+        public static float lastFPS = 0.0f;
+        public static Vector4 accentColor = new(0.26f, 0.59f, 0.98f, 1.00f);
+        public static Vector4 SidebarColor = new(0.07f, 0.075f, 0.11f, 1.0f);
+        public static Vector4 MainContentCol = new(0.094f, 0.102f, 0.118f, 1.0f);
+        public static Vector4 TextCol = new(0.274f, 0.317f, 0.450f, 1.0f);
         public static float windowAlpha = 1f;
         private float animationSpeed = 0.15f;
-
+        private static float LabelColumnWidth = 150f;
+        private static float WidgetColumnWidth = 160f;
+        private static float LabelPadding = 4f;
+        public static ImFontPtr TextFontNormal;
+        public static ImFontPtr TextFontBig;
+        public static ImFontPtr TextFont48;
+        public static ImFontPtr TextFont60;
+        public static ImFontPtr IconFont;
+        public static ImFontPtr IconFont1;
+        public static bool EnableWaterMark = true;
+        public static bool IsTextFontNormalLoaded => !TextFontNormal.Equals(default(ImFontPtr));
+        public static bool IsTextFontBigLoaded => !TextFontBig.Equals(default(ImFontPtr));
+        public static bool IsTextFont48Loaded => !TextFont48.Equals(default(ImFontPtr));
+        public static bool IsTextFont60Loaded => !TextFont60.Equals(default(ImFontPtr));
+        public static bool IsIconFontLoaded => !IconFont.Equals(default(ImFontPtr));
+        public static Vector4 trackCol = new(0.18f, 0.18f, 0.20f, 1f);
+        public static Vector4 knobOff = new(0.15f, 0.15f, 0.15f, 1f);
+        public static Vector4 knobOn = new(0.2745f, 0.3176f, 0.4510f, 1.0f);
+        public static bool IsIconFont1Loaded => !IconFont1.Equals(default(ImFontPtr));
+        public static Vector4 ParticleColor = new(1f, 1f, 1f, 1f);
+        public static Vector4 LineColor = new(1, 1, 1, 0.33f);
+        public static float ParticleRadius = 2.5f;
+        public static Vector2 BaseParticlePos = new();
+        public static int NumberOfParticles = 50;
+        public static Random random = new();
+        public float ParticleSpeed = 0.53f;
+        public static List<Vector2> Positions = new();
+        public static List<Vector2> Velocities = new();
+        public static float MaxLineDistance = 300f;
+        public static ImGuiKey OpenKey = ImGuiKey.Insert;
         public void UpdateEntities(IEnumerable<Entity> newEntities)
         {
             entities = newEntities.ToList();
         }
-        public static class FontManager
+
+        public static void LoadFonts()
         {
-            public static ImFontPtr BoldFont;
-            public static ImFontPtr IconFont;
-
-            public static bool IsBoldFontLoaded => !BoldFont.Equals(default(ImFontPtr));
-            public static bool IsIconFontLoaded => !IconFont.Equals(default(ImFontPtr));
-
-            public static void LoadFonts() // TODO make a font changer in settings
+            try
             {
+                if (ImGui.GetCurrentContext() == IntPtr.Zero) ImGui.CreateContext();
+
                 var io = ImGui.GetIO();
-                BoldFont = io.Fonts.AddFontFromFileTTF("C:\\Windows\\Fonts\\arialbd.ttf", 18.0f);
-                IconFont = io.Fonts.AddFontFromFileTTF("z", 18.0f);
+
+                TextFontNormal = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\NotoSans-Bold.ttf", 18.0f);
+                TextFontBig = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\NotoSans-Bold.ttf", 24.0f);
+                TextFont48 = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\NotoSans-Bold.ttf", 48.0f);
+                TextFont60 = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\NotoSans-Bold.ttf", 60.0f);
+                IconFont = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\glyph.ttf", 18.0f);
+
+                ushort[] icons = new ushort[] { 0xEB54, 0xEB55, 0 }; 
+                unsafe
+                {
+                    fixed (ushort* pIcons = icons)
+                    {
+                        IconFont1 = io.Fonts.AddFontFromFileTTF(
+                            "..\\..\\..\\..\\Resources\\fonts\\Lineicons.ttf",
+                            36.0f,
+                            null,
+                            (IntPtr)pIcons
+                        );
+                    }
+                }
                 io.Fonts.Build();
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
+
+
+
+
 
         public void UpdateLocalPlayer(Entity newEntity) // update local player
         {
@@ -99,13 +154,40 @@ namespace Titled_Gui
                 io.ConfigViewportsNoTaskBarIcon = true;
                 RenderESPOverlay();
                 RenderMainWindow();
+                RenderWaterMark();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
         }
+        public void RenderWaterMark()
+        {
+            if (EnableWaterMark && IsTextFontBigLoaded)
+            {
+                ImGui.SetNextWindowSize(new(200, 200));
+                ImGui.SetNextWindowPos(new(screenSize.X / 2, 0));
+                ImGui.Begin("wm", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar);
+                ImGui.PushFont(TextFontBig);
+                var Stlye = ImGui.GetStyle();
+                Stlye.WindowRounding = 12f;
+                var DrawList = ImGui.GetWindowDrawList();
+                Vector2 TextPosition = ImGui.GetWindowPos() + new Vector2(20, 20);
+                DrawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 20), ImGui.ColorConvertFloat4ToU32(accentColor), "Titled");
+                timeSinceLastUpdate += ImGui.GetIO().DeltaTime;
 
+                if (timeSinceLastUpdate >= fpsUpdateInterval)
+                {
+                    lastFPS = 1f / ImGui.GetIO().DeltaTime;
+                    timeSinceLastUpdate = 0.0f;
+                }
+
+                DrawList.AddText(new(TextPosition.X, TextPosition.Y + 20f), ImGui.ColorConvertFloat4ToU32(TextCol), $"FPS: {Math.Round(lastFPS)}");
+                DrawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 20), ImGui.ColorConvertFloat4ToU32(accentColor), "Titled");
+                ImGui.PopFont();
+                ImGui.End();
+            }
+        }
         private void RenderESPOverlay()
         {
             ImGui.SetNextWindowSize(screenSize);
@@ -122,6 +204,11 @@ namespace Titled_Gui
                 ImGuiWindowFlags.NoMove
             );
             drawList = ImGui.GetWindowDrawList();
+            var io = ImGui.GetIO();
+            io.Framerate = 0;
+            io.ConfigViewportsNoAutoMerge = true;
+            io.ConfigViewportsNoTaskBarIcon = true;
+
             //ImGui.ShowMetricsWindow();
             ImGui.End();
         }
@@ -129,16 +216,20 @@ namespace Titled_Gui
         private void RenderMainWindow()
         {
             // toggle on tab
-            if (ImGui.IsKeyPressed(ImGuiKey.Tab, false))
+            if (ImGui.IsKeyPressed(OpenKey, false))
             {
                 DrawWindow = !DrawWindow;
                 tabWasPressed = true;
             }
-
+            BGdrawList = ImGui.GetBackgroundDrawList();
             if (DrawWindow)
             {
+                BGdrawList.AddRectFilled(Vector2.Zero, screenSize, ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.5f)));
+                DrawParticles(NumberOfParticles);
+                ImGui.SetNextWindowPos(new Vector2((screenSize.X - 800) / 2f, (screenSize.Y - 600) / 2f), ImGuiCond.Always);
+
                 ImGuiStylePtr style = ImGui.GetStyle();
-                style.Alpha = 1.0f;
+                style.Alpha = windowAlpha;
                 style.DisabledAlpha = 0.8f;
                 style.WindowPadding = new Vector2(0.0f, 0.0f);
                 style.WindowRounding = 12.0f;
@@ -169,15 +260,15 @@ namespace Titled_Gui
                 style.ButtonTextAlign = new Vector2(0.5f, 0.5f);
                 style.SelectableTextAlign = new Vector2(0.0f, 0.0f);
 
-                style.Colors[(int)ImGuiCol.Text] = new Vector4(0.274f, 0.317f, 0.450f, 1.0f);
-                style.Colors[(int)ImGuiCol.TextDisabled] = new Vector4(0.2745098173618317f, 0.3176470696926117f, 0.4501f, 1.0f);
-                style.Colors[(int)ImGuiCol.WindowBg] = new Vector4(0.078f, 0.0862f, 0.101f, 1.0f);
-                style.Colors[(int)ImGuiCol.ChildBg] = new Vector4(0.09411764889955521f, 0.1019607856869698f, 0.1176470592617989f, 1.0f);
-                style.Colors[(int)ImGuiCol.PopupBg] = new Vector4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
-                style.Colors[(int)ImGuiCol.Border] = new Vector4(0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f);
-                style.Colors[(int)ImGuiCol.BorderShadow] = new Vector4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
+                style.Colors[(int)ImGuiCol.Text] = new(0.274f, 0.317f, 0.450f, 1.0f);
+                style.Colors[(int)ImGuiCol.TextDisabled] = new(0.2745098173618317f, 0.3176470696926117f, 0.4501f, 1.0f);
+                style.Colors[(int)ImGuiCol.WindowBg] = new(0.078f, 0.0862f, 0.101f, 1.0f);
+                style.Colors[(int)ImGuiCol.ChildBg] = new(0.09411764889955521f, 0.1019607856869698f, 0.1176470592617989f, 1.0f);
+                style.Colors[(int)ImGuiCol.PopupBg] = new(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
+                style.Colors[(int)ImGuiCol.Border] = new(0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f);
+                style.Colors[(int)ImGuiCol.BorderShadow] = new(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
                 style.Colors[(int)ImGuiCol.FrameBg] = new Vector4(0.1137254908680916f, 0.125490203499794f, 0.1529411822557449f, 1.0f);
-                style.Colors[(int)ImGuiCol.FrameBgHovered] = new Vector4(0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f);
+                style.Colors[(int)ImGuiCol.FrameBgHovered] = new(0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f);
                 style.Colors[(int)ImGuiCol.FrameBgActive] = new Vector4(0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f);
                 style.Colors[(int)ImGuiCol.TitleBg] = new Vector4(0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f);
                 style.Colors[(int)ImGuiCol.TitleBgActive] = new Vector4(0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f);
@@ -190,7 +281,7 @@ namespace Titled_Gui
                 style.Colors[(int)ImGuiCol.CheckMark] = new Vector4(0.2745098173618317f, 0.3176470696926117f, 0.4509803950786591f, 1.0f);
                 style.Colors[(int)ImGuiCol.SliderGrab] = new Vector4(0.2745098173618317f, 0.3176470696926117f, 0.4509803950786591f, 1.0f);
                 style.Colors[(int)ImGuiCol.SliderGrabActive] = new Vector4(0.6000000238418579f, 0.9647058844566345f, 0.0313725508749485f, 1.0f);
-                style.Colors[(int)ImGuiCol.Button] = new Vector4(0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f);
+                style.Colors[(int)ImGuiCol.Button] = SidebarColor;
                 style.Colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.1803921610116959f, 0.1882352977991104f, 0.196078434586525f, 1.0f);
                 style.Colors[(int)ImGuiCol.ButtonActive] = new Vector4(0.1529411822557449f, 0.1529411822557449f, 0.1529411822557449f, 1.0f);
                 style.Colors[(int)ImGuiCol.Header] = new Vector4(0.1411764770746231f, 0.1647058874368668f, 0.2078431397676468f, 1.0f);
@@ -225,24 +316,30 @@ namespace Titled_Gui
 
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
                 ImGui.Begin("", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoDocking);
-                ImGui.SetWindowSize(new Vector2(800, 600));
+                ImGui.SetWindowSize(new(800, 600));
 
-                ImGui.BeginChild("Sidebar", new Vector2(110, -1), ImGuiChildFlags.Border);
+                Vector2 tabPos = ImGui.GetCursorScreenPos();
+                tabSize = new(100, ImGui.GetContentRegionAvail().Y);
+                var drawList = ImGui.GetWindowDrawList();
+                drawList.AddRectFilled(tabPos, tabPos + tabSize, ImGui.ColorConvertFloat4ToU32(SidebarColor), 12.0f, ImDrawFlags.RoundCornersLeft);
+
+                ImGui.BeginChild("Sidebar", tabSize, ImGuiChildFlags.None, ImGuiWindowFlags.NoBackground);
                 {
                     float LogoWidth = 120;
                     float offset = (ImGui.GetContentRegionAvail().X - LogoWidth) * 0.5f;
                     ImGui.SetCursorPosX(ImGui.GetCursorPosX() + offset);
 
                     AddOrGetImagePointer("..\\..\\..\\..\\Resources\\MenuLogo.png", true, out menuLogoTexture, out Width, out Height);
-                    ImGui.Image(menuLogoTexture, new Vector2(120, 120));
+                    ImGui.Image(menuLogoTexture, new(120, 120));
                     ImGui.Spacing();
+
                     ImGui.Separator();
                     ImGui.Spacing();
 
-                    RenderTabButton("Legit", 0);
-                    RenderTabButton("Rage", 1);
-                    RenderTabButton("Visuals", 2);
-                    RenderTabButton("Config", 3);
+                    RenderTabButton("E", 0);
+                    RenderTabButton("D", 1);
+                    RenderTabButton("C", 2);
+                    RenderTabButton("\uEB54", 3);
 
                     var availableHeight = ImGui.GetContentRegionAvail().Y;
                     var cogButtonHeight = 35f;
@@ -250,7 +347,7 @@ namespace Titled_Gui
 
                     if (spacingHeight > 0)
                     {
-                        ImGui.Dummy(new Vector2(0, spacingHeight));
+                        ImGui.Dummy(new(0, spacingHeight));
                     }
 
                     Vector2 cogPos = ImGui.GetCursorScreenPos();
@@ -264,10 +361,7 @@ namespace Titled_Gui
                     bool isHovered = ImGui.IsItemHovered();
                     bool isSettingsSelected = selectedTab == 4;
 
-                    Vector2 gearCenter = new Vector2(
-                        cogPos.X + cogSize.X / 2,
-                        cogPos.Y + cogSize.Y / 2
-                    );
+                    Vector2 gearCenter = new(cogPos.X + cogSize.X / 2, cogPos.Y + cogSize.Y / 2);
 
                     uint gearColor;
                     if (isSettingsSelected)
@@ -287,157 +381,174 @@ namespace Titled_Gui
                 }
                 ImGui.EndChild();
 
-                ImGui.SameLine();
+                ImGui.SameLine(0f, 0f);
 
-                ImGui.BeginChild("MainContent", new Vector2(0, 0), ImGuiChildFlags.None);
+                Vector2 mainPos = ImGui.GetCursorScreenPos();
+                Vector2 mainSize = ImGui.GetContentRegionAvail();
+
+                drawList.AddRectFilled(mainPos, mainPos + mainSize, ImGui.ColorConvertFloat4ToU32(new(0.094f, 0.102f, 0.118f, 1.0f)), 12.0f, ImDrawFlags.RoundCornersBottom);
+
+                ImGui.BeginChild("MainContent", mainSize, ImGuiChildFlags.None, ImGuiWindowFlags.NoBackground);
                 {
                     ImGui.PopStyleVar();
                     ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(16, 16));
+                    ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 12.0f);
+                    RenderCategoryHeader("Titled");
 
                     switch (selectedTab)
                     {
                         case 0: // legit
-                            RenderCategoryHeader("LEGIT");
-                            RenderModuleToggle("Auto BHOP", ref Modules.Legit.Bhop.BhopEnable);
-                            RenderModuleToggle("Bomb Overlay", ref BombTimerOverlay.EnableTimeOverlay);
-                            RenderModuleToggle("Jump Shot", ref Modules.Legit.JumpHack.JumpHackEnabled);
+                            ImGui.Columns(2, "Legit Columns", true);
+                            ImGui.BeginChild("LeftAim");
+                            RenderBoolSetting("Auto BHOP", ref Modules.Legit.Bhop.BhopEnable);
+                            RenderBoolSetting("Bomb Overlay", ref BombTimerOverlay.EnableTimeOverlay);
+                            RenderBoolSetting("Jump Shot", ref Modules.Legit.JumpHack.JumpHackEnabled);
+                            RenderBoolSetting("Hit Sound", ref HitStuff.Enabled);
+                            RenderFloatSlider("Hit Sound Volume", ref HitStuff.Volume, 0, 10);
+                            RenderIntCombo("Current Hit Sound", ref HitStuff.CurrentHitSound, HitStuff.HitSounds, HitStuff.HitSounds.Length);
+                            RenderBoolSettingWith1ColorPicker("Headshot Text", ref HitStuff.EnableHeadshotText, ref HitStuff.TextColor);
+                            ImGui.NextColumn();
+                            ImGui.EndChild();
+                            ImGui.BeginChild("RightRage");
+                            ImGui.EndChild();
+
+                            ImGui.Columns(1);
                             break;
 
                         case 1: // rage
-                            RenderCategoryHeader("Aim");
+                            ImGui.Columns(2, "TriggerColumns", true);
 
-                            RenderModuleToggle("Enable Aimbot", ref Modules.Rage.Aimbot.AimbotEnable);
-                            if (Modules.Rage.Aimbot.AimbotEnable)
+                            ImGui.BeginChild("LeftAim");
+                            RenderBoolSetting("Enable Aimbot", ref Modules.Rage.Aimbot.AimbotEnable);
+
+                            RenderSettingsSection("Aimbot Settings", () =>
                             {
-                                Modules.Rage.Aimbot.EnableAimbot();
-                                RenderSettingsSection("Aimbot Settings", () =>
-                                {
-                                    if (ImGui.Combo("##Aim Bone", ref Aimbot.CurrentBone, Aimbot.Bones, Aimbot.Bones.Length)) // bone that aimbot aims on
-                                    {
-                                    }
-                                    if (ImGui.Combo("##Aim Method", ref Aimbot.CurrentAimMethod, Aimbot.AimbotMethods, Aimbot.AimbotMethods.Length))
-                                    {
-                                    }
-                                    RenderModuleToggle("Aim On Team", ref Modules.Rage.Aimbot.Team);
-                                    RenderModuleToggle("Draw FOV", ref Modules.Rage.Aimbot.DrawFov);
-                                    ImGui.SliderInt("FOV Size", ref Modules.Rage.Aimbot.FovSize, 10, 1000, "%d");
-                                    ImGui.Spacing();
-                                    ImGui.Text("FOV Color:");
-                                    ImGui.ColorEdit4("##FOV Color", ref Modules.Rage.Aimbot.FovColor);
-                                });
-                            }
+                                RenderIntCombo("Aim Bone", ref Aimbot.CurrentBone, Aimbot.Bones, Aimbot.Bones.Length, 160f); // bone that aimbot aims on
+                                RenderIntCombo("Aim Method", ref Aimbot.CurrentAimMethod, Aimbot.AimbotMethods, Aimbot.AimbotMethods.Length);
+                                RenderBoolSetting("Aim On Team", ref Modules.Rage.Aimbot.Team);
+                                RenderFloatSlider("Smoothing X", ref Aimbot.SmoothingX, 0, 20, "%.2f");
+                                RenderFloatSlider("Smoothing Y", ref Aimbot.SmoothingY, 0, 20, "%.2f");
+                                RenderBoolSetting("Draw FOV", ref Aimbot.DrawFov);
+                                RenderBoolSetting("Use FOV", ref Aimbot.UseFOV);
+                                RenderBoolSetting("Scoped Check", ref Aimbot.ScopedOnly);
+                                RenderIntSlider("FOV Size", ref Modules.Rage.Aimbot.FovSize, 10, 1000, "%d");
+                                ImGui.Spacing();
+                                RenderColorSetting("FOV Color", ref Modules.Rage.Aimbot.FovColor);
+                            });
 
-                            RenderModuleToggle("Triggerbot", ref Modules.Rage.TriggerBot.Enabled);
+                            ImGui.EndChild();
 
-                            if (Modules.Rage.TriggerBot.RequireKeybind)
+                            ImGui.NextColumn();
+
+                            ImGui.BeginChild("RightRage");
+                            RenderBoolSetting("Triggerbot", ref Modules.Rage.TriggerBot.Enabled);
+
+
+                            if (isWaitingForKey)
                             {
-                                if (isWaitingForKey)
+                                ImGui.Text("Press any key...");
+                                if (ImGui.Button("Cancel"))
                                 {
-                                    ImGui.Text("Press any key...");
-                                    if (ImGui.Button("Cancel"))
+                                    isWaitingForKey = false;
+                                }
+
+                                foreach (Keys key in Enum.GetValues(typeof(Keys)))
+                                {
+                                    if ((User32.GetAsyncKeyState((int)key) & 0x8000) != 0 && key != Keys.Escape)
                                     {
+                                        Modules.Rage.TriggerBot.TriggerKey = key;
+                                        keybindLabel = $"Keybind: {key}";
                                         isWaitingForKey = false;
-                                    }
-
-                                    foreach (Keys key in Enum.GetValues(typeof(Keys)))
-                                    {
-                                        if ((User32.GetAsyncKeyState((int)key) & 0x8000) != 0 && key != Keys.Escape)
-                                        {
-                                            Modules.Rage.TriggerBot.TriggerKey = key;
-                                            keybindLabel = $"Keybind: {key}";
-                                            isWaitingForKey = false;
-                                            break;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if (ImGui.Button(keybindLabel))
-                                    {
-                                        isWaitingForKey = true;
+                                        break;
                                     }
                                 }
                             }
+                            else
+                            {
+                                if (ImGui.Button(keybindLabel))
+                                {
+                                    isWaitingForKey = true;
+                                }
+                            }
+
 
                             RenderSettingsSection("Trigger Bot Settings", () =>
                             {
-                                ImGui.SliderInt("Delay", ref Modules.Rage.TriggerBot.Delay, 0, 1000, "%d");
-                                ImGui.Checkbox("Require Keybind", ref Modules.Rage.TriggerBot.RequireKeybind);
-                                ImGui.Checkbox("Shoot At Team", ref Modules.Rage.TriggerBot.ShootAtTeam);
+                                RenderIntSlider("Max Delay", ref Modules.Rage.TriggerBot.MaxDelay, 0, 1000, "%d");
+                                RenderIntSlider("Min Delay", ref Modules.Rage.TriggerBot.MinDelay, 0, 1000, "%d");
+                                RenderBoolSetting("Require Keybind", ref Modules.Rage.TriggerBot.RequireKeybind);
+                                RenderBoolSetting("Shoot At Team", ref Modules.Rage.TriggerBot.ShootAtTeam);
                             });
+                            ImGui.EndChild();
 
-
+                            ImGui.Columns(1);
                             break;
 
                         case 2: // visuals
-                            RenderCategoryHeader("VISUALS");
-
                             ImGui.Columns(2, "VisualsColumns", true);
 
                             ImGui.BeginChild("LeftVisuals");
-                            RenderModuleToggle("Enable ESP", ref BoxESP.enableESP);
+                            RenderBoolSetting("Enable ESP", ref BoxESP.EnableESP);
 
-                            RenderSettingsSection("ESP Settings", () =>
-                            {
-                                if (ImGui.Combo("##ESPShape", ref BoxESP.CurrentShape, BoxESP.Shapes, BoxESP.Shapes.Length)) // shape dropdown
-                                {
-                                }
-                                RenderModuleToggle("Draw On Self", ref BoxESP.DrawOnSelf);
-                                RenderModuleToggle("Team Check", ref BoxESP.TeamCheck);
-                                RenderModuleToggle("Enable RGB", ref Colors.RGB);
-                                ImGui.SliderFloat("Box Fill Opacity", ref BoxESP.BoxFillOpacity, 0.0f, 1.0f, "%.2f");
-                                RenderModuleToggle("Outline", ref BoxESP.Outline);
-                                ImGui.SliderFloat("ESP Rounding", ref BoxESP.Rounding, 1f, 5f);
-                            });
+                            //RenderSettingsSection("ESP Settings", () =>
+                            //{
+                            RenderIntCombo("ESP Shape", ref BoxESP.CurrentShape, BoxESP.Shapes, BoxESP.Shapes.Length); // shape dropdown
+                                                                                                                       //RenderBoolSetting("Draw On Self", ref BoxESP.DrawOnSelf);
+                            RenderBoolSetting("Team Check", ref BoxESP.TeamCheck);
+                            RenderBoolSetting("Enable RGB", ref Colors.RGB);
+                            RenderBoolSettingWith2ColorPickers("Box Fill Gradient", ref BoxESP.BoxFillGradient, ref BoxESP.BoxFillGradientColorTop, ref BoxESP.BoxFillGradientBottom);
+                            RenderFloatSlider("Box Fill Opacity", ref BoxESP.BoxFillOpacity, 0.0f, 1.0f, "%.2f");
+                            RenderBoolSetting("Outline", ref BoxESP.Outline);
+                            RenderFloatSlider("ESP Rounding", ref BoxESP.Rounding, 1f, 5f);
+                            RenderFloatSlider("ESP Glow", ref BoxESP.GlowAmount, 0f, 5f);
+                            RenderColorSetting("Team Color", ref Colors.TeamColor);
+                            RenderColorSetting("Enemy Color", ref Colors.EnemyColor);
+                            //});
+                            RenderBoolSetting("Flash Check", ref BoxESP.FlashCheck);
+                            RenderBoolSetting("Enable Health Bar", ref Modules.Visual.HealthBar.EnableHealthBar);
+                            RenderBoolSetting("Enable Armor Bar", ref ArmorBar.EnableArmorhBar);
+                            RenderBoolSetting("Show Distance Text", ref BoxESP.EnableDistanceTracker);
 
-                            RenderModuleToggle("Enable Health Bar", ref Modules.Visual.HealthBar.EnableHealthBar);
-                            RenderModuleToggle("Enable Armor Bar", ref ArmorBar.EnableArmorhBar);
-                            RenderModuleToggle("Show Distance Text", ref BoxESP.EnableDistanceTracker);
+                            RenderBoolSetting("Enable Tracers", ref Tracers.enableTracers);
+                            RenderIntCombo("Tracer Start Position", ref Tracers.CurrentStartPos, Tracers.StartPositions, Tracers.StartPositions.Length);
+                            RenderIntCombo("Tracer End Position", ref Tracers.CurrentEndPos, Tracers.EndPositions, Tracers.EndPositions.Length);
+                            RenderFloatSlider("Tracer Thickness", ref Tracers.LineThickness, 0.05f, 5f);
 
-                            RenderModuleToggle("Enable Tracers", ref Tracers.enableTracers);
-                            ImGui.Combo("##Tracer Start Position", ref Tracers.CurrentStartPos, Tracers.StartPositions, Tracers.StartPositions.Length);
-                            ImGui.Combo("##Tracer End Position", ref Tracers.CurrentEndPos, Tracers.EndPositions, Tracers.EndPositions.Length);
-                            ImGui.SliderFloat("Tracer Thickness", ref Tracers.LineThickness, 0.05f, 5f);
+                            RenderBoolSetting("Show Name", ref NameDisplay.Enabled);
 
-                            RenderModuleToggle("Show Name", ref NameDisplay.Enabled);
+                            RenderBoolSetting("Enable Bone ESP", ref Modules.Visual.BoneESP.EnableBoneESP);
+                            RenderBoolSetting("Team Check", ref BoneESP.TeamCheck);
+                            RenderFloatSlider("Bone Thickness", ref BoneESP.BoneThickness, 1f, 10f, "%.1f");
+                            RenderColorSetting("Bone Color", ref BoneESP.BoneColor);
+                            RenderBoolSetting("Enable RGB", ref Colors.RGB);
 
-                            RenderModuleToggle("Enable Bone ESP", ref Modules.Visual.BoneESP.EnableBoneESP);
-                            RenderSettingsSection("Bone ESP Settings", () =>
-                            {
-                                RenderModuleToggle("Draw On Self", ref BoneESP.DrawOnSelf);
-                                RenderModuleToggle("Team Check", ref BoneESP.TeamCheck);
-                                ImGui.SliderFloat("Bone Thickness", ref BoneESP.BoneThickness, 1f, 10f, "%.1f");
-                                ImGui.ColorEdit4("Bone Color", ref BoneESP.BoneColor);
-                                RenderModuleToggle("Enable RGB", ref Colors.RGB);
-                            });
-
-                            RenderModuleToggle("Enable Chams", ref Modules.Visual.Chams.EnableChams);
-                            if (Modules.Visual.Chams.EnableChams)
-                            {
-                                RenderSettingsSection("Chams Settings", () =>
-                                {
-                                    RenderModuleToggle("Draw On Self", ref Chams.DrawOnSelf);
-                                    RenderModuleToggle("Draw On Self", ref Modules.Visual.Chams.DrawOnSelf);
-                                    ImGui.SliderFloat("Bone Thickness", ref Chams.BoneThickness, 1f, 20f, "%.1f");
-                                    RenderModuleToggle("Enable RGB", ref Colors.RGB);
-                                });
-                            }
+                            //RenderBoolSetting("Enable Chams", ref Modules.Visual.Chams.EnableChams);
+                            //if (Modules.Visual.Chams.EnableChams)
+                            //{
+                            //    RenderSettingsSection("Chams Settings", () =>
+                            //    {
+                            //        RenderBoolSetting("Draw On Self", ref Chams.DrawOnSelf);
+                            //        RenderBoolSetting("Draw On Self", ref Modules.Visual.Chams.DrawOnSelf);
+                            //        RenderFloatSlider("Bone Thickness", ref Chams.BoneThickness, 1f, 20f, "%.1f");
+                            //        RenderBoolSetting("Enable RGB", ref Colors.RGB);
+                            //    });
+                            //}
+                            RenderBoolSetting("Eye Ray", ref EyeRay.Enabled);
                             ImGui.EndChild();
 
                             ImGui.NextColumn();
 
                             ImGui.BeginChild("RightVisuals");
-                            RenderModuleToggle("Enable Bomb Timer", ref Modules.Visual.BombTimerOverlay.EnableTimeOverlay);
-                            RenderModuleToggle("Anti Flash", ref Modules.Visual.NoFlash.NoFlashEnable);
-                            RenderModuleToggle("Fov Changer", ref FovChanger.Enabled);
-                            ImGui.SliderInt("Fov", ref FovChanger.FOV, 60, 160);
+                            RenderBoolSetting("Enable Bomb Timer", ref Modules.Visual.BombTimerOverlay.EnableTimeOverlay);
+                            RenderBoolSetting("Anti Flash", ref Modules.Visual.NoFlash.NoFlashEnable);
+                            RenderBoolSetting("Fov Changer", ref FovChanger.Enabled);
+                            RenderIntSlider("Fov", ref FovChanger.FOV, 60, 160);
                             ImGui.EndChild();
 
                             ImGui.Columns(1);
                             break;
 
                         case 3: // config
-                            RenderCategoryHeader("CONFIG");
                             ImGui.Columns(2, "ConfigColum", true);
                             ImGui.BeginChild("ConfigLeft");
                             ImGui.Text("Available Configs:");
@@ -484,29 +595,36 @@ namespace Titled_Gui
 
 
                         case 4: // settings
-                            RenderCategoryHeader("SETTINGS");
+                            ImGui.Columns(2, "SettingsColumn", true);
+
+                            ImGui.BeginChild("LeftColumn");
 
                             ImGui.Text("GUI Settings");
                             ImGui.Spacing();
 
-                            ImGui.SliderFloat("Window Alpha", ref windowAlpha, 0.1f, 1.0f, "%.2f");
-                            ImGui.ColorEdit4("Accent Color", ref accentColor);
-                            ImGui.SliderFloat("Animation Speed", ref animationSpeed, 0.01f, 1.0f, "%.2f"); // TODO make like open and close anim maybe tab swtichs
-
-                            ImGui.Spacing();
-                            ImGui.Separator();
-                            ImGui.Spacing();
-
+                            RenderFloatSlider("Window Alpha", ref windowAlpha, 0.1f, 1.0f, "%.2f");
+                            RenderColorSetting("Accent Color", ref accentColor);
+                            RenderFloatSlider("Animation Speed", ref animationSpeed, 0.01f, 1.0f, "%.2f"); // TODO make like open and close anim maybe tab swtichs
+                            RenderFloatSlider("Particle Speed", ref ParticleSpeed, 0, 10);
+                            RenderColorSetting("Particle Color", ref ParticleColor);
+                            RenderColorSetting("Line Color", ref LineColor);
                             ImGui.Text("Keybinds:");
-                            ImGui.Text("Toggle Menu: TAB");
+                            RenderKeybindChooser("Open Keybind", ref OpenKey);
+                            ImGui.EndChild();
 
+                            ImGui.NextColumn();
+
+                            ImGui.BeginChild("RightColumn");
                             ImGui.Spacing();
-                            ImGui.Separator();
                             ImGui.Spacing();
 
                             ImGui.Text("About:");
-                            ImGui.Text($"Titled Gui v{Configs.Version}");
+                            ImGui.Text($"Titled GUI V{Configs.Version}");
                             ImGui.Text("External Cheat Made By xfi0 / domok.");
+
+                            ImGui.EndChild();
+
+                            ImGui.Columns(1);
                             break;
                     }
                 }
@@ -520,71 +638,118 @@ namespace Titled_Gui
                 RunAllModules();
             }
         }
-        public void RunAllModules()
+        public void DrawParticles(int num)
         {
-            // run all modules that access the renderrer on the renderer thread prevents flickering
-            if (NameDisplay.Enabled)
+            while (Positions.Count < num) // only add if there isnt eg 50 drawn
             {
-                foreach (var e in entities)
-                {
-                    NameDisplay.DrawName(e, this);
-                }
+                Positions.Add(new Vector2(random.Next((int)screenSize.X), random.Next((int)screenSize.Y)));
+                Velocities.Add(new Vector2((float)(random.NextDouble() * 2 - 1), (float)(random.NextDouble() * 2 - 1)));
             }
-            if (Aimbot.DrawFov && Aimbot.AimbotEnable)
-                Aimbot.DrawCircle(Aimbot.FovSize, Aimbot.FovColor);
-            if (Modules.Visual.BoneESP.EnableBoneESP)
+
+            for (int i = 0; i < num; i++)
             {
-                foreach (Data.Entity.Entity entity in entities)
+                Positions[i] += Velocities[i] * ParticleSpeed; 
+
+                if (Positions[i].X < 0 || Positions[i].X > screenSize.X || Positions[i].Y < 0 || Positions[i].Y > screenSize.Y)
                 {
-                    if ((!BoneESP.TeamCheck || entity.Team == localPlayer.Team) && (!BoneESP.DrawOnSelf || entity != localPlayer))
+                    Positions[i] = new Vector2(random.Next((int)screenSize.X), random.Next((int)screenSize.Y));
+                    Velocities[i] = new Vector2((float)(random.NextDouble() * 2 - 1), (float)(random.NextDouble() * 2 - 1));
+                }
+
+                DrawHelpers.DrawGlowCircleFilled(drawList, Positions[i], ParticleRadius, ParticleColor, 1.1f);
+            }
+
+            for (int i = 0; i < num; i++) //// lines
+            {
+                for (int j = i + 1; j < num; j++)
+                {
+                    float dist = Vector2.Distance(Positions[i], Positions[j]);
+                    if (dist < MaxLineDistance)
                     {
-                        Modules.Visual.BoneESP.DrawBoneLines(entity, this);
+                        float alpha = 1f - (dist / MaxLineDistance);
+                        drawList.AddLine(Positions[i], Positions[j], ImGui.ColorConvertFloat4ToU32(new Vector4(LineColor.X, LineColor.Y, LineColor.Z, LineColor.W * alpha)), 1f);
                     }
                 }
             }
-            EyeRay.DrawEyeRay();
-            if (Modules.Rage.TriggerBot.Enabled)
-            {
-                Modules.Rage.TriggerBot.Start();
-            }
-            if (Modules.Visual.Chams.EnableChams)
-            {
-                foreach (Entity entity in entities)
-                {
-                    Chams.DrawChams(entity);
-                }
-            }
-            if (ArmorBar.EnableArmorhBar)
-            {
-                foreach (var entity in GameState.Entities)
-                {
-                    float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
-                    Vector2 rectTTop = new(entity.ViewPosition2D.X - entityHeight / 3, entity.ViewPosition2D.Y);
-                    Vector2 barTopLeft = new(rectTTop.X = ArmorBar.ArmorBarWidth + 2f, entity.ViewPosition2D.Y);
+        }
 
-                    float barHeight = entityHeight;
-                    ArmorBar.DrawArmorBar(this, entity.Armor, 100, barTopLeft, barHeight, entity);
-                }
-            }
-            Radar.DrawRadar();
-            if (Modules.Visual.BoxESP.enableESP)
+
+
+        public void RunAllModules()
+        {
+            try
             {
-                foreach (var entity in entities)
+                HitStuff.CreateHitText();
+                if (EyeRay.Enabled)
                 {
-                    if (entity != null)
+                    EyeRay.DrawEyeRay();
+                }
+                if (NameDisplay.Enabled)
+                {
+                    foreach (var e in entities)
                     {
-                        bool isEnemy = entity.Team != localPlayer.Team;
-
-                        // skip if its local and we should draw on self
-                        if (entity.PawnAddress == localPlayer.PawnAddress && !BoxESP.DrawOnSelf)
-                            continue;
-
-                        //draw Team and entity if Team check is false
-                        if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck && isEnemy))
+                        NameDisplay.DrawName(e, this);
+                    }
+                }
+                if (Aimbot.DrawFov && Aimbot.AimbotEnable && Aimbot.UseFOV)
+                {
+                    Aimbot.DrawCircle(Aimbot.FovSize, Aimbot.FovColor);
+                }
+                if (Modules.Visual.BoneESP.EnableBoneESP)
+                {
+                    foreach (Data.Entity.Entity entity in entities)
+                    {
+                        if ((!BoneESP.TeamCheck || entity.Team == localPlayer.Team) && (!BoneESP.DrawOnSelf || entity != localPlayer))
                         {
-                            BoxESP.DrawBoxESP(entity, localPlayer, this);
+                            Modules.Visual.BoneESP.DrawBoneLines(entity, this);
                         }
-                        if (BoxESP.EnableDistanceTracker)
+                    }
+                }
+                if (Chams.EnableChams)
+                {
+                    foreach (Entity entity in entities)
+                    {
+                        Chams.DrawChams(entity);
+                    }
+                }
+                if (ArmorBar.EnableArmorhBar)
+                {
+                    foreach (var entity in GameState.Entities)
+                    {
+                        Vector2 barPos = new(entity.Head2D.X);
+                        float EntityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
+
+                        ArmorBar.DrawArmorBar(this, entity.Armor, 100, barPos, EntityHeight, entity);
+                    }
+                }
+
+                Radar.DrawRadar();
+
+                if (Modules.Visual.BoxESP.EnableESP)
+                {
+                    foreach (var entity in entities)
+                    {
+                        if (entity != null)
+                        {
+                            bool isEnemy = entity.Team != localPlayer.Team;
+
+                            // skip if its local and we should draw on self
+                            if (entity.PawnAddress == localPlayer.PawnAddress && !BoxESP.DrawOnSelf)
+                                continue;
+
+                            //draw Team and entity if Team check is false
+                            if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck && isEnemy))
+                            {
+                                BoxESP.DrawBoxESP(entity, localPlayer, this);
+                            }
+                        }
+                    }
+                }
+                if (BoxESP.EnableDistanceTracker)
+                {
+                    foreach (var entity in entities)
+                    {
+                        if (entity != null)
                         {
                             string distText = $"{(int)entity.Distance / 100}m";
                             Vector2 textPos = new Vector2(entity.Position2D.X + 2, entity.Position2D.Y);
@@ -592,114 +757,472 @@ namespace Titled_Gui
                         }
                     }
                 }
-            }
-            if (Tracers.enableTracers)
-            {
-                foreach (var entity in GameState.Entities)
+                if (Tracers.enableTracers)
                 {
-                    if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck && entity.Team != GameState.localPlayer.Team))
+                    foreach (var entity in GameState.Entities)
                     {
-                        Tracers.DrawTracers(entity, this);
+                        if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck && entity.Team != GameState.localPlayer.Team))
+                        {
+                            Tracers.DrawTracers(entity, this);
+                        }
                     }
                 }
+                foreach (var entity in GameState.Entities)
+                {
+                    float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
+
+                    Vector2 rectTTop = new(entity.ViewPosition2D.X - entityHeight / 3, entity.ViewPosition2D.Y);
+                    Vector2 barTopLeft = new(rectTTop.X - HealthBar.HealthBarWidth - 2, rectTTop.Y);
+
+                    Modules.Visual.HealthBar.DrawHealthBar(this, entity.Health, 100, barTopLeft, entityHeight, entity);
+                }
             }
-            foreach (var entity in GameState.Entities)
+            catch (Exception e)
             {
-                float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
-                Vector2 rectTTop = new(entity.ViewPosition2D.X - entityHeight / 3, entity.ViewPosition2D.Y);
-                Vector2 barTopLeft = new(rectTTop.X - HealthBar.HealthBarWidth - 2, rectTTop.Y);
-                float barHeight = entityHeight;
-                Modules.Visual.HealthBar.DrawHealthBar(this, entity.Health, 100, barTopLeft, barHeight, entity);
+                Console.WriteLine(e);
             }
         }
+       
+
         private static void DrawGearIcon(Vector2 center, uint color)
         {
-            const float radius = 8f;
-            const int teeth = 8;
-            const float innerRadius = radius * 0.6f;
-            const float toothHeight = radius * 0.3f;
-            const float toothWidth = 0.3f;
+            if (!Renderer.IsIconFont1Loaded)
+                return;
 
-            var currentDrawList = ImGui.GetWindowDrawList();
+            ImGui.PushFont(Renderer.IconFont1);
 
-            for (int i = 0; i < teeth; i++)
-            {
-                float angle1 = (float)(i * 2 * Math.PI / teeth - toothWidth / 2);
-                float angle2 = (float)(i * 2 * Math.PI / teeth + toothWidth / 2);
+            Vector2 textSize = ImGui.CalcTextSize("\uEAF5");
+            Vector2 textPos = new Vector2(center.X - textSize.X / 2, center.Y - textSize.Y / 2);
 
-                Vector2 innerP1 = new Vector2(
-                    center.X + (float)Math.Cos(angle1) * innerRadius,
-                    center.Y + (float)Math.Sin(angle1) * innerRadius
-                );
-                Vector2 innerP2 = new Vector2(
-                    center.X + (float)Math.Cos(angle2) * innerRadius,
-                    center.Y + (float)Math.Sin(angle2) * innerRadius
-                );
-                Vector2 outerP1 = new Vector2(
-                    center.X + (float)Math.Cos(angle1) * (radius + toothHeight),
-                    center.Y + (float)Math.Sin(angle1) * (radius + toothHeight)
-                );
-                Vector2 outerP2 = new Vector2(
-                    center.X + (float)Math.Cos(angle2) * (radius + toothHeight),
-                    center.Y + (float)Math.Sin(angle2) * (radius + toothHeight)
-                );
+            ImGui.GetWindowDrawList().AddText(textPos, color, "\uEAF5");
 
-                currentDrawList.AddQuadFilled(innerP1, innerP2, outerP2, outerP1, color);
-            }
-
-            currentDrawList.AddCircleFilled(center, radius, color);
-
-            currentDrawList.AddCircleFilled(center, radius * 0.25f, ImGui.ColorConvertFloat4ToU32(new Vector4(0.09f, 0.09f, 0.10f, 1.0f)));
+            ImGui.PopFont();
         }
+
 
         private static void RenderCategoryHeader(string categoryName)
         {
-            if (FontManager.IsBoldFontLoaded)
+            Vector2 textSize = ImGui.CalcTextSize(categoryName);
+            float padding = 8f;
+
+            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + padding); 
+            if (Renderer.IsTextFontNormalLoaded)
             {
-                ImGui.PushFont(FontManager.BoldFont);
-                ImGui.TextColored(accentColor, categoryName);
+                ImGui.PushFont(Renderer.TextFontNormal);
+                RenderGradientText(categoryName, new Vector4(0.078f, 0.0862f, 0.101f, 1f), Renderer.accentColor);
                 ImGui.PopFont();
             }
             else
             {
-                ImGui.TextColored(accentColor, categoryName);
+                RenderGradientText(categoryName, new Vector4(1, 0, 0, 1), new Vector4(0, 1, 0, 1));
             }
 
+            ImGui.Dummy(new Vector2(textSize.X, textSize.Y + padding)); 
             ImGui.Separator();
             ImGui.Spacing();
         }
 
+        private static void RenderLeftRightLableThing(string label, Action renderWidget)
+        {
+            ImGui.Columns(2, null, false);
+
+            // left
+            ImGui.SetColumnWidth(0, 200);
+            ImGui.Text(label);
+            ImGui.NextColumn();
+
+            // right
+            float widgetWidth = ImGui.CalcItemWidth();
+            float availWidth = ImGui.GetColumnWidth() - ImGui.GetStyle().ItemSpacing.X;
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + availWidth - widgetWidth);
+
+            renderWidget();
+            ImGui.NextColumn();
+
+            ImGui.Columns(1);
+        }
+        private static void RenderGradientText(string text, Vector4 startColor, Vector4 endColor)
+        {
+            var drawList = ImGui.GetWindowDrawList();
+            Vector2 pos = ImGui.GetCursorScreenPos();
+            float step = 1f / (text.Length - 1);
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                float t = i * step;
+                Vector4 color = startColor + t * (endColor - startColor);
+                drawList.AddText(pos, ImGui.ColorConvertFloat4ToU32(color), text[i].ToString());
+                pos.X += ImGui.CalcTextSize(text[i].ToString()).X;
+            }
+
+            ImGui.Dummy(new Vector2(ImGui.CalcTextSize(text).X, 0));
+        }
+
+
         private void RenderTabButton(string label, int tabIndex)
         {
+            ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(0, 0)); // no spacing between tabs
             bool isSelected = selectedTab == tabIndex;
-            if (isSelected)
+
+            if (IsIconFontLoaded)
             {
-                ImGui.PushStyleColor(ImGuiCol.Button, accentColor);
-                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, accentColor);
-                ImGui.PushStyleColor(ImGuiCol.ButtonActive, accentColor);
-                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1, 1, 1, 1));
+                ImGui.PushFont(IconFont);
+
+                if (isSelected)
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero); // transparent background
+                    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, Vector4.Zero);
+                    ImGui.PushStyleColor(ImGuiCol.ButtonActive, Vector4.Zero);
+                    ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1, 1, 1, 1));
+                }
+                else
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
+                }
+                ImGui.PopStyleColor(isSelected ? 4 : 1);
+            }
+
+            bool pressed;
+            if (label == "\uEB54")
+            {
+                ImGui.PushFont(IconFont1);
+                if (isSelected)
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
+                    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, Vector4.Zero);
+                    ImGui.PushStyleColor(ImGuiCol.ButtonActive, Vector4.Zero);
+                    ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1, 1, 1, 1));
+                }
+                else
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
+                }
+                pressed = ImGui.Button(label, new Vector2(tabSize.X, 40));
+                if (pressed) selectedTab = tabIndex;
+                ImGui.PopStyleColor(isSelected ? 4 : 1);
+                ImGui.PopFont();
             }
             else
             {
-                ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0));
+                pressed = ImGui.Button(label, new Vector2(tabSize.X, 40));
+                if (pressed) selectedTab = tabIndex;
             }
 
-            if (ImGui.Button(label, new Vector2(-1, 40)))
-                selectedTab = tabIndex;
+            var min = ImGui.GetItemRectMin();
+            var max = ImGui.GetItemRectMax();
+            var borderColor =isSelected ? SidebarColor + new Vector4(0.02f, 0.01f, 0.01f, 1f) : SidebarColor;
+            drawList.AddLine(new Vector2(min.X, min.Y), new Vector2(max.X, min.Y), ImGui.ColorConvertFloat4ToU32(borderColor), 1.5f); 
+            drawList.AddLine(new Vector2(min.X, max.Y), new Vector2(max.X, max.Y), ImGui.ColorConvertFloat4ToU32(borderColor), 1.5f);
 
-            ImGui.PopStyleColor(isSelected ? 4 : 1);
+            ImGui.PopFont();
+            ImGui.PopStyleVar(); // restore spacing
         }
 
-        private static void RenderModuleToggle(string? label, ref bool value, Action? callback = null)
+
+
+        private static void RenderRow(string label, Action renderWidget, bool rightAlignWidget = false)
         {
-            ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(0, 8));
-            bool OriginalValue = value;
-            if (ImGui.Checkbox(label, ref value))
+            ImGui.Columns(2, null, false);
+
+            ImGui.Indent(LabelPadding);
+            ImGui.Text(label);
+            ImGui.Unindent(LabelPadding);
+            ImGui.NextColumn();
+
+            float colWidth = ImGui.GetColumnWidth();
+            float spacing = ImGui.GetStyle().ItemSpacing.X;
+            float widgetWidth = WidgetColumnWidth;
+
+            if (rightAlignWidget)
             {
-                callback?.Invoke();
+                float posX = ImGui.GetCursorPosX() + colWidth - widgetWidth - spacing;
+                ImGui.SetCursorPosX(posX);
             }
-            ImGui.PopStyleVar();
+
+            ImGui.PushItemWidth(widgetWidth);
+            renderWidget();
+            ImGui.PopItemWidth();
+
+            ImGui.NextColumn();
+            ImGui.Columns(1);
         }
+
+        private static void RenderRowRightAligned(string label, Action renderWidget, float widgetWidth = 0f)
+        {
+            ImGui.Columns(2, null, false);
+
+            ImGui.Indent(LabelPadding);
+            ImGui.Text(label);
+            ImGui.Unindent(LabelPadding);
+            ImGui.NextColumn();
+
+            float colWidth = ImGui.GetColumnWidth();
+            float spacing = ImGui.GetStyle().ItemSpacing.X;
+            float desired = widgetWidth <= 0f ? 200f : widgetWidth;
+            desired = Math.Min(desired, colWidth - spacing);
+
+            float posX = ImGui.GetCursorPosX() + colWidth - desired - spacing;
+            ImGui.SetCursorPosX(posX);
+
+            ImGui.PushItemWidth(desired);
+            renderWidget();
+            ImGui.PopItemWidth();
+
+            ImGui.NextColumn();
+            ImGui.Columns(1);
+        }
+        private static void RenderBoolSetting(string label, ref bool value, Action? onChanged = null, float widgetWidth = 0f)
+        {
+            bool temp = value;
+            RenderRowRightAligned(label, () =>
+            {
+                float height = ImGui.GetFrameHeight();
+                float width = height * 1.7f;
+                float radius = height / 2f - 2f;
+
+                float colWidth = ImGui.GetColumnWidth();
+                float spacing = ImGui.GetStyle().ItemSpacing.X;
+                float posX = ImGui.GetCursorPosX() + colWidth - width - spacing;
+                ImGui.SetCursorPosX(posX);
+
+                Vector2 p = ImGui.GetCursorScreenPos();
+                var drawList = ImGui.GetWindowDrawList();
+                string strId = "##" + label;
+
+                ImGui.InvisibleButton(strId, new Vector2(width, height));
+                if (ImGui.IsItemClicked()) temp = !temp;
+
+                float t = temp ? 1f : 0f;
+
+                drawList.AddRectFilled(p, new Vector2(p.X + width, p.Y + height), ImGui.ColorConvertFloat4ToU32(trackCol), height); // track
+
+                float knobX = p.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
+                float knobY = p.Y + radius + 2f;
+                Vector4 knobColor = temp ? knobOn : knobOff;
+                // knob
+                drawList.AddCircleFilled(new Vector2(knobX, knobY), radius, ImGui.ColorConvertFloat4ToU32(knobColor), 36);
+                drawList.AddCircle(new Vector2(knobX, knobY), radius, ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
+            }, widgetWidth);
+
+            if (temp != value)
+            {
+                value = temp;
+                onChanged?.Invoke();
+            }
+        }
+
+        private void RenderBoolSettingWith2ColorPickers(string label, ref bool value, ref Vector4 color1, ref Vector4 color2)
+        {
+            ImGui.PushID(label);
+
+            var tmp1 = color1;
+            var tmp2 = color2;
+            var tmpVal = value;
+
+            RenderRowRightAligned(label, () =>
+            {
+                ImGui.ColorEdit4("##" + label + "col1", ref tmp1, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
+                ImGui.SameLine();
+
+                ImGui.ColorEdit4("##" + label + "col2", ref tmp2, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
+                ImGui.SameLine();
+
+                ImGui.Checkbox("##" + label + "checkmark", ref tmpVal);
+            }, widgetWidth: 73f);
+
+            if (!tmp1.Equals(color1))
+            {
+                color1 = tmp1;
+            }
+            if (!tmp2.Equals(color2))
+            {
+                color2 = tmp2;
+            }
+            if (tmpVal != value)
+            {
+                value = tmpVal;
+            }
+
+            ImGui.PopID();
+        }
+        private void RenderBoolSettingWith1ColorPicker(string label, ref bool value, ref Vector4 color1)
+        {
+            ImGui.PushID(label);
+
+            bool tmpVal = value;
+            Vector4 tmpColor = color1;
+
+            RenderRowRightAligned(label, () =>
+            {
+                Vector2 rowStart = ImGui.GetCursorScreenPos();
+                float rowWidth = ImGui.GetColumnWidth();
+                float paddingRight = 7f; 
+
+                ImGui.SetCursorScreenPos(rowStart + new Vector2(0, 0));
+                ImGui.ColorEdit4("##" + label + "_col1", ref tmpColor, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
+
+                float height = ImGui.GetFrameHeight();
+                float width = height * 1.7f;
+                float radius = height / 2f - 2f;
+                Vector2 knobPos = new Vector2(rowStart.X + rowWidth - width - paddingRight, rowStart.Y);
+
+                var drawList = ImGui.GetWindowDrawList();
+                ImGui.SetCursorScreenPos(knobPos);
+
+                ImGui.InvisibleButton("##" + label + "_toggle", new Vector2(width, height));
+                if (ImGui.IsItemClicked()) tmpVal = !tmpVal;
+
+                float t = tmpVal ? 1f : 0f;
+                drawList.AddRectFilled(knobPos, new Vector2(knobPos.X + width, knobPos.Y + height), ImGui.ColorConvertFloat4ToU32(trackCol), height);
+                float knobX = knobPos.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
+                float knobY = knobPos.Y + radius + 2f;
+                drawList.AddCircleFilled(new Vector2(knobX, knobY), radius, ImGui.ColorConvertFloat4ToU32(tmpVal ? knobOn : knobOff), 36);
+                drawList.AddCircle(new Vector2(knobX, knobY), radius, ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
+            });
+
+            if (!tmpColor.Equals(color1)) color1 = tmpColor;
+            value = tmpVal;
+
+            ImGui.PopID();
+        }
+
+
+
+        private static void RenderIntCombo(string label, ref int current, string[] items, int itemCount, float widgetWidth = 160f)
+        {
+            int temp = current; 
+
+            RenderRowRightAligned(label, () =>
+            {
+                ImGui.Combo("##" + label, ref temp, items, items.Length);
+            }, widgetWidth);
+
+            if (temp != current)
+            {
+                current = temp; 
+            }
+        }
+        private static void RenderColorSetting(string label, ref Vector4 color, Action? onChanged = null, float widgetWidth = 160f)
+        {
+            Vector4 temp = color;
+            RenderRowRightAligned(label, () =>
+            {
+                ImGui.ColorEdit4("##" + label, ref temp);
+            }, widgetWidth);
+
+            if (!temp.Equals(color))
+            {
+                color = temp;
+                onChanged?.Invoke();
+            }
+        }
+
+        private static void RenderFloatSlider(string label, ref float value, float min, float max, string format = "%.2f", float widgetWidth = 200f)
+        {
+            float temp = value;
+            RenderRowRightAligned(label, () =>
+            {
+                ImGui.SliderFloat("##" + label, ref temp, min, max, format);
+            }, widgetWidth);
+
+            if (temp != value) value = temp;
+        }
+
+        private static void RenderIntSlider(string label, ref int value, int min, int max, string format = "%d", float widgetWidth = 200f)
+        {
+            int temp = value;
+            RenderRowRightAligned(label, () =>
+            {
+                ImGui.SliderInt("##" + label, ref temp, min, max, format);
+            }, widgetWidth);
+
+            if (temp != value) value = temp;
+        }
+        public static void RenderKeybindChooser(string Lable, ref int Key)
+        {
+            ImGui.PushID(Lable);
+
+            if (!KeyBind.ContainsKey(Lable)) KeyBind[Lable] = false;
+
+            string keyName = KeyBind[Lable] ? "Press Any Key..." : (Key == (int)Keys.None ? "None" : Key.ToString());
+
+            if (ImGui.Button(keyName, new Vector2(100, 0)))
+            {
+                KeyBind[Lable] = true;
+            }
+
+            if (KeyBind[Lable])
+            {
+                foreach (Keys key in Enum.GetValues(typeof(Keys)))
+                {
+                    if ((User32.GetAsyncKeyState((int)key) & 0x8000) == 0)
+                    {
+                        if (key >= Keys.LButton && key <= Keys.MButton) continue;
+
+                        if (key == Keys.Escape)
+                        {
+                            Key = (int)Keys.Insert;
+                        }
+                        else
+                        {
+                            Key = (int)key;
+                        }
+
+                        KeyBind[Lable] = false;
+                        break;
+                    }
+                }
+            }
+
+            ImGui.SameLine();
+            ImGui.Text(Lable);
+
+            ImGui.PopID();
+        }
+        public static Dictionary<string, bool> KeyBind = new();
+
+        public static void RenderKeybindChooser(string Lable, ref ImGuiKey Key)
+        {
+            ImGui.PushID(Lable);
+
+            if (!KeyBind.ContainsKey(Lable)) KeyBind[Lable] = false;
+
+            string keyName = KeyBind[Lable] ? "Press Any Key..." : (Key == ImGuiKey.None ? "None" : Key.ToString());
+
+            if (ImGui.Button(keyName, new Vector2(100, 0)))
+            {
+                KeyBind[Lable] = true;
+            }
+
+            if (KeyBind[Lable])
+            {
+                foreach (ImGuiKey imguiKey in Enum.GetValues(typeof(ImGuiKey)))
+                {
+                    if (ImGui.IsKeyPressed(imguiKey))
+                    {
+                        if (imguiKey >= ImGuiKey.MouseLeft && imguiKey <= ImGuiKey.MouseWheelY) continue;
+
+                        if (imguiKey == ImGuiKey.Escape)
+                        {
+                            Key = ImGuiKey.Insert;
+                        }
+                        else
+                        {
+                            Key = imguiKey;
+                        }
+
+                        KeyBind[Lable] = false;
+                        break;
+                    }
+                }
+            }
+
+            ImGui.SameLine();
+            ImGui.Text(Lable);
+
+            ImGui.PopID();
+        }
+
 
         public static void RenderSettingsSection(string label, Action content)
         {

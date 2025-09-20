@@ -18,27 +18,29 @@ namespace Titled_Gui.Modules.Legit
         public static float Chance = 100;
         public static int HopKey = 0x20; // space
         private static Random RandomGen = new();
-        public static void AutoBhop() 
+        public static void AutoBhop()
         {
             if (User32.GetAsyncKeyState(HopKey) < 0)
             {
-                //for (int i = 0; i < 100; i++) // thanks stack overflow i dontg know how to do this outside unity
-                //{
-                //    //int randomValueBetween0And99 = RandomGen.Next(100);
-                    //if (randomValueBetween0And99 < Chance)
-                    //{
+                for (int i = 0; i < 100; i++) // thanks stack overflow i dontg know how to do this outside unity
+                {
+                    int randomValueBetween0And99 = RandomGen.Next(100);
+                    if (randomValueBetween0And99 < Chance)
+                    {
                         if (fflag == 65665 || fflag == 65667)
                         {
-                            GameState.swed.WriteInt(GameState.ForceJump, 65537); // write the value to ForceJump to make the player jump
-                            Thread.Sleep(1); // sleep
+                            GameState.swed.WriteInt(GameState.ForceJump, 65537); 
+                            Thread.Sleep(5);
                         }
                         else
                         {
-                            GameState.swed.WriteInt(GameState.ForceJump, 256); // undo jump 
-                            Thread.Sleep(1); //sleep
+                            GameState.swed.WriteInt(GameState.ForceJump, 256);
+                            Thread.Sleep(5); 
                         }
-                    //}
-                //}
+
+                    }
+                }
+
             }
         }
         protected override void FrameAction()

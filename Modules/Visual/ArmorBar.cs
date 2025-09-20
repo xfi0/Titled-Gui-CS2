@@ -15,7 +15,7 @@ namespace Titled_Gui.Modules.Visual
         public static float Rounding = 2.3f;
         public static void DrawArmorBar(Renderer renderer, float Armor, float MaxArmor, Vector2 topLeft, float height, Entity e)
         {
-            if (!EnableArmorhBar || (!TeamCheck && e.Team == GameState.localPlayer.Team) || e == null) return;
+            if (!EnableArmorhBar || (!TeamCheck && e.Team == GameState.localPlayer.Team) || e == null || BoxESP.FlashCheck && GameState.localPlayer.IsFlashed || e.Armor < 1) return;
 
             float HealthPercentage = Math.Clamp(Armor / MaxArmor, 0f, 1f); // like percentage of box to be filled
             float filledHeight = height * HealthPercentage;

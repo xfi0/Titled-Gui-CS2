@@ -77,7 +77,7 @@ namespace Titled_Gui.Modules.Visual
             ImGui.Begin(BombPlanted ? "C4 Has Been Planted" : "C4 Has Not Been Planted", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar);
 
             ImDrawListPtr imDrawList = ImGui.GetWindowDrawList();
-            imDrawList.AddText(Renderer.FontManager.BoldFont, 18f, ImGui.GetWindowPos() + new Vector2(10, 0), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), BombPlanted ? "C4 Has Been Planted" : "C4 Has Not Been Planted");
+            imDrawList.AddText(Renderer.TextFontNormal, 18f, ImGui.GetWindowPos() + new Vector2(10, 0), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), BombPlanted ? "C4 Has Been Planted" : "C4 Has Not Been Planted");
             imDrawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 20), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), TimePlanted.ToString());
             ImGui.End();
         }

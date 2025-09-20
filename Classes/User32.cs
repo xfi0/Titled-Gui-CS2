@@ -4,28 +4,23 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static Titled_Gui.Classes.User32;
 
 namespace Titled_Gui.Classes
 {
     internal class User32 // what is SYSLIB1054 pls help
     {
-
         [StructLayout(LayoutKind.Sequential)]
-        public struct MouseInput
+        public struct INPUT
         {
-            public int dx;
-            public int dy;
-            public int mouseData;
-            public uint dwFlags;
-            public uint time;
-            public IntPtr dwExtraInfo;
+            public uint type;
+            public InputUnion U;
         }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct Input
+        [StructLayout(LayoutKind.Explicit)]
+        public struct InputUnion
         {
-            public int type;
-            public MouseInput mi;
+            [FieldOffset(0)] public MOUSEINPUT mi;
+            [FieldOffset(0)] public KEYBDINPUT ki;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -34,7 +29,27 @@ namespace Titled_Gui.Classes
             public int X;
             public int Y;
         }
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MOUSEINPUT
+        {
+            public int dx;
+            public int dy;
+            public int mouseData;
+            public uint dwFlags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
+        [StructLayout(LayoutKind.Sequential)]
+        public struct KEYBDINPUT
+        {
+            public ushort wVk;
+            public ushort wScan;
+            public uint dwFlags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
 
+        public const int INPUT_KEYBOARD = 1;
         public const int INPUT_MOUSE = 0;
         public const uint MOUSEEVENTF_MOVE = 0x0001;
         public const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
@@ -69,7 +84,7 @@ namespace Titled_Gui.Classes
         [DllImport("user32.dll")]
         public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern uint SendInput(uint nInputs, [In] Input[] pInputs, int cbSize);
+        public static extern uint SendInput(uint nInputs, [In] INPUT[] pInputs, int cbSize);
 
         [DllImport("user32.dll")]
         public static extern bool GetCursorPos(out POINT lpPoint);
@@ -84,14 +99,18 @@ namespace Titled_Gui.Classes
 
         public static void Jump(bool on)
         {
-            if (on)
+            INPUT[] Inputs = new INPUT[1];
+            Inputs[0].type = INPUT_KEYBOARD;
+            Inputs[0].U.ki = new KEYBDINPUT
             {
-                keybd_event(VK_SPACE, 0, KEYEVENTF_KEYDOWN, 0);
-            }
-            else
-            {
-                keybd_event(VK_SPACE, 0, KEYEVENTF_KEYUP, 0);
-            }
+                wVk = VK_SPACE,
+                wScan = 0,
+                dwFlags = on ? KEYEVENTF_KEYDOWN : KEYEVENTF_KEYUP,
+                time = 0,
+                dwExtraInfo = IntPtr.Zero
+            };
+
+            SendInput((uint)Inputs.Length, Inputs, Marshal.SizeOf(typeof(INPUT)));
         }
     }
 }

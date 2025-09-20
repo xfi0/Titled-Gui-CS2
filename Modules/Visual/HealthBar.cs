@@ -13,17 +13,20 @@ namespace Titled_Gui.Modules.Visual
         public static bool TeamCheck = false;
         public static float HealthBarWidth = 5f;
         public static float Rounding = 2.3f;
+        public static Vector4 HealthBarBackGround = new(0.2f, 0.2f, 0.2f, 1f);
+        public static Vector4 HealthColor = new();
+
         public static void DrawHealthBar(Renderer renderer, float Health, float maxHealth, Vector2 topLeft, float height, Entity e)
         {
-            if (!EnableHealthBar || HealthBar.DrawOnSelf && e.Team == GameState.localPlayer.Team || e == null) return;
+            if (!EnableHealthBar || (!DrawOnSelf && e.PawnAddress == GameState.localPlayer.PawnAddress) || e == null || (BoxESP.FlashCheck && GameState.localPlayer.IsFlashed)) return;
 
             float HealthPercentage = Math.Clamp(Health / maxHealth, 0f, 1f); // like percentage of box to be filled
             float filledHeight = height * HealthPercentage;
 
-            renderer.drawList.AddRectFilled(topLeft, topLeft + new Vector2(HealthBarWidth, height), ImGui.ColorConvertFloat4ToU32(new Vector4(0.2f, 0.2f, 0.2f, 1f)), Rounding);
+            renderer.drawList.AddRectFilled(topLeft, topLeft + new Vector2(HealthBarWidth, height), ImGui.ColorConvertFloat4ToU32(HealthBarBackGround), Rounding);
 
             Vector2 filledTop = topLeft + new Vector2(0, height - filledHeight);
-            Vector4 HealthColor = Colors.RGB ? Colors.Rgb(HealthPercentage) : new Vector4(0f, 1f, 0f, 1f);
+            HealthColor = Colors.RGB ? Colors.Rgb(HealthPercentage) : new Vector4(0f, 1f, 0f, 1f);
 
             renderer.drawList.AddRectFilled(filledTop, filledTop + new Vector2(HealthBarWidth, filledHeight), ImGui.ColorConvertFloat4ToU32(HealthColor), Rounding);
         }

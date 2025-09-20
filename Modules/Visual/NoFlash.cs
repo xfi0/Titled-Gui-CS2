@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
@@ -15,7 +16,8 @@ namespace Titled_Gui.Modules.Visual
         {
             if (!NoFlashEnable) return;
 
-            float FlashBangDuration = GameState.swed.ReadFloat(GameState.client, Offsets.m_flFlashBangTime);
+            var FlashBangDuration = GameState.swed.ReadFloat(GameState.client, Offsets.m_flFlashBangTime);
+
             if (FlashBangDuration > 0)
             {
                 GameState.swed.WriteInt(GameState.LocalPlayerPawn, Offsets.m_flFlashBangTime, 0);

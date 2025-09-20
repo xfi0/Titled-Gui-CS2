@@ -1,4 +1,5 @@
-﻿using Swed64;
+﻿using ImGuiNET;
+using Swed64;
 using System.Numerics;
 using System.Reflection;
 using System.Text;
@@ -16,6 +17,9 @@ using static Titled_Gui.Data.Game.GameState;
 EntityManager entityManager = new EntityManager(GameState.swed,GameState.renderer);
 await OffsetGetter.UpdateOffsetsAsync();
 
+ImGui.CreateContext();
+Renderer.LoadFonts();
+
 Thread renderThread = new(() => GameState.renderer.Start().Wait())
 {
     IsBackground = true
@@ -23,7 +27,6 @@ Thread renderThread = new(() => GameState.renderer.Start().Wait())
 renderThread.Start();
 // entities
 List<Entity> entities = new List<Entity>();
-
 Thread entityUpdateThread = new(() =>
 {
     while (true)
@@ -54,9 +57,11 @@ Thread entityUpdateThread = new(() =>
             GameState.Entities = new List<Titled_Gui.Data.Entity.Entity>(entities);
             foreach (Entity entity in entities)
             {
-                WeaponReader.UpdateEntityWeaponName(entity);
+                GetGunName.UpdateEntityWeaponName(entity);
+                //Console.WriteLine(entity.Ping);
             }
-
+            //Console.WriteLine(EntityManager.ReturnLocalPlayer()?.IsShooting);
+            //Console.WriteLine(GameState.swed.ReadFloat(LocalPlayerPawn, Offsets.m_flFlashBangTime));
         }
         catch (Exception e)
         {

@@ -27,8 +27,15 @@ namespace Titled_Gui.Data.Game
         public static uint Crouching = 655667; // crouching state
         public static bool BombPlanted { get; set; }
         public static IntPtr MoneyServices { get; set; }
+        public static uint WeaponServices { get; set; }
+        public static IntPtr ActionTrackingServices { get; set; }
+        public static IntPtr BulletServices { get; set; }
         public static IntPtr currentController = IntPtr.Zero;
         public static bool IsScoped { get; set; }
+        public static IntPtr LocalController { get; set; }
+        public static int RoundHeadshots {  get; set; }
+        public static int RoundKills { get; set; }
+        public static int RoundDamage { get; set; }
 
     }
 }

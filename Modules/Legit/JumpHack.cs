@@ -4,7 +4,7 @@ using Titled_Gui.Data.Entity;
 
 namespace Titled_Gui.Modules.Legit
 {
-    internal class JumpHack // TODO make it like work
+    internal class JumpHack : Classes.ThreadService // TODO make it like work
     {
         public static bool JumpHackEnabled = false;
         public static int JumpHotkey = 0x20;
@@ -32,6 +32,10 @@ namespace Titled_Gui.Modules.Legit
                     Console.WriteLine(GameState.fflag);
                 }
             }
+        }
+        protected override void FrameAction()
+        {
+            JumpShot();
         }
     }
 }

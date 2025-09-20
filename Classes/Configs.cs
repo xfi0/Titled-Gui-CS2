@@ -11,7 +11,7 @@ namespace Titled_Gui.Classes
     internal class Configs
     {
         public static string Name = "Titled";
-        public static string Version = "1.0.2";
+        public static string Version = "1.3";
         public static string Author = "github.com/xfi0";
         public static string Link = "https://github.com/xfi0/Titled-Gui-CS2";
 
@@ -38,7 +38,7 @@ namespace Titled_Gui.Classes
                 },
                 ["ESP"] = new JObject
                 {
-                    ["ESP Enabled"] = BoxESP.enableESP,
+                    ["ESP Enabled"] = BoxESP.EnableESP,
                     ["ESP Current Shape"] = BoxESP.CurrentShape,
                     ["ESP Rounding"] = BoxESP.Rounding,
                     ["ESP Outline"] = BoxESP.Outline,
@@ -49,7 +49,17 @@ namespace Titled_Gui.Classes
                         ["X"] = BoxESP.OutlineThickness.X,
                         ["Y"] = BoxESP.OutlineThickness.Y
                     },
-                    ["ESP Opacity"] = BoxESP.BoxFillOpacity
+                    ["ESP Opacity"] = BoxESP.BoxFillOpacity,
+                    ["ESP Glow Amount"] = BoxESP.GlowAmount,
+                },
+                ["Tracers"] = new JObject
+                {
+                    ["Tracers Enabled"] = Tracers.enableTracers,
+                    ["Tracers Thickness"] = Tracers.LineThickness,
+                    ["Tracers Team Check"] = Tracers.TeamCheck,
+                    ["Tracers Draw On Self"] = Tracers.DrawOnSelf,
+                    ["Tracers Current Start"] = Tracers.CurrentStartPos,
+                    ["Tracers Current End"] = Tracers.CurrentEndPos
                 },
                 ["Bone ESP"] = new JObject
                 {
@@ -80,7 +90,8 @@ namespace Titled_Gui.Classes
                 ["Trigger Bot"] = new JObject
                 {
                     ["Trigger Bot Enabled"] = TriggerBot.Enabled,
-                    ["Trigger Bot Delay"] = TriggerBot.Delay,
+                    ["Trigger Bot Max Delay"] = TriggerBot.MaxDelay,
+                    ["Trigger Bot Min Delay"] = TriggerBot.MinDelay,
                     ["Trigger Bot Shoot At Team"] = TriggerBot.ShootAtTeam,
                     ["Trigger Bot Require Keybind"] = TriggerBot.RequireKeybind
                 },
@@ -99,6 +110,27 @@ namespace Titled_Gui.Classes
                     ["Chams Enabled"] = Chams.EnableChams,
                     ["Chams Thickness"] = Chams.BoneThickness,
                     ["Chams Draw On Self"] = Chams.DrawOnSelf
+                },
+                ["No Flash"] = new JObject
+                {
+                    ["No Flash Enabled"] = NoFlash.NoFlashEnable,
+                },
+                ["FOV Changer"] = new JObject
+                {
+                    ["FOV Changer Enabled"] = FovChanger.Enabled,
+                    ["FOV Changer FOV"] = FovChanger.FOV,
+                }
+                ["Name Display"] = new JObject
+                {
+                    ["Name Display Enabled"] = NameDisplay.Enabled,
+                }
+                ["Armor Bar"] = new JObject
+                {
+                    ["Armor Bar Enabled"] = ArmorBar.EnableArmorhBar,
+                    ["Armor Bar Rounding"] = ArmorBar.Rounding,
+                    ["Armor Bar Team Check"] = ArmorBar.TeamCheck,
+                    ["Armor Bar Draw On Self"] = ArmorBar.DrawOnSelf,
+                    ["Armor Bar Width"] = ArmorBar.ArmorBarWidth,
                 }
             };
 
@@ -149,7 +181,7 @@ namespace Titled_Gui.Classes
             #endregion
 
             #region Shape ESP
-            BoxESP.enableESP = configData["ESP"]?["ESP Enabled"]?.ToObject<bool>() ?? BoxESP.enableESP;
+            BoxESP.EnableESP = configData["ESP"]?["ESP Enabled"]?.ToObject<bool>() ?? BoxESP.EnableESP;
             BoxESP.Rounding = configData["ESP"]?["ESP Rounding"]?.ToObject<float>() ?? BoxESP.Rounding;
             BoxESP.Outline = configData["ESP"]?["ESP Outline"]?.ToObject<bool>() ?? BoxESP.Outline;
             BoxESP.TeamCheck = configData["ESP"]?["ESP Team Check"]?.ToObject<bool>() ?? BoxESP.TeamCheck;
@@ -189,7 +221,8 @@ namespace Titled_Gui.Classes
 
             #region Trigger Bot
             TriggerBot.Enabled = configData["Trigger Bot"]?["Trigger Bot Enabled"]?.ToObject<bool>() ?? TriggerBot.Enabled;
-            TriggerBot.Delay = configData["Trigger Bot"]?["Trigger Bot Delay"]?.ToObject<int>() ?? TriggerBot.Delay;
+            TriggerBot.MaxDelay = configData["Trigger Bot"]?["Trigger Bot Max Delay"]?.ToObject<int>() ?? TriggerBot.MaxDelay;
+            TriggerBot.MinDelay = configData["Trigger Bot"]?["Trigger Bot Min Delay"]?.ToObject<int>() ?? TriggerBot.MinDelay;
             TriggerBot.ShootAtTeam = configData["Trigger Bot"]?["Trigger Bot Shoot At Team"]?.ToObject<bool>() ?? TriggerBot.ShootAtTeam;
             TriggerBot.RequireKeybind = configData["Trigger Bot"]?["Trigger Bot Require Keybind"]?.ToObject<bool>() ?? TriggerBot.RequireKeybind;
             #endregion
@@ -198,6 +231,38 @@ namespace Titled_Gui.Classes
             Bhop.BhopEnable = configData["Bhop"]?["Bhop Enabled"]?.ToObject<bool>() ?? Bhop.BhopEnable;
             Bhop.HopKey = configData["Bhop"]?["Bhop Keybind"]?.ToObject<int>() ?? Bhop.HopKey;
             #endregion
+            #region Eye Ray
+            EyeRay.Enabled = configData["Eye Ray"]?["Eye Ray Enabled"]?.ToObject<bool>() ?? EyeRay.Enabled;
+            EyeRay.Length = configData["Eye Ray"]?["Eye Ray Length"]?.ToObject<float>() ?? EyeRay.Length;
+            #endregion
+
+            #region Chams
+            Chams.EnableChams = configData["Chams"]?["Chams Enabled"]?.ToObject<bool>() ?? Chams.EnableChams;
+            Chams.BoneThickness = configData["Chams"]?["Chams Thickness"]?.ToObject<float>() ?? Chams.BoneThickness;
+            Chams.DrawOnSelf = configData["Chams"]?["Chams Draw On Self"]?.ToObject<bool>() ?? Chams.DrawOnSelf;
+            #endregion
+
+            #region No Flash
+            NoFlash.NoFlashEnable = configData["No Flash"]?["No Flash Enabled"]?.ToObject<bool>() ?? NoFlash.NoFlashEnable;
+            #endregion
+
+            #region FOV Changer
+            FovChanger.Enabled = configData["FOV Changer"]?["FOV Changer Enabled"]?.ToObject<bool>() ?? FovChanger.Enabled;
+            FovChanger.FOV = configData["FOV Changer"]?["FOV Changer FOV"]?.ToObject<int>() ?? FovChanger.FOV;
+            #endregion
+
+            #region Name Display
+            NameDisplay.Enabled = configData["Name Display"]?["Name Display Enabled"]?.ToObject<bool>() ?? NameDisplay.Enabled;
+            #endregion
+
+            #region Armor Bar
+            ArmorBar.EnableArmorhBar = configData["Armor Bar"]?["Armor Bar Enabled"]?.ToObject<bool>() ?? ArmorBar.EnableArmorhBar;
+            ArmorBar.Rounding = configData["Armor Bar"]?["Armor Bar Rounding"]?.ToObject<float>() ?? ArmorBar.Rounding;
+            ArmorBar.TeamCheck = configData["Armor Bar"]?["Armor Bar Team Check"]?.ToObject<bool>() ?? ArmorBar.TeamCheck;
+            ArmorBar.DrawOnSelf = configData["Armor Bar"]?["Armor Bar Draw On Self"]?.ToObject<bool>() ?? ArmorBar.DrawOnSelf;
+            ArmorBar.ArmorBarWidth = configData["Armor Bar"]?["Armor Bar Width"]?.ToObject<float>() ?? ArmorBar.ArmorBarWidth;
+            #endregion
+
         }
     }
 }

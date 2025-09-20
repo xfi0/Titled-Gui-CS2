@@ -41,10 +41,16 @@ namespace Titled_Gui.Data.Entity
         public Vector3 ViewDirection { get; set; }
         public Vector3 AimPunchAngle { get; set; }
         public Vector3 AimPunchAngleVel { get; set; }
-        public int AimPunchCache { get; set; }
+        public Vector3 AimPunchCache { get; set; }
         public int AimPunchTickBase { get; set; }
         public int AimPunchTickFraction { get; set; }
+        public bool IsAttacking { get; set; }
         public bool IsShooting { get; set; }
         public bool IsBuyMenuOpen { get; set; }
+        public bool IsEnemy { get; set; }
+        public bool IsFlashed { get; set; }
+        public int ShotsFired { get; set; }
+        public int Ping { get; set; }
+        public bool IsWalking { get; set; }
     }
 }

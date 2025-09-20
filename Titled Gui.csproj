@@ -13,6 +13,30 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\fonts\glyph.ttf" />
+	  <None Remove="Resources\fonts\Lineicons.ttf" />
+	  <None Remove="Resources\fonts\NotoSans-Bold.ttf" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Resources\fonts\glyph.ttf">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\fonts\Lineicons.ttf">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\fonts\NotoSans-Bold.ttf">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\NeverLose.wav">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Skeet.wav">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="ClickableTransparentOverlay" Version="9.1.0" />
 		<PackageReference Include="NAudio" Version="2.2.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

@@ -30,7 +30,7 @@ namespace Titled_Gui.Classes
         protected override void FrameAction()
         {
             UpdateStuff();
-            MoneyTest();
+            //MoneyTest();
         }
     }
 }

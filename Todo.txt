@@ -5,10 +5,13 @@ Make RCS
 # Middle Ground
 visual tab should be better
 ESP Preview
+Finish Hit Sound
+Trigger bot not use crosshair index bs instead use a raycast or sum
 
 # Least Important
-Radar Hack, 
-Configs,
+Radar, 
+Finish Configs,
 Bhop Using Keyboard Input,
-VSYNC Toggleable
 For Visuals Color Picker With Transparency If Applicable
+armor Bar Display on good pos
+ping display

@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
@@ -11,10 +12,10 @@ namespace Titled_Gui.Modules.Visual
         public static bool DrawOnSelf = false;
         public static bool EnableBoneESP = false;
         public static bool TeamCheck = false;
-        public static Vector4 BoneColor = new Vector4(1f, 1f, 1f, 1f); // color of the Bones
+        public static Vector4 BoneColor = new(1f, 1f, 1f, 1f);
+        public static float GlowAmount = 1f;
 
-
-        public static readonly (int, int)[] BoneConnections =  // short simple
+        public static readonly (int, int)[] BoneConnections = 
         [
             (0, 1), // Waist to Neck
             (1, 2), // Neck to Head
@@ -47,9 +48,9 @@ namespace Titled_Gui.Modules.Visual
         }
         public static void DrawBoneLines(Data.Entity.Entity entity, Renderer renderer)
         {
-            if (!EnableBoneESP || entity == null || entity.Bones2D == null || TeamCheck && entity.Team == GameState.localPlayer.Team || !DrawOnSelf && entity.PawnAddress == GameState.localPlayer.PawnAddress || entity.Bones == null || entity.Health == 0) return; 
+            if (!EnableBoneESP || entity == null || entity.Bones2D == null || (!TeamCheck && entity.Team == EntityManager.ReturnLocalPlayer().Team) || (!DrawOnSelf && entity.PawnAddress == GameState.localPlayer.PawnAddress) || entity.Bones == null || entity.Health == 0 || BoxESP.FlashCheck && GameState.localPlayer.IsFlashed) return; 
 
-            float thickness = Math.Clamp(BoneESP.BoneThickness / (entity.Distance * 0.1f), 0.5f, 2f); // calculate thickness based on Distance, minimum 0.5f and maximum 2f stops it from being massive
+            float thickness = Math.Clamp(BoneThickness / (entity.Distance * 0.1f), 0.5f, 2f); // calculate thickness based on Distance, minimum 0.5f and maximum 2f stops it from being massive
             uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb(0.5f) : BoneColor); //get color
 
             foreach (var (a, b) in BoneConnections)
@@ -62,6 +63,11 @@ namespace Titled_Gui.Modules.Visual
 
                 if (IsValidScreenPoint(boneA) && IsValidScreenPoint(boneB))
                 {
+                    if (GlowAmount > 0)
+                    {
+                        DrawHelpers.DrawGlowLine(renderer.drawList, boneA, boneB, BoneColor, GlowAmount);
+                        DrawHelpers.DrawGlowCircle(renderer.drawList, boneA, thickness * 2, BoneColor, GlowAmount);
+                    }
                     renderer.drawList.AddLine(boneA, boneB, boneColor, thickness); //draw a line between the Bones
                     renderer.drawList.AddCircleFilled(boneA, thickness * 2, boneColor); //draw a circle at the start bone
                 }
@@ -71,6 +77,9 @@ namespace Titled_Gui.Modules.Visual
             if (IsValidScreenPoint(HeadPos))
             {
                 float radius = Math.Clamp(10f / (entity.Distance * 0.05f), 3f, 10f);
+                if (GlowAmount > 0)
+                    DrawHelpers.DrawGlowCircle(renderer.drawList, HeadPos, radius, BoneColor, GlowAmount);
+
                 renderer.drawList.AddCircleFilled(HeadPos, radius, boneColor); // draw a circle at the Head bone extra big
             }
         }

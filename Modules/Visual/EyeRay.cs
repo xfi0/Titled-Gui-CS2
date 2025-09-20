@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using System.Numerics;
+using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
@@ -11,22 +12,35 @@ namespace Titled_Gui.Modules.Visual
         public static bool DrawOnSelf = false;
         public static bool DrawOnTeam = true;
         public static bool Enabled = false;
-        public static Vector4 EyeRayColor = new(1, 0 , 0, 1);
+        public static Vector4 EyeRayColor = new(1, 0, 0, 1);
         public static void DrawEyeRay()
         {
-            foreach (Entity e in GameState.Entities)
+            try
             {
-                if (e == null || (!DrawOnSelf && e.PawnAddress == GameState.localPlayer.PawnAddress) || (!DrawOnTeam && e.Team == GameState.localPlayer.Team) || e.Health == 0) continue;
+                foreach (Entity e in GameState.Entities)
+                {
+                    if (e == null || e.Bones2D == null || !DrawOnTeam && e.Team == GameState.localPlayer.Team || BoxESP.FlashCheck && GameState.localPlayer.IsFlashed) return;
 
-                var Head = e.Bones2D![(int)BoneESP.BoneIds.Head];
+                    Vector2 Head = e.Bones2D[2];
 
-                float Yaw = e.ViewAngles.Y * (float)(Math.PI / 180.0);
-                float dx = Yaw * Length;
-                float dy = Yaw * Length;
+                    float yaw = 0 * (MathF.PI / 180.0f);
 
-                Vector2 End = new(Head.X + dx, Head.Y + dy);
+                    float dx = MathF.Cos(yaw) * Length;
+                    float dy = -MathF.Sin(yaw) * Length;
 
-                GameState.renderer.drawList.AddLine(Head, End, ImGui.ColorConvertFloat4ToU32(EyeRayColor));
+
+                    float ClampedLength = Math.Clamp(Length, 0.3f, 0.6f); 
+
+                    Vector2 End = new(Head.X + dx * ClampedLength, Head.Y + dy * ClampedLength);
+                    if (End == new Vector2(-99, -99)) continue;
+
+                    GameState.renderer.drawList.AddLine(Head, End, ImGui.ColorConvertFloat4ToU32(EyeRayColor));
+                    //Console.WriteLine("DRAWING" + Head + " " + End);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
         }
 

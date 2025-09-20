@@ -7,20 +7,19 @@ using System.Threading.Tasks;
 
 namespace Titled_Gui.Data.Game
 {
-    //okay so shouldve put offsets here the whole time but wtv
     public class Offsets 
     {
-        public static int m_pCameraServices = 0x11E0; // camera services pointer
-        public static int m_iFOV = 0x210; //local player fov
-        public static int m_bIsScoped = 0x23E8; // scoped in a sniper
-        public static int m_iHealth = 0x344; // entitys Health
-        public static int m_entitySpottedState = 0x1B58; // entity spotted state
-        public static int m_bSpotted = 0x8; // spotted bool
-        public static int m_iIDEntIndex = 0x1458; // entity index
-        public static int m_pSceneNode = 0x8; // scene node pointer
-        public static int dwViewMatrix = 0x1A6D260; // View matrix address
-        public static int m_vecViewOffset = 0xCB0; // View offset of the entity
-        public static int dwViewAngles = 0x1A774D0; // View angles address
+        public static int m_pCameraServices = 0x11E0; 
+        public static int m_iFOV = 0x210; 
+        public static int m_bIsScoped = 0x23E8; 
+        public static int m_iHealth = 0x344; 
+        public static int m_entitySpottedState = 0x1B58; 
+        public static int m_bSpotted = 0x8; 
+        public static int m_iIDEntIndex = 0x1458; 
+        public static int m_pSceneNode = 0x8; 
+        public static int dwViewMatrix = 0x1A6D260; 
+        public static int m_vecViewOffset = 0xCB0;
+        public static int dwViewAngles = 0x1A774D0; 
         public static int m_lifeState = 0x348;
         public static int m_vOldOrigin = 0x1324;
         public static int m_iTeamNum = 0x3E3;
@@ -62,5 +61,18 @@ namespace Titled_Gui.Data.Game
         public static int m_iCashSpentThisRound = 0x0;
         public static int m_aimPunchCache = 0x0;
         public static int m_bIsBuyMenuOpen = 0x0;
+        public static int m_iAmmo = 0x0;
+        public static int m_angEyeAngles = 0x0;
+        public static int m_iShotsFired = 0x0;
+        public static int m_pActionTrackingServices = 0x0;
+        public static int m_iNumRoundKills = 0x0;
+        public static int m_iNumRoundKillsHeadshots = 0x0;
+        public static int m_flTotalRoundDamageDealt = 0x0;
+        public static int m_pBulletServices = 0x0;
+        public static int m_totalHitsOnServer = 0x0;
+        public static int m_iSpectatorSlotCount = 0x0;
+        public static int m_iPing = 0x0;
+        public static int m_bIsWalking = 0x0;
+        public static int dwLocalPlayerController = 0x0;
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Titled_Gui.Data.Game;
 using static Titled_Gui.Modules.Visual.BoneESP;
 
 namespace Titled_Gui.Classes
@@ -34,7 +35,6 @@ namespace Titled_Gui.Classes
             float X = halfW + (screenX / view) * halfW;
             float Y = halfH - (screenY / view) * halfH;
 
-            // now return the Cordinates
             return new Vector2(X, Y);
         }
 
@@ -85,9 +85,9 @@ namespace Titled_Gui.Classes
             while (angle < -180) angle += 360;
             return angle;
         }
-        public static List<Vector3> ReadBones(nint boneAddress, Swed swed)
+        public static List<Vector3> ReadBones(nint boneAddress)
         {
-            byte[] boneBytes = swed.ReadBytes(boneAddress, 27 * 32 + 16);
+            byte[] boneBytes = GameState.swed.ReadBytes(boneAddress, 27 * 32 + 16);
             List<Vector3> Bones = new();
             foreach (var boneId in Enum.GetValues(typeof(BoneIds)))
             {
@@ -105,7 +105,7 @@ namespace Titled_Gui.Classes
             List<Vector2> Bones2d = new List<Vector2>();
             foreach (Vector3 bone in Bones)
             {
-                Vector2 bone2d = WorldToScreen(ViewMatrix, bone, new Vector2((int)screenSize.X, (int)screenSize.Y));
+                Vector2 bone2d = WorldToScreen(ViewMatrix, bone, screenSize);
                 Bones2d.Add(bone2d);
             }
             return Bones2d;

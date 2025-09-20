@@ -76,7 +76,6 @@
     Legit
   </summary>
     <ul dir="auto">
-      <li>Legit</li>
         <li>Hit Sound</li>
         <li>Change Hit Sound Volume</li>
         <li>Change Hit Sound Sound/li>

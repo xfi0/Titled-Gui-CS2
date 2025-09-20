@@ -30,11 +30,12 @@ namespace Titled_Gui.Modules.Visual
         public static Vector2 StartPos = new();
         public static Vector2 EndPos = new();
         public static float HeadOffset = 50f;
+        public static float RGBSpeed = 0.5f;
         public static void DrawTracers(Entity entity, Renderer renderer)
         {
-            if (!enableTracers || (DrawOnSelf && entity.PawnAddress == localPlayer.PawnAddress) || entity == null || (TeamCheck && entity.Team == localPlayer.Team) || BoxESP.FlashCheck && localPlayer.IsFlashed) return;
+            if (!enableTracers || (DrawOnSelf && entity.PawnAddress == localPlayer.PawnAddress) || entity == null || (TeamCheck && entity.Team == localPlayer.Team) || BoxESP.FlashCheck && localPlayer.IsFlashed || entity?.Bones2D?.Count <= 0) return;
 
-            if (entity.Position2D != new Vector2(-99, -99))
+            if (entity?.Position2D != new Vector2(-99, -99))
             {
                 switch (CurrentStartPos)
                 {
@@ -51,7 +52,7 @@ namespace Titled_Gui.Modules.Visual
                 switch (CurrentEndPos)
                 {
                     case 0: EndPos = entity.Position2D; break;
-                    case 1: EndPos = new Vector2(entity.Bones2D[2].X, entity.Bones2D[2].Y + HeadOffset); break;
+                    case 1: EndPos = new(entity.Bones2D[2].X, entity.Bones2D[2].Y + HeadOffset); break;
                 }
                 if (!RGB)
                 {
@@ -60,7 +61,7 @@ namespace Titled_Gui.Modules.Visual
                 }
                 else if (RGB)
                 {
-                    Vector4 lineColor = Colors.Rgb(0.5f); //rgb works here nvm
+                    Vector4 lineColor = Colors.Rgb(RGBSpeed); //rgb works here nvm
                     renderer.drawList.AddLine(StartPos, EndPos, ImGui.GetColorU32(lineColor), LineThickness); // add line for rgb
                 }
             }

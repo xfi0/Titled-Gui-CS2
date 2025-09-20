@@ -11,9 +11,7 @@ namespace Titled_Gui.Modules.Visual
     {
         public static bool EnableTimeOverlay = false;
         public static bool BombPlanted = false;
-        public static int? TimePlanted = 0;
-        private static Thread? TimerThread;
-        private static bool ThreadRunning = false;
+        private static int? TimePlanted = 0;
 
         public static void Initialize()
         {

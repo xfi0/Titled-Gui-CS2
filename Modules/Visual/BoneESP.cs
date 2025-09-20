@@ -9,7 +9,6 @@ namespace Titled_Gui.Modules.Visual
     public static class BoneESP
     {
         public static float BoneThickness = 5f;
-        public static bool DrawOnSelf = false;
         public static bool EnableBoneESP = false;
         public static bool TeamCheck = false;
         public static Vector4 BoneColor = new(1f, 1f, 1f, 1f);
@@ -48,7 +47,7 @@ namespace Titled_Gui.Modules.Visual
         }
         public static void DrawBoneLines(Data.Entity.Entity entity, Renderer renderer)
         {
-            if (!EnableBoneESP || entity == null || entity.Bones2D == null || (!TeamCheck && entity.Team == EntityManager.ReturnLocalPlayer().Team) || (!DrawOnSelf && entity.PawnAddress == GameState.localPlayer.PawnAddress) || entity.Bones == null || entity.Health == 0 || BoxESP.FlashCheck && GameState.localPlayer.IsFlashed) return; 
+            if (!EnableBoneESP || entity == null || entity.Bones2D == null || (!TeamCheck && entity.Team == GameState.localPlayer.Team) || entity.PawnAddress == GameState.localPlayer.PawnAddress || entity.Bones == null || entity.Health == 0 || BoxESP.FlashCheck && GameState.localPlayer.IsFlashed) return; 
 
             float thickness = Math.Clamp(BoneThickness / (entity.Distance * 0.1f), 0.5f, 2f); // calculate thickness based on Distance, minimum 0.5f and maximum 2f stops it from being massive
             uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb(0.5f) : BoneColor); //get color

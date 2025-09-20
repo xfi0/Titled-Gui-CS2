@@ -16,14 +16,12 @@ namespace Titled_Gui.Modules.Rage
         public static void RunRCS()
         {
             if (!Enabled || GameState.localPlayer.Health == 0 || (User32.GetAsyncKeyState(0x01) & 0x8000) == 0) return;
+            
+            Vector3 PunchAngle = GameState.localPlayer.AimPunchAngle * Strength / 100 * 2;
 
-            var LocalPlayerIAmSoGladThisFinallyWorks = EntityManager.ReturnLocalPlayer() != null ? EntityManager.ReturnLocalPlayer() : null;
-
-            Vector3 PunchAngle = LocalPlayerIAmSoGladThisFinallyWorks.AimPunchAngle * Strength / 100 * 2;
-
-            if (LocalPlayerIAmSoGladThisFinallyWorks.ShotsFired > StartBullet)
+            if (GameState.localPlayer.ShotsFired > StartBullet)
             {
-                Vector3 NewAngles = LocalPlayerIAmSoGladThisFinallyWorks.ViewAngles + OldPunch - PunchAngle;
+                Vector3 NewAngles = GameState.localPlayer.ViewAngles + OldPunch - PunchAngle;
                 GameState.swed.WriteVec(GameState.client, Offsets.dwViewAngles, NewAngles);
             }
             OldPunch = PunchAngle;

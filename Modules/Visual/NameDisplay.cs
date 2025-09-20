@@ -22,8 +22,10 @@ namespace Titled_Gui.Modules.Visual
                 //Offset / (e.Distance * 0.1f), 50f, 60f
                 float BestDistance = 225f; // looks good imo
                 float OffsetX = Math.Clamp(Offset * (BestDistance / Math.Max(e!.Distance, 1f)), 50f, 60f);
+
                 Vector2 textPos = new(e.Bones2D[2].X + OffsetX, e.Bones2D[2].Y);
                 string name = (e?.Name ?? "").Split('\0')[0].Replace("?", "").Replace("\0", "");
+
                 renderer.drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)), name);
 
             }

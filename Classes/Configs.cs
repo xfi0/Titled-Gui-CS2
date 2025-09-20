@@ -51,6 +51,15 @@ namespace Titled_Gui.Classes
                     },
                     ["ESP Opacity"] = BoxESP.BoxFillOpacity,
                     ["ESP Glow Amount"] = BoxESP.GlowAmount,
+                    ["ESP Gradient"] = BoxESP.BoxFillGradient,
+                    ["ESP Gradient Top"] = new JObject
+                    {
+                        ["X"]  = BoxESP.BoxFillGradientColorTop.X,
+                        ["Y"] = BoxESP.BoxFillGradientColorTop.Y,
+                        ["Z"] = BoxESP.BoxFillGradientColorTop.Z,
+                        ["W"] = BoxESP.BoxFillGradientColorTop.W,
+                    }
+                    ["ESP Flash Check"] = BoxESP.FlashCheck,
                 },
                 ["Tracers"] = new JObject
                 {
@@ -66,7 +75,14 @@ namespace Titled_Gui.Classes
                     ["Bone ESP Enabled"] = BoneESP.EnableBoneESP,
                     ["Bone ESP Thickness"] = BoneESP.BoneThickness,
                     ["Bone ESP Team Check"] = BoneESP.TeamCheck,
-                    ["Bone ESP Draw On Self"] = BoneESP.DrawOnSelf,
+                    ["Bone ESP Glow Amount"] = BoneESP.GlowAmount,
+                    ["Bone ESP Color"] = new JObject
+                    {
+                        ["Bone ESP Color X"] = BoneESP.BoneColor.X,
+                        ["Bone ESP Color Y"] = BoneESP.BoneColor.Y,
+                        ["Bone ESP Color Z"] = BoneESP.BoneColor.Z,
+                        ["Bone ESP Color W"] = BoneESP.BoneColor.W,
+                    }
                 },
                 ["HealthBar"] = new JObject
                 {
@@ -81,6 +97,16 @@ namespace Titled_Gui.Classes
                     ["Aimbot Selected Bone"] = Aimbot.CurrentBoneIndex,
                     ["Aimbot Aim Method"] = Aimbot.CurrentAimMethod,
                     ["Aimbot FOV Size"] = Aimbot.FovSize,
+                    ["Aimbot Use FOV"] = Aimbot.UseFOV,
+                    ["Aimbot FOV Color"] = new JObject
+                    {
+                        ["Aimbot FOV Color X"] = Aimbot.FovColor.X,
+                        ["Aimbot FOV Color Y"] = Aimbot.FovColor.Y,
+                        ["Aimbot FOV Color Z"] = Aimbot.FovColor.Z,
+                        ["Aimbot FOV Color W"] = Aimbot.FovColor.Z,   
+                    }
+
+                    ["Aimbox Scope Check"] = Aimbot.ScopedOnly,
                 },
                 ["RCS"] = new JObject
                 {
@@ -132,6 +158,20 @@ namespace Titled_Gui.Classes
                     ["Armor Bar Draw On Self"] = ArmorBar.DrawOnSelf,
                     ["Armor Bar Width"] = ArmorBar.ArmorBarWidth,
                 }
+                ["Hit Actions"] = new JObject
+                {
+                    ["Hit Sound Enabled"] = HitStuff.Enabled,
+                    ["Hit Sound Volume"] = HitStuff.Volume,
+                    ["Current Hit Sound"] = HitStuff.CurrentHitSound,
+                    ["Enable Headshot Text"] = HitStuff.EnableHeadshotText,
+                    ["Headshot Text Color"] = new JObject
+                    {
+                        ["Headshot Text Color X"] = HitStuff.TextColor.X,
+                        ["Headshot Text Color Y"] = HitStuff.TextColor.Y, 
+                        ["Headshot Text Color Z"] = HitStuff.TextColor.Z,
+                        ["Headshot Text Color W"] = HitStuff.TextColor.W,
+                    }
+                }
             };
 
             Directory.CreateDirectory(ConfigDirPath);
@@ -145,124 +185,142 @@ namespace Titled_Gui.Classes
 
         public static void LoadConfig(string fileName)
         {
-            if (!fileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
-                fileName += ".json";
-
-            string fullPath = Path.Combine(ConfigDirPath, fileName);
-            if (!File.Exists(fullPath))
-            {
-                Console.WriteLine($"Config Not Found at {fullPath}");
-                return;
-            }
-
-            JsonString = File.ReadAllText(fullPath);
-            if (string.IsNullOrWhiteSpace(JsonString))
-            {
-                Console.WriteLine("Config is empty.");
-                return;
-            }
-
-            JObject configData;
             try
             {
-                configData = JObject.Parse(JsonString);
+                if (!fileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                    fileName += ".json";
+
+                string fullPath = Path.Combine(ConfigDirPath, fileName);
+                if (!File.Exists(fullPath))
+                {
+                    Console.WriteLine($"Config Not Found at {fullPath}");
+                    return;
+                }
+
+                JsonString = File.ReadAllText(fullPath);
+                if (string.IsNullOrWhiteSpace(JsonString))
+                {
+                    Console.WriteLine("Config Is Empty.");
+                    return;
+                }
+
+                JObject configData;
+                try
+                {
+                    configData = JObject.Parse(JsonString);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error loading config: {ex.Message}");
+                    return;
+                }
+
+                #region MISC
+                Name = configData["0"]?["Name"]?.ToString() ?? Name;
+                Version = configData["0"]?["Version"]?.ToString() ?? Version;
+                Author = configData["0"]?["Author"]?.ToString() ?? Author;
+                Link = configData["0"]?["Link"]?.ToString() ?? Link;
+                #endregion
+
+                #region Shape ESP
+                BoxESP.EnableESP = configData["ESP"]?["ESP Enabled"]?.ToObject<bool>() ?? BoxESP.EnableESP;
+                BoxESP.Rounding = configData["ESP"]?["ESP Rounding"]?.ToObject<float>() ?? BoxESP.Rounding;
+                BoxESP.Outline = configData["ESP"]?["ESP Outline"]?.ToObject<bool>() ?? BoxESP.Outline;
+                BoxESP.TeamCheck = configData["ESP"]?["ESP Team Check"]?.ToObject<bool>() ?? BoxESP.TeamCheck;
+                BoxESP.DrawOnSelf = configData["ESP"]?["ESP Draw On Self"]?.ToObject<bool>() ?? BoxESP.DrawOnSelf;
+                BoxESP.BoxFillOpacity = configData["ESP"]?["ESP Opacity"]?.ToObject<float>() ?? BoxESP.BoxFillOpacity;
+                BoxESP.CurrentShape = configData["ESP"]?["ESP Current Shape"]?.ToObject<int>() ?? BoxESP.CurrentShape;
+                float outlineX = configData["ESP"]?["Outline Thickness"]?["X"]?.ToObject<float>() ?? BoxESP.OutlineThickness.X;
+                float outlineY = configData["ESP"]?["Outline Thickness"]?["Y"]?.ToObject<float>() ?? BoxESP.OutlineThickness.Y;
+                BoxESP.OutlineThickness = new Vector2(outlineX, outlineY);
+                #endregion
+
+                #region Bone ESP
+                BoneESP.EnableBoneESP = configData["Bone ESP"]?["Bone ESP Enabled"]?.ToObject<bool>() ?? BoneESP.EnableBoneESP;
+                BoneESP.BoneThickness = configData["Bone ESP"]?["Bone ESP Thickness"]?.ToObject<float>() ?? BoneESP.BoneThickness;
+                BoneESP.TeamCheck = configData["Bone ESP"]?["Bone ESP Team Check"]?.ToObject<bool>() ?? BoneESP.TeamCheck;
+                #endregion
+
+                #region HealthBar
+                HealthBar.EnableHealthBar = configData["HealthBar"]?["HealthBar Enabled"]?.ToObject<bool>() ?? HealthBar.EnableHealthBar;
+                HealthBar.Rounding = configData["HealthBar"]?["HealthBar Rounding"]?.ToObject<float>() ?? HealthBar.Rounding;
+                HealthBar.HealthBarWidth = configData["HealthBar"]?["HealthBar Width"]?.ToObject<float>() ?? HealthBar.HealthBarWidth;
+                #endregion
+
+                #region Aimbot
+                Aimbot.AimbotEnable = configData["Aimbot"]?["Aimbot Enabled"]?.ToObject<bool>() ?? Aimbot.AimbotEnable;
+                Aimbot.Team = configData["Aimbot"]?["Aimbot Aim On Team"]?.ToObject<bool>() ?? Aimbot.Team;
+                Aimbot.CurrentBoneIndex = configData["Aimbot"]?["Aimbot Selected Bone"]?.ToObject<int>() ?? Aimbot.CurrentBoneIndex;
+                Aimbot.CurrentAimMethod = configData["Aimbot"]?["Aimbot Aim Method"]?.ToObject<int>() ?? Aimbot.CurrentAimMethod;
+                Aimbot.FovSize = configData["Aimbot"]?["Aimbot FOV Size"]?.ToObject<int>() ?? Aimbot.FovSize;
+                #endregion
+
+                #region RCS
+                RCS.Enabled = configData["RCS"]?["RCS Enabled"]?.ToObject<bool>() ?? RCS.Enabled;
+                RCS.Strength = configData["RCS"]?["RCS Strength"]?.ToObject<float>() ?? RCS.Strength;
+                #endregion
+
+                #region Trigger Bot
+                TriggerBot.Enabled = configData["Trigger Bot"]?["Trigger Bot Enabled"]?.ToObject<bool>() ?? TriggerBot.Enabled;
+                TriggerBot.MaxDelay = configData["Trigger Bot"]?["Trigger Bot Max Delay"]?.ToObject<int>() ?? TriggerBot.MaxDelay;
+                TriggerBot.MinDelay = configData["Trigger Bot"]?["Trigger Bot Min Delay"]?.ToObject<int>() ?? TriggerBot.MinDelay;
+                TriggerBot.ShootAtTeam = configData["Trigger Bot"]?["Trigger Bot Shoot At Team"]?.ToObject<bool>() ?? TriggerBot.ShootAtTeam;
+                TriggerBot.RequireKeybind = configData["Trigger Bot"]?["Trigger Bot Require Keybind"]?.ToObject<bool>() ?? TriggerBot.RequireKeybind;
+                #endregion
+
+                #region Bhop
+                Bhop.BhopEnable = configData["Bhop"]?["Bhop Enabled"]?.ToObject<bool>() ?? Bhop.BhopEnable;
+                Bhop.HopKey = configData["Bhop"]?["Bhop Keybind"]?.ToObject<int>() ?? Bhop.HopKey;
+                #endregion
+
+                #region Eye Ray
+                EyeRay.Enabled = configData["Eye Ray"]?["Eye Ray Enabled"]?.ToObject<bool>() ?? EyeRay.Enabled;
+                EyeRay.Length = configData["Eye Ray"]?["Eye Ray Length"]?.ToObject<float>() ?? EyeRay.Length;
+                #endregion
+
+                #region Chams
+                Chams.EnableChams = configData["Chams"]?["Chams Enabled"]?.ToObject<bool>() ?? Chams.EnableChams;
+                Chams.BoneThickness = configData["Chams"]?["Chams Thickness"]?.ToObject<float>() ?? Chams.BoneThickness;
+                Chams.DrawOnSelf = configData["Chams"]?["Chams Draw On Self"]?.ToObject<bool>() ?? Chams.DrawOnSelf;
+                #endregion
+
+                #region No Flash
+                NoFlash.NoFlashEnable = configData["No Flash"]?["No Flash Enabled"]?.ToObject<bool>() ?? NoFlash.NoFlashEnable;
+                #endregion
+
+                #region FOV Changer
+                FovChanger.Enabled = configData["FOV Changer"]?["FOV Changer Enabled"]?.ToObject<bool>() ?? FovChanger.Enabled;
+                FovChanger.FOV = configData["FOV Changer"]?["FOV Changer FOV"]?.ToObject<int>() ?? FovChanger.FOV;
+                #endregion
+
+                #region Name Display
+                NameDisplay.Enabled = configData["Name Display"]?["Name Display Enabled"]?.ToObject<bool>() ?? NameDisplay.Enabled;
+                #endregion
+
+                #region Armor Bar
+                ArmorBar.EnableArmorhBar = configData["Armor Bar"]?["Armor Bar Enabled"]?.ToObject<bool>() ?? ArmorBar.EnableArmorhBar;
+                ArmorBar.Rounding = configData["Armor Bar"]?["Armor Bar Rounding"]?.ToObject<float>() ?? ArmorBar.Rounding;
+                ArmorBar.TeamCheck = configData["Armor Bar"]?["Armor Bar Team Check"]?.ToObject<bool>() ?? ArmorBar.TeamCheck;
+                ArmorBar.DrawOnSelf = configData["Armor Bar"]?["Armor Bar Draw On Self"]?.ToObject<bool>() ?? ArmorBar.DrawOnSelf;
+                ArmorBar.ArmorBarWidth = configData["Armor Bar"]?["Armor Bar Width"]?.ToObject<float>() ?? ArmorBar.ArmorBarWidth;
+                #endregion
+
+                #region Hit Actions
+                HitStuff.Enabled = configData["Hit Actions"]?["Hit Sound Enabled"]?.ToObject<bool>() ?? HitStuff.Enabled;
+                HitStuff.Volume = configData["Hit Actions"]?["Hit Sound Volume"]?.ToObject<float>() ?? HitStuff.Volume;
+                HitStuff.CurrentHitSound = configData["Hit Actions"]?["Current Hit Sound"]?.ToObject<int>() ?? HitStuff.CurrentHitSound;
+                HitStuff.EnableHeadshotText = configData["Hit Actions"]?["Enable Headshot Text"]?.ToObject<bool>() ?? HitStuff.EnableHeadshotText;
+                float headshotR = configData["Hit Actions"]?["Headshot Text Color"]?["Headshot Text Color X"]?.ToObject<float>() ?? HitStuff.TextColor.X;
+                float headshotG = configData["Hit Actions"]?["Headshot Text Color"]?["Headshot Text Color Y"]?.ToObject<float>() ?? HitStuff.TextColor.Y;
+                float headshotB = configData["Hit Actions"]?["Headshot Text Color"]?["Headshot Text Color Z"]?.ToObject<float>() ?? HitStuff.TextColor.Z;
+                float headshotA = configData["Hit Actions"]?["Headshot Text Color"]?["Headshot Text Color W"]?.ToObject<float>() ?? HitStuff.TextColor.W;
+                HitStuff.TextColor = new Vector4(headshotR, headshotG, headshotB, headshotA);
+                #endregion
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Console.WriteLine($"Error loading config: {ex.Message}");
-                return;
+                Console.WriteLine(e.Message);
             }
-
-            #region MISC
-            Name = configData["0"]?["Name"]?.ToString() ?? Name;
-            Version = configData["0"]?["Version"]?.ToString() ?? Version;
-            Author = configData["0"]?["Author"]?.ToString() ?? Author;
-            Link = configData["0"]?["Link"]?.ToString() ?? Link;
-            #endregion
-
-            #region Shape ESP
-            BoxESP.EnableESP = configData["ESP"]?["ESP Enabled"]?.ToObject<bool>() ?? BoxESP.EnableESP;
-            BoxESP.Rounding = configData["ESP"]?["ESP Rounding"]?.ToObject<float>() ?? BoxESP.Rounding;
-            BoxESP.Outline = configData["ESP"]?["ESP Outline"]?.ToObject<bool>() ?? BoxESP.Outline;
-            BoxESP.TeamCheck = configData["ESP"]?["ESP Team Check"]?.ToObject<bool>() ?? BoxESP.TeamCheck;
-            BoxESP.DrawOnSelf = configData["ESP"]?["ESP Draw On Self"]?.ToObject<bool>() ?? BoxESP.DrawOnSelf;
-            BoxESP.BoxFillOpacity = configData["ESP"]?["ESP Opacity"]?.ToObject<float>() ?? BoxESP.BoxFillOpacity;
-            BoxESP.CurrentShape = configData["ESP"]?["ESP Current Shape"]?.ToObject<int>() ?? BoxESP.CurrentShape;
-            float outlineX = configData["ESP"]?["Outline Thickness"]?["X"]?.ToObject<float>() ?? BoxESP.OutlineThickness.X;
-            float outlineY = configData["ESP"]?["Outline Thickness"]?["Y"]?.ToObject<float>() ?? BoxESP.OutlineThickness.Y;
-            BoxESP.OutlineThickness = new Vector2(outlineX, outlineY);
-            #endregion
-
-            #region Bone ESP
-            BoneESP.EnableBoneESP = configData["Bone ESP"]?["Bone ESP Enabled"]?.ToObject<bool>() ?? BoneESP.EnableBoneESP;
-            BoneESP.BoneThickness = configData["Bone ESP"]?["Bone ESP Thickness"]?.ToObject<float>() ?? BoneESP.BoneThickness;
-            BoneESP.TeamCheck = configData["Bone ESP"]?["Bone ESP Team Check"]?.ToObject<bool>() ?? BoneESP.TeamCheck;
-            BoneESP.DrawOnSelf = configData["Bone ESP"]?["Bone ESP Draw On Self"]?.ToObject<bool>() ?? BoneESP.DrawOnSelf;
-            #endregion
-
-            #region HealthBar
-            HealthBar.EnableHealthBar = configData["HealthBar"]?["HealthBar Enabled"]?.ToObject<bool>() ?? HealthBar.EnableHealthBar;
-            HealthBar.Rounding = configData["HealthBar"]?["HealthBar Rounding"]?.ToObject<float>() ?? HealthBar.Rounding;
-            HealthBar.HealthBarWidth = configData["HealthBar"]?["HealthBar Width"]?.ToObject<float>() ?? HealthBar.HealthBarWidth;
-            #endregion
-
-            #region Aimbot
-            Aimbot.AimbotEnable = configData["Aimbot"]?["Aimbot Enabled"]?.ToObject<bool>() ?? Aimbot.AimbotEnable;
-            Aimbot.Team = configData["Aimbot"]?["Aimbot Aim On Team"]?.ToObject<bool>() ?? Aimbot.Team;
-            Aimbot.CurrentBoneIndex = configData["Aimbot"]?["Aimbot Selected Bone"]?.ToObject<int>() ?? Aimbot.CurrentBoneIndex;
-            Aimbot.CurrentAimMethod = configData["Aimbot"]?["Aimbot Aim Method"]?.ToObject<int>() ?? Aimbot.CurrentAimMethod;
-            Aimbot.FovSize = configData["Aimbot"]?["Aimbot FOV Size"]?.ToObject<int>() ?? Aimbot.FovSize;
-            #endregion
-
-            #region RCS
-            RCS.Enabled = configData["RCS"]?["RCS Enabled"]?.ToObject<bool>() ?? RCS.Enabled;
-            RCS.Strength = configData["RCS"]?["RCS Strength"]?.ToObject<float>() ?? RCS.Strength;
-            #endregion
-
-            #region Trigger Bot
-            TriggerBot.Enabled = configData["Trigger Bot"]?["Trigger Bot Enabled"]?.ToObject<bool>() ?? TriggerBot.Enabled;
-            TriggerBot.MaxDelay = configData["Trigger Bot"]?["Trigger Bot Max Delay"]?.ToObject<int>() ?? TriggerBot.MaxDelay;
-            TriggerBot.MinDelay = configData["Trigger Bot"]?["Trigger Bot Min Delay"]?.ToObject<int>() ?? TriggerBot.MinDelay;
-            TriggerBot.ShootAtTeam = configData["Trigger Bot"]?["Trigger Bot Shoot At Team"]?.ToObject<bool>() ?? TriggerBot.ShootAtTeam;
-            TriggerBot.RequireKeybind = configData["Trigger Bot"]?["Trigger Bot Require Keybind"]?.ToObject<bool>() ?? TriggerBot.RequireKeybind;
-            #endregion
-
-            #region Bhop
-            Bhop.BhopEnable = configData["Bhop"]?["Bhop Enabled"]?.ToObject<bool>() ?? Bhop.BhopEnable;
-            Bhop.HopKey = configData["Bhop"]?["Bhop Keybind"]?.ToObject<int>() ?? Bhop.HopKey;
-            #endregion
-            #region Eye Ray
-            EyeRay.Enabled = configData["Eye Ray"]?["Eye Ray Enabled"]?.ToObject<bool>() ?? EyeRay.Enabled;
-            EyeRay.Length = configData["Eye Ray"]?["Eye Ray Length"]?.ToObject<float>() ?? EyeRay.Length;
-            #endregion
-
-            #region Chams
-            Chams.EnableChams = configData["Chams"]?["Chams Enabled"]?.ToObject<bool>() ?? Chams.EnableChams;
-            Chams.BoneThickness = configData["Chams"]?["Chams Thickness"]?.ToObject<float>() ?? Chams.BoneThickness;
-            Chams.DrawOnSelf = configData["Chams"]?["Chams Draw On Self"]?.ToObject<bool>() ?? Chams.DrawOnSelf;
-            #endregion
-
-            #region No Flash
-            NoFlash.NoFlashEnable = configData["No Flash"]?["No Flash Enabled"]?.ToObject<bool>() ?? NoFlash.NoFlashEnable;
-            #endregion
-
-            #region FOV Changer
-            FovChanger.Enabled = configData["FOV Changer"]?["FOV Changer Enabled"]?.ToObject<bool>() ?? FovChanger.Enabled;
-            FovChanger.FOV = configData["FOV Changer"]?["FOV Changer FOV"]?.ToObject<int>() ?? FovChanger.FOV;
-            #endregion
-
-            #region Name Display
-            NameDisplay.Enabled = configData["Name Display"]?["Name Display Enabled"]?.ToObject<bool>() ?? NameDisplay.Enabled;
-            #endregion
-
-            #region Armor Bar
-            ArmorBar.EnableArmorhBar = configData["Armor Bar"]?["Armor Bar Enabled"]?.ToObject<bool>() ?? ArmorBar.EnableArmorhBar;
-            ArmorBar.Rounding = configData["Armor Bar"]?["Armor Bar Rounding"]?.ToObject<float>() ?? ArmorBar.Rounding;
-            ArmorBar.TeamCheck = configData["Armor Bar"]?["Armor Bar Team Check"]?.ToObject<bool>() ?? ArmorBar.TeamCheck;
-            ArmorBar.DrawOnSelf = configData["Armor Bar"]?["Armor Bar Draw On Self"]?.ToObject<bool>() ?? ArmorBar.DrawOnSelf;
-            ArmorBar.ArmorBarWidth = configData["Armor Bar"]?["Armor Bar Width"]?.ToObject<float>() ?? ArmorBar.ArmorBarWidth;
-            #endregion
-
         }
     }
 }

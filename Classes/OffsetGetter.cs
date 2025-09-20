@@ -12,9 +12,8 @@ namespace Titled_Gui.Classes
     {
         private static readonly Dictionary<string, int> offsets = new(); // holds the resolved offsets
         private static HttpClient httpClient = new();
-        static OffsetGetter() // cctor for like stuff to try fix error where it dont work it still no work but
+        static OffsetGetter() 
         {
-            httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromSeconds(10);
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
         }
@@ -257,19 +256,17 @@ namespace Titled_Gui.Classes
                     bool found = false;
                     foreach (var source in sources)
                     {
-                        // if this offset comes from a specific class, parse it first
                         if (source.ClassName != null)
                         {
                             ParseClassOffsets(ClientDllContent, source.ClassName);
                         }
 
-                        // now check if the dumper provided this offset
                         if (offsets.TryGetValue(source.Name, out int value))
                         {
                             int? currentValue = (int?)field?.GetValue(null);
                             field?.SetValue(null, value);
 
-                            Console.WriteLine($"[OFFSET FINDER] Updated {fieldName} from 0x{currentValue:X} to 0x{value:X} (source: {source.Name}, class: {source.ClassName ?? "global"})");
+                            Console.WriteLine($"[OFFSET FINDER] Updated {fieldName} From 0x{currentValue:X} To 0x{value:X} (Source: {source.Name}, Class: {source.ClassName ?? "global"})");
                             updatedCount++;
                             found = true;
                             break;
@@ -278,7 +275,7 @@ namespace Titled_Gui.Classes
 
                     if (!found)
                     {
-                        Console.WriteLine($"[OFFSET FINDER] ERROR: No Offset Found {fieldName} (tried: {string.Join(", ", sources.Select(s => s.Name))})");
+                        Console.WriteLine($"[OFFSET FINDER] ERROR: No Offset Found {fieldName} (Tried: {string.Join(", ", sources.Select(s => s.Name))})");
                     }
                 }
                 else

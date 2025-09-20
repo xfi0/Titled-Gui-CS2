@@ -26,7 +26,7 @@ namespace Titled_Gui.Modules.Rage
         public static int CurrentAimMethod = 0;
         public static float SmoothingX = 5f;
         public static float SmoothingY = 5f;
-        private static bool FlashCheck = false;
+        private static bool FlashCheck = false; 
         public static bool ScopedOnly = false;
         public static bool UseFOV = true;
         public static Random random = new();
@@ -34,7 +34,7 @@ namespace Titled_Gui.Modules.Rage
         {
             try
             {
-                if (!AimbotEnable || ((User32.GetAsyncKeyState(AimbotKey) & 0x8000) == 0) || Entities == null || GameState.localPlayer.Health == 0 || (ScopedOnly && !EntityManager.ReturnLocalPlayer().IsScoped)) { RandomChosen = false; return; }
+                if (!AimbotEnable || ((User32.GetAsyncKeyState(AimbotKey) & 0x8000) == 0) || Entities == null || GameState.localPlayer.Health == 0 || (ScopedOnly && !GameState.localPlayer.IsScoped) || (FlashCheck && GameState.localPlayer.IsFlashed)) { RandomChosen = false; return; }
 
                 Entity? target = GetTarget();
 
@@ -108,7 +108,10 @@ namespace Titled_Gui.Modules.Rage
                 {
                     case 0: // mouse
                         {
-                            Vector2 newAngles2D = target?.Bones2D[CurrentBoneIndex] != Vector2.Zero ? target.Bones2D[CurrentBoneIndex] : target.Position2D;
+                            Vector2 newAngles2D = (target != null && target.Bones2D != null  &&
+                            CurrentBoneIndex < target.Bones2D.Count && target.Bones2D[CurrentBoneIndex] != Vector2.Zero) 
+                            ? target.Bones2D[CurrentBoneIndex] : target?.Position2D ?? Vector2.Zero; // holy ts is long
+                            
                             int dx = (int)(newAngles2D.X - screenCenter.X);
                             int dy = (int)(newAngles2D.Y - screenCenter.Y);
 

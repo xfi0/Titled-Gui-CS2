@@ -5,17 +5,17 @@ namespace Titled_Gui.Data.Game
     internal class GlobalVar : Classes.ThreadService
     {
         private static ulong address;
-        private static ulong TickCountOffset = 0x48;
-        private static ulong RealTimeOffset = 0x00;
-        private static ulong FrameCountOffset = 0x04;
-        private static ulong MaxClientsOffset = 0x10;
-        private static ulong IntervalPerTickOffset = 0x14;
-        private static ulong IntervalPerTick2Offset = 0x44;
-        private static ulong CurrentTimeOffset = 0x30;
-        private static ulong CurrentTime2Offset = 0x38;
-        private static ulong CurrentNetchanOffset = 0x00;
-        private static ulong CurrentMapOffset = 0x0180;
-        private static ulong CurrentMapNameOffset = 0x0188;
+        private static readonly ulong TickCountOffset = 0x48;
+        private static readonly ulong RealTimeOffset = 0x00;
+        private static readonly ulong FrameCountOffset = 0x04;
+        private static readonly ulong MaxClientsOffset = 0x10;
+        private static readonly ulong IntervalPerTickOffset = 0x14;
+        private static readonly ulong IntervalPerTick2Offset = 0x44;
+        private static readonly ulong CurrentTimeOffset = 0x30;
+        private static readonly ulong CurrentTime2Offset = 0x38;
+        //private static ulong CurrentNetchanOffset = 0x00;
+        private static readonly ulong CurrentMapOffset = 0x0180;
+        private static readonly ulong CurrentMapNameOffset = 0x0188;
 
         public static void Update()
         {

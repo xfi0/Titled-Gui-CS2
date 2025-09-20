@@ -56,7 +56,7 @@ namespace Titled_Gui.Classes
         public const uint MOUSEEVENTF_LEFTUP = 0x0004;
         public const uint KEYEVENTF_KEYDOWN = 0x0000;
         public const uint KEYEVENTF_KEYUP = 0x0002;
-        public const byte VK_SPACE = 0x20; // space
+        public const byte VK_SPACE = 0x20; 
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool ClientToScreen(IntPtr hWnd, out System.Drawing.Point lpPoint);

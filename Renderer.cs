@@ -27,7 +27,6 @@ namespace Titled_Gui
         public Entity localPlayer = new();
         private readonly object entityLock = new();
 
-        private bool tabWasPressed = false;
         private int selectedTab = 0; // 0 = legit, 1 = rage, 2 = visuals, 3 = config, 4 = settings
 
         public ImDrawListPtr drawList;
@@ -36,8 +35,6 @@ namespace Titled_Gui
         public static Vector2 tabSize;
 
         public static bool DrawWindow = false;
-        private static bool isWaitingForKey = false;
-        private static string keybindLabel = $"Keybind: {Modules.Rage.TriggerBot.TriggerKey}";
         public static float fpsUpdateInterval = 1.0f;
         public static float timeSinceLastUpdate = 0.0f;
         public static float lastFPS = 0.0f;
@@ -47,7 +44,6 @@ namespace Titled_Gui
         public static Vector4 TextCol = new(0.274f, 0.317f, 0.450f, 1.0f);
         public static float windowAlpha = 1f;
         private float animationSpeed = 0.15f;
-        private static float LabelColumnWidth = 150f;
         private static float WidgetColumnWidth = 160f;
         private static float LabelPadding = 4f;
         public static ImFontPtr TextFontNormal;
@@ -77,10 +73,7 @@ namespace Titled_Gui
         public static List<Vector2> Velocities = new();
         public static float MaxLineDistance = 300f;
         public static ImGuiKey OpenKey = ImGuiKey.Insert;
-        public void UpdateEntities(IEnumerable<Entity> newEntities)
-        {
-            entities = newEntities.ToList();
-        }
+        public void UpdateEntities(IEnumerable<Entity> newEntities) => entities = newEntities.ToList();
 
         public static void LoadFonts()
         {
@@ -165,7 +158,7 @@ namespace Titled_Gui
         {
             if (EnableWaterMark && IsTextFontBigLoaded)
             {
-                ImGui.SetNextWindowSize(new(200, 200));
+                ImGui.SetNextWindowSize(new(200, 80));
                 ImGui.SetNextWindowPos(new(screenSize.X / 2, 0));
                 ImGui.Begin("wm", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar);
                 ImGui.PushFont(TextFontBig);
@@ -219,7 +212,6 @@ namespace Titled_Gui
             if (ImGui.IsKeyPressed(OpenKey, false))
             {
                 DrawWindow = !DrawWindow;
-                tabWasPressed = true;
             }
             BGdrawList = ImGui.GetBackgroundDrawList();
             if (DrawWindow)
@@ -399,23 +391,22 @@ namespace Titled_Gui
                     {
                         case 0: // legit
                             ImGui.Columns(2, "Legit Columns", true);
-                            ImGui.BeginChild("LeftAim");
-                            RenderBoolSetting("Auto BHOP", ref Modules.Legit.Bhop.BhopEnable);
-                            RenderBoolSetting("Bomb Overlay", ref BombTimerOverlay.EnableTimeOverlay);
-                            RenderBoolSetting("Jump Shot", ref Modules.Legit.JumpHack.JumpHackEnabled);
+                            ImGui.BeginChild("LeftLegit");
+                            //RenderBoolSetting("Auto BHOP", ref Modules.Legit.Bhop.BhopEnable);
+                            //RenderBoolSetting("Jump Shot", ref Modules.Legit.JumpHack.JumpHackEnabled);
                             RenderBoolSetting("Hit Sound", ref HitStuff.Enabled);
-                            RenderFloatSlider("Hit Sound Volume", ref HitStuff.Volume, 0, 10);
+                            RenderFloatSlider("Hit Sound Volume", ref HitStuff.Volume, 0, 1);
                             RenderIntCombo("Current Hit Sound", ref HitStuff.CurrentHitSound, HitStuff.HitSounds, HitStuff.HitSounds.Length);
                             RenderBoolSettingWith1ColorPicker("Headshot Text", ref HitStuff.EnableHeadshotText, ref HitStuff.TextColor);
                             ImGui.NextColumn();
                             ImGui.EndChild();
-                            ImGui.BeginChild("RightRage");
+                            ImGui.BeginChild("RightLegit");
                             ImGui.EndChild();
 
                             ImGui.Columns(1);
                             break;
 
-                        case 1: // rage
+                        case 1: // aim
                             ImGui.Columns(2, "TriggerColumns", true);
 
                             ImGui.BeginChild("LeftAim");
@@ -432,7 +423,6 @@ namespace Titled_Gui
                                 RenderBoolSetting("Use FOV", ref Aimbot.UseFOV);
                                 RenderBoolSetting("Scoped Check", ref Aimbot.ScopedOnly);
                                 RenderIntSlider("FOV Size", ref Modules.Rage.Aimbot.FovSize, 10, 1000, "%d");
-                                ImGui.Spacing();
                                 RenderColorSetting("FOV Color", ref Modules.Rage.Aimbot.FovColor);
                             });
 
@@ -444,41 +434,40 @@ namespace Titled_Gui
                             RenderBoolSetting("Triggerbot", ref Modules.Rage.TriggerBot.Enabled);
 
 
-                            if (isWaitingForKey)
-                            {
-                                ImGui.Text("Press any key...");
-                                if (ImGui.Button("Cancel"))
-                                {
-                                    isWaitingForKey = false;
-                                }
+                            //if (isWaitingForKey)
+                            //{
+                            //    ImGui.Text("Press any key...");
+                            //    if (ImGui.Button("Cancel"))
+                            //    {
+                            //        isWaitingForKey = false;
+                            //    }
 
-                                foreach (Keys key in Enum.GetValues(typeof(Keys)))
-                                {
-                                    if ((User32.GetAsyncKeyState((int)key) & 0x8000) != 0 && key != Keys.Escape)
-                                    {
-                                        Modules.Rage.TriggerBot.TriggerKey = key;
-                                        keybindLabel = $"Keybind: {key}";
-                                        isWaitingForKey = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (ImGui.Button(keybindLabel))
-                                {
-                                    isWaitingForKey = true;
-                                }
-                            }
+                            //    foreach (Keys key in Enum.GetValues(typeof(Keys)))
+                            //    {
+                            //        if ((User32.GetAsyncKeyState((int)key) & 0x8000) != 0 && key != Keys.Escape)
+                            //        {
+                            //            Modules.Rage.TriggerBot.TriggerKey = key;
+                            //            keybindLabel = $"Keybind: {key}";
+                            //            isWaitingForKey = false;
+                            //            break;
+                            //        }
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    if (ImGui.Button(keybindLabel))
+                            //    {
+                            //        isWaitingForKey = true;
+                            //    }
+                            //}
+                            RenderKeybindChooser($"Keybind: {Modules.Rage.TriggerBot.TriggerKey}", ref TriggerBot.TriggerKey);
 
 
-                            RenderSettingsSection("Trigger Bot Settings", () =>
-                            {
-                                RenderIntSlider("Max Delay", ref Modules.Rage.TriggerBot.MaxDelay, 0, 1000, "%d");
-                                RenderIntSlider("Min Delay", ref Modules.Rage.TriggerBot.MinDelay, 0, 1000, "%d");
-                                RenderBoolSetting("Require Keybind", ref Modules.Rage.TriggerBot.RequireKeybind);
-                                RenderBoolSetting("Shoot At Team", ref Modules.Rage.TriggerBot.ShootAtTeam);
-                            });
+
+                            RenderIntSlider("Max Delay", ref Modules.Rage.TriggerBot.MaxDelay, 0, 1000, "%d");
+                            RenderIntSlider("Min Delay", ref Modules.Rage.TriggerBot.MinDelay, 0, 1000, "%d");
+                            RenderBoolSetting("Require Keybind", ref Modules.Rage.TriggerBot.RequireKeybind);
+
                             ImGui.EndChild();
 
                             ImGui.Columns(1);
@@ -699,7 +688,7 @@ namespace Titled_Gui
                 {
                     foreach (Data.Entity.Entity entity in entities)
                     {
-                        if ((!BoneESP.TeamCheck || entity.Team == localPlayer.Team) && (!BoneESP.DrawOnSelf || entity != localPlayer))
+                        if ((!BoneESP.TeamCheck || entity.Team == localPlayer.Team) && entity != localPlayer)
                         {
                             Modules.Visual.BoneESP.DrawBoneLines(entity, this);
                         }
@@ -786,8 +775,7 @@ namespace Titled_Gui
 
         private static void DrawGearIcon(Vector2 center, uint color)
         {
-            if (!Renderer.IsIconFont1Loaded)
-                return;
+            if (!Renderer.IsIconFont1Loaded) return;
 
             ImGui.PushFont(Renderer.IconFont1);
 

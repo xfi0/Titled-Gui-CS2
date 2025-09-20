@@ -13,7 +13,7 @@ namespace Titled_Gui.Modules.Rage
         public static int MinDelay = 0;
         public static int MaxDelay = 10;  
         public static bool ShootAtTeam = true;
-        public static Keys TriggerKey = Keys.XButton2;
+        public static int TriggerKey = (int)Keys.MButton;
         public static bool RequireKeybind = true; // if enabled keybind is needed
         public static bool OnTarget = false;
         public static Stopwatch ReacquireTimer = new();
@@ -37,7 +37,7 @@ namespace Titled_Gui.Modules.Rage
         {
             try
             {
-                if (!Enabled || (RequireKeybind && (GetAsyncKeyState((int)TriggerKey) & 0x8000) == 0) || GameState.localPlayer.Health == 0)
+                if (!Enabled || (RequireKeybind && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0) || GameState.localPlayer.Health == 0)
                     return;
 
                 int crosshairEnt = GameState.swed.ReadInt(GameState.LocalPlayerPawn + Offsets.m_iIDEntIndex);

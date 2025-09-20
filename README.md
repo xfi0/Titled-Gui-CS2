@@ -1,13 +1,6 @@
 <p align="center">
   <img src="https://github.com/xfi0/Titled-Gui-CS2/blob/master/Resources/MenuLogo.png?raw=true" alt="CS2 Cheat Logo" width="300">
 </p>
-
-<h1 align="center">CS2 External Cheat</h1>
-
-<p align="center">
-  An advanced <strong>external cheat</strong> for Counter-Strike 2 (CS2) focused on high performance and avoiding detection
-</p>
-
 <div align="center">
   
   ![GitHub](https://img.shields.io/github/license/xfi0/Titled-Gui-CS2?style=flat-square)
@@ -16,6 +9,10 @@
 
 </div>
 
+<p align="center">Titled is a advanced external cheat with minimal memory writing and great features.</p>
+
+<hr></hr>
+
 ## ❗ Disclaimer
 
 > ⚠️ **This project is for educational purposes only.**  
@@ -23,19 +20,69 @@
 > Using this in online matches may result in account bans.  
 > You are solely responsible for any consequences of using this software.
 
----
+<hr></hr>
 
 ## 🛠 Features
 
-| Category       | Features                                                                 |
-|----------------|--------------------------------------------------------------------------|
-| **ESP**        | Boxes, Health bars, Bones (Weapons coming soon)                          |
-| **Aimbot**     | Fov Check, Keybind                                                       |
-| **RCS**        | Recoil Control System with humanized patterns (Coming Soon)              |
-| **Stealth**    | Minimal Memory Writing                                                   |
-| **Modular**    | Toggleable features with customizable settings                           |
-
----
+<details>
+  <summary>
+    Visual
+  </summary>
+    <ul dir="auto">
+      <li>Boxes</li>
+        <li>Box Type</li>
+        <li>Team Check</li>
+        <li>Box Fill Opacity</li>
+        <li>Box Fill Gradient</li>
+        <li>Box Rounding</li>
+        <li>Box Glow</li>
+        <li>Tracers</li>
+        <li>Change Tracer Start Position</li>
+        <li>Change Tracer End Position</li>
+        <li>Healthbar</li>
+        <li>Armorbar</li>
+        <li>Name</li>
+        <li>Skeletons</li>
+        <li>Visual Color</li>
+        <li>Bomb Overlay</li>
+        <li>Etc.</li>
+    </ul>
+</details>
+<details>
+  <summary>
+    Aim
+  </summary>
+    <ul dir="auto">
+      <li>Aimbot</li>
+        <li>Change Aimbot Bone</li>
+        <li>Change From Move Mouse Pos To Memory Write (Better acc but higher detec)</li>
+        <li>Aim On Team</li>
+        <li>Smoothing X</li>
+        <li>Smoothing Y</li>
+        <li>Draw FOV</li>
+        <li>Use FOV</li>
+        <li>Scoped Check</li>
+        <li>FOV Size</li>
+        <li>FOV Color</li>
+        <li>Trigger Bot</li>
+        <li>Trigger Bot Min Delay</li>
+        <li>Trigger Bot Max Delay</li>
+        <li>Require Keybind</li>
+        <li>Change Keybind</li>
+    </ul>
+</details>
+<details>
+  <summary>
+    Legit
+  </summary>
+    <ul dir="auto">
+        <li>Hit Sound</li>
+        <li>Change Hit Sound Volume</li>
+        <li>Change Hit Sound Sound/li>
+        <li>Headshot Text</li>
+        <li>Change Headshot Text Color</li>
+    </ul>
+</details>
 
 ## 🚀 Getting Started
 

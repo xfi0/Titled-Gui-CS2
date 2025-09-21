@@ -71,7 +71,6 @@ try
     entityUpdateThread.Start();
     ThreadService.StartAllThreadServices();
 
-
     while (true)
     {
         Thread.Sleep(1);

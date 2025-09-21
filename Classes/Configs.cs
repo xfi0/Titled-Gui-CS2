@@ -215,7 +215,7 @@ namespace Titled_Gui.Classes
                 }
 
                 #region MISC
-                Name = configData["0"]?["Name"]?.ToString() ?? Name;
+                MenuName = configData["0"]?["Name"]?.ToString() ?? MenuName;
                 Version = configData["0"]?["Version"]?.ToString() ?? Version;
                 Author = configData["0"]?["Author"]?.ToString() ?? Author;
                 Link = configData["0"]?["Link"]?.ToString() ?? Link;

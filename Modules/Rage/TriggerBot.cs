@@ -58,6 +58,7 @@ namespace Titled_Gui.Modules.Rage
                 IntPtr entityPtr = GameState.swed.ReadPointer(entityEntry + EntityStride * (crosshairEnt & EntityIndexMask));
 
                 int EntityTeam = GameState.swed.ReadInt(entityPtr + Offsets.m_iTeamNum);
+
                 if ((!ShootAtTeam && GameState.localPlayer.Team != EntityTeam) || entityPtr == IntPtr.Zero || entityEntry == IntPtr.Zero || entityList == IntPtr.Zero)
                 {
                     ClearTargetState();

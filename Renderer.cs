@@ -398,8 +398,13 @@ namespace Titled_Gui
                             RenderFloatSlider("Hit Sound Volume", ref HitStuff.Volume, 0, 1);
                             RenderIntCombo("Current Hit Sound", ref HitStuff.CurrentHitSound, HitStuff.HitSounds, HitStuff.HitSounds.Length);
                             RenderBoolSettingWith1ColorPicker("Headshot Text", ref HitStuff.EnableHeadshotText, ref HitStuff.TextColor);
+
+                            RenderBoolSetting("Jump Shot", ref Modules.Legit.JumpHack.JumpHackEnabled);
+                            RenderKeybindChooser("Jump Shot Keybind", ref JumpHack.JumpHotkey);
+
                             ImGui.NextColumn();
                             ImGui.EndChild();
+
                             ImGui.BeginChild("RightLegit");
                             ImGui.EndChild();
 

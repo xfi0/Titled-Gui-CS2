@@ -30,6 +30,7 @@ namespace Titled_Gui.Modules.Rage
         public static bool ScopedOnly = false;
         public static bool UseFOV = true;
         public static Random random = new();
+
         public static void EnableAimbot()
         {
             try
@@ -65,22 +66,18 @@ namespace Titled_Gui.Modules.Rage
                                         RandomChosen = true;
                                     }
                                     break;
-                                default:CurrentBoneIndex = (int)BoneESP.BoneIds.Head;break;
+                                default: CurrentBoneIndex = (int)BoneESP.BoneIds.Head; break;
                             }
 
                             if (CurrentBone != 5 && RandomChosen)
                                 RandomChosen = false;
-                            
+
                             CurrentBoneV3 = target!.Bones![CurrentBoneIndex]!;
-                            Console.WriteLine(CurrentBoneIndex);
+
                             if (CurrentBoneV3 != Vector3.Zero)
-                            {
                                 newAngles = Calculate.CalculateAngles(playerView, CurrentBoneV3);
-                            }
                             else
-                            {
                                 newAngles = Calculate.CalculateAngles(playerView, target.Position);
-                            }
                         }
                         catch (Exception e)
                         {

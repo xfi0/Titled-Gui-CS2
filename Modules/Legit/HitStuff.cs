@@ -79,7 +79,7 @@ namespace Titled_Gui.Modules.Legit
             }
             catch (FileNotFoundException e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine("File Was Not Found.");
             }
             catch (Exception e)
             {
@@ -91,7 +91,10 @@ namespace Titled_Gui.Modules.Legit
             ImGui.PushFont(Renderer.TextFont48);
             foreach (HitText hitText in Texts.ToList())
             {
-                if (DateTime.Now > hitText.ExpireAt) { Texts.Remove(hitText); continue; }
+                if (DateTime.Now > hitText.ExpireAt)
+                {
+                    Texts.Remove(hitText); continue;
+                }
 
 
                 hitText.State += 1f;

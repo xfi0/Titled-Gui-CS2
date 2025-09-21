@@ -128,13 +128,6 @@ namespace Titled_Gui
             }
         }
 
-        public Entity GetLocalPlayer() // get localplayer
-        {
-            lock (entityLock)
-            {
-                return localPlayer;
-            }
-        }
         protected override void Render()
         {
             try
@@ -681,6 +674,7 @@ namespace Titled_Gui
             try
             {
                 HitStuff.CreateHitText();
+
                 if (EyeRay.Enabled)
                 {
                     EyeRay.DrawEyeRay();
@@ -730,20 +724,7 @@ namespace Titled_Gui
                 {
                     foreach (var entity in entities)
                     {
-                        if (entity != null)
-                        {
-                            bool isEnemy = entity.Team != localPlayer.Team;
-
-                            // skip if its local and we should draw on self
-                            if (entity.PawnAddress == localPlayer.PawnAddress && !BoxESP.DrawOnSelf)
-                                continue;
-
-                            //draw Team and entity if Team check is false
-                            if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck && isEnemy))
-                            {
-                                BoxESP.DrawBoxESP(entity, localPlayer, this);
-                            }
-                        }
+                        BoxESP.DrawBoxESP(entity, localPlayer, this);
                     }
                 }
                 if (BoxESP.EnableDistanceTracker)

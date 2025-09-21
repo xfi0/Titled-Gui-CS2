@@ -77,7 +77,7 @@ namespace Titled_Gui.Modules.Legit
                     player.Dispose();
                 };
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 Console.WriteLine("File Was Not Found.");
             }

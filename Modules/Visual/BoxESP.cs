@@ -12,7 +12,6 @@ namespace Titled_Gui.Modules.Visual
     {
         public static bool TeamCheck = false;
         public static bool EnableESP = false;
-        public static bool DrawOnSelf = false;
         public static float BoxFillOpacity = 0.2f; // 20%
         public static string[] Shapes = new string[] { "2D Box", "3D Box", "Edges" };
         public static int CurrentShape = 0;
@@ -28,11 +27,11 @@ namespace Titled_Gui.Modules.Visual
         public static float EdgeMultiple = 0.25f; 
         public static void DrawBoxESP(Entity entity, Entity localPlayer, Renderer renderer)
         {
-            if (!EnableESP || (DrawOnSelf && entity.PawnAddress != GameState.localPlayer.PawnAddress) || FlashCheck && GameState.localPlayer.IsFlashed || entity?.Bones2D?[2] == new Vector2(-99, -99) || entity.Bones2D.Count < 0) return;
+            if (!EnableESP  || entity == null || (TeamCheck && entity.Team == localPlayer.Team) || entity.PawnAddress == GameState.localPlayer.PawnAddress || FlashCheck && GameState.localPlayer.IsFlashed || entity?.Bones2D?.Count < 0  || entity?.Bones2D == null) return;
 
             try
             {
-                Vector4 boxColor = Colors.RGB ? Colors.Rgb(0.5f) : (GameState.localPlayer.Team == entity.Team ? Colors.TeamColor : Colors.EnemyColor);
+                Vector4 boxColor = Colors.RGB ? Colors.Rgb(0.5f) : (GameState.localPlayer.Team == entity?.Team ? Colors.TeamColor : Colors.EnemyColor);
 
                 Vector4 fillColor = boxColor;
                 fillColor.W = BoxFillOpacity;

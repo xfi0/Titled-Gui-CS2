@@ -8,9 +8,9 @@ using Titled_Gui.Modules.Visual;
 
 namespace Titled_Gui.Classes
 {
-    internal class Configs
+    internal class Configs : Classes.ThreadService
     {
-        public static string Name = "Titled";
+        public static string MenuName = "Titled";
         public static string Version = "1.3";
         public static string Author = "github.com/xfi0";
         public static string Link = "https://github.com/xfi0/Titled-Gui-CS2";
@@ -31,7 +31,7 @@ namespace Titled_Gui.Classes
             {
                 ["0"] = new JObject
                 {
-                    ["Name"] = Name,
+                    ["Name"] = MenuName,
                     ["Version"] = Version,
                     ["Author"] = Author,
                     ["Link"] = Link,
@@ -43,7 +43,6 @@ namespace Titled_Gui.Classes
                     ["ESP Rounding"] = BoxESP.Rounding,
                     ["ESP Outline"] = BoxESP.Outline,
                     ["ESP Team Check"] = BoxESP.TeamCheck,
-                    ["ESP Draw On Self"] = BoxESP.DrawOnSelf,
                     ["Outline Thickness"] = new JObject
                     {
                         ["X"] = BoxESP.OutlineThickness.X,
@@ -227,7 +226,6 @@ namespace Titled_Gui.Classes
                 BoxESP.Rounding = configData["ESP"]?["ESP Rounding"]?.ToObject<float>() ?? BoxESP.Rounding;
                 BoxESP.Outline = configData["ESP"]?["ESP Outline"]?.ToObject<bool>() ?? BoxESP.Outline;
                 BoxESP.TeamCheck = configData["ESP"]?["ESP Team Check"]?.ToObject<bool>() ?? BoxESP.TeamCheck;
-                BoxESP.DrawOnSelf = configData["ESP"]?["ESP Draw On Self"]?.ToObject<bool>() ?? BoxESP.DrawOnSelf;
                 BoxESP.BoxFillOpacity = configData["ESP"]?["ESP Opacity"]?.ToObject<float>() ?? BoxESP.BoxFillOpacity;
                 BoxESP.CurrentShape = configData["ESP"]?["ESP Current Shape"]?.ToObject<int>() ?? BoxESP.CurrentShape;
                 float outlineX = configData["ESP"]?["Outline Thickness"]?["X"]?.ToObject<float>() ?? BoxESP.OutlineThickness.X;
@@ -320,6 +318,26 @@ namespace Titled_Gui.Classes
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        protected override void FrameAction()
+        {
+            if (!Directory.Exists(Configs.ConfigDirPath))
+            {
+                Directory.CreateDirectory(Configs.ConfigDirPath);
+            }
+            var files = Directory.EnumerateFiles(Configs.ConfigDirPath).Select(Path.GetFileName).Where(f => f != null).ToHashSet(); // refresh so if any thing changes the dic updates
+            foreach (var file in files)
+            {
+                Configs.SavedConfigs.TryAdd(file!, true);
+            }
+            foreach (var key in Configs.SavedConfigs.Keys)
+            {
+                if (!files.Contains(key))
+                {
+                    Configs.SavedConfigs.TryRemove(key, out _);
+                }
             }
         }
     }

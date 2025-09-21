@@ -35,26 +35,15 @@ try
         {
             try
             {
-                if (!Directory.Exists(Configs.ConfigDirPath))
+                if (entityManager != null)
                 {
-                    Directory.CreateDirectory(Configs.ConfigDirPath);
+                    entities = entityManager?.GetEntities();
+                    Entity localPlayer = entityManager.GetLocalPlayer();
+
+                    GameState.localPlayer = localPlayer;
+
+                    GameState.renderer.UpdateLocalPlayer(localPlayer);
                 }
-                var files = Directory.EnumerateFiles(Configs.ConfigDirPath).Select(Path.GetFileName).Where(f => f != null).ToHashSet(); // refresh so if any thing changes the dic updates
-                foreach (var file in files)
-                {
-                    Configs.SavedConfigs.TryAdd(file!, true);
-                }
-                foreach (var key in Configs.SavedConfigs.Keys)
-                {
-                    if (!files.Contains(key))
-                    {
-                        Configs.SavedConfigs.TryRemove(key, out _);
-                    }
-                }
-                entities = entityManager.GetEntities();
-                Entity localPlayer = entityManager.GetLocalPlayer();
-                GameState.localPlayer = localPlayer;
-                GameState.renderer.UpdateLocalPlayer(localPlayer);
                 if (entities != null)
                 {
                     GameState.renderer.UpdateEntities(entities);
@@ -62,7 +51,7 @@ try
 
                     foreach (Entity entity in entities)
                     {
-                        GetGunName.UpdateEntityWeaponName(entity);
+                        //GetGunName.UpdateEntityWeaponName(entity);
                         //Console.WriteLine(entity.Ping);
                     }
                 }

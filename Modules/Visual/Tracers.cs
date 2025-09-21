@@ -33,37 +33,34 @@ namespace Titled_Gui.Modules.Visual
         public static float RGBSpeed = 0.5f;
         public static void DrawTracers(Entity entity, Renderer renderer)
         {
-            if (!enableTracers || (DrawOnSelf && entity.PawnAddress == localPlayer.PawnAddress) || entity == null || (TeamCheck && entity.Team == localPlayer.Team) || BoxESP.FlashCheck && localPlayer.IsFlashed || entity?.Bones2D?.Count <= 0) return;
+            if (!enableTracers || (DrawOnSelf && entity.PawnAddress == localPlayer.PawnAddress) || entity == null || (TeamCheck && entity.Team == localPlayer.Team) || BoxESP.FlashCheck && localPlayer.IsFlashed || entity?.Bones2D?.Count <= 0 || entity?.Position2D == new Vector2(-99, -99) || entity?.Bones2D == null) return;
 
-            if (entity?.Position2D != new Vector2(-99, -99))
+            switch (CurrentStartPos)
             {
-                switch (CurrentStartPos)
-                {
-                    case 0:
-                        StartPos = new(renderer.screenSize.X / 2, renderer.screenSize.Y / 2);
-                        break;
-                    case 1:
-                        StartPos = new(renderer.screenSize.X / 2, renderer.screenSize.Y);
-                        break;
-                    case 2:
-                        StartPos = new(renderer.screenSize.X / 2, -renderer.screenSize.Y);
-                        break;
-                }
-                switch (CurrentEndPos)
-                {
-                    case 0: EndPos = entity.Position2D; break;
-                    case 1: EndPos = new(entity.Bones2D[2].X, entity.Bones2D[2].Y + HeadOffset); break;
-                }
-                if (!RGB)
-                {
-                    Vector4 lineColor = localPlayer.Team == entity.Team ? TeamColor : EnemyColor; //get color idk if rgb works here
-                    renderer.drawList.AddLine(StartPos, EndPos, ImGui.ColorConvertFloat4ToU32(lineColor), LineThickness); // add line for non rgb just liek Team color
-                }
-                else if (RGB)
-                {
-                    Vector4 lineColor = Colors.Rgb(RGBSpeed); //rgb works here nvm
-                    renderer.drawList.AddLine(StartPos, EndPos, ImGui.GetColorU32(lineColor), LineThickness); // add line for rgb
-                }
+                case 0:
+                    StartPos = new(renderer.screenSize.X / 2, renderer.screenSize.Y / 2);
+                    break;
+                case 1:
+                    StartPos = new(renderer.screenSize.X / 2, renderer.screenSize.Y);
+                    break;
+                case 2:
+                    StartPos = new(renderer.screenSize.X / 2, -renderer.screenSize.Y);
+                    break;
+            }
+            switch (CurrentEndPos)
+            {
+                case 0: EndPos = entity.Position2D; break;
+                case 1: EndPos = new(entity.Bones2D[2].X, entity.Bones2D[2].Y + HeadOffset); break;
+            }
+            if (!RGB)
+            {
+                Vector4 lineColor = localPlayer.Team == entity.Team ? TeamColor : EnemyColor; //get color idk if rgb works here
+                renderer.drawList.AddLine(StartPos, EndPos, ImGui.ColorConvertFloat4ToU32(lineColor), LineThickness); // add line for non rgb just liek Team color
+            }
+            else if (RGB)
+            {
+                Vector4 lineColor = Colors.Rgb(RGBSpeed); //rgb works here nvm
+                renderer.drawList.AddLine(StartPos, EndPos, ImGui.GetColorU32(lineColor), LineThickness); // add line for rgb
             }
         }
     }

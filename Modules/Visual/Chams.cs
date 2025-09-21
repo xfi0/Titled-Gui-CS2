@@ -14,7 +14,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawChams(Entity entity)
         {
-            if (entity == null || entity.Bones2D == null || (DrawOnSelf && entity == GameState.localPlayer) || BoxESP.FlashCheck && GameState.localPlayer.IsFlashed) return;
+            if (entity == null || entity.Bones2D == null || (DrawOnSelf && entity == GameState.localPlayer) || BoxESP.FlashCheck && GameState.localPlayer.IsFlashed || entity.Bones2D.Count <= 0) return;
 
             float DistanceFactor = entity.Distance * 0.05f;
             float thickness = Math.Clamp(30f / DistanceFactor, 20f, 30f); // much thicker to mimic body
@@ -24,8 +24,7 @@ namespace Titled_Gui.Modules.Visual
 
             foreach (var (a, b) in BoneESP.BoneConnections)
             {
-                if (a >= entity?.Bones2D?.Count || b >= entity?.Bones2D?.Count)
-                    continue;
+                if (a < 0 || a >= entity.Bones2D.Count || b < 0 || b >= entity.Bones2D.Count) continue;
 
                 Vector2 boneA = entity.Bones2D[a];
                 Vector2 boneB = entity.Bones2D[b];

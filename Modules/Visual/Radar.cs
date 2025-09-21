@@ -15,7 +15,7 @@ namespace Titled_Gui.Modules.Visual
     internal class Radar 
     {
         public static bool IsEnabled = false;
-        public static Vector4 PointColor = new Vector4(1f, 1f, 1f, 1f);
+        public static Vector4 PointColor = new(1f, 1f, 1f, 1f);
 
         private static Vector2 CrossPosition = new(200f, 200f);
 

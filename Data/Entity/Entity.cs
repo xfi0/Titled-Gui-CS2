@@ -52,5 +52,8 @@ namespace Titled_Gui.Data.Entity
         public int ShotsFired { get; set; }
         public int Ping { get; set; }
         public bool IsWalking { get; set; }
+        public bool HasBomb { get; set; }
+        public bool IsDefusing { get; set; }
+        public bool InBombZone { get; set; }
     }
 }

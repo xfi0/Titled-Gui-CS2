@@ -74,5 +74,7 @@ namespace Titled_Gui.Data.Game
         public static int m_iPing = 0x0;
         public static int m_bIsWalking = 0x0;
         public static int dwLocalPlayerController = 0x0;
+        public static int m_bIsDefusing = 0x0;
+        public static int m_bInBombZone = 0x0;
     }
 }

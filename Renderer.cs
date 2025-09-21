@@ -426,6 +426,7 @@ namespace Titled_Gui
                                 RenderColorSetting("FOV Color", ref Modules.Rage.Aimbot.FovColor);
                             });
 
+                            RenderBoolSetting("RCS", ref Modules.Rage.RCS.Enabled);
                             ImGui.EndChild();
 
                             ImGui.NextColumn();

@@ -28,7 +28,7 @@ namespace Titled_Gui.Modules.Visual
         public static float EdgeMultiple = 0.25f; 
         public static void DrawBoxESP(Entity entity, Entity localPlayer, Renderer renderer)
         {
-            if (!EnableESP || (DrawOnSelf && entity.PawnAddress != GameState.localPlayer.PawnAddress) || FlashCheck && GameState.localPlayer.IsFlashed || entity?.Bones2D?[2] != new Vector2(-99, -99) || entity.Bones2D.Count > 0) return;
+            if (!EnableESP || (DrawOnSelf && entity.PawnAddress != GameState.localPlayer.PawnAddress) || FlashCheck && GameState.localPlayer.IsFlashed || entity?.Bones2D?[2] == new Vector2(-99, -99) || entity.Bones2D.Count < 0) return;
 
             try
             {
@@ -49,6 +49,7 @@ namespace Titled_Gui.Modules.Visual
                     case 0: // 2D box
                         Vector2 rectTop = new(centerX - halfWidth, topY);
                         Vector2 rectBottom = new(centerX + halfWidth, bottomY);
+                        
                         if (GlowAmount > 0f)
                             DrawHelpers.DrawGlowRect(renderer.drawList, rectTop, rectBottom, boxColor, Rounding, GlowAmount);
 

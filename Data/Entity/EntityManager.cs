@@ -106,6 +106,9 @@ namespace Titled_Gui.Data.Entity
                 Ammo = GameState.swed.ReadInt(client, Offsets.m_iAmmo),
                 EyeDirection = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_angEyeAngles),
                 IsWalking = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bIsWalking),
+                //HasBomb = GameState.swed.ReadBool(localPlayer, Offsets.)
+                IsDefusing = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bIsDefusing),
+                InBombZone = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bInBombZone),
             };
 
             return localPlayer;

@@ -92,6 +92,8 @@ namespace Titled_Gui.Classes
             { "m_iAccount", new() { new Offset("m_iAccount") } },
             { "m_iTotalCashSpent", new() { new Offset("m_iTotalCashSpent") } },
             { "m_iCashSpentThisRound", new() { new Offset("m_iCashSpentThisRound") } },
+            { "m_bIsDefusing", new() { new Offset("m_bIsDefusing") } },
+            { "m_bInBombZone", new() { new Offset("m_bInBombZone") } },
             { "m_bIsBuyMenuOpen", new() { new Offset("m_bIsBuyMenuOpen") } },
             { "m_aimPunchCache", new() { new Offset("m_aimPunchCache") } },
             { "m_iAmmo", new() { new Offset("m_iAmmo") } },

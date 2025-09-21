@@ -17,7 +17,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawName(Entity e, Renderer renderer)
         {
-            if (e != null && e.Position2D != new Vector2(-99, -99) || (e?.PawnAddress != GameState.localPlayer.PawnAddress) || e.Bones2D == null || e.Health == 0 || (BoxESP.FlashCheck && !GameState.localPlayer.IsFlashed))
+            if (e != null && e.Position2D != new Vector2(-99, -99) && e.PawnAddress != GameState.localPlayer.PawnAddress && e.Health > 0 && (!BoxESP.FlashCheck || GameState.localPlayer.IsFlashed) && e.Bones2D != null && e.Bones2D.Count > 2 && e.Bones2D[2] != new Vector2(-99, -99))
             {
                 //Offset / (e.Distance * 0.1f), 50f, 60f
                 float BestDistance = 225f; // looks good imo

@@ -22,8 +22,9 @@ namespace Titled_Gui.Classes
             if (view <= 0.01f)
             {
                 // if entity is not visible, return a negative vector idk why but eveyone does it sao
-                return new Vector2(-99, -99);
+                return new(-99, -99);
             }
+
             // calculate screen x and y
             float screenX = matrix[0 * 4 + 0] * pos.X + matrix[0 * 4 + 1] * pos.Y + matrix[0 * 4 + 2] * pos.Z + matrix[0 * 4 + 3];
             float screenY = matrix[1 * 4 + 0] * pos.X + matrix[1 * 4 + 1] * pos.Y + matrix[1 * 4 + 2] * pos.Z + matrix[1 * 4 + 3];
@@ -35,7 +36,7 @@ namespace Titled_Gui.Classes
             float X = halfW + (screenX / view) * halfW;
             float Y = halfH - (screenY / view) * halfH;
 
-            return new Vector2(X, Y);
+            return new(X, Y);
         }
 
 
@@ -76,7 +77,7 @@ namespace Titled_Gui.Classes
             pitch = NormalizeAngle(pitch);
             yaw = NormalizeAngle(yaw);
 
-            return new Vector2(pitch, yaw);
+            return new(pitch, yaw);
         }
 
         public static float NormalizeAngle(float angle)
@@ -88,7 +89,7 @@ namespace Titled_Gui.Classes
         public static List<Vector3> ReadBones(nint boneAddress)
         {
             byte[] boneBytes = GameState.swed.ReadBytes(boneAddress, 27 * 32 + 16);
-            List<Vector3> Bones = new();
+            List<Vector3> Bones = [];
             foreach (var boneId in Enum.GetValues(typeof(BoneIds)))
             {
                 float x = BitConverter.ToSingle(boneBytes, (int)boneId * 32 + 0);
@@ -102,7 +103,7 @@ namespace Titled_Gui.Classes
 
         public static List<Vector2> ReadBones2D(List<Vector3> Bones, float[] ViewMatrix, Vector2 screenSize)
         {
-            List<Vector2> Bones2d = new List<Vector2>();
+            List<Vector2> Bones2d = [];
             foreach (Vector3 bone in Bones)
             {
                 Vector2 bone2d = WorldToScreen(ViewMatrix, bone, screenSize);

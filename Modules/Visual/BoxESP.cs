@@ -25,9 +25,10 @@ namespace Titled_Gui.Modules.Visual
         public static bool BoxFillGradient = true;
         public static Vector4 BoxFillGradientColorTop = new(1f,1f,1f, BoxFillOpacity);
         public static Vector4 BoxFillGradientBottom = new(0f,0f,0f, BoxFillOpacity);
+        public static float EdgeMultiple = 0.25f; 
         public static void DrawBoxESP(Entity entity, Entity localPlayer, Renderer renderer)
         {
-            if (!EnableESP || (DrawOnSelf && entity.PawnAddress != GameState.localPlayer.PawnAddress) || FlashCheck && GameState.localPlayer.IsFlashed) return;
+            if (!EnableESP || (DrawOnSelf && entity.PawnAddress != GameState.localPlayer.PawnAddress) || FlashCheck && GameState.localPlayer.IsFlashed || entity?.Bones2D?[2] != new Vector2(-99, -99) || entity.Bones2D.Count > 0) return;
 
             try
             {
@@ -36,6 +37,7 @@ namespace Titled_Gui.Modules.Visual
                 Vector4 fillColor = boxColor;
                 fillColor.W = BoxFillOpacity;
                 // get dimentions
+
                 float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
                 float halfWidth = entityHeight / 3f;
                 float centerX = (entity.ViewPosition2D.X + entity.Position2D.X) / 2f;
@@ -54,7 +56,7 @@ namespace Titled_Gui.Modules.Visual
                             GameState.renderer.drawList.AddRect(rectTop + OutlineThickness, rectBottom + OutlineThickness, ImGui.ColorConvertFloat4ToU32(boxColor) & 0xFF000000);
 
                         if (BoxFillGradient)
-                            DrawHelpers.DrawGradientRect(renderer.drawList, rectTop, rectBottom, new Vector4(BoxFillGradientColorTop.X, BoxFillGradientColorTop.Y, BoxFillGradientColorTop.Z, BoxFillOpacity), new Vector4(BoxFillGradientBottom.X, BoxFillGradientBottom.Y, BoxFillGradientBottom.Z, BoxFillOpacity), Rounding);
+                            DrawHelpers.DrawGradientRect(renderer.drawList, rectTop, rectBottom, new(BoxFillGradientColorTop.X, BoxFillGradientColorTop.Y, BoxFillGradientColorTop.Z, BoxFillOpacity), new Vector4(BoxFillGradientBottom.X, BoxFillGradientBottom.Y, BoxFillGradientBottom.Z, BoxFillOpacity), Rounding);
                         else
                             renderer.drawList.AddRectFilled(rectTop, rectBottom, ImGui.ColorConvertFloat4ToU32(fillColor), Rounding);
 
@@ -108,37 +110,36 @@ namespace Titled_Gui.Modules.Visual
                         Vector2 rectBottomLeft = new(centerX - halfWidth, bottomY);
                         Vector2 rectBottomRight = new(centerX + halfWidth, bottomY);
 
-                        float edgeFrac = 0.25f; // lenght
+                        float edgeWidth = (rectTopRight.X - rectTopLeft.X) * EdgeMultiple;
+                        float edgeHeight = (rectBottomLeft.Y - rectTopLeft.Y) * EdgeMultiple;
 
-                        float edgeWidth = (rectTopRight.X - rectTopLeft.X) * edgeFrac;
-                        float edgeHeight = (rectBottomLeft.Y - rectTopLeft.Y) * edgeFrac;
                         if (GlowAmount > 0f)
                         {
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopLeft, new Vector2(rectTopLeft.X + edgeWidth, rectTopLeft.Y), boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopLeft, new Vector2(rectTopLeft.X, rectTopLeft.Y + edgeHeight), boxColor, GlowAmount);
+                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopLeft, new(rectTopLeft.X + edgeWidth, rectTopLeft.Y), boxColor, GlowAmount);
+                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopLeft, new(rectTopLeft.X, rectTopLeft.Y + edgeHeight), boxColor, GlowAmount);
 
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopRight, new Vector2(rectTopRight.X - edgeWidth, rectTopRight.Y), boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopRight, new Vector2(rectTopRight.X, rectTopRight.Y + edgeHeight), boxColor, GlowAmount);
+                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopRight, new(rectTopRight.X - edgeWidth, rectTopRight.Y), boxColor, GlowAmount);
+                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopRight, new(rectTopRight.X, rectTopRight.Y + edgeHeight), boxColor, GlowAmount);
 
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomLeft, new Vector2(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomLeft, new Vector2(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), boxColor, GlowAmount);
+                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomLeft, new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), boxColor, GlowAmount);
+                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomLeft, new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), boxColor, GlowAmount);
 
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomRight, new Vector2(rectBottomRight.X - edgeWidth, rectBottomRight.Y), boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomRight, new Vector2(rectBottomRight.X, rectBottomRight.Y - edgeHeight), boxColor, GlowAmount);
+                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomRight, new(rectBottomRight.X - edgeWidth, rectBottomRight.Y), boxColor, GlowAmount);
+                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomRight, new(rectBottomRight.X, rectBottomRight.Y - edgeHeight), boxColor, GlowAmount);
                         }
 
 
-                        renderer.drawList.AddLine(rectTopLeft, new Vector2(rectTopLeft.X + edgeWidth, rectTopLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
-                        renderer.drawList.AddLine(rectTopLeft, new Vector2(rectTopLeft.X, rectTopLeft.Y + edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectTopLeft, new(rectTopLeft.X + edgeWidth, rectTopLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectTopLeft, new(rectTopLeft.X, rectTopLeft.Y + edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
 
-                        renderer.drawList.AddLine(rectTopRight, new Vector2(rectTopRight.X - edgeWidth, rectTopRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
-                        renderer.drawList.AddLine(rectTopRight, new Vector2(rectTopRight.X, rectTopRight.Y + edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectTopRight, new(rectTopRight.X - edgeWidth, rectTopRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectTopRight, new(rectTopRight.X, rectTopRight.Y + edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
 
-                        renderer.drawList.AddLine(rectBottomLeft, new Vector2(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
-                        renderer.drawList.AddLine(rectBottomLeft, new Vector2(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectBottomLeft, new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectBottomLeft, new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
 
-                        renderer.drawList.AddLine(rectBottomRight, new Vector2(rectBottomRight.X - edgeWidth, rectBottomRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
-                        renderer.drawList.AddLine(rectBottomRight, new Vector2(rectBottomRight.X, rectBottomRight.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectBottomRight, new(rectBottomRight.X - edgeWidth, rectBottomRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectBottomRight, new(rectBottomRight.X, rectBottomRight.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
 
                         break;
 

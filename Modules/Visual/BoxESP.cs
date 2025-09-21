@@ -61,56 +61,45 @@ namespace Titled_Gui.Modules.Visual
                             renderer.drawList.AddRect(rectTop, rectBottom, ImGui.ColorConvertFloat4ToU32(boxColor), Rounding); // outside
                         break;
 
-                    case 1: // 3D box, kinda weird looking kinda nice idk
-                        float depth = halfWidth * 0.5f;
-
-                        //g et p[ositions
-                        Vector2 frontTopLeft = new Vector2(centerX - halfWidth, topY);
-                        Vector2 frontTopRight = new Vector2(centerX + halfWidth, topY);
-                        Vector2 frontBottomLeft = new Vector2(centerX - halfWidth, bottomY);
-                        Vector2 frontBottomRight = new Vector2(centerX + halfWidth, bottomY);
-                        Vector2 backTopLeft = new Vector2(centerX - halfWidth + depth, topY - depth);
-                        Vector2 backTopRight = new Vector2(centerX + halfWidth + depth, topY - depth);
-                        Vector2 backBottomLeft = new Vector2(centerX - halfWidth + depth, bottomY - depth);
-                        Vector2 backBottomRight = new Vector2(centerX + halfWidth + depth, bottomY - depth);
-                        // all faces
-                        if (GlowAmount > 0f)
+                    case 1:// 3D box, kinda weird looking kinda nice idk
                         {
-                            DrawHelpers.DrawGlowLine(renderer.drawList, frontTopLeft, frontTopRight, boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, frontTopRight, frontBottomRight, boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, frontBottomRight, frontBottomLeft, boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, frontBottomLeft, frontTopLeft, boxColor, GlowAmount);
+                            float depth = halfWidth;
 
-                            DrawHelpers.DrawGlowLine(renderer.drawList, backTopLeft, backTopRight, boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, backTopRight, backBottomRight, boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, backBottomRight, backBottomLeft, boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, backBottomLeft, backTopLeft, boxColor, GlowAmount);
+                            Vector3[] Corners =
+                            {
+                                new(entity.Position.X - halfWidth, entity.Position.Y + entityHeight, entity.Position.Z - depth),
+                                new(entity.Position.X + halfWidth, entity.Position.Y + entityHeight, entity.Position.Z - depth),
+                                new(entity.Position.X + halfWidth, entity.Position.Y + entityHeight, entity.Position.Z + depth),
+                                new(entity.Position.X - halfWidth, entity.Position.Y + entityHeight, entity.Position.Z + depth),
 
-                            DrawHelpers.DrawGlowLine(renderer.drawList, frontTopLeft, backTopLeft, boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, frontTopRight, backTopRight, boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, frontBottomLeft, backBottomLeft, boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, frontBottomRight, backBottomRight, boxColor, GlowAmount);
+                                new(entity.Position.X - halfWidth, entity.Position.Y, entity.Position.Z - depth),
+                                new(entity.Position.X + halfWidth, entity.Position.Y, entity.Position.Z - depth),
+                                new(entity.Position.X + halfWidth, entity.Position.Y, entity.Position.Z + depth),
+                                new(entity.Position.X - halfWidth, entity.Position.Y, entity.Position.Z + depth),
+                            };
+                            float[] ViewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+
+                            Vector2[] Corners2D = new Vector2[Corners.Length];
+                            for (int i = 0; i < Corners.Length; i++)
+                            {
+                                Corners2D[i] = Calculate.WorldToScreen(ViewMatrix, Corners[i], GameState.renderer.screenSize);
+
+                                if (Corners2D[i].X < 0 || Corners2D[i].Y < 0) return;
+                            }
+
+                            renderer.drawList.AddLine(Corners2D[0], Corners2D[1], ImGui.ColorConvertFloat4ToU32(boxColor));
+                            renderer.drawList.AddLine(Corners2D[1], Corners2D[2], ImGui.ColorConvertFloat4ToU32(boxColor));
+                            renderer.drawList.AddLine(Corners2D[2], Corners2D[3], ImGui.ColorConvertFloat4ToU32(boxColor));
+                            renderer.drawList.AddLine(Corners2D[3], Corners2D[0], ImGui.ColorConvertFloat4ToU32(boxColor));
+                            renderer.drawList.AddLine(Corners2D[4], Corners2D[5], ImGui.ColorConvertFloat4ToU32(boxColor));
+                            renderer.drawList.AddLine(Corners2D[5], Corners2D[6], ImGui.ColorConvertFloat4ToU32(boxColor));
+                            renderer.drawList.AddLine(Corners2D[6], Corners2D[7], ImGui.ColorConvertFloat4ToU32(boxColor));
+                            renderer.drawList.AddLine(Corners2D[7], Corners2D[4], ImGui.ColorConvertFloat4ToU32(boxColor));
+                            renderer.drawList.AddLine(Corners2D[0], Corners2D[4], ImGui.ColorConvertFloat4ToU32(boxColor));
+                            renderer.drawList.AddLine(Corners2D[1], Corners2D[5], ImGui.ColorConvertFloat4ToU32(boxColor));
+                            renderer.drawList.AddLine(Corners2D[2], Corners2D[6], ImGui.ColorConvertFloat4ToU32(boxColor));
+                            renderer.drawList.AddLine(Corners2D[3], Corners2D[7], ImGui.ColorConvertFloat4ToU32(boxColor));
                         }
-                        if (Outline)
-                            GameState.renderer.drawList.AddRect(frontTopLeft + OutlineThickness, frontBottomRight + OutlineThickness, ImGui.ColorConvertFloat4ToU32(boxColor) & 0xFF000000);
-
-                       DrawHelpers.DrawGlowQuadFilled(renderer.drawList, frontTopLeft, frontTopRight, frontBottomRight, frontBottomLeft, boxColor, GlowAmount);
-                       DrawHelpers.DrawGlowQuadFilled(renderer.drawList, backTopLeft, backTopRight, backBottomRight, backBottomLeft, boxColor, GlowAmount);
-                       DrawHelpers.DrawGlowQuadFilled(renderer.drawList, frontTopLeft, frontTopRight, backTopRight, backTopLeft, boxColor, GlowAmount);
-                       DrawHelpers.DrawGlowQuadFilled(renderer.drawList, frontBottomLeft, frontBottomRight, backBottomRight, backBottomLeft, boxColor, GlowAmount);
-                       DrawHelpers.DrawGlowQuadFilled(renderer.drawList, frontTopLeft, frontBottomLeft, backBottomLeft, backTopLeft, boxColor, GlowAmount);
-
-                        DrawHelpers.DrawGlowQuadFilled(renderer.drawList,frontTopRight, frontBottomRight, backBottomRight, backTopRight, boxColor, GlowAmount);
-
-                        DrawHelpers.DrawGlowQuad(renderer.drawList,frontTopLeft, frontTopRight, frontBottomRight, frontBottomLeft, boxColor, GlowAmount);
-
-                        DrawHelpers.DrawGlowQuad(renderer.drawList, backTopLeft, backTopRight, backBottomRight, backBottomLeft, boxColor, GlowAmount);
-
-                        // connections
-                        DrawHelpers.DrawGlowLine(renderer.drawList, frontTopLeft, backTopLeft, boxColor, GlowAmount);
-                        DrawHelpers.DrawGlowLine(renderer.drawList, frontTopRight, backTopRight, boxColor, GlowAmount);
-                        DrawHelpers.DrawGlowLine(renderer.drawList, frontBottomLeft, backBottomLeft, boxColor, GlowAmount);
-                        DrawHelpers.DrawGlowLine(renderer.drawList, frontBottomRight, backBottomRight, boxColor, GlowAmount);
                         break;
 
                     case 2: //  edges

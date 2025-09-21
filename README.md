@@ -89,8 +89,8 @@
 ### Prerequisites
 
 - Windows 10/11 (x64)
-- Visual Studio 2022
-- .NET 8.0
+- Visual Studio 2026
+- .NET 10.0.X
 - Internet connection for auto-updating offsets
 
 ### Installation

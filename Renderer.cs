@@ -73,6 +73,12 @@ namespace Titled_Gui
         public static List<Vector2> Velocities = new();
         public static float MaxLineDistance = 300f;
         public static ImGuiKey OpenKey = ImGuiKey.Insert;
+        public static HashSet<Keys> keys =
+        [
+           Keys.ShiftKey, Keys.LShiftKey, Keys.RShiftKey,
+           Keys.ControlKey, Keys.LControlKey, Keys.RControlKey,
+           Keys.Menu, Keys.LMenu, Keys.RMenu
+        ];
         public void UpdateEntities(IEnumerable<Entity> newEntities) => entities = newEntities.ToList();
 
         public static void LoadFonts()
@@ -1132,48 +1138,45 @@ namespace Titled_Gui
 
             if (temp != value) value = temp;
         }
-        public static void RenderKeybindChooser(string Lable, ref int Key)
+        public static void RenderKeybindChooser(string label, ref int key)
         {
-            ImGui.PushID(Lable);
+            ImGui.PushID(label);
 
-            if (!KeyBind.ContainsKey(Lable)) KeyBind[Lable] = false;
+            if (!KeyBind.ContainsKey(label))
+                KeyBind[label] = false;
 
-            string keyName = KeyBind[Lable] ? "Press Any Key..." : (Key == (int)Keys.None ? "None" : Key.ToString());
+            if (ImGui.Button(KeyBind[label] ? "Press Any Key..." : (key == (int)Keys.None ? "None" : Enum.GetName(typeof(Keys), key) ?? key.ToString()), new Vector2(100, 0)))
+                KeyBind[label] = true;
 
-            if (ImGui.Button(keyName, new Vector2(100, 0)))
+            if (KeyBind[label])
             {
-                KeyBind[Lable] = true;
-            }
-
-            if (KeyBind[Lable])
-            {
-                foreach (Keys key in Enum.GetValues(typeof(Keys)))
+                foreach (Keys k in Enum.GetValues<Keys>())
                 {
-                    if ((User32.GetAsyncKeyState((int)key) & 0x8000) == 0)
-                    {
-                        if (key >= Keys.LButton && key <= Keys.MButton) continue;
+                    if (k == Keys.None) continue;
+                    if (k == Keys.LButton || k == Keys.RButton || k == Keys.MButton || k == Keys.XButton1 || k == Keys.XButton2) continue;
+                    if (keys.Contains(k)) continue;
 
-                        if (key == Keys.Escape)
-                        {
-                            Key = (int)Keys.Insert;
-                        }
-                        else
-                        {
-                            Key = (int)key;
-                        }
+                    short state = User32.GetAsyncKeyState((int)k);
+                    bool pressed = (state & 0x8000) != 0;
+                    if (!pressed) continue;
 
-                        KeyBind[Lable] = false;
-                        break;
-                    }
+                    if (k == Keys.Escape)
+                        key = (int)Keys.None;
+                    else
+                        key = (int)k;
+
+                    KeyBind[label] = false;
+                    break;
                 }
             }
 
             ImGui.SameLine();
-            ImGui.Text(Lable);
+            ImGui.Text(label);
 
             ImGui.PopID();
         }
-        public static Dictionary<string, bool> KeyBind = new();
+
+        public static Dictionary<string, bool> KeyBind = [];
 
         public static void RenderKeybindChooser(string Lable, ref ImGuiKey Key)
         {

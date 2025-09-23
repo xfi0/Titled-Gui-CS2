@@ -1,5 +1,4 @@
-﻿using Swed64;
-using System.Text;
+﻿using System.Text;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Data.Game.GameState;

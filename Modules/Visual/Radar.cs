@@ -1,12 +1,5 @@
 ﻿using ImGuiNET;
-using NAudio.Gui;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Numerics;
-using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual

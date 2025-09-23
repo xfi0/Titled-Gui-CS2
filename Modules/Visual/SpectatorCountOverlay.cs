@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Titled_Gui.Data.Game;
-
-namespace Titled_Gui.Modules.Visual
+﻿namespace Titled_Gui.Modules.Visual
 {
     internal class SpectatorCountOverlay : Classes.ThreadService
     {

@@ -1,17 +1,12 @@
 ﻿using ClickableTransparentOverlay;
 using ImGuiNET;
-using NAudio.Gui;
 using System.Numerics;
-using System.Windows.Forms;
-using System.Xml.Linq;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace Titled_Gui
 {
@@ -115,10 +110,6 @@ namespace Titled_Gui
                 Console.WriteLine(e);
             }
         }
-
-
-
-
 
         public void UpdateLocalPlayer(Entity newEntity) // update local player
         {

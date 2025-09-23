@@ -1,6 +1,4 @@
 using Swed64;
-using System;
-using System.Collections.Generic;
 
 namespace Titled_Gui.Data.Game
 {

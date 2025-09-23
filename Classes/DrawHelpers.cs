@@ -1,8 +1,5 @@
 ﻿using ImGuiNET;
-using NAudio.Gui;
-using System;
 using System.Numerics;
-using System.Text;
 
 namespace Titled_Gui.Classes
 {

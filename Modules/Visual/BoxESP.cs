@@ -1,10 +1,9 @@
 ﻿using ImGuiNET;
 using System.Numerics;
-using Titled_Gui.Data;
 using Titled_Gui.Classes;
-using static Titled_Gui.Notifications.Library;
-using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Entity;
+using Titled_Gui.Data.Game;
+using static Titled_Gui.Notifications.Library;
 
 namespace Titled_Gui.Modules.Visual
 {

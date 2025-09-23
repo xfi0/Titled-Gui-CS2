@@ -1,9 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Numerics;
+﻿using System.Numerics;
 using Titled_Gui.Classes;
-using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
-using Titled_Gui.Modules.Legit;
 
 namespace Titled_Gui.Modules.Rage
 {

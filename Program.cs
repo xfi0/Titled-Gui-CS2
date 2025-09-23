@@ -1,17 +1,9 @@
 ﻿using ImGuiNET;
-using Swed64;
 using System.Numerics;
-using System.Reflection;
-using System.Text;
-using System.Threading;
 using Titled_Gui;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
-using Titled_Gui.Modules.Legit;
-using Titled_Gui.Modules.Rage;
-using Titled_Gui.Modules.Visual;
-using static Titled_Gui.Data.Game.GameState;
 
 try
 {
@@ -28,7 +20,7 @@ try
     };
     renderThread.Start();
     // entities
-    List<Entity> entities = new List<Entity>();
+    List<Entity>? entities = new List<Entity>();
     Thread entityUpdateThread = new(() =>
     {
         while (true)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading;
-using Titled_Gui.Classes;
+﻿using System.Runtime.InteropServices;
 using static Titled_Gui.Classes.User32;
 
 internal static class MoveMouse

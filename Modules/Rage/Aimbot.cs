@@ -1,11 +1,10 @@
 ﻿using ImGuiNET;
-using System;
 using System.Numerics;
 using Titled_Gui.Classes;
-using static Titled_Gui.Data.Game.GameState;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Modules.Visual;
+using static Titled_Gui.Data.Game.GameState;
 
 namespace Titled_Gui.Modules.Rage
 {

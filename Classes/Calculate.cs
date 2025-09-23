@@ -1,11 +1,4 @@
-﻿using Swed64;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Modules.Visual.BoneESP;
 

@@ -2,7 +2,6 @@
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
-using Vortice.Mathematics;
 using static Titled_Gui.Classes.User32;
 
 namespace Titled_Gui.Modules.Rage

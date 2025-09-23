@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Titled_Gui.Data.Game
+﻿namespace Titled_Gui.Data.Game
 {
     internal class GlobalVar : Classes.ThreadService
     {

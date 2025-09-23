@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Titled_Gui.Data.Entity;
-using static Titled_Gui.Data.Game.GameState;
+﻿using static Titled_Gui.Data.Game.GameState;
 
 namespace Titled_Gui.Data.Game
 {

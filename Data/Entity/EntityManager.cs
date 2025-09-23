@@ -1,17 +1,8 @@
-using Swed64;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Linq;
+using System.Diagnostics;
 using System.Numerics;
 using Titled_Gui.Classes;
-using static Titled_Gui.Data.Game.GameState;
-using static Titled_Gui.Data.Game.Offsets;
-using Titled_Gui.Modules.Rage;
-using Titled_Gui.Modules.Visual;
-using System.Diagnostics;
 using Titled_Gui.Data.Game;
-using Vortice.Mathematics;
+using static Titled_Gui.Data.Game.GameState;
 
 namespace Titled_Gui.Data.Entity
 {

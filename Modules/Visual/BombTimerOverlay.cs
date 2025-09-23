@@ -1,7 +1,5 @@
 ﻿using ImGuiNET;
-using System;
 using System.Numerics;
-using System.Threading;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Renderer;
 

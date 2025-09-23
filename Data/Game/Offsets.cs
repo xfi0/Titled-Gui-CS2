@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Titled_Gui.Data.Game
+﻿namespace Titled_Gui.Data.Game
 {
     public class Offsets 
     {

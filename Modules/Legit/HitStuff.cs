@@ -1,10 +1,6 @@
 ﻿using ImGuiNET;
 using NAudio.Wave;
-using System;
-using System.IO;
 using System.Numerics;
-using System.Threading.Tasks;
-using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Legit

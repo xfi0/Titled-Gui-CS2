@@ -9,7 +9,7 @@ namespace Titled_Gui.Modules.Visual
         {
             if (!NoFlashEnable) return;
 
-            var FlashBangDuration = GameState.swed.ReadFloat(GameState.client, Offsets.m_flFlashBangTime);
+            float FlashBangDuration = GameState.swed.ReadFloat(GameState.client, Offsets.m_flFlashBangTime);
 
             if (FlashBangDuration > 0)
             {

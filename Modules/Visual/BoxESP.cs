@@ -52,10 +52,11 @@ namespace Titled_Gui.Modules.Visual
                             DrawHelpers.DrawGlowRect(renderer.drawList, rectTop, rectBottom, boxColor, Rounding, GlowAmount);
 
                         if (Outline)
-                            GameState.renderer.drawList.AddRect(rectTop + OutlineThickness, rectBottom + OutlineThickness, ImGui.ColorConvertFloat4ToU32(boxColor) & 0xFF000000);
+                            GameState.renderer.drawList.AddRect(rectTop + OutlineThickness, rectBottom + OutlineThickness, ImGui.ColorConvertFloat4ToU32(boxColor) & 0xFF000000, Rounding);
 
                         if (BoxFillGradient)
                             DrawHelpers.DrawGradientRect(renderer.drawList, rectTop, rectBottom, new(BoxFillGradientColorTop.X, BoxFillGradientColorTop.Y, BoxFillGradientColorTop.Z, BoxFillOpacity), new Vector4(BoxFillGradientBottom.X, BoxFillGradientBottom.Y, BoxFillGradientBottom.Z, BoxFillOpacity), Rounding);
+                        
                         else
                             renderer.drawList.AddRectFilled(rectTop, rectBottom, ImGui.ColorConvertFloat4ToU32(fillColor), Rounding);
 
@@ -111,6 +112,9 @@ namespace Titled_Gui.Modules.Visual
 
                         float edgeWidth = (rectTopRight.X - rectTopLeft.X) * EdgeMultiple;
                         float edgeHeight = (rectBottomLeft.Y - rectTopLeft.Y) * EdgeMultiple;
+                        Vector2 TopLeftSideIThink = new(centerX + halfWidth, bottomY);
+                        //if (Outline)
+                        //    renderer.drawList.AddRect(rectTopLeft + OutlineThickness, TopLeftSideIThink + OutlineThickness, ImGui.ColorConvertFloat4ToU32(boxColor) & 0xFF000000, Rounding);
 
                         if (GlowAmount > 0f)
                         {

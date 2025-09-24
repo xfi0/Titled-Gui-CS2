@@ -65,7 +65,6 @@ namespace Titled_Gui.Classes
                     ["Tracers Enabled"] = Tracers.enableTracers,
                     ["Tracers Thickness"] = Tracers.LineThickness,
                     ["Tracers Team Check"] = Tracers.TeamCheck,
-                    ["Tracers Draw On Self"] = Tracers.DrawOnSelf,
                     ["Tracers Current Start"] = Tracers.CurrentStartPos,
                     ["Tracers Current End"] = Tracers.CurrentEndPos
                 },

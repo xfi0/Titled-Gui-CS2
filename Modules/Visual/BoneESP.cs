@@ -75,6 +75,7 @@ namespace Titled_Gui.Modules.Visual
             if (IsValidScreenPoint(HeadPos))
             {
                 float radius = Math.Clamp(10f / (entity.Distance * 0.05f), 3f, 10f);
+
                 if (GlowAmount > 0)
                     DrawHelpers.DrawGlowCircle(renderer.drawList, HeadPos, radius, BoneColor, GlowAmount);
 

@@ -43,7 +43,7 @@ namespace Titled_Gui.Data.Entity
 
             return  entities != null ? entities?.OrderBy(e => e?.Distance)?.ToList() : null;
         }
-        public Entity GetLocalPlayer()
+        public static Entity GetLocalPlayer()
         {
             IntPtr localPlayerPawn = GameState.swed.ReadPointer(GameState.client + Offsets.dwLocalPlayerPawn);
             GameState.LocalPlayerPawn = localPlayerPawn;
@@ -132,7 +132,7 @@ namespace Titled_Gui.Data.Entity
 
             return false;
         }
-        private Entity? PopulateEntity(IntPtr pawnAddress)
+        private static Entity? PopulateEntity(IntPtr pawnAddress)
         { 
             try
             {

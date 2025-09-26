@@ -30,7 +30,7 @@ try
                 if (entityManager != null)
                 {
                     entities = entityManager?.GetEntities();
-                    Entity localPlayer = entityManager.GetLocalPlayer();
+                    Entity localPlayer = EntityManager.GetLocalPlayer();
 
                     GameState.localPlayer = localPlayer;
 

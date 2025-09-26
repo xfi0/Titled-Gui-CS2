@@ -528,6 +528,10 @@ namespace Titled_Gui
                             RenderBoolSetting("Anti Flash", ref Modules.Visual.NoFlash.NoFlashEnable);
                             RenderBoolSetting("Fov Changer", ref FovChanger.Enabled);
                             RenderIntSlider("Fov", ref FovChanger.FOV, 60, 160);
+                            
+                            RenderBoolSettingWith2ColorPickers("Radar", ref Radar.IsEnabled, ref Radar.EnemyPointColor, ref Radar.TeamPointColor);
+                            RenderBoolSetting("Draw Team", ref Radar.DrawOnTeam);
+                            RenderBoolSetting("Draw Cross", ref Radar.DrawCrossb);
                             ImGui.EndChild();
 
                             ImGui.Columns(1);

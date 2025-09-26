@@ -37,9 +37,9 @@ namespace Titled_Gui.Modules.Legit
         }
         protected override void FrameAction()
         {
+            if (!BhopEnable) return;
             GameState.ForceJump = client + Offsets.jump;
             GameState.fflag = GameState.swed.ReadUInt(GameState.LocalPlayerPawn, Offsets.m_fFlags);
-            if (!BhopEnable) return;
             AutoBhop();
         }
     }

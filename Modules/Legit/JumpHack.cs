@@ -5,7 +5,7 @@ namespace Titled_Gui.Modules.Legit
 {
     internal class JumpHack : Classes.ThreadService 
     {
-        public static bool JumpHackEnabled = true;
+        public static bool JumpHackEnabled = false;
         public static int JumpHotkey = 0x20;
         public static void JumpShot()
         {

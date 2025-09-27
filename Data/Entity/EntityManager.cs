@@ -137,7 +137,7 @@ namespace Titled_Gui.Data.Entity
         {
             if (swed.ReadBool(e.SpottedByState + Offsets.m_bSpotted))
             {
-                Console.WriteLine(e.Name + " " + "Is Spotted");
+                //Console.WriteLine(e.Name + " " + "Is Spotted");
                 return true;
             }
             else

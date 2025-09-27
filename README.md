@@ -6,19 +6,12 @@
   ![GitHub](https://img.shields.io/github/license/xfi0/Titled-Gui-CS2?style=flat-square)
   ![GitHub last commit](https://img.shields.io/github/last-commit/xfi0/Titled-Gui-CS2?style=flat-square)
   ![GitHub stars](https://img.shields.io/github/stars/xfi0/Titled-Gui-CS2?style=flat-square)
-
+  ![Game](https://camo.githubusercontent.com/b0fa2e220bcef6eac697ee68889005822be30338fdd3584a95a9f58ccff21e2a/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4353322d3030303030303f7374796c653d666f722d7468652d6261646765266c6f676f3d636f756e7465722d737472696b65266c6f676f436f6c6f723d7768697465)
 </div>
-
-<p align="center">Titled is a advanced external cheat with minimal memory writing and great features.</p>
-
 <hr></hr>
 
-## ❗ Disclaimer
-
-> ⚠️ **This project is for educational purposes only.**  
-> I do not condone cheating in multiplayer games.  
-> Using this in online matches may result in account bans.  
-> You are solely responsible for any consequences of using this software.
+<p align="center">Titled is a advanced external cheat with minimal memory writing, great features, and full custimization.</p>
+<p align="center">Please give me a star if you enjoy it, and or take any code. Its not needed but I appreciate it.</p>
 
 <hr></hr>
 
@@ -100,8 +93,12 @@
    git clone https://github.com/xfi0/Titled-Gui-CS2.git
    cd Titled-Gui-CS2
    ```
-  2. Build / run the solution in debug mode (x64) 
-  3. Run TitledGui.exe as Administrator
+  2. Run the solution in debug mode (x64)
+
+### Notes
+
+- If you have any bugs and or bans please open a issue saying the mods you had enabled, how long you cheated for, etc.
+- This has SOME memory writing features, like FOV changer, no flash, and bhop. 
 
 ## 🤝 Contributing
 ### I accept contributions! Please follow these steps:

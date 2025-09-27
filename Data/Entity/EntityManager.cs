@@ -66,7 +66,7 @@ namespace Titled_Gui.Data.Entity
                 Position = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
                 IsFlashed = GameState.swed.ReadFloat(localPlayerPawn, Offsets.m_flFlashBangTime) > 1.5,
                 Ping = GameState.swed.ReadInt(localPlayerPawn, Offsets.m_iPing),
-                Health = GameState.swed.ReadInt(GameState.localPlayer.PawnAddress, Offsets.m_iHealth),
+                Health = GameState.swed.ReadInt(GameState.LocalPlayer.PawnAddress, Offsets.m_iHealth),
                 Team = GameState.swed.ReadInt(localPlayerPawn + Offsets.m_iTeamNum),
                 LifeState = GameState.swed.ReadInt(localPlayerPawn, Offsets.m_lifeState),
                 Position2D = Calculate.WorldToScreen(ViewMatrix, GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), renderer.screenSize),
@@ -186,7 +186,7 @@ namespace Titled_Gui.Data.Entity
                     IsWalking = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsWalking),
                 };
 
-                entity.IsEnemy = entity.Team != GameState.localPlayer.Team;
+                entity.IsEnemy = entity.Team != GameState.LocalPlayer.Team;
 
                 return entity;
             }

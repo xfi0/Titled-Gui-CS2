@@ -8,7 +8,7 @@ using Titled_Gui.Data.Game;
 try
 {
     // initialization
-    EntityManager entityManager = new EntityManager();
+    EntityManager entityManager = new();
     await OffsetGetter.UpdateOffsetsAsync();
 
     ImGui.CreateContext();
@@ -20,7 +20,7 @@ try
     };
     renderThread.Start();
     // entities
-    List<Entity>? entities = new List<Entity>();
+    List<Entity>? entities = new();
     Thread entityUpdateThread = new(() =>
     {
         while (true)
@@ -32,7 +32,7 @@ try
                     entities = entityManager?.GetEntities();
                     Entity localPlayer = EntityManager.GetLocalPlayer();
 
-                    GameState.localPlayer = localPlayer;
+                    GameState.LocalPlayer = localPlayer;
 
                     GameState.renderer.UpdateLocalPlayer(localPlayer);
                 }
@@ -67,6 +67,10 @@ try
     {
         Thread.Sleep(1);
     }
+}
+catch (IndexOutOfRangeException)
+{
+    Console.WriteLine("IndexOutOfRangeException, Please Make Sure Your Game Is Running.");
 }
 catch (Exception e)
 {

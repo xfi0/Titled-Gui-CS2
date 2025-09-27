@@ -34,14 +34,14 @@ namespace Titled_Gui.Modules.Rage
         {
             try
             {
-                if (!AimbotEnable || ((User32.GetAsyncKeyState(AimbotKey) & 0x8000) == 0) || Entities == null || GameState.localPlayer.Health == 0 || (ScopedOnly && !GameState.localPlayer.IsScoped) || (FlashCheck && GameState.localPlayer.IsFlashed)) { RandomChosen = false; return; }
+                if (!AimbotEnable || ((User32.GetAsyncKeyState(AimbotKey) & 0x8000) == 0) || Entities == null || GameState.LocalPlayer.Health == 0 || (ScopedOnly && !GameState.LocalPlayer.IsScoped) || (FlashCheck && GameState.LocalPlayer.IsFlashed)) { RandomChosen = false; return; }
 
                 Entity? target = GetTarget();
 
                 if (target == null) return;
 
                 Vector2 screenCenter = new(GameState.renderer.screenSize.X / 2, GameState.renderer.screenSize.Y / 2);
-                Vector3 playerView = localPlayer.Origin + localPlayer.View;
+                Vector3 playerView = LocalPlayer.Origin + LocalPlayer.View;
                 Vector2 newAngles;
 
                 bool useHeadPosition = target?.Bones?[CurrentBoneIndex] != Vector3.Zero;
@@ -175,7 +175,7 @@ namespace Titled_Gui.Modules.Rage
 
                 foreach (var entity in Entities)
                 {
-                    if (entity.Position2D == new Vector2(-99, -99) || entity.Head2D == new Vector2(-99, -99) || entity.Health == 0 || (!Team && entity.Team == GameState.localPlayer.Team)) continue;
+                    if (entity.Position2D == new Vector2(-99, -99) || entity.Head2D == new Vector2(-99, -99) || entity.Health == 0 || (!Team && entity.Team == GameState.LocalPlayer.Team)) continue;
 
                     float distToBody = Vector2.Distance(screenCenter, entity.Position2D);
                     float distToHead = Vector2.Distance(screenCenter, entity.Head2D);

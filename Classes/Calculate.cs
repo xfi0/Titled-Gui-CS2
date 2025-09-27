@@ -14,7 +14,7 @@ namespace Titled_Gui.Classes
             // if entity is visible
             if (view <= 0.01f)
             {
-                // if entity is not visible, return a negative vector idk why but eveyone does it sao
+                // if entity is not visible
                 return new(-99, -99);
             }
 
@@ -22,7 +22,7 @@ namespace Titled_Gui.Classes
             float screenX = matrix[0 * 4 + 0] * pos.X + matrix[0 * 4 + 1] * pos.Y + matrix[0 * 4 + 2] * pos.Z + matrix[0 * 4 + 3];
             float screenY = matrix[1 * 4 + 0] * pos.X + matrix[1 * 4 + 1] * pos.Y + matrix[1 * 4 + 2] * pos.Z + matrix[1 * 4 + 3];
 
-            //prespective division 
+            // perspective division 
             float halfW = windowSize.X * 0.5f;
             float halfH = windowSize.Y * 0.5f;
 
@@ -35,7 +35,7 @@ namespace Titled_Gui.Classes
 
         //public static Vector2 WorldToScreen(float[] matrix, Vector3 pos, Vector2 windowSize) // OLD
         //{
-        //    // ccalculate w aka depth
+        //    // calculate w aka depth
         //    float screenW = matrix[12] * pos.X + matrix[13] * pos.Y + matrix[14] * pos.Z + matrix[15];
 
         //    // if entity is visible
@@ -45,16 +45,16 @@ namespace Titled_Gui.Classes
         //        float screenX = matrix[0] * pos.X + matrix[1] * pos.Y + matrix[2] * pos.Z + matrix[3];
         //        float screenY = matrix[4] * pos.X + matrix[5] * pos.Y + matrix[6] * pos.Z + matrix[7];
 
-        //        //prespective division 
+        //        //perspective division 
         //        float X = windowSize.X / 2 + windowSize.X / 2 * screenX / screenW;
         //        float Y = windowSize.Y / 2 - windowSize.Y / 2 * screenY / screenW;
 
-        //        //now return the Cordinates
+        //        //now return the coordinates
         //        return new Vector2(X, Y);
         //    }
         //    else
         //    {
-        //        // if entity is not visible, return a negative vector idk why but eveyone does it sao
+        //        // if entity is not visible
         //        return new Vector2(-99, -99);
         //    }
         //}
@@ -83,12 +83,12 @@ namespace Titled_Gui.Classes
         {
             byte[] boneBytes = GameState.swed.ReadBytes(boneAddress, 27 * 32 + 16);
             List<Vector3> Bones = [];
-            foreach (var boneId in Enum.GetValues(typeof(BoneIds)))
+            foreach (var boneId in Enum.GetValues<BoneIds>())
             {
                 float x = BitConverter.ToSingle(boneBytes, (int)boneId * 32 + 0);
                 float y = BitConverter.ToSingle(boneBytes, (int)boneId * 32 + 4);
                 float z = BitConverter.ToSingle(boneBytes, (int)boneId * 32 + 8);
-                Vector3 currentBone = new Vector3(x, y, z);
+                Vector3 currentBone = new(x, y, z);
                 Bones.Add(currentBone);
             }
             return Bones;

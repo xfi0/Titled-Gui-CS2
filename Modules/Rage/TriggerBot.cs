@@ -36,7 +36,7 @@ namespace Titled_Gui.Modules.Rage
         {
             try
             {
-                if (!Enabled || (RequireKeybind && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0) || GameState.localPlayer.Health == 0)
+                if (!Enabled || (RequireKeybind && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0) || GameState.LocalPlayer.Health == 0)
                     return;
 
                 int crosshairEnt = GameState.swed.ReadInt(GameState.LocalPlayerPawn + Offsets.m_iIDEntIndex);
@@ -58,7 +58,7 @@ namespace Titled_Gui.Modules.Rage
 
                 int EntityTeam = GameState.swed.ReadInt(entityPtr + Offsets.m_iTeamNum);
 
-                if ((!ShootAtTeam && GameState.localPlayer.Team != EntityTeam) || entityPtr == IntPtr.Zero || entityEntry == IntPtr.Zero || entityList == IntPtr.Zero)
+                if ((!ShootAtTeam && GameState.LocalPlayer.Team != EntityTeam) || entityPtr == IntPtr.Zero || entityEntry == IntPtr.Zero || entityList == IntPtr.Zero)
                 {
                     ClearTargetState();
                     return;

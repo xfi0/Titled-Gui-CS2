@@ -41,12 +41,12 @@ namespace Titled_Gui.Classes
                     ["ESP Enabled"] = BoxESP.EnableESP,
                     ["ESP Current Shape"] = BoxESP.CurrentShape,
                     ["ESP Rounding"] = BoxESP.Rounding,
-                    ["ESP Outline"] = BoxESP.Outline,
+                    ["ESP Outline"] = BoxESP.InnerOutline,
                     ["ESP Team Check"] = BoxESP.TeamCheck,
                     ["Outline Thickness"] = new JObject
                     {
-                        ["X"] = BoxESP.OutlineThickness.X,
-                        ["Y"] = BoxESP.OutlineThickness.Y
+                        ["X"] = BoxESP.InnerOutlineThickness.X,
+                        ["Y"] = BoxESP.InnerOutlineThickness.Y
                     },
                     ["ESP Opacity"] = BoxESP.BoxFillOpacity,
                     ["ESP Glow Amount"] = BoxESP.GlowAmount,
@@ -223,13 +223,13 @@ namespace Titled_Gui.Classes
                 #region Shape ESP
                 BoxESP.EnableESP = configData["ESP"]?["ESP Enabled"]?.ToObject<bool>() ?? BoxESP.EnableESP;
                 BoxESP.Rounding = configData["ESP"]?["ESP Rounding"]?.ToObject<float>() ?? BoxESP.Rounding;
-                BoxESP.Outline = configData["ESP"]?["ESP Outline"]?.ToObject<bool>() ?? BoxESP.Outline;
+                BoxESP.InnerOutline = configData["ESP"]?["ESP Outline"]?.ToObject<bool>() ?? BoxESP.InnerOutline;
                 BoxESP.TeamCheck = configData["ESP"]?["ESP Team Check"]?.ToObject<bool>() ?? BoxESP.TeamCheck;
                 BoxESP.BoxFillOpacity = configData["ESP"]?["ESP Opacity"]?.ToObject<float>() ?? BoxESP.BoxFillOpacity;
                 BoxESP.CurrentShape = configData["ESP"]?["ESP Current Shape"]?.ToObject<int>() ?? BoxESP.CurrentShape;
-                float outlineX = configData["ESP"]?["Outline Thickness"]?["X"]?.ToObject<float>() ?? BoxESP.OutlineThickness.X;
-                float outlineY = configData["ESP"]?["Outline Thickness"]?["Y"]?.ToObject<float>() ?? BoxESP.OutlineThickness.Y;
-                BoxESP.OutlineThickness = new Vector2(outlineX, outlineY);
+                float outlineX = configData["ESP"]?["Outline Thickness"]?["X"]?.ToObject<float>() ?? BoxESP.InnerOutlineThickness.X;
+                float outlineY = configData["ESP"]?["Outline Thickness"]?["Y"]?.ToObject<float>() ?? BoxESP.InnerOutlineThickness.Y;
+                BoxESP.InnerOutlineThickness = new Vector2(outlineX, outlineY);
                 #endregion
 
                 #region Bone ESP

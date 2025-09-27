@@ -11,7 +11,7 @@ namespace Titled_Gui.Modules.Legit
 
         public static void UpdateFov()
         {
-            if (!Enabled || GameState.localPlayer.Health == 0) return;
+            if (!Enabled || GameState.LocalPlayer.Health == 0) return;
 
            DesiredFov = (uint)FOV; // set desired fov to the current fov
            GameState.CurrentFov = GameState.swed.ReadUInt(GameState.CameraServices + Offsets.m_iFOV); // read current fov

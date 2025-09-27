@@ -19,7 +19,7 @@ namespace Titled_Gui.Modules.Legit
                     int randomValueBetween0And99 = RandomGen.Next(100);
                     if (randomValueBetween0And99 < Chance)
                     {
-                        if (fflag == 65665 || fflag == 65667)
+                        if (Fflag == 65665 || Fflag == 65667)
                         {
                             GameState.swed.WriteInt(GameState.ForceJump, 65537); 
                             Thread.Sleep(5);
@@ -39,7 +39,7 @@ namespace Titled_Gui.Modules.Legit
         {
             if (!BhopEnable) return;
             GameState.ForceJump = client + Offsets.jump;
-            GameState.fflag = GameState.swed.ReadUInt(GameState.LocalPlayerPawn, Offsets.m_fFlags);
+            GameState.Fflag = GameState.swed.ReadUInt(GameState.LocalPlayerPawn, Offsets.m_fFlags);
             AutoBhop();
         }
     }

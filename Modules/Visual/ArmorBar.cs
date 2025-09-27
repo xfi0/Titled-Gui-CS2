@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Newtonsoft.Json.Bson;
 using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
@@ -15,7 +16,7 @@ namespace Titled_Gui.Modules.Visual
         public static float Rounding = 2.3f;
         public static void DrawArmorBar(Renderer renderer, float Armor, float MaxArmor, Vector2 topLeft, float height, Entity e)
         {
-            if (!EnableArmorhBar || (!TeamCheck && e.Team == GameState.localPlayer.Team) || e == null || BoxESP.FlashCheck && GameState.localPlayer.IsFlashed || e.Armor < 1) return;
+            if (!EnableArmorhBar || (!TeamCheck && e.Team == GameState.LocalPlayer.Team) || e == null || BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed || e.Armor < 1) return;
 
             float HealthPercentage = Math.Clamp(Armor / MaxArmor, 0f, 1f); // like percentage of box to be filled
             float filledHeight = height * HealthPercentage;
@@ -27,5 +28,16 @@ namespace Titled_Gui.Modules.Visual
 
             renderer.drawList.AddRectFilled(filledTop, filledTop + new Vector2(ArmorBarWidth, filledHeight), ImGui.ColorConvertFloat4ToU32(HealthColor), Rounding);
         }
+        public static void DrawArmorBarPreview(Vector2 position)
+        {
+            float BarHeight = 200f;
+            float BarWidth = 6f;
+            float HealthPercentage = 0.5f; // TODO maybe make moving
+
+            Vector2 bottom = position + new Vector2(0, BarHeight);
+             ImGui.GetWindowDrawList().AddRectFilled(position, bottom + new Vector2(BarWidth, 0), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 0.6f)));
+            ImGui.GetWindowDrawList().AddRectFilled(position, position + new Vector2(BarWidth, BarHeight * HealthPercentage), ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 1, 1)));
+        }
+
     }
 }

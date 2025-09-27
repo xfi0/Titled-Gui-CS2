@@ -14,7 +14,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawChams(Entity entity)
         {
-            if (entity == null || entity.Bones2D == null || (DrawOnSelf && entity == GameState.localPlayer) || BoxESP.FlashCheck && GameState.localPlayer.IsFlashed || entity.Bones2D.Count <= 0) return;
+            if (entity == null || entity.Bones2D == null || (DrawOnSelf && entity == GameState.LocalPlayer) || BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed || entity.Bones2D.Count <= 0) return;
 
             float DistanceFactor = entity.Distance * 0.05f;
             float thickness = Math.Clamp(30f / DistanceFactor, 20f, 30f); // much thicker to mimic body

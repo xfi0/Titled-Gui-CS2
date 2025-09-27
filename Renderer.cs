@@ -18,7 +18,7 @@ namespace Titled_Gui
         private uint Height;
 
         //entity copy  
-        public List<Entity> entities = new List<Entity>();
+        public List<Entity> entities = new();
         public Entity localPlayer = new();
         private readonly object entityLock = new();
 
@@ -126,15 +126,11 @@ namespace Titled_Gui
                 var io = ImGui.GetIO();
                 io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard; // keyboard nav
                 io.ConfigFlags |= ImGuiConfigFlags.NavEnableGamepad;  // gamepad nav
-
                 io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
-
-                //uncap fps
                 io.Framerate = 0;
-
-                //no vsync maybe should be on idk
                 io.ConfigViewportsNoAutoMerge = true;
                 io.ConfigViewportsNoTaskBarIcon = true;
+
                 RenderESPOverlay();
                 RenderMainWindow();
                 RenderWaterMark();
@@ -456,13 +452,13 @@ namespace Titled_Gui
                             //        isWaitingForKey = true;
                             //    }
                             //}
-                            RenderKeybindChooser($"Keybind: {Modules.Rage.TriggerBot.TriggerKey}", ref TriggerBot.TriggerKey);
+                            RenderKeybindChooser($"Key bind: {Modules.Rage.TriggerBot.TriggerKey}", ref TriggerBot.TriggerKey);
 
 
 
                             RenderIntSlider("Max Delay", ref Modules.Rage.TriggerBot.MaxDelay, 0, 1000, "%d");
                             RenderIntSlider("Min Delay", ref Modules.Rage.TriggerBot.MinDelay, 0, 1000, "%d");
-                            RenderBoolSetting("Require Keybind", ref Modules.Rage.TriggerBot.RequireKeybind);
+                            RenderBoolSetting("Require Key bind", ref Modules.Rage.TriggerBot.RequireKeybind);
 
                             ImGui.EndChild();
 
@@ -478,16 +474,16 @@ namespace Titled_Gui
                             //RenderSettingsSection("ESP Settings", () =>
                             //{
                             RenderIntCombo("ESP Shape", ref BoxESP.CurrentShape, BoxESP.Shapes, BoxESP.Shapes.Length); // shape dropdown
-                                                                                                                       //RenderBoolSetting("Draw On Self", ref BoxESP.DrawOnSelf);
                             RenderBoolSetting("Team Check", ref BoxESP.TeamCheck);
                             RenderBoolSetting("Enable RGB", ref Colors.RGB);
                             RenderBoolSettingWith2ColorPickers("Box Fill Gradient", ref BoxESP.BoxFillGradient, ref BoxESP.BoxFillGradientColorTop, ref BoxESP.BoxFillGradientBottom);
                             RenderFloatSlider("Box Fill Opacity", ref BoxESP.BoxFillOpacity, 0.0f, 1.0f, "%.2f");
-                            RenderBoolSetting("Outline", ref BoxESP.Outline);
+                            RenderBoolSettingWith1ColorPicker("Inner Outline", ref BoxESP.InnerOutline, ref BoxESP.InnerOutlineColor);
                             RenderFloatSlider("ESP Rounding", ref BoxESP.Rounding, 1f, 5f);
                             RenderFloatSlider("ESP Glow", ref BoxESP.GlowAmount, 0f, 5f);
                             RenderColorSetting("Team Color", ref Colors.TeamColor);
                             RenderColorSetting("Enemy Color", ref Colors.EnemyColor);
+                            RenderBoolSettingWith2ColorPickers("Outer Outline", ref BoxESP.OuterOutline, ref BoxESP.OutlineEnemyColor, ref BoxESP.OutlineTeamColor);
                             //});
                             RenderBoolSetting("Flash Check", ref BoxESP.FlashCheck);
                             RenderBoolSetting("Enable Health Bar", ref Modules.Visual.HealthBar.EnableHealthBar);
@@ -503,10 +499,10 @@ namespace Titled_Gui
 
                             RenderBoolSetting("Enable Bone ESP", ref Modules.Visual.BoneESP.EnableBoneESP);
                             RenderBoolSetting("Team Check", ref BoneESP.TeamCheck);
-                            RenderFloatSlider("Bone Thickness", ref BoneESP.BoneThickness, 1f, 10f, "%.1f");
+                            //RenderFloatSlider("Bone Thickness", ref BoneESP.BoneThickness, 1f, 10f, "%.1f");
                             RenderColorSetting("Bone Color", ref BoneESP.BoneColor);
                             RenderBoolSetting("Enable RGB", ref Colors.RGB);
-
+                            RenderFloatSlider("Bone Glow", ref BoneESP.GlowAmount, 0, 1f);
                             //RenderBoolSetting("Enable Chams", ref Modules.Visual.Chams.EnableChams);
                             //if (Modules.Visual.Chams.EnableChams)
                             //{
@@ -522,17 +518,36 @@ namespace Titled_Gui
                             ImGui.EndChild();
 
                             ImGui.NextColumn();
+                            ImGui.BeginChild("RightVisuals", ImGui.GetContentRegionAvail());
 
-                            ImGui.BeginChild("RightVisuals");
+                            float PreviewHeight = ImGui.GetContentRegionAvail().Y * 0.5f; 
+                            ImGui.BeginChild("ESPPreviewSection", new(0, PreviewHeight));
+
+                            RenderCategoryHeader("ESP Preview");
+
+                            float Offset = -30f;
+                            Vector2 previewCenter = ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetContentRegionAvail().X / 2, PreviewHeight / 2 + Offset);
+
+                            BoxESP.RenderESPPreview(previewCenter);
+
+                            ImGui.EndChild();
+
+                            ImGui.BeginChild("EtraVisuals", new(0, 0));
+
+                            RenderCategoryHeader("Other Visuals");
                             RenderBoolSetting("Enable Bomb Timer", ref Modules.Visual.BombTimerOverlay.EnableTimeOverlay);
                             RenderBoolSetting("Anti Flash", ref Modules.Visual.NoFlash.NoFlashEnable);
                             RenderBoolSetting("Fov Changer", ref FovChanger.Enabled);
                             RenderIntSlider("Fov", ref FovChanger.FOV, 60, 160);
-                            
+
                             RenderBoolSettingWith2ColorPickers("Radar", ref Radar.IsEnabled, ref Radar.EnemyPointColor, ref Radar.TeamPointColor);
                             RenderBoolSetting("Draw Team", ref Radar.DrawOnTeam);
                             RenderBoolSetting("Draw Cross", ref Radar.DrawCrossb);
+
                             ImGui.EndChild();
+
+                            ImGui.EndChild();
+
 
                             ImGui.Columns(1);
                             break;
@@ -542,7 +557,7 @@ namespace Titled_Gui
                             ImGui.BeginChild("ConfigLeft");
                             ImGui.Text("Available Configs:");
 
-                            ImGui.BeginChild("ConfigList", new Vector2(0, 200), ImGuiChildFlags.Border);
+                            ImGui.BeginChild("ConfigList", new(0, 200), ImGuiChildFlags.Border);
                             {
                                 foreach (var config in Configs.SavedConfigs.Keys)
                                 {
@@ -629,7 +644,7 @@ namespace Titled_Gui
         }
         public void DrawParticles(int num)
         {
-            while (Positions.Count < num) // only add if there isnt eg 50 drawn
+            while (Positions.Count < num || Velocities.Count < num) // only add if there isnt eg 50 drawn
             {
                 Positions.Add(new Vector2(random.Next((int)screenSize.X), random.Next((int)screenSize.Y)));
                 Velocities.Add(new Vector2((float)(random.NextDouble() * 2 - 1), (float)(random.NextDouble() * 2 - 1)));
@@ -648,7 +663,7 @@ namespace Titled_Gui
                 DrawHelpers.DrawGlowCircleFilled(drawList, Positions[i], ParticleRadius, ParticleColor, 1.1f);
             }
 
-            for (int i = 0; i < num; i++) //// lines
+            for (int i = 0; i < num; i++) // lines
             {
                 for (int j = i + 1; j < num; j++)
                 {
@@ -729,8 +744,8 @@ namespace Titled_Gui
                         if (entity != null)
                         {
                             string distText = $"{(int)entity.Distance / 100}m";
-                            Vector2 textPos = new Vector2(entity.Position2D.X + 2, entity.Position2D.Y);
-                            drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), distText);
+                            Vector2 textPos = new(entity.Position2D.X + 2, entity.Position2D.Y);
+                            drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new(1f, 1f, 1f, 1f)), distText);
                         }
                     }
                 }
@@ -738,7 +753,7 @@ namespace Titled_Gui
                 {
                     foreach (var entity in GameState.Entities)
                     {
-                        if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck && entity.Team != GameState.localPlayer.Team))
+                        if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck && entity.Team != GameState.LocalPlayer.Team))
                         {
                             Tracers.DrawTracers(entity, this);
                         }
@@ -751,7 +766,7 @@ namespace Titled_Gui
                     Vector2 rectTTop = new(entity.ViewPosition2D.X - entityHeight / 3, entity.ViewPosition2D.Y);
                     Vector2 barTopLeft = new(rectTTop.X - HealthBar.HealthBarWidth - 2, rectTTop.Y);
 
-                    Modules.Visual.HealthBar.DrawHealthBar(this, entity.Health, 100, barTopLeft, entityHeight, entity);
+                    Modules.Visual.HealthBar.DrawHealthBar(entity.Health, 100, barTopLeft, entityHeight, entity);
                 }
             }
             catch (Exception e)
@@ -768,7 +783,7 @@ namespace Titled_Gui
             ImGui.PushFont(Renderer.IconFont1);
 
             Vector2 textSize = ImGui.CalcTextSize("\uEAF5");
-            Vector2 textPos = new Vector2(center.X - textSize.X / 2, center.Y - textSize.Y / 2);
+            Vector2 textPos = new(center.X - textSize.X / 2, center.Y - textSize.Y / 2);
 
             ImGui.GetWindowDrawList().AddText(textPos, color, "\uEAF5");
 
@@ -1040,7 +1055,7 @@ namespace Titled_Gui
                 float height = ImGui.GetFrameHeight();
                 float width = height * 1.7f;
                 float radius = height / 2f - 2f;
-                Vector2 knobPos = new Vector2(rowStart.X + rowWidth - width - paddingRight, rowStart.Y);
+                Vector2 knobPos = new(rowStart.X + rowWidth - width - paddingRight, rowStart.Y);
 
                 var drawList = ImGui.GetWindowDrawList();
                 ImGui.SetCursorScreenPos(knobPos);
@@ -1169,7 +1184,7 @@ namespace Titled_Gui
 
             if (KeyBind[Lable])
             {
-                foreach (ImGuiKey imguiKey in Enum.GetValues(typeof(ImGuiKey)))
+                foreach (ImGuiKey imguiKey in Enum.GetValues<ImGuiKey>())
                 {
                     if (ImGui.IsKeyPressed(imguiKey))
                     {

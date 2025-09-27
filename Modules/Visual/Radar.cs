@@ -7,7 +7,7 @@ namespace Titled_Gui.Modules.Visual
 {
     internal class Radar
     {
-        public static bool IsEnabled = true;
+        public static bool IsEnabled = false;
         public static bool DrawOnTeam = true;
         public static bool DrawCrossb = false;
         public static Vector4 PointColor = new(1f, 1f, 1f, 1f);
@@ -37,14 +37,14 @@ namespace Titled_Gui.Modules.Visual
 
                 foreach (Entity e in GameState.Entities)
                 {
-                    if (e == null || e.Health <= 0 || e.PawnAddress == GameState.localPlayer.PawnAddress) continue;
+                    if (e == null || e.Health <= 0 || e.PawnAddress == GameState.LocalPlayer.PawnAddress) continue;
 
-                    float dx = GameState.localPlayer.Position.X - e.Position.X;
-                    float dy = GameState.localPlayer.Position.Y - e.Position.Y;
+                    float dx = GameState.LocalPlayer.Position.X - e.Position.X;
+                    float dy = GameState.LocalPlayer.Position.Y - e.Position.Y;
                     float Scale = (2.0f * RenderRange) / Proportion;
                     float Distance = (float)Math.Sqrt(dx * dx + dy * dy) * Scale;
 
-                    float AngleRad = (GameState.localPlayer.ViewAngles.Y * (MathF.PI / 180.0f)) - (float)Math.Atan2(e.Position.Y - GameState.localPlayer.Position.Y, e.Position.X - GameState.localPlayer.Position.X);
+                    float AngleRad = (GameState.LocalPlayer.ViewAngles.Y * (MathF.PI / 180.0f)) - (float)Math.Atan2(e.Position.Y - GameState.LocalPlayer.Position.Y, e.Position.X - GameState.LocalPlayer.Position.X);
 
                     Vector2 PointPos;
                     PointPos.X = (CrossPosition.X + Distance * MathF.Sin(AngleRad));
@@ -52,11 +52,11 @@ namespace Titled_Gui.Modules.Visual
 
                     if (Distance <= RenderRange) // if theyre not visible on the radar dont draw them
                     {
-                        if (e.Team != GameState.localPlayer.Team)
-                            Points.Add(new Point(PointPos, EnemyPointColor, PointType, GameState.localPlayer.ViewAngles.Y));
+                        if (e.Team != GameState.LocalPlayer.Team)
+                            Points.Add(new Point(PointPos, EnemyPointColor, PointType, GameState.LocalPlayer.ViewAngles.Y));
 
-                        else if (e.Team == GameState.localPlayer.Team && DrawOnTeam)
-                            Points.Add(new Point(PointPos, TeamPointColor, PointType, GameState.localPlayer.ViewAngles.Y));
+                        else if (e.Team == GameState.LocalPlayer.Team && DrawOnTeam)
+                            Points.Add(new Point(PointPos, TeamPointColor, PointType, GameState.LocalPlayer.ViewAngles.Y));
                     }
                 }
 

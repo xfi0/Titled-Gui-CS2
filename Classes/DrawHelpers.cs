@@ -24,7 +24,6 @@ namespace Titled_Gui.Classes
         public static void DrawGradientRect(ImDrawListPtr DrawList, Vector2 RectTop, Vector2 RectBottom, Vector4 ColorStart, Vector4 ColorEnd, float Rounding = 0f)
         {
             float rounded = MathF.Min(Rounding, MathF.Abs(RectBottom.X - RectTop.X) * 0.5f);
-            rounded = MathF.Min(rounded, MathF.Abs(RectBottom.Y - RectTop.Y) * 0.5f);
 
             uint topColor = ImGui.ColorConvertFloat4ToU32(ColorStart);
             uint bottomColor = ImGui.ColorConvertFloat4ToU32(ColorEnd);
@@ -32,7 +31,7 @@ namespace Titled_Gui.Classes
             DrawList.AddRectFilledMultiColor(RectTop, RectBottom, topColor, topColor, bottomColor, bottomColor);
         }
         
-        public static void DrawGlowLine(ImDrawListPtr drawList, Vector2 p1, Vector2 p2, Vector4 color, float glowAmount, int layers = 3)
+        public static void DrawGlowLine(ImDrawListPtr drawList, Vector2 p1, Vector2 p2, Vector4 color, float glowAmount, int layers = 3, float ThickNess = 0)
         {
             Vector2 dir = Vector2.Normalize(p2 - p1);
             Vector2 normal = new(-dir.Y, dir.X);
@@ -43,9 +42,16 @@ namespace Titled_Gui.Classes
                 float Alpha = color.W * MathF.Exp(-i * 0.7f);
                 var glowColor = new Vector4(color.X, color.Y, color.Z, Alpha);
                 var off = normal * Offset;
-
-                drawList.AddLine(p1 - off, p2 - off, ImGui.ColorConvertFloat4ToU32(glowColor));
-                drawList.AddLine(p1 + off, p2 + off, ImGui.ColorConvertFloat4ToU32(glowColor));
+                if (ThickNess == 0)
+                {
+                    drawList.AddLine(p1 - off, p2 - off, ImGui.ColorConvertFloat4ToU32(glowColor));
+                    drawList.AddLine(p1 + off, p2 + off, ImGui.ColorConvertFloat4ToU32(glowColor));
+                }
+                else
+                {
+                    drawList.AddLine(p1 - off, p2 - off, ImGui.ColorConvertFloat4ToU32(glowColor), ThickNess);
+                    drawList.AddLine(p1 + off, p2 + off, ImGui.ColorConvertFloat4ToU32(glowColor), ThickNess);
+                }
             }
         }
 
@@ -106,6 +112,24 @@ namespace Titled_Gui.Classes
 
                 drawList.AddQuadFilled(new Vector2(p1.X - expansion, p1.Y - expansion), new Vector2(p2.X + expansion, p2.Y - expansion), new Vector2(p3.X + expansion, p3.Y + expansion), new Vector2(p4.X - expansion, p4.Y + expansion), ImGui.ColorConvertFloat4ToU32(glowColor));
             }
+        }
+        public static void MakeFloatGoWOO(ref float Value, out float OutValue)
+        {
+            Value += 0.1f;
+
+            if (Value >= 1.0f)
+            {
+                Value = 1.0f;
+                OutValue = Value;
+                return;
+            }
+            else if (Value <= 0.0f)
+            {
+                Value = 0.0f;
+                OutValue = Value;
+                return;
+            }
+            OutValue = Value;
         }
     }
 }

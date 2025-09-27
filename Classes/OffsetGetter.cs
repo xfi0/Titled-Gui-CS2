@@ -23,16 +23,10 @@ namespace Titled_Gui.Classes
         private static string ButtonsContent = string.Empty;
         private static string Engine2Content = string.Empty;
 
-        private class Offset
+        private class Offset(string name, string? className = null)
         {
-            public string Name { get; }
-            public string? ClassName { get; }
-
-            public Offset(string name, string? className = null)
-            {
-                Name = name;
-                ClassName = className;
-            }
+            public string Name { get; } = name;
+            public string? ClassName { get; } = className;
         }
 
         private static readonly Dictionary<string, List<Offset>> FieldNameMappings = new()

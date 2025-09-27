@@ -34,9 +34,11 @@ namespace Titled_Gui
         public static float timeSinceLastUpdate = 0.0f;
         public static float lastFPS = 0.0f;
         public static Vector4 accentColor = new(0.26f, 0.59f, 0.98f, 1.00f);
-        public static Vector4 SidebarColor = new(0.07f, 0.075f, 0.11f, 1.0f);
+        public static Vector4 SidebarColor = new(0.07f, 0.075f, 0.09f, 1.0f);
         public static Vector4 MainContentCol = new(0.094f, 0.102f, 0.118f, 1.0f);
         public static Vector4 TextCol = new(0.274f, 0.317f, 0.450f, 1.0f);
+        public static Vector4 HeaderStartCol = TextCol;
+        public static Vector4 HeaderEndCol = new(1, 1, 1, 0);
         public static float windowAlpha = 1f;
         private float animationSpeed = 0.15f;
         private static float WidgetColumnWidth = 160f;
@@ -371,8 +373,7 @@ namespace Titled_Gui
                     ImGui.PopStyleVar();
                     ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(16, 16));
                     ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 12.0f);
-                    RenderCategoryHeader("Titled");
-
+                    RenderTitle();
                     switch (selectedTab)
                     {
                         case 0: // legit
@@ -537,8 +538,8 @@ namespace Titled_Gui
                             RenderCategoryHeader("Other Visuals");
                             RenderBoolSetting("Enable Bomb Timer", ref Modules.Visual.BombTimerOverlay.EnableTimeOverlay);
                             RenderBoolSetting("Anti Flash", ref Modules.Visual.NoFlash.NoFlashEnable);
-                            RenderBoolSetting("Fov Changer", ref FovChanger.Enabled);
-                            RenderIntSlider("Fov", ref FovChanger.FOV, 60, 160);
+                            RenderBoolSetting("FOV Changer", ref FovChanger.Enabled);
+                            RenderIntSlider("Desired FOV", ref FovChanger.FOV, 60, 160);
 
                             RenderBoolSettingWith2ColorPickers("Radar", ref Radar.IsEnabled, ref Radar.EnemyPointColor, ref Radar.TeamPointColor);
                             RenderBoolSetting("Draw Team", ref Radar.DrawOnTeam);
@@ -547,7 +548,6 @@ namespace Titled_Gui
                             ImGui.EndChild();
 
                             ImGui.EndChild();
-
 
                             ImGui.Columns(1);
                             break;
@@ -778,9 +778,9 @@ namespace Titled_Gui
 
         private static void DrawGearIcon(Vector2 center, uint color)
         {
-            if (!Renderer.IsIconFont1Loaded) return;
+            if (!IsIconFont1Loaded) return;
 
-            ImGui.PushFont(Renderer.IconFont1);
+            ImGui.PushFont(IconFont1);
 
             Vector2 textSize = ImGui.CalcTextSize("\uEAF5");
             Vector2 textPos = new(center.X - textSize.X / 2, center.Y - textSize.Y / 2);
@@ -789,29 +789,48 @@ namespace Titled_Gui
 
             ImGui.PopFont();
         }
+        public static void RenderTitle()
+        {
+            if (!IsTextFontNormalLoaded) return;
+            ImGui.PushFont(TextFontNormal);
 
+            Vector2 textSize = ImGui.CalcTextSize("Titled");
+            Vector2 cursorPos = ImGui.GetCursorScreenPos();
+
+            ImGui.GetWindowDrawList().AddText(cursorPos, ImGui.ColorConvertFloat4ToU32(TextCol), "Titled");
+        }
 
         private static void RenderCategoryHeader(string categoryName)
         {
             Vector2 textSize = ImGui.CalcTextSize(categoryName);
-            float padding = 8f;
 
-            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + padding); 
-            if (Renderer.IsTextFontNormalLoaded)
+            Vector2 cursorPos = ImGui.GetCursorScreenPos();
+            Vector2 childSize = ImGui.GetContentRegionAvail();
+
+            Vector2 rectPos = new(cursorPos.X, cursorPos.Y);
+            Vector2 rectSize = new(childSize.X / 2, textSize.Y + 8.3f); // half of the child
+
+            ImGui.GetWindowDrawList().AddRectFilledMultiColor( rectPos, rectPos + rectSize, ImGui.ColorConvertFloat4ToU32(HeaderStartCol), ImGui.ColorConvertFloat4ToU32(MainContentCol), ImGui.ColorConvertFloat4ToU32(MainContentCol), ImGui.ColorConvertFloat4ToU32(HeaderStartCol));
+
+            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 1 / 2);
+
+            if (Renderer.IsTextFontBigLoaded)
             {
-                ImGui.PushFont(Renderer.TextFontNormal);
-                RenderGradientText(categoryName, new Vector4(0.078f, 0.0862f, 0.101f, 1f), Renderer.accentColor);
+                ImGui.PushFont(Renderer.TextFontBig);
+                RenderGradientText(categoryName, new(0, 0, 0, 1f), new(0, 0, 0, 1f));
+                //RenderGradientText(categoryName, new(0.078f, 0.0862f, 0.101f, 1f), Renderer.accentColor);
                 ImGui.PopFont();
             }
             else
             {
-                RenderGradientText(categoryName, new Vector4(1, 0, 0, 1), new Vector4(0, 1, 0, 1));
+                RenderGradientText(categoryName, new(1, 0, 0, 1), new(0, 1, 0, 1));
             }
 
-            ImGui.Dummy(new Vector2(textSize.X, textSize.Y + padding)); 
+            ImGui.Dummy(new Vector2(textSize.X, textSize.Y + 1));
             ImGui.Separator();
             ImGui.Spacing();
         }
+
 
         private static void RenderLeftRightLableThing(string label, Action renderWidget)
         {
@@ -1036,7 +1055,7 @@ namespace Titled_Gui
 
             ImGui.PopID();
         }
-        private void RenderBoolSettingWith1ColorPicker(string label, ref bool value, ref Vector4 color1)
+        private static void RenderBoolSettingWith1ColorPicker(string label, ref bool value, ref Vector4 color1)
         {
             ImGui.PushID(label);
 

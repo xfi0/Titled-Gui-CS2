@@ -35,8 +35,7 @@ namespace Titled_Gui.Modules.Visual
             float BarHeight = 200f;
             float BarWidth = 6f;
             float HealthPercent = 0.75f;
-            float HealthPercent1;
-            DrawHelpers.MakeFloatGoWOO(ref HealthPercent, out HealthPercent1);
+            DrawHelpers.MakeFloatGoWOO(ref HealthPercent, out float HealthPercent1);
 
             Vector2 bottom = position + new Vector2(0, BarHeight);
 

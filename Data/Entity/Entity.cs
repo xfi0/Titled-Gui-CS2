@@ -50,5 +50,6 @@ namespace Titled_Gui.Data.Entity
         public bool HasBomb { get; set; }
         public bool IsDefusing { get; set; }
         public bool InBombZone { get; set; }
+        public IntPtr SpottedByState { get; set; }
     }
 }

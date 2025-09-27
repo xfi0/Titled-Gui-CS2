@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Game;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using static Titled_Gui.Data.Game.GameState;
 
 namespace Titled_Gui.Data.Entity
@@ -132,6 +133,19 @@ namespace Titled_Gui.Data.Entity
 
             return false;
         }
+        public static bool VisibilityCheck(Entity e)
+        {
+            if (swed.ReadBool(e.SpottedByState + Offsets.m_bSpotted))
+            {
+                Console.WriteLine(e.Name + " " + "Is Spotted");
+                return true;
+            }
+            else
+            {
+                //Console.WriteLine(e.ToString() + " " + "Is NOT Spotted");
+                return false;
+            }
+        }
         private static Entity? PopulateEntity(IntPtr pawnAddress)
         { 
             try
@@ -144,7 +158,7 @@ namespace Titled_Gui.Data.Entity
                 IntPtr currentWeapon = GameState.swed.ReadPointer(pawnAddress, Offsets.m_pClippingWeapon);
                 short weaponIndex = GameState.swed.ReadShort(currentWeapon + Offsets.m_AttributeManager, Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
 
-                Entity entity = new Entity
+                Entity entity = new()
                 {
                     Team = GameState.swed.ReadInt(pawnAddress + Offsets.m_iTeamNum),
                     PawnAddress = pawnAddress,
@@ -154,7 +168,8 @@ namespace Titled_Gui.Data.Entity
                     View = GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset),
                     Position2D = Calculate.WorldToScreen(ViewMatrix, GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), renderer.screenSize),
                     ViewPosition2D = Calculate.WorldToScreen(ViewMatrix, Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)), renderer.screenSize),
-                    //Visible => ,
+                    //Visible = VisibilityCheck(pawnAddress),
+                    SpottedByState = swed.ReadPointer(pawnAddress + 0x2718),
                     Head = Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)),
                     Head2D = Calculate.WorldToScreen(ViewMatrix, Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)), renderer.screenSize),
                     Distance = Vector3.Distance(GameState.swed.ReadVec(GameState.LocalPlayerPawn, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
@@ -185,6 +200,8 @@ namespace Titled_Gui.Data.Entity
                     Ping = (int)GameState.swed.ReadUInt(currentController, Offsets.m_iPing),
                     IsWalking = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsWalking),
                 };
+
+                entity.Visible = VisibilityCheck(entity);
 
                 entity.IsEnemy = entity.Team != GameState.LocalPlayer.Team;
 

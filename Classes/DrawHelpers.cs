@@ -21,6 +21,20 @@ namespace Titled_Gui.Classes
                 drawList.AddRect(glowTop, glowBottom, ImGui.ColorConvertFloat4ToU32(glowColor), rounding);
             }
         }
+        public static void DrawGlowRectFilled(ImDrawListPtr drawList, Vector2 rectTop, Vector2 rectBottom, Vector4 color, float rounding, float glowAmount, int layers = 4)
+        {
+            for (int i = 1; i <= layers; i++)
+            {
+                float Expansion = glowAmount * i;
+                float alpha = color.W * MathF.Exp(-i * 0.6f);
+                var glowColor = new Vector4(color.X, color.Y, color.Z, alpha);
+
+                var glowTop = new Vector2(rectTop.X - Expansion, rectTop.Y - Expansion);
+                var glowBottom = new Vector2(rectBottom.X + Expansion, rectBottom.Y + Expansion);
+
+                drawList.AddRectFilled(glowTop, glowBottom, ImGui.ColorConvertFloat4ToU32(glowColor), rounding);
+            }
+        }
         public static void DrawGradientRect(ImDrawListPtr DrawList, Vector2 RectTop, Vector2 RectBottom, Vector4 ColorStart, Vector4 ColorEnd, float Rounding = 0f)
         {
             float rounded = MathF.Min(Rounding, MathF.Abs(RectBottom.X - RectTop.X) * 0.5f);

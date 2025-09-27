@@ -48,7 +48,6 @@ namespace Titled_Gui.Classes
             { "m_iFOV", new() { new Offset("m_iFOV"), new Offset("m_iDesiredFOV") } },
             { "m_bIsScoped", new() { new Offset("m_bIsScoped"), new Offset("m_bIsScopedIn") } },
             { "m_iHealth", new() { new Offset("m_iHealth") } },
-            { "m_entitySpottedState", new() { new Offset("m_entitySpottedState") } },
             { "m_bSpotted", new() { new Offset("m_bSpotted"), new Offset("m_bSpottedBy") } },
             { "m_iIDEntIndex", new() { new Offset("m_iIDEntIndex") } },
             { "m_pSceneNode", new() { new Offset("m_pSceneNode"), new Offset("m_pRenderingNode") } },
@@ -99,6 +98,8 @@ namespace Titled_Gui.Classes
             { "m_flTotalRoundDamageDealt", new() { new Offset("m_flTotalRoundDamageDealt", "CCSPlayerController") } },
             { "m_iNumRoundKills", new() { new Offset("m_iNumRoundKills", "CCSPlayerController_ActionTrackingServices") } },
             { "m_iNumRoundKillsHeadshots", new() { new Offset("m_iNumRoundKillsHeadshots", "CCSPlayerController_ActionTrackingServices") } },
+            { "m_entitySpottedState", new() { new Offset("m_entitySpottedState", "C_CSPlayerPawn") } },
+
         };
 
         public static async Task UpdateOffsetsAsync()

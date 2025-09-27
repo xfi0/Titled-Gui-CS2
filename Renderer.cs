@@ -416,6 +416,7 @@ namespace Titled_Gui
                                 RenderBoolSetting("Scoped Check", ref Aimbot.ScopedOnly);
                                 RenderIntSlider("FOV Size", ref Modules.Rage.Aimbot.FovSize, 10, 1000, "%d");
                                 RenderColorSetting("FOV Color", ref Modules.Rage.Aimbot.FovColor);
+                                RenderBoolSetting("Visibility Check", ref Aimbot.VisibilityCheck);
                             });
 
                             RenderBoolSetting("RCS", ref Modules.Rage.RCS.Enabled);
@@ -425,34 +426,6 @@ namespace Titled_Gui
 
                             ImGui.BeginChild("RightRage");
                             RenderBoolSetting("Triggerbot", ref Modules.Rage.TriggerBot.Enabled);
-
-
-                            //if (isWaitingForKey)
-                            //{
-                            //    ImGui.Text("Press any key...");
-                            //    if (ImGui.Button("Cancel"))
-                            //    {
-                            //        isWaitingForKey = false;
-                            //    }
-
-                            //    foreach (Keys key in Enum.GetValues(typeof(Keys)))
-                            //    {
-                            //        if ((User32.GetAsyncKeyState((int)key) & 0x8000) != 0 && key != Keys.Escape)
-                            //        {
-                            //            Modules.Rage.TriggerBot.TriggerKey = key;
-                            //            keybindLabel = $"Keybind: {key}";
-                            //            isWaitingForKey = false;
-                            //            break;
-                            //        }
-                            //    }
-                            //}
-                            //else
-                            //{
-                            //    if (ImGui.Button(keybindLabel))
-                            //    {
-                            //        isWaitingForKey = true;
-                            //    }
-                            //}
                             RenderKeybindChooser($"Key bind: {Modules.Rage.TriggerBot.TriggerKey}", ref TriggerBot.TriggerKey);
 
 

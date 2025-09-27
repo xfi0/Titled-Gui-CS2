@@ -29,7 +29,7 @@ namespace Titled_Gui.Modules.Rage
         public static bool ScopedOnly = false;
         public static bool UseFOV = true;
         public static Random random = new();
-
+        public static bool VisibilityCheck = true;
         public static void EnableAimbot()
         {
             try
@@ -175,7 +175,7 @@ namespace Titled_Gui.Modules.Rage
 
                 foreach (var entity in Entities)
                 {
-                    if (entity.Position2D == new Vector2(-99, -99) || entity.Head2D == new Vector2(-99, -99) || entity.Health == 0 || (!Team && entity.Team == GameState.LocalPlayer.Team)) continue;
+                    if (entity.Position2D == new Vector2(-99, -99) || entity.Head2D == new Vector2(-99, -99) || entity.Health == 0 || (!Team && entity.Team == GameState.LocalPlayer.Team) || (VisibilityCheck && !entity.Visible)) continue;
 
                     float distToBody = Vector2.Distance(screenCenter, entity.Position2D);
                     float distToHead = Vector2.Distance(screenCenter, entity.Head2D);

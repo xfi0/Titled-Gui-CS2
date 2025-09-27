@@ -133,19 +133,10 @@ namespace Titled_Gui.Data.Entity
 
             return false;
         }
-        public static bool VisibilityCheck(Entity e)
-        {
-            if (swed.ReadBool(e.SpottedByState + Offsets.m_bSpotted))
-            {
-                //Console.WriteLine(e.Name + " " + "Is Spotted");
-                return true;
-            }
-            else
-            {
-                //Console.WriteLine(e.ToString() + " " + "Is NOT Spotted");
-                return false;
-            }
-        }
+        //public static bool VisibilityCheck(Entity e)
+        //{
+           
+        //}
         private static Entity? PopulateEntity(IntPtr pawnAddress)
         { 
             try
@@ -168,7 +159,7 @@ namespace Titled_Gui.Data.Entity
                     View = GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset),
                     Position2D = Calculate.WorldToScreen(ViewMatrix, GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), renderer.screenSize),
                     ViewPosition2D = Calculate.WorldToScreen(ViewMatrix, Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)), renderer.screenSize),
-                    //Visible = VisibilityCheck(pawnAddress),
+                    Visible = swed.ReadBool(currentPawn, Offsets.m_entitySpottedState + Offsets.m_bSpotted),
                     SpottedByState = swed.ReadPointer(pawnAddress + 0x2718),
                     Head = Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)),
                     Head2D = Calculate.WorldToScreen(ViewMatrix, Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)), renderer.screenSize),
@@ -201,8 +192,7 @@ namespace Titled_Gui.Data.Entity
                     IsWalking = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsWalking),
                 };
 
-                entity.Visible = VisibilityCheck(entity);
-
+                //Console.WriteLine(entity.Visible + " " + entity.Name);
                 entity.IsEnemy = entity.Team != GameState.LocalPlayer.Team;
 
                 return entity;

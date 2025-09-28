@@ -40,6 +40,7 @@
         <li>Skeletons</li>
         <li>Visual Color</li>
         <li>Bomb Overlay</li>
+        <li>Radar</li>
         <li>Etc.</li>
     </ul>
 </details>
@@ -64,6 +65,7 @@
         <li>Trigger Bot Max Delay</li>
         <li>Require Keybind</li>
         <li>Change Keybind</li>
+        <li>RCS</li>
     </ul>
 </details>
 <details>

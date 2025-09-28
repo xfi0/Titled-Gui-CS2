@@ -104,6 +104,13 @@
 - If you have any bugs and or bans please open a issue saying the mods you had enabled, how long you cheated for, etc.
 - This has SOME memory writing features, like FOV changer, no flash, and bhop. 
 
+<hr></hr>
+
+[Preview](https://github.com/xfi0/Titled-Gui-CS2/Docs/Preview1.png)
+
+
+<hr></hr>
+
 ## 🤝 Contributing
 ### I accept contributions! Please follow these steps:
 

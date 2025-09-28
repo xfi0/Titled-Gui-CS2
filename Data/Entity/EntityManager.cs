@@ -190,6 +190,7 @@ namespace Titled_Gui.Data.Entity
                     EyeDirection = GameState.swed.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
                     Ping = (int)GameState.swed.ReadUInt(currentController, Offsets.m_iPing),
                     IsWalking = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsWalking),
+                    AngEyeAngles = GameState.swed.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
                 };
 
                 //Console.WriteLine(entity.Visible + " " + entity.Name);

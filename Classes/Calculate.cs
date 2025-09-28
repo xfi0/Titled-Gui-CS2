@@ -11,7 +11,7 @@ namespace Titled_Gui.Classes
             // calculate depth
             float view = matrix[3 * 4 + 0] * pos.X + matrix[3 * 4 + 1] * pos.Y + matrix[3 * 4 + 2] * pos.Z + matrix[3 * 4 + 3];
 
-            // if entity is visible
+            // if entity is not visible
             if (view <= 0.01f)
             {
                 // if entity is not visible

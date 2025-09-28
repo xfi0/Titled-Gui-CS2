@@ -21,7 +21,7 @@ namespace Titled_Gui.Modules.Visual
 
                     Vector2 Head = e.Bones2D[2];
 
-                    float Yaw = 0 * (MathF.PI / 180.0f);
+                    float Yaw = e.AngEyeAngles.Y * (MathF.PI / 180.0f);
 
                     float dx = MathF.Cos(Yaw) * Length;
                     float dy = -MathF.Sin(Yaw) * Length;

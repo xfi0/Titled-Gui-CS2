@@ -51,5 +51,6 @@ namespace Titled_Gui.Data.Entity
         public bool IsDefusing { get; set; }
         public bool InBombZone { get; set; }
         public IntPtr SpottedByState { get; set; }
+        public Vector3 AngEyeAngles { get; set; }
     }
 }

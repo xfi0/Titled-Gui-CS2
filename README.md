@@ -106,7 +106,7 @@
 
 <hr></hr>
 
-[Preview](https://github.com/xfi0/Titled-Gui-CS2/Docs/Preview1.png)(https://github.com/xfi0/Titled-Gui-CS2/blob/master/Docs/Preview1.png)
+[Preview](https://github.com/xfi0/Titled-Gui-CS2/blob/master/Docs/Preview1.png)
 
 
 <hr></hr>

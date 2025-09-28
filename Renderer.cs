@@ -408,6 +408,7 @@ namespace Titled_Gui
                             {
                                 RenderIntCombo("Aim Bone", ref Aimbot.CurrentBone, Aimbot.Bones, Aimbot.Bones.Length, 160f); // bone that aimbot aims on
                                 RenderIntCombo("Aim Method", ref Aimbot.CurrentAimMethod, Aimbot.AimbotMethods, Aimbot.AimbotMethods.Length);
+                                RenderKeybindChooser("Aimbot Keybind", ref Aimbot.AimbotKey);
                                 RenderBoolSetting("Aim On Team", ref Modules.Rage.Aimbot.Team);
                                 RenderFloatSlider("Smoothing X", ref Aimbot.SmoothingX, 0, 20, "%.2f");
                                 RenderFloatSlider("Smoothing Y", ref Aimbot.SmoothingY, 0, 20, "%.2f");
@@ -419,17 +420,14 @@ namespace Titled_Gui
                                 RenderBoolSetting("Visibility Check", ref Aimbot.VisibilityCheck);
                             });
 
-                            RenderBoolSetting("RCS", ref Modules.Rage.RCS.Enabled);
+                            RenderBoolSetting("RCS", ref RCS.Enabled);
                             ImGui.EndChild();
 
                             ImGui.NextColumn();
 
                             ImGui.BeginChild("RightRage");
                             RenderBoolSetting("Triggerbot", ref Modules.Rage.TriggerBot.Enabled);
-                            RenderKeybindChooser($"Key bind: {Modules.Rage.TriggerBot.TriggerKey}", ref TriggerBot.TriggerKey);
-
-
-
+                            RenderKeybindChooser($"Trigger Bot Keybind", ref TriggerBot.TriggerKey);
                             RenderIntSlider("Max Delay", ref Modules.Rage.TriggerBot.MaxDelay, 0, 1000, "%d");
                             RenderIntSlider("Min Delay", ref Modules.Rage.TriggerBot.MinDelay, 0, 1000, "%d");
                             RenderBoolSetting("Require Key bind", ref Modules.Rage.TriggerBot.RequireKeybind);
@@ -1125,28 +1123,25 @@ namespace Titled_Gui
         {
             ImGui.PushID(label);
 
-            if (!KeyBind.ContainsKey(label))
-                KeyBind[label] = false;
+            if (!KeyBind.ContainsKey(label)) KeyBind[label] = false;
 
-            if (ImGui.Button(KeyBind[label] ? "Press Any Key..." : (key == (int)Keys.None ? "None" : Enum.GetName(typeof(Keys), key) ?? key.ToString()), new Vector2(100, 0)))
-                KeyBind[label] = true;
+            if (ImGui.Button(KeyBind[label] ? "Press Any Key..." : (key == (int)Keys.None ? "None" : Enum.GetName(typeof(Keys), key) ?? key.ToString()), new Vector2(100, 0))) KeyBind[label] = true;
 
             if (KeyBind[label])
             {
                 foreach (Keys k in Enum.GetValues<Keys>())
                 {
-                    if (k == Keys.None) continue;
-                    if (k == Keys.LButton || k == Keys.RButton || k == Keys.MButton || k == Keys.XButton1 || k == Keys.XButton2) continue;
+                    if (k == Keys.None || k == Keys.Escape) continue;
                     if (keys.Contains(k)) continue;
 
                     short state = User32.GetAsyncKeyState((int)k);
                     bool pressed = (state & 0x8000) != 0;
+
                     if (!pressed) continue;
 
-                    if (k == Keys.Escape)
-                        key = (int)Keys.None;
-                    else
-                        key = (int)k;
+                    if (k == Keys.Escape) key = (int)Keys.None;
+                    
+                    else key = (int)k;
 
                     KeyBind[label] = false;
                     break;
@@ -1158,6 +1153,7 @@ namespace Titled_Gui
 
             ImGui.PopID();
         }
+
 
         public static Dictionary<string, bool> KeyBind = [];
 

@@ -14,22 +14,24 @@ namespace Titled_Gui.Modules.Rage
         public static void RunRCS()
         {
             if (!Enabled || GameState.LocalPlayer.Health == 0 || (User32.GetAsyncKeyState(0x01) & 0x8000) == 0) return;
-            
-            Vector3 PunchAngle = GameState.LocalPlayer.AimPunchAngle * Strength / 100 * 2;
 
-            Vector2 ScreenCenter = new(GameState.renderer.screenSize.X / 2, GameState.renderer.screenSize.Y / 2);
+            Vector3 PunchAngle = GameState.LocalPlayer.AimPunchAngle * Strength / 100 * 2;
 
             if (GameState.LocalPlayer.ShotsFired > StartBullet)
             {
                 Vector3 NewAngles = GameState.LocalPlayer.ViewAngles + OldPunch - PunchAngle;
-                int dx = (int)((int)NewAngles.X - ScreenCenter.X);
-                int dY = (int)((int)NewAngles.Y - ScreenCenter.Y);
+                NewAngles.X = Calculate.NormalizeAngle(NewAngles.X);
+                NewAngles.Y = Calculate.NormalizeAngle(NewAngles.Y);
 
-                MoveMouse.MouseMove(dx, dY);
+                int dx = (int)(NewAngles.X - GameState.LocalPlayer.ViewAngles.X) / (int)Smoothing;
+                int dy = (int)(NewAngles.Y - GameState.LocalPlayer.ViewAngles.Y) / (int)Smoothing;
+
+                MoveMouse.MouseMove(dx, dy);
                 //GameState.swed.WriteVec(GameState.client, Offsets.dwViewAngles, NewAngles);
             }
             OldPunch = PunchAngle;
         }
+
 
         protected override void FrameAction()
         {

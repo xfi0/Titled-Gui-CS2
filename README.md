@@ -13,7 +13,7 @@
 <hr></hr>
 
 <p align="center">Titled is a advanced external cheat with minimal memory writing, great features, and full custimization.</p>
-<p align="center">⭐Please, star this repo if you enjoyed it</p>
+<p align="center">⭐Please, star this repo if you enjoyed it!⭐</p>
 
 <hr></hr>
 

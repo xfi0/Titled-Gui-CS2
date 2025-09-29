@@ -712,12 +712,7 @@ namespace Titled_Gui
                 {
                     foreach (var entity in entities)
                     {
-                        if (entity != null)
-                        {
-                            string distText = $"{(int)entity.Distance / 100}m";
-                            Vector2 textPos = new(entity.Position2D.X + 2, entity.Position2D.Y);
-                            drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new(1f, 1f, 1f, 1f)), distText);
-                        }
+                        DistanceTextThingy(entity);
                     }
                 }
                 if (Tracers.enableTracers)
@@ -745,7 +740,13 @@ namespace Titled_Gui
                 Console.WriteLine(e);
             }
         }
-       
+        public static void DistanceTextThingy(Entity e)
+        {
+            if (e == null || (BoxESP.TeamCheck && e?.Team == GameState.LocalPlayer.Team) || e?.Health <= 0 || e?.PawnAddress == GameState.LocalPlayer.PawnAddress) return;
+            string distText = $"{(int)e?.Distance / 100}m";
+            Vector2 textPos = new(e.Position2D.X + 2, e.Position2D.Y);
+            GameState.renderer.drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new(1f, 1f, 1f, 1f)), distText);
+        }
 
         private static void DrawGearIcon(Vector2 center, uint color)
         {

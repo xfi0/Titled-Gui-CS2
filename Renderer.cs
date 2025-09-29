@@ -217,9 +217,9 @@ namespace Titled_Gui
                 style.WindowMinSize = new Vector2(32.0f, 32.0f);
                 style.WindowTitleAlign = new Vector2(0.5f, 0.5f);
                 style.WindowMenuButtonPosition = ImGuiDir.Left;
-                style.ChildRounding = 12.0f;
-                style.ChildBorderSize = 1.0f;
-                style.PopupRounding = 4.0f;
+                style.ChildRounding = 12f;
+                style.ChildBorderSize = 1f;
+                style.PopupRounding = 4f;
                 style.PopupBorderSize = 1.0f;
                 style.FramePadding = new Vector2(5.0f, 1.0f);
                 style.FrameRounding = 5.0f;
@@ -227,19 +227,25 @@ namespace Titled_Gui
                 style.ItemSpacing = new Vector2(6.0f, 4.0f);
                 style.ItemInnerSpacing = new Vector2(4.0f, 4.0f);
                 style.CellPadding = new Vector2(4.0f, 2.0f);
-                style.IndentSpacing = 21.0f;
-                style.ColumnsMinSpacing = 6.0f;
-                style.ScrollbarSize = 13.0f;
-                style.ScrollbarRounding = 16.0f;
-                style.GrabMinSize = 20.0f;
-                style.GrabRounding = 5.0f;
-                style.TabRounding = 4.0f;
-                style.TabBorderSize = 1.0f;
-                style.TabMinWidthForCloseButton = 0.0f;
+                style.IndentSpacing = 21f;
+                style.ColumnsMinSpacing = 6f;
+                style.ScrollbarSize = 13f;
+                style.ScrollbarRounding = 16f;
+                style.GrabMinSize = 20f;
+                style.GrabRounding = 5f;
+                style.TabRounding = 4f;
+                style.TabBorderSize = 1f;
+                style.TabMinWidthForCloseButton = 0;
                 style.ColorButtonPosition = ImGuiDir.Right;
                 style.ButtonTextAlign = new Vector2(0.5f, 0.5f);
                 style.SelectableTextAlign = new Vector2(0.0f, 0.0f);
+                style.ScrollbarSize = 10f;
+                style.ScrollbarRounding = 4f;
 
+                style.Colors[(int)ImGuiCol.ScrollbarBg] = style.Colors[(int)ImGuiCol.WindowBg];
+                style.Colors[(int)ImGuiCol.ScrollbarGrab] = new Vector4(0.15f, 0.17f, 0.20f, 1.0f);
+                style.Colors[(int)ImGuiCol.ScrollbarGrabHovered] = new Vector4(0.20f, 0.22f, 0.25f, 1.0f);
+                style.Colors[(int)ImGuiCol.ScrollbarGrabActive] = new Vector4(0.25f, 0.27f, 0.30f, 1.0f);
                 style.Colors[(int)ImGuiCol.Text] = new(0.274f, 0.317f, 0.450f, 1.0f);
                 style.Colors[(int)ImGuiCol.TextDisabled] = new(0.2745098173618317f, 0.3176470696926117f, 0.4501f, 1.0f);
                 style.Colors[(int)ImGuiCol.WindowBg] = new(0.078f, 0.0862f, 0.101f, 1.0f);
@@ -373,7 +379,7 @@ namespace Titled_Gui
                     ImGui.PopStyleVar();
                     ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(16, 16));
                     ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 12.0f);
-                    RenderTitle();
+                    RenderTitle("Titled");
                     switch (selectedTab)
                     {
                         case 0: // legit
@@ -761,16 +767,33 @@ namespace Titled_Gui
 
             ImGui.PopFont();
         }
-        public static void RenderTitle()
+        public static void RenderTitle(string Text)
         {
-            if (!IsTextFontNormalLoaded) return;
-            ImGui.PushFont(TextFontNormal);
+            if (!IsTextFontBigLoaded) return;
 
-            Vector2 textSize = ImGui.CalcTextSize("Titled");
-            Vector2 cursorPos = ImGui.GetCursorScreenPos();
+            ImGui.PushFont(TextFontBig);
 
-            ImGui.GetWindowDrawList().AddText(cursorPos, ImGui.ColorConvertFloat4ToU32(TextCol), "Titled");
+            Vector2 offsetPos = new(ImGui.GetCursorScreenPos().X + 4, ImGui.GetCursorScreenPos().Y + 2);
+
+            ImGui.GetWindowDrawList().AddText(offsetPos, ImGui.ColorConvertFloat4ToU32(TextCol), Text);
+
+            ImGui.PopFont();
+
+            Vector2 textSize = ImGui.CalcTextSize(Text);
+
+            ImGui.Dummy(new Vector2(0, textSize.Y + 8));
+
+            // sep line
+            Vector2 start = ImGui.GetCursorScreenPos();
+            Vector2 end = new(start.X + ImGui.GetContentRegionAvail().X, start.Y);
+            ImGui.GetWindowDrawList().AddLine(start, end, ImGui.ColorConvertFloat4ToU32(new Vector4(0.15f, 0.17f, 0.20f, 1.0f)), 1.0f);
+
+            ImGui.Dummy(new Vector2(0, 6)); // spacing below
         }
+
+
+
+
 
         private static void RenderCategoryHeader(string categoryName)
         {

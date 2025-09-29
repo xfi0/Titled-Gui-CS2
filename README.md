@@ -115,10 +115,11 @@
 
 - Fork the project
 
-- Create your feature branch (git checkout -b feature/AmazingFeature)
+- Code Your Feature
 
 - Commit your changes (git commit -m 'Add some AmazingFeature')
 
-- Push to the branch (git push Origin feature/AmazingFeature)
+- Push to master branch (git push origin master)
 
 - Open a Pull Request
+

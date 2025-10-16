@@ -18,7 +18,7 @@ namespace Titled_Gui
         private uint Height;
 
         //entity copy  
-        public List<Entity> entities = new();
+        public List<Entity> entities = [];
         public Entity localPlayer = new();
         private readonly object entityLock = new();
 
@@ -66,8 +66,8 @@ namespace Titled_Gui
         public static int NumberOfParticles = 50;
         public static Random random = new();
         public float ParticleSpeed = 0.53f;
-        public static List<Vector2> Positions = new();
-        public static List<Vector2> Velocities = new();
+        public static List<Vector2> Positions = [];
+        public static List<Vector2> Velocities = [];
         public static float MaxLineDistance = 300f;
         public static ImGuiKey OpenKey = ImGuiKey.Insert;
         public static HashSet<Keys> keys =

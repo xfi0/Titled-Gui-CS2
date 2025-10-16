@@ -25,7 +25,29 @@ namespace Titled_Gui.Modules.Visual
             GameState.renderer.drawList.AddRectFilled(topLeft, topLeft + new Vector2(HealthBarWidth, height), ImGui.ColorConvertFloat4ToU32(HealthBarBackGround), Rounding);
 
             Vector2 filledTop = topLeft + new Vector2(0, height - filledHeight);
-            HealthColor = Colors.RGB ? Colors.Rgb(HealthPercentage) : new Vector4(0f, 1f, 0f, 1f);
+
+            if (Colors.RGB)
+                HealthColor = Colors.Rgb(e.Health);
+            
+            else
+            {
+                if (e.Health > 80)
+                    HealthColor = new(0f, 1f, 0f, 1f);
+
+                else if (e.Health > 50)
+                {
+                    float t = (80 - e.Health) / 30; 
+                    HealthColor = Vector4.Lerp(new(0f, 1f, 0f, 1f), new(1f, 1f, 0f, 1f), t); 
+                }
+                else if (e.Health > 20)
+                {
+                    float t = (50 - e.Health) / 30;
+                    HealthColor = Vector4.Lerp(new(1f, 1f, 0f, 1f), new(1f, 0f, 0f, 1f), t);
+                }
+                else
+                    HealthColor = new(1f, 0f, 0f, 1f);   
+            }
+
 
             GameState.renderer.drawList.AddRectFilled(filledTop, filledTop + new Vector2(HealthBarWidth, filledHeight), ImGui.ColorConvertFloat4ToU32(HealthColor), Rounding);
         }

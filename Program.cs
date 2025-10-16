@@ -19,7 +19,7 @@ try
     };
     renderThread.Start();
     // entities
-    List<Entity>? entities = new();
+    List<Entity>? entities = [];
     Thread entityUpdateThread = new(() =>
     {
         while (true)
@@ -38,7 +38,7 @@ try
                 if (entities != null)
                 {
                     GameState.renderer.UpdateEntities(entities);
-                    GameState.Entities = new List<Titled_Gui.Data.Entity.Entity>(entities);
+                    GameState.Entities = [.. entities];
 
                     foreach (Entity entity in entities)
                     {

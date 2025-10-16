@@ -15,7 +15,7 @@ namespace Titled_Gui.Modules.Rage
         public static int FovSize = 100;
         public static Vector4 FovColor = new(1f, 0f, 0f, 1f);
         public static bool DrawFov = true;
-        public static int AimbotKey = 0x04; // mmb TODO Make Changable
+        public static int AimbotKey = 0x04; // mmb
         public static string[] Bones = new string[] { "Head", "Neck", "Right Sholder", "Left Sholder", "Waist", "Random" };
         public static int CurrentBone = 0;
         public static int CurrentBoneIndex = 2;

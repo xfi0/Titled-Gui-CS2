@@ -1,13 +1,10 @@
 // IF YOU ARE A DEV FEEL FREE TO DO ANY OF THESE AND SUBMIT A PULL REQUEST
 # Important
-Make RCS
 
 # Middle Ground
-visual tab should be better
-ESP Preview
-Finish Hit Sound
 Trigger bot not use crosshair index bs instead use a raycast or sum
-the like when i move radar points move
+weird w2s none sense
+Menu useable in game
 
 # Least Important
 Radar, 

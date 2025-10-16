@@ -13,7 +13,6 @@ try
 
     ImGui.CreateContext();
     Renderer.LoadFonts();
-
     Thread renderThread = new(() => GameState.renderer.Start().Wait())
     {
         IsBackground = true

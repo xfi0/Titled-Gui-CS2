@@ -13,13 +13,13 @@ namespace Titled_Gui.Data.Entity
 
         public List<Entity>? GetEntities()
         {
-            List<Entity> entities = new List<Entity>();
+            List<Entity> entities = new();
             GameState.EntityList = GameState.swed.ReadPointer(GameState.client + Offsets.dwEntityList);
             listEntry = GameState.swed.ReadPointer(GameState.EntityList + 0x10);
 
             for (int i = 0; i < 64; i++) // loop through all entities
             {
-                currentController = GameState.swed.ReadPointer(listEntry, i * 0x78);
+                currentController = GameState.swed.ReadPointer(listEntry, i * 0x70);
                 if (currentController == IntPtr.Zero) continue;
 
                 int pawnHandle = GameState.swed.ReadInt(currentController, Offsets.m_hPlayerPawn);
@@ -28,7 +28,7 @@ namespace Titled_Gui.Data.Entity
                 IntPtr listEntry2 = GameState.swed.ReadPointer(GameState.EntityList, 0x8 * ((pawnHandle & 0x7FFF) >> 9) + 0x10);
                 if (listEntry2 == IntPtr.Zero) continue;
 
-                GameState.currentPawn = GameState.swed.ReadPointer(listEntry2, 0x78 * (pawnHandle & 0x1FF));
+                GameState.currentPawn = GameState.swed.ReadPointer(listEntry2, 0x70 * (pawnHandle & 0x1FF));
                 if (GameState.currentPawn == IntPtr.Zero) continue;
 
                 int lifeState = GameState.swed.ReadInt(GameState.currentPawn, Offsets.m_lifeState);
@@ -57,7 +57,7 @@ namespace Titled_Gui.Data.Entity
             IntPtr currentWeapon = GameState.swed.ReadPointer(localPlayerPawn, Offsets.m_pClippingWeapon);
             short weaponIndex = GameState.swed.ReadShort(currentWeapon + Offsets.m_AttributeManager, Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
 
-            Entity localPlayer = new Entity
+            Entity localPlayer = new()
             {
                 PawnAddress = localPlayerPawn,
                 Origin = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),

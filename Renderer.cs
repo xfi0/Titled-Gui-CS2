@@ -92,18 +92,11 @@ namespace Titled_Gui
                 TextFont60 = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\NotoSans-Bold.ttf", 60.0f);
                 IconFont = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\glyph.ttf", 18.0f);
 
-                ushort[] icons = new ushort[] { 0xEB54, 0xEB55, 0 }; 
+                ushort[] icons = [0xEB54, 0xEB55, 0]; 
                 unsafe
                 {
                     fixed (ushort* pIcons = icons)
-                    {
-                        IconFont1 = io.Fonts.AddFontFromFileTTF(
-                            "..\\..\\..\\..\\Resources\\fonts\\Lineicons.ttf",
-                            36.0f,
-                            null,
-                            (IntPtr)pIcons
-                        );
-                    }
+                        IconFont1 = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\Lineicons.ttf", 36.0f, null, (IntPtr)pIcons);
                 }
                 io.Fonts.Build();
             }
@@ -198,9 +191,8 @@ namespace Titled_Gui
         {
             // toggle on tab
             if (ImGui.IsKeyPressed(OpenKey, false))
-            {
                 DrawWindow = !DrawWindow;
-            }
+            
             BGdrawList = ImGui.GetBackgroundDrawList();
             if (DrawWindow)
             {
@@ -748,8 +740,9 @@ namespace Titled_Gui
         }
         public static void DistanceTextThingy(Entity e)
         {
-            if (e == null || (BoxESP.TeamCheck && e?.Team == GameState.LocalPlayer.Team) || e?.Health <= 0 || e?.PawnAddress == GameState.LocalPlayer.PawnAddress) return;
-            string distText = $"{(int)e?.Distance / 100}m";
+            if (e == null || (BoxESP.TeamCheck && e?.Team == GameState.LocalPlayer.Team) || e?.Health <= 0 || e?.PawnAddress == GameState.LocalPlayer.PawnAddress || e?.Distance == null) return;
+
+            string distText = $"{(int)e.Distance / 100}m";
             Vector2 textPos = new(e.Position2D.X + 2, e.Position2D.Y);
             GameState.renderer.drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new(1f, 1f, 1f, 1f)), distText);
         }

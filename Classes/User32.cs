@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Titled_Gui.Classes
 {
@@ -50,8 +51,12 @@ namespace Titled_Gui.Classes
         public const uint MOUSEEVENTF_LEFTUP = 0x0004;
         public const uint KEYEVENTF_KEYDOWN = 0x0000;
         public const uint KEYEVENTF_KEYUP = 0x0002;
-        public const byte VK_SPACE = 0x20; 
-
+        public const byte VK_SPACE = 0x20;
+        private const int WH_KEYBOARD_LL = 13;
+        private static LowLevelKeyboardProc _proc;
+        private const int WM_KEYDOWN = 0x0100;
+        private static IntPtr _hookID = IntPtr.Zero;
+        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool ClientToScreen(IntPtr hWnd, out System.Drawing.Point lpPoint);
 
@@ -66,6 +71,8 @@ namespace Titled_Gui.Classes
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool UnhookWindowsHookEx(IntPtr hInstance);
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern short GetAsyncKeyState(int vKey);
@@ -83,6 +90,8 @@ namespace Titled_Gui.Classes
         [DllImport("user32.dll")]
         public static extern bool GetCursorPos(out POINT lpPoint);
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
 
         public static void Click()
         {

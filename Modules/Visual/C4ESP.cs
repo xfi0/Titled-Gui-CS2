@@ -11,8 +11,8 @@ namespace Titled_Gui.Modules.Visual
 {
     internal class C4ESP
     {
-        public static bool BoxEnabled = true;
-        public static bool TextEnabled = true;
+        public static bool BoxEnabled = false;
+        public static bool TextEnabled = false;
         public static Vector4 BoxColor = new(1, 1, 1, 1);
         public static Vector4 TextColor = new(1, 1, 1, 1);
 

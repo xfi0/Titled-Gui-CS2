@@ -514,7 +514,8 @@ namespace Titled_Gui
                             RenderBoolSettingWith2ColorPickers("Radar", ref Radar.IsEnabled, ref Radar.EnemyPointColor, ref Radar.TeamPointColor);
                             RenderBoolSetting("Draw Team", ref Radar.DrawOnTeam);
                             RenderBoolSetting("Draw Cross", ref Radar.DrawCrossb);
-
+                            RenderBoolSettingWith1ColorPicker("C4 Box ESP", ref C4ESP.BoxEnabled, ref C4ESP.BoxColor);
+                            RenderBoolSettingWith1ColorPicker("C4 Text ESP", ref C4ESP.TextEnabled, ref C4ESP.TextColor);
                             ImGui.EndChild();
 
                             ImGui.EndChild();

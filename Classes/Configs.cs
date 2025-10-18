@@ -169,7 +169,7 @@ namespace Titled_Gui.Classes
                     ["Trigger Bot Enabled"] = TriggerBot.Enabled,
                     ["Trigger Bot Max Delay"] = TriggerBot.MaxDelay,
                     ["Trigger Bot Min Delay"] = TriggerBot.MinDelay,
-                    ["Trigger Bot Shoot At Team"] = TriggerBot.ShootAtTeam,
+                    ["Trigger Bot Shoot At Team"] = TriggerBot.TeamCheck,
                     ["Trigger Bot Require Keybind"] = TriggerBot.RequireKeybind,
                     ["Trigger Bot Key"] = TriggerBot.TriggerKey
                 },
@@ -426,7 +426,7 @@ namespace Titled_Gui.Classes
                 TriggerBot.Enabled = configData["Trigger Bot"]?["Trigger Bot Enabled"]?.ToObject<bool>() ?? TriggerBot.Enabled;
                 TriggerBot.MaxDelay = configData["Trigger Bot"]?["Trigger Bot Max Delay"]?.ToObject<int>() ?? TriggerBot.MaxDelay;
                 TriggerBot.MinDelay = configData["Trigger Bot"]?["Trigger Bot Min Delay"]?.ToObject<int>() ?? TriggerBot.MinDelay;
-                TriggerBot.ShootAtTeam = configData["Trigger Bot"]?["Trigger Bot Shoot At Team"]?.ToObject<bool>() ?? TriggerBot.ShootAtTeam;
+                TriggerBot.TeamCheck = configData["Trigger Bot"]?["Trigger Bot Shoot At Team"]?.ToObject<bool>() ?? TriggerBot.TeamCheck;
                 TriggerBot.RequireKeybind = configData["Trigger Bot"]?["Trigger Bot Require Keybind"]?.ToObject<bool>() ?? TriggerBot.RequireKeybind;
                 TriggerBot.TriggerKey = configData["Trigger Bot"]?["Trigger Bot Key"]?.ToObject<int>() ?? TriggerBot.TriggerKey;
                 #endregion

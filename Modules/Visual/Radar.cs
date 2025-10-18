@@ -126,7 +126,7 @@ namespace Titled_Gui.Modules.Visual
         }
     }
 
-    internal class Point(Vector2 position, Vector4 color, int type, float yaw)
+    public class Point(Vector2 position, Vector4 color, int type, float yaw)
     {
         public Vector2 Position { get; } = position;
         public Vector4 Color { get; } = color;

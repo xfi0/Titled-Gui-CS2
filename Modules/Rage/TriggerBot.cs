@@ -11,7 +11,7 @@ namespace Titled_Gui.Modules.Rage
         public static bool Enabled = false;
         public static int MinDelay = 0;
         public static int MaxDelay = 10;  
-        public static bool ShootAtTeam = true;
+        public static bool TeamCheck = false;
         public static int TriggerKey = (int)Keys.MButton;
         public static bool RequireKeybind = true; // if enabled keybind is needed
         public static bool OnTarget = false;
@@ -19,8 +19,6 @@ namespace Titled_Gui.Modules.Rage
         public static Stopwatch TargetGraceTimer = new();
         public static int CurrentDelay = 0;
         private static readonly Random random = new(); 
-
-        public const float MaxVelocityThreshold = 18f;
         public const int EntityListMultiplier = 0x8;
         public const int EntityEntryOffset = 0x10;
         public const int EntityStride = 120;
@@ -36,12 +34,11 @@ namespace Titled_Gui.Modules.Rage
         {
             try
             {
-                if (!Enabled || (RequireKeybind && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0) || GameState.LocalPlayer.Health == 0)
-                    return;
+                if (!Enabled || (RequireKeybind && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0) || GameState.LocalPlayer.Health == 0) return;
 
                 int crosshairEnt = GameState.swed.ReadInt(GameState.LocalPlayerPawn + Offsets.m_iIDEntIndex);
-
-                if (crosshairEnt < 0)
+                //Console.WriteLine(crosshairEnt);
+                if (crosshairEnt == -1 || crosshairEnt <= 0)
                 {
                     ClearTargetState();
                     return;
@@ -49,16 +46,15 @@ namespace Titled_Gui.Modules.Rage
 
                 IntPtr entityList = GameState.swed.ReadPointer(GameState.client + Offsets.dwEntityList);
                 if (entityList == IntPtr.Zero)
-                {
                     entityList = EntityManager.listEntry;
-                }
+                
 
                 IntPtr entityEntry = GameState.swed.ReadPointer(entityList + EntityListMultiplier * (crosshairEnt >> EntityIndexShift) + EntityEntryOffset);
                 IntPtr entityPtr = GameState.swed.ReadPointer(entityEntry + EntityStride * (crosshairEnt & EntityIndexMask));
 
                 int EntityTeam = GameState.swed.ReadInt(entityPtr + Offsets.m_iTeamNum);
 
-                if ((!ShootAtTeam && GameState.LocalPlayer.Team != EntityTeam) || entityPtr == IntPtr.Zero || entityEntry == IntPtr.Zero || entityList == IntPtr.Zero)
+                if ((TeamCheck && GameState.LocalPlayer.Team == EntityTeam) || entityPtr == IntPtr.Zero || entityEntry == IntPtr.Zero || entityList == IntPtr.Zero)
                 {
                     ClearTargetState();
                     return;
@@ -74,7 +70,7 @@ namespace Titled_Gui.Modules.Rage
 
                     if (ReacquireTimer.ElapsedMilliseconds >= CurrentDelay)
                     {
-                        ExecuteTriggerAsync();
+                        Shoot();
                         OnTarget = true;
                         ReacquireTimer.Reset();
                         TargetGraceTimer.Restart();
@@ -82,7 +78,7 @@ namespace Titled_Gui.Modules.Rage
                 }
                 else
                 {
-                    ExecuteTriggerAsync();
+                    Shoot();
                     TargetGraceTimer.Restart();
                 }
             }
@@ -92,7 +88,7 @@ namespace Titled_Gui.Modules.Rage
             }
         }
 
-        private static async void ExecuteTriggerAsync()
+        private static async void Shoot()
         {
             await Task.Delay(5);
             User32.Click();
@@ -101,9 +97,8 @@ namespace Titled_Gui.Modules.Rage
         private static void ClearTargetState()
         {
             if (OnTarget && TargetGraceTimer.ElapsedMilliseconds < 100)
-            {
                 return;
-            }
+            
 
             OnTarget = false;
             ReacquireTimer.Reset();

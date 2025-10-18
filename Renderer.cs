@@ -429,7 +429,7 @@ namespace Titled_Gui
                             RenderIntSlider("Max Delay", ref Modules.Rage.TriggerBot.MaxDelay, 0, 1000, "%d");
                             RenderIntSlider("Min Delay", ref Modules.Rage.TriggerBot.MinDelay, 0, 1000, "%d");
                             RenderBoolSetting("Require Key bind", ref Modules.Rage.TriggerBot.RequireKeybind);
-
+                            //RenderBoolSetting("Team Check", ref TriggerBot.TeamCheck);
                             ImGui.EndChild();
 
                             ImGui.Columns(1);

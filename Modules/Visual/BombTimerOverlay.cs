@@ -19,17 +19,16 @@ namespace Titled_Gui.Modules.Visual
                 GameState.GameRules = GameState.swed.ReadPointer(GameState.client, Offsets.dwGameRules);
 
                 if (GameState.GameRules == IntPtr.Zero)
-                {
                     Thread.Sleep(10);
-                }
+                
 
-                BombPlanted = GameState.swed.ReadBool(GameState.GameRules, 0x9A5);
+                BombPlanted = GameState.swed.ReadBool(GameState.GameRules, Offsets.m_bBombPlanted);
 
                 if (BombPlanted)
                 {
                     for (int i = 0; i < 40; i++) // if bomb gets planted start counting
                     {
-                        BombPlanted = GameState.swed.ReadBool(GameState.GameRules, 0x9A5); // UH THIS WILL BREAK ON UPDATE BUT AUTO UPDATER GRABS FROM WRONG STRUCT OR SUM
+                        BombPlanted = GameState.swed.ReadBool(GameState.GameRules, Offsets.m_bBombPlanted);
                         if (!BombPlanted) { TimePlanted = 40; break; } // defusal
 
                         TimePlanted = 40 - i;
@@ -37,9 +36,8 @@ namespace Titled_Gui.Modules.Visual
                     }
                 }
                 else
-                {
                     Thread.Sleep(100);
-                }
+                
             }
             catch (Exception ex)
             {

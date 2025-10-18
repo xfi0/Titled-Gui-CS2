@@ -144,6 +144,7 @@ namespace Titled_Gui.Classes
                 return;
             }
             OutValue = Value;
+      
         }
     }
 }

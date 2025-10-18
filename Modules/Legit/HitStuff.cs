@@ -61,8 +61,8 @@ namespace Titled_Gui.Modules.Legit
             {
                 string path = Path.Combine("..", "..", "..", "..", "Resources", $"{soundName.Replace(" ", "")}.wav");
 
-                var file = new AudioFileReader(path);
-                var player = new WaveOutEvent();
+                AudioFileReader file = new(path);
+                WaveOutEvent player = new();
                 player.Init(file);
                 player.Volume = Volume;
                 player.Play();
@@ -92,7 +92,6 @@ namespace Titled_Gui.Modules.Legit
                     Texts.Remove(hitText); continue;
                 }
 
-
                 hitText.State += 1f;
 
                 float X = hitText.BasePosition.X + 100f * MathF.Sin(hitText.State / 50f) - 50f;
@@ -102,7 +101,7 @@ namespace Titled_Gui.Modules.Legit
 
                 float LifeTime = (float)(hitText.ExpireAt - DateTime.Now).TotalMilliseconds;
                 float totalLife = 1500f; // 1.5 s
-                float alpha = Math.Clamp(1f - ((totalLife - LifeTime) / totalLife), 0.5f, 1f);
+                float alpha = Math.Clamp(1f - ((totalLife - LifeTime) / totalLife), 0.1f, 1f);
 
                 var TextColorAdjusted = new Vector4(TextColor.X, TextColor.Y, TextColor.Z, alpha);
 

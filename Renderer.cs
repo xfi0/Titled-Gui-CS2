@@ -129,6 +129,7 @@ namespace Titled_Gui
                 RenderESPOverlay();
                 RenderMainWindow();
                 RenderWaterMark();
+                BombTimerOverlay.TimeOverlay();
             }
             catch (Exception ex)
             {
@@ -655,9 +656,8 @@ namespace Titled_Gui
                 HitStuff.CreateHitText();
 
                 if (EyeRay.Enabled)
-                {
                     EyeRay.DrawEyeRay();
-                }
+                
                 if (NameDisplay.Enabled)
                 {
                     foreach (var e in entities)
@@ -666,9 +666,8 @@ namespace Titled_Gui
                     }
                 }
                 if (Aimbot.DrawFov && Aimbot.AimbotEnable && Aimbot.UseFOV)
-                {
                     Aimbot.DrawCircle(Aimbot.FovSize, Aimbot.FovColor);
-                }
+                
                 if (Modules.Visual.BoneESP.EnableBoneESP)
                 {
                     foreach (Data.Entity.Entity entity in entities)
@@ -679,6 +678,7 @@ namespace Titled_Gui
                         }
                     }
                 }
+                C4ESP.DrawESP();
                 if (Chams.EnableChams)
                 {
                     foreach (Entity entity in entities)
@@ -740,7 +740,7 @@ namespace Titled_Gui
         }
         public static void DistanceTextThingy(Entity e)
         {
-            if (e == null || (BoxESP.TeamCheck && e?.Team == GameState.LocalPlayer.Team) || e?.Health <= 0 || e?.PawnAddress == GameState.LocalPlayer.PawnAddress || e?.Distance == null) return;
+            if (e == null || (BoxESP.TeamCheck && e?.Team == GameState.LocalPlayer.Team) || e?.Health <= 0 || e?.PawnAddress == GameState.LocalPlayer.PawnAddress || e?.Distance == null || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed)) return;
 
             string distText = $"{(int)e.Distance / 100}m";
             Vector2 textPos = new(e.Position2D.X + 2, e.Position2D.Y);

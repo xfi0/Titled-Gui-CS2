@@ -46,7 +46,11 @@ try
                         //Console.WriteLine(entity.Ping);
                     }
                 }
-                //Console.WriteLine(EntityManager.ReturnLocalPlayer()?.IsShooting);
+                //float[] ViewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+                //foreach (float vm in ViewMatrix)
+                //{
+                //    Console.WriteLine(vm);
+                //}
                 //Console.WriteLine(GameState.swed.ReadFloat(LocalPlayerPawn, Offsets.m_flFlashBangTime));
             }
             catch (Exception e)

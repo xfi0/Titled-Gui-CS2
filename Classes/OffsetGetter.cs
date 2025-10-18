@@ -91,6 +91,7 @@ namespace Titled_Gui.Classes
             { "m_angEyeAngles", new() { new Offset("m_angEyeAngles") } },
             { "m_iSpectatorSlotCount", new() { new Offset("m_iSpectatorSlotCount") } },
             { "m_iShotsFired", new() { new Offset("m_iShotsFired") } },
+            { "m_vecAbsOrigin", new() { new Offset("m_vecAbsOrigin") } },
 
             // EXPLICIT CLASS THING
             { "m_pActionTrackingServices", new() { new Offset("m_pActionTrackingServices", "CCSPlayerController") } },
@@ -99,6 +100,7 @@ namespace Titled_Gui.Classes
             { "m_iNumRoundKills", new() { new Offset("m_iNumRoundKills", "CCSPlayerController_ActionTrackingServices") } },
             { "m_iNumRoundKillsHeadshots", new() { new Offset("m_iNumRoundKillsHeadshots", "CCSPlayerController_ActionTrackingServices") } },
             { "m_entitySpottedState", new() { new Offset("m_entitySpottedState", "C_CSPlayerPawn") } },
+            //{ "m_bBombPlanted", new() { new Offset("m_bBombPlanted", "C_CSGameRules") } },
 
         };
 

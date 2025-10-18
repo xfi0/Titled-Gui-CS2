@@ -13,7 +13,7 @@ namespace Titled_Gui.Data.Entity
 
         public List<Entity>? GetEntities()
         {
-            List<Entity> entities = new();
+            List<Entity> entities = [];
             GameState.EntityList = GameState.swed.ReadPointer(GameState.client + Offsets.dwEntityList);
             listEntry = GameState.swed.ReadPointer(GameState.EntityList + 0x10);
 
@@ -113,7 +113,7 @@ namespace Titled_Gui.Data.Entity
         //    Ray ray = new(localPlayer.Bones[2], localPlayer.EyeDirection);
         //    if (ray.Intersects(localPlayer.Bones[2],))
         //}
-        private static readonly Dictionary<nint, int> Shots = new();
+        private static readonly Dictionary<nint, int> Shots = [];
 
         public static bool IsShooting()
         {

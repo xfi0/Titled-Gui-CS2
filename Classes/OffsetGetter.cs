@@ -5,7 +5,7 @@ namespace Titled_Gui.Classes
 {
     internal class OffsetGetter
     {
-        private static readonly Dictionary<string, int> offsets = new(); // holds the resolved offsets
+        private static readonly Dictionary<string, int> offsets = []; // holds the resolved offsets
         private static HttpClient httpClient = new();
         static OffsetGetter() 
         {

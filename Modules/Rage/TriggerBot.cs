@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
@@ -37,24 +38,39 @@ namespace Titled_Gui.Modules.Rage
                 if (!Enabled || (RequireKeybind && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0) || GameState.LocalPlayer.Health == 0) return;
 
                 int crosshairEnt = GameState.swed.ReadInt(GameState.LocalPlayerPawn + Offsets.m_iIDEntIndex);
-                //Console.WriteLine(crosshairEnt);
-                if (crosshairEnt == -1 || crosshairEnt <= 0)
+                if (crosshairEnt == -1 || crosshairEnt == 0)
+                {
+                    ClearTargetState();
+                    return;
+                }
+                int IndexHigh = (crosshairEnt & 0x7FFF) >> 9;
+                int IndexLow = (crosshairEnt & 0x1FF);
+
+                IntPtr entityList = GameState.swed.ReadPointer(GameState.client + Offsets.dwEntityList);
+                if (entityList == IntPtr.Zero)
+                {
+                    ClearTargetState();
+                    entityList = GameState.EntityList; // fallback, may not work
+                    return;
+                }
+                IntPtr entityEntry = GameState.swed.ReadPointer(entityList, 0x8 * IndexHigh + 0x10);
+                if (entityEntry == IntPtr.Zero)
+                {
+                    ClearTargetState();
+                    return;
+                }
+                IntPtr entityPtr = GameState.swed.ReadPointer(entityEntry, 0x70 * IndexLow);
+                if (entityPtr == IntPtr.Zero)
                 {
                     ClearTargetState();
                     return;
                 }
 
-                IntPtr entityList = GameState.swed.ReadPointer(GameState.client + Offsets.dwEntityList);
-                if (entityList == IntPtr.Zero)
-                    entityList = EntityManager.listEntry;
-                
-
-                IntPtr entityEntry = GameState.swed.ReadPointer(entityList + EntityListMultiplier * (crosshairEnt >> EntityIndexShift) + EntityEntryOffset);
-                IntPtr entityPtr = GameState.swed.ReadPointer(entityEntry + EntityStride * (crosshairEnt & EntityIndexMask));
-
                 int EntityTeam = GameState.swed.ReadInt(entityPtr + Offsets.m_iTeamNum);
-
-                if ((TeamCheck && GameState.LocalPlayer.Team == EntityTeam) || entityPtr == IntPtr.Zero || entityEntry == IntPtr.Zero || entityList == IntPtr.Zero)
+                int Health = GameState.swed.ReadInt(entityPtr + Offsets.m_iHealth);
+                int LifeState = GameState.swed.ReadInt(entityPtr + Offsets.m_lifeState);
+                
+                if ((TeamCheck && GameState.LocalPlayer.Team == EntityTeam) || entityPtr == IntPtr.Zero || entityEntry == IntPtr.Zero || entityList == IntPtr.Zero || Health == 0 || GameState.LocalPlayer.Health == 0 || LifeState != 256)
                 {
                     ClearTargetState();
                     return;
@@ -84,13 +100,12 @@ namespace Titled_Gui.Modules.Rage
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.ToString());
+                Console.WriteLine(ex.ToString());
             }
         }
 
-        private static async void Shoot()
+        private static void Shoot()
         {
-            await Task.Delay(5);
             User32.Click();
         }
 

@@ -16,12 +16,12 @@ namespace Titled_Gui.Modules.Rage
         public static Vector4 FovColor = new(1f, 0f, 0f, 1f);
         public static bool DrawFov = true;
         public static int AimbotKey = 0x04; // mmb
-        public static string[] Bones = new string[] { "Head", "Neck", "Right Sholder", "Left Sholder", "Waist", "Random" };
+        public static string[] Bones = ["Head", "Neck", "Right Sholder", "Left Sholder", "Waist", "Random"];
         public static int CurrentBone = 0;
         public static int CurrentBoneIndex = 2;
         public static Vector3 CurrentBoneV3 = Vector3.Zero;
         public static bool RandomChosen = false;
-        public static string[] AimbotMethods = new[] { "Mouse Movement", "Memory Writing" };
+        public static string[] AimbotMethods = ["Mouse Movement", "Memory Writing"];
         public static int CurrentAimMethod = 0;
         public static float SmoothingX = 5f;
         public static float SmoothingY = 5f;

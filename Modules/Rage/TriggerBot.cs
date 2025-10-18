@@ -44,7 +44,7 @@ namespace Titled_Gui.Modules.Rage
                     return;
                 }
                 int IndexHigh = (crosshairEnt & 0x7FFF) >> 9;
-                int IndexLow = (crosshairEnt & 0x1FF);
+                int IndexLow = (crosshairEnt & EntityIndexMask);
 
                 IntPtr entityList = GameState.swed.ReadPointer(GameState.client + Offsets.dwEntityList);
                 if (entityList == IntPtr.Zero)
@@ -53,7 +53,7 @@ namespace Titled_Gui.Modules.Rage
                     entityList = GameState.EntityList; // fallback, may not work
                     return;
                 }
-                IntPtr entityEntry = GameState.swed.ReadPointer(entityList, 0x8 * IndexHigh + 0x10);
+                IntPtr entityEntry = GameState.swed.ReadPointer(entityList, EntityListMultiplier * IndexHigh + EntityEntryOffset);
                 if (entityEntry == IntPtr.Zero)
                 {
                     ClearTargetState();

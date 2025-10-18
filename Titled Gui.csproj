@@ -17,6 +17,7 @@
 	  <None Remove="Resources\fonts\glyph.ttf" />
 	  <None Remove="Resources\fonts\Lineicons.ttf" />
 	  <None Remove="Resources\fonts\NotoSans-Bold.ttf" />
+	  <None Remove="Resources\fonts\undefeated.ttf" />
 	  <None Remove="Resources\MenuLogo.png" />
 	</ItemGroup>
 
@@ -52,6 +53,12 @@
 
 	<ItemGroup>
 	  <Folder Include="Configs\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Resources\fonts\undefeated.ttf">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 </Project>

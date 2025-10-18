@@ -49,6 +49,7 @@ namespace Titled_Gui
         public static ImFontPtr TextFont60;
         public static ImFontPtr IconFont;
         public static ImFontPtr IconFont1;
+        public static ImFontPtr GunIconsFont;
         public static bool EnableWaterMark = true;
         public static bool IsTextFontNormalLoaded => !TextFontNormal.Equals(default(ImFontPtr));
         public static bool IsTextFontBigLoaded => !TextFontBig.Equals(default(ImFontPtr));
@@ -59,6 +60,7 @@ namespace Titled_Gui
         public static Vector4 knobOff = new(0.15f, 0.15f, 0.15f, 1f);
         public static Vector4 knobOn = new(0.2745f, 0.3176f, 0.4510f, 1.0f);
         public static bool IsIconFont1Loaded => !IconFont1.Equals(default(ImFontPtr));
+        public static bool IsGunIconFontLoaded => !GunIconsFont.Equals(default(ImFontPtr));
         public static Vector4 ParticleColor = new(1f, 1f, 1f, 1f);
         public static Vector4 LineColor = new(1, 1, 1, 0.33f);
         public static float ParticleRadius = 2.5f;
@@ -91,6 +93,7 @@ namespace Titled_Gui
                 TextFont48 = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\NotoSans-Bold.ttf", 48.0f);
                 TextFont60 = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\NotoSans-Bold.ttf", 60.0f);
                 IconFont = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\glyph.ttf", 18.0f);
+                GunIconsFont = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\undefeated.ttf", 24.0f);
 
                 ushort[] icons = [0xEB54, 0xEB55, 0]; 
                 unsafe
@@ -325,17 +328,15 @@ namespace Titled_Gui
                     var spacingHeight = availableHeight - cogButtonHeight - 5f;
 
                     if (spacingHeight > 0)
-                    {
                         ImGui.Dummy(new(0, spacingHeight));
-                    }
+                    
 
                     Vector2 cogPos = ImGui.GetCursorScreenPos();
                     Vector2 cogSize = new(ImGui.GetContentRegionAvail().X, cogButtonHeight);
 
                     if (ImGui.InvisibleButton("##SettingsGear", cogSize))
-                    {
                         selectedTab = 4;
-                    }
+                    
 
                     bool isHovered = ImGui.IsItemHovered();
                     bool isSettingsSelected = selectedTab == 4;
@@ -344,17 +345,14 @@ namespace Titled_Gui
 
                     uint gearColor;
                     if (isSettingsSelected)
-                    {
                         gearColor = ImGui.ColorConvertFloat4ToU32(accentColor);
-                    }
+                    
                     else if (isHovered)
-                    {
                         gearColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.9f, 0.9f, 0.9f, 1));
-                    }
+                    
                     else
-                    {
                         gearColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.6f, 0.6f, 0.6f, 1));
-                    }
+                    
 
                     DrawGearIcon(gearCenter, gearColor);
                 }
@@ -486,6 +484,7 @@ namespace Titled_Gui
                             //    });
                             //}
                             RenderBoolSetting("Eye Ray", ref EyeRay.Enabled);
+                            RenderBoolSetting("Gun Icon", ref GunDisplay.Enabled);
                             ImGui.EndChild();
 
                             ImGui.NextColumn();
@@ -696,6 +695,10 @@ namespace Titled_Gui
 
                         ArmorBar.DrawArmorBar(this, entity.Armor, 100, barPos, EntityHeight, entity);
                     }
+                }
+                foreach (var e in GameState.Entities)
+                {
+                    GunDisplay.Draw(e);
                 }
 
                 Radar.DrawRadar();

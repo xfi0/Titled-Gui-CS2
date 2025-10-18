@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Numerics;
+using System.Reflection;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Game;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
@@ -54,8 +55,25 @@ namespace Titled_Gui.Data.Entity
             IntPtr boneMatrix = GameState.swed.ReadPointer(sceneNode, Offsets.m_modelState + 0x80);
             IntPtr dwSensitivity = GameState.swed.ReadPointer(GameState.client + Offsets.dwSensitivity);
             float sensitivity = GameState.swed.ReadFloat(dwSensitivity + Offsets.dwSensitivity_sensitivity);
-            IntPtr currentWeapon = GameState.swed.ReadPointer(localPlayerPawn, Offsets.m_pClippingWeapon);
-            short weaponIndex = GameState.swed.ReadShort(currentWeapon + Offsets.m_AttributeManager, Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
+            IntPtr clippingWeapon = GameState.swed.ReadPointer(localPlayerPawn + Offsets.m_pClippingWeapon);
+            IntPtr weaponData = GameState.swed.ReadPointer(clippingWeapon + 0x10);
+            IntPtr weaponNameAddress = GameState.swed.ReadPointer(weaponData + 0x20);
+
+            string weaponName = "Invalid Weapon Name";
+            if (weaponNameAddress != 0)
+            {
+                byte[] Buffer = GameState.swed.ReadBytes(weaponNameAddress, 32);
+                int len = Array.IndexOf<byte>(Buffer, 0);
+                if (len < 0)
+                    len = Buffer.Length;
+
+                string raw = System.Text.Encoding.UTF8.GetString(Buffer, 0, len);
+
+                if (raw.Length > 7)
+                    weaponName = raw.Substring(7);
+                else
+                    weaponName = raw;
+            }
 
             Entity localPlayer = new()
             {
@@ -83,12 +101,10 @@ namespace Titled_Gui.Data.Entity
                 Sensitivity = GameState.swed.ReadFloat(GameState.client + Offsets.dwSensitivity, Offsets.dwSensitivity_sensitivity),
                 Velocity = GameState.swed.ReadVec(GameState.LocalPlayerPawn, Offsets.m_vecAbsVelocity),
                 ViewAngles = GameState.swed.ReadVec(client, Offsets.dwViewAngles),
-                CurrentWeapon = currentWeapon,
-                WeaponIndex = weaponIndex,
                 Armor = GameState.swed.ReadInt(localPlayerPawn, Offsets.m_ArmorValue),
                 IsScoped = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bIsScoped),
                 IsBuyMenuOpen = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bIsBuyMenuOpen),
-                CurrentWeaponName = Enum.GetName(typeof(GetGunName.WeaponIds), weaponIndex),
+                CurrentWeaponName = weaponName,
                 Account = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iAccount),
                 CashSpent = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iCashSpentThisRound),
                 CashSpentTotal = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iTotalCashSpent),
@@ -146,8 +162,27 @@ namespace Titled_Gui.Data.Entity
                 IntPtr boneMatrix = GameState.swed.ReadPointer(sceneNode, Offsets.m_modelState + 0x80);
                 IntPtr dwSensitivity = GameState.swed.ReadPointer(GameState.client + Offsets.dwSensitivity);
                 float sensitivity = GameState.swed.ReadFloat(dwSensitivity + Offsets.dwSensitivity_sensitivity);
-                IntPtr currentWeapon = GameState.swed.ReadPointer(pawnAddress, Offsets.m_pClippingWeapon);
-                short weaponIndex = GameState.swed.ReadShort(currentWeapon + Offsets.m_AttributeManager, Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
+
+                IntPtr clippingWeapon = GameState.swed.ReadPointer(currentPawn + Offsets.m_pClippingWeapon);
+                IntPtr weaponData = GameState.swed.ReadPointer(clippingWeapon + 0x10);
+                IntPtr weaponNameAddress = GameState.swed.ReadPointer(weaponData + 0x20);
+
+                string weaponName = "Invalid Weapon Name";
+                if (weaponNameAddress != 0)
+                {
+                    byte[] Buffer = GameState.swed.ReadBytes(weaponNameAddress, 32);
+                    int len = Array.IndexOf<byte>(Buffer, 0);
+                    if (len < 0) 
+                        len = Buffer.Length;
+
+                    string raw = System.Text.Encoding.UTF8.GetString(Buffer, 0, len);
+
+                    if (raw.Length > 7)
+                        weaponName = raw.Substring(7);
+                    else
+                        weaponName = raw;
+                }
+
 
                 Entity entity = new()
                 {
@@ -173,12 +208,12 @@ namespace Titled_Gui.Data.Entity
                     ViewAngles = GameState.swed.ReadVec(client, Offsets.dwViewAngles),
                     AimPunchAngle = GameState.swed.ReadVec(pawnAddress + Offsets.m_aimPunchAngle),
                     AimPunchAngleVel = GameState.swed.ReadVec(pawnAddress + Offsets.m_aimPunchCache),
-                    CurrentWeapon = currentWeapon,
-                    WeaponIndex = weaponIndex,
+                    //CurrentWeapon = currentWeapon,
+                    //WeaponIndex = weaponIndex,
                     Armor = GameState.swed.ReadInt(pawnAddress, Offsets.m_ArmorValue),
                     IsScoped = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsScoped),
                     IsBuyMenuOpen = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsBuyMenuOpen),
-                    CurrentWeaponName = Enum.GetName(typeof(GetGunName.WeaponIds), weaponIndex),
+                    CurrentWeaponName = weaponName,
                     Account = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iAccount),
                     CashSpent = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iCashSpentThisRound),
                     CashSpentTotal = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iTotalCashSpent),
@@ -186,7 +221,7 @@ namespace Titled_Gui.Data.Entity
                     ShotsFired = swed.ReadInt(pawnAddress, Offsets.m_iShotsFired),
                     IsAttacking = GameState.swed.ReadBool(GameState.client, Offsets.attack),
                     IsFlashed = GameState.swed.ReadFloat(pawnAddress, Offsets.m_flFlashBangTime) > 1.5,
-                    Ammo = GameState.swed.ReadInt(client, Offsets.m_iAmmo),
+                    Ammo = GameState.swed.ReadInt(pawnAddress, Offsets.m_iAmmo),
                     EyeDirection = GameState.swed.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
                     Ping = (int)GameState.swed.ReadUInt(currentController, Offsets.m_iPing),
                     IsWalking = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsWalking),

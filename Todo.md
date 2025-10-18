@@ -1,9 +1,10 @@
-// IF YOU ARE A DEV FEEL FREE TO DO ANY OF THESE AND SUBMIT A PULL REQUEST
+# IF YOU ARE A DEV FEEL FREE TO DO ANY OF THESE AND SUBMIT A PULL REQUEST
+
 # Important
 
 # Middle Ground
 Trigger bot not use crosshair index bs instead use a raycast or sum
-weird w2s none sense
+Fix visualls like name display moving at a distance
 Menu useable in game
 
 # Least Important

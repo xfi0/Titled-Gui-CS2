@@ -42,7 +42,7 @@ try
 
                     foreach (Entity entity in entities)
                     {
-                        Console.WriteLine(entity.CurrentWeaponName);
+                        //Console.WriteLine(entity.CurrentWeaponName);
                     }
                 }
                 //float[] ViewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);

@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using System.Numerics;
+using System.Windows.Forms.VisualStyles;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Data.Game.GameState;
@@ -13,6 +14,8 @@ namespace Titled_Gui.Modules.Visual
         public static bool TeamCheck = false;
         public static Vector4 BoneColor = new(1f, 1f, 1f, 1f);
         public static float GlowAmount = 1f;
+        public static string[] Types = ["Straight", "Beizer"];
+        public static int CurrentType = 1;
 
         public static readonly (int, int)[] BoneConnections = 
         [
@@ -64,11 +67,19 @@ namespace Titled_Gui.Modules.Visual
                 {
                     if (GlowAmount > 0)
                     {
-                        DrawHelpers.DrawGlowLine(renderer.drawList, boneA, boneB, BoneColor, GlowAmount,  ThickNess: thickness);
+                        DrawHelpers.DrawGlowLine(renderer.drawList, boneA, boneB, BoneColor, GlowAmount, ThickNess: thickness);
                         DrawHelpers.DrawGlowCircle(renderer.drawList, boneA, thickness * 2, BoneColor, GlowAmount);
                     }
-                    renderer.drawList.AddLine(boneA, boneB, boneColor, thickness); //draw a line between the Bones
-                    renderer.drawList.AddCircleFilled(boneA, thickness * 2, boneColor); //draw a circle at the start bone
+                    switch (CurrentType)
+                    {
+                        case 0:
+                            renderer.drawList.AddLine(boneA, boneB, boneColor, thickness); //draw a line between the Bones
+                            renderer.drawList.AddCircleFilled(boneA, thickness * 2, boneColor); //draw a circle at the start bone
+                            break;
+                        case 1:
+                            renderer.drawList.AddBezierCubic(boneB, boneB,boneA, boneA,boneColor, thickness);
+                            break;
+                    }
                 }
             }
 

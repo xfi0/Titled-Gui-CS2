@@ -15,7 +15,7 @@ namespace Titled_Gui.Modules.Visual
         public static Vector4 BoneColor = new(1f, 1f, 1f, 1f);
         public static float GlowAmount = 1f;
         public static string[] Types = ["Straight", "Beizer"];
-        public static int CurrentType = 1;
+        public static int CurrentType = 0;
 
         public static readonly (int, int)[] BoneConnections = 
         [
@@ -77,7 +77,7 @@ namespace Titled_Gui.Modules.Visual
                             renderer.drawList.AddCircleFilled(boneA, thickness * 2, boneColor); //draw a circle at the start bone
                             break;
                         case 1:
-                            renderer.drawList.AddBezierCubic(boneB, boneB,boneA, boneA,boneColor, thickness);
+                            renderer.drawList.AddBezierCubic(boneB, boneA, boneA, boneColor, thickness);
                             break;
                     }
                 }

@@ -14,36 +14,48 @@ namespace Titled_Gui.Data.Entity
 
         public List<Entity>? GetEntities()
         {
-            List<Entity> entities = [];
-            GameState.EntityList = GameState.swed.ReadPointer(GameState.client + Offsets.dwEntityList);
-            listEntry = GameState.swed.ReadPointer(GameState.EntityList + 0x10);
-
-            for (int i = 0; i < 64; i++) // loop through all entities
+            try
             {
-                currentController = GameState.swed.ReadPointer(listEntry, i * 0x70);
-                if (currentController == IntPtr.Zero) continue;
+                List<Entity> entities = [];
+                GameState.EntityList = GameState.swed.ReadPointer(GameState.client + Offsets.dwEntityList);
+                if (EntityList != IntPtr.Zero)
+                    listEntry = GameState.swed.ReadPointer(GameState.EntityList + 0x10);
+                else
+                    Console.WriteLine("Entity List Was Null");
 
-                int pawnHandle = GameState.swed.ReadInt(currentController, Offsets.m_hPlayerPawn);
-                if (pawnHandle == 0) continue;
-
-                IntPtr listEntry2 = GameState.swed.ReadPointer(GameState.EntityList, 0x8 * ((pawnHandle & 0x7FFF) >> 9) + 0x10);
-                if (listEntry2 == IntPtr.Zero) continue;
-
-                GameState.currentPawn = GameState.swed.ReadPointer(listEntry2, 0x70 * (pawnHandle & 0x1FF));
-                if (GameState.currentPawn == IntPtr.Zero) continue;
-
-                int lifeState = GameState.swed.ReadInt(GameState.currentPawn, Offsets.m_lifeState);
-                if (lifeState != 256) continue;
-
-                Entity? entity = PopulateEntity(GameState.currentPawn);
-
-                if (entity != null)
+                for (int i = 0; i < 64; i++) // loop through all entities
                 {
-                    entities?.Add(entity);
+                    currentController = GameState.swed.ReadPointer(listEntry, i * 0x70);
+                    if (currentController == IntPtr.Zero) continue;
+
+                    int pawnHandle = GameState.swed.ReadInt(currentController, Offsets.m_hPlayerPawn);
+                    if (pawnHandle == 0) continue;
+
+                    IntPtr listEntry2 = GameState.swed.ReadPointer(GameState.EntityList, 0x8 * ((pawnHandle & 0x7FFF) >> 9) + 0x10);
+                    if (listEntry2 == IntPtr.Zero) continue;
+
+                    GameState.currentPawn = GameState.swed.ReadPointer(listEntry2, 0x70 * (pawnHandle & 0x1FF));
+                    if (GameState.currentPawn == IntPtr.Zero) continue;
+
+                    int lifeState = GameState.swed.ReadInt(GameState.currentPawn, Offsets.m_lifeState);
+                    if (lifeState != 256) continue;
+
+                    Entity? entity = PopulateEntity(GameState.currentPawn);
+
+                    if (entity != null)
+                    {
+                        entities?.Add(entity);
+                    }
+                }
+                return entities != null ? entities?.OrderBy(e => e?.Distance)?.ToList() : null;
+            }
+            catch (Exception ex)
+            {
+                {
+                    Console.WriteLine(ex.ToString());
+                    return null;
                 }
             }
-
-            return  entities != null ? entities?.OrderBy(e => e?.Distance)?.ToList() : null;
         }
         public static Entity GetLocalPlayer()
         {

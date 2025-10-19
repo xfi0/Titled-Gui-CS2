@@ -77,7 +77,7 @@ namespace Titled_Gui.Modules.Visual
                             renderer.drawList.AddCircleFilled(boneA, thickness * 2, boneColor); //draw a circle at the start bone
                             break;
                         case 1:
-                            renderer.drawList.AddBezierCubic(boneB, boneA, boneA, boneColor, thickness);
+                            //renderer.drawList.AddBezierCubic(boneB, boneA, boneA, boneColor, thickness);
                             break;
                     }
                 }

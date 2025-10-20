@@ -43,18 +43,15 @@ namespace Titled_Gui.Data.Entity
                     Entity? entity = PopulateEntity(GameState.currentPawn);
 
                     if (entity != null)
-                    {
                         entities?.Add(entity);
-                    }
+
                 }
                 return entities != null ? entities?.OrderBy(e => e?.Distance)?.ToList() : null;
             }
             catch (Exception ex)
             {
-                {
-                    Console.WriteLine(ex.ToString());
-                    return null;
-                }
+                Console.WriteLine(ex.ToString());
+                return null;
             }
         }
         public static Entity GetLocalPlayer()

@@ -4,7 +4,6 @@
 
 # Middle Ground
 Trigger bot not use crosshair index bs instead use a raycast or sum
-Fix visualls like name display moving at a distance
 Menu useable in game
 
 # Least Important

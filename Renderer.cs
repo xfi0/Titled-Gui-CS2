@@ -88,12 +88,14 @@ namespace Titled_Gui
 
                 var io = ImGui.GetIO();
 
-                TextFontNormal = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\NotoSans-Bold.ttf", 18.0f);
-                TextFontBig = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\NotoSans-Bold.ttf", 24.0f);
-                TextFont48 = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\NotoSans-Bold.ttf", 48.0f);
-                TextFont60 = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\NotoSans-Bold.ttf", 60.0f);
-                IconFont = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\glyph.ttf", 18.0f);
-                GunIconsFont = io.Fonts.AddFontFromFileTTF("..\\..\\..\\..\\Resources\\fonts\\undefeated.ttf", 24.0f);
+                string Base = Path.Combine(AppContext.BaseDirectory, "Resources", "fonts");
+
+                TextFontNormal = io.Fonts.AddFontFromFileTTF(Path.Combine(Base, "NotoSans-Bold.ttf"), 18.0f);
+                TextFontBig = io.Fonts.AddFontFromFileTTF(Path.Combine(Base, "NotoSans-Bold.ttf"), 24.0f);
+                TextFont48 = io.Fonts.AddFontFromFileTTF(Path.Combine(Base, "NotoSans-Bold.ttf"), 48.0f);
+                TextFont60 = io.Fonts.AddFontFromFileTTF(Path.Combine(Base, "NotoSans-Bold.ttf"), 60.0f);
+                IconFont = io.Fonts.AddFontFromFileTTF(Path.Combine(Base, "glyph.ttf"), 18.0f);
+                GunIconsFont = io.Fonts.AddFontFromFileTTF(Path.Combine(Base, "undefeated.ttf"), 24.0f);
 
                 ushort[] icons = [0xEB54, 0xEB55, 0]; 
                 unsafe
@@ -467,6 +469,7 @@ namespace Titled_Gui
                             RenderBoolSetting("Show Name", ref NameDisplay.Enabled);
 
                             RenderBoolSetting("Enable Bone ESP", ref Modules.Visual.BoneESP.EnableBoneESP);
+                            RenderIntCombo("Bone ESP Type", ref BoneESP.CurrentType, BoneESP.Types, BoneESP.Types.Length);
                             RenderBoolSetting("Team Check", ref BoneESP.TeamCheck);
                             //RenderFloatSlider("Bone Thickness", ref BoneESP.BoneThickness, 1f, 10f, "%.1f");
                             RenderColorSetting("Bone Color", ref BoneESP.BoneColor);
@@ -686,16 +689,6 @@ namespace Titled_Gui
                         Chams.DrawChams(entity);
                     }
                 }
-                if (ArmorBar.EnableArmorhBar)
-                {
-                    foreach (var entity in GameState.Entities)
-                    {
-                        Vector2 barPos = new(entity.Head2D.X);
-                        float EntityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
-
-                        ArmorBar.DrawArmorBar(this, entity.Armor, 100, barPos, EntityHeight, entity);
-                    }
-                }
                 foreach (var e in GameState.Entities)
                 {
                     GunDisplay.Draw(e);
@@ -729,12 +722,40 @@ namespace Titled_Gui
                 }
                 foreach (var entity in GameState.Entities)
                 {
-                    float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
+                    if (entity != null)
+                    {
+                        var rect = BoxESP.GetBoxRect(entity);
+                        if (rect != null)
+                        {
+                            var (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle) = rect.Value;
+                            Vector2 barTopLeft = new(topLeft.X - HealthBar.HealthBarWidth - 2, topLeft.Y);
+                            float height = bottomRight.Y - topLeft.Y;
 
-                    Vector2 rectTTop = new(entity.ViewPosition2D.X - entityHeight / 3, entity.ViewPosition2D.Y);
-                    Vector2 barTopLeft = new(rectTTop.X - HealthBar.HealthBarWidth - 2, rectTTop.Y);
+                            Modules.Visual.HealthBar.DrawHealthBar(entity.Health, 100, barTopLeft, height, entity);
+                        }
+                    }
+                }
+                if (ArmorBar.EnableArmorhBar)
+                {
+                    foreach (var entity in GameState.Entities)
+                    {
+                        if (entity != null)
+                        {
+                            var rect = BoxESP.GetBoxRect(entity);
+                            if (rect != null)
+                            {
+                                var (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle) = rect.Value;
+                                Vector2 barTopRight = new(topRight.X - HealthBar.HealthBarWidth + 8, topRight.Y);
+                                float height = bottomRight.Y - topLeft.Y;
 
-                    Modules.Visual.HealthBar.DrawHealthBar(entity.Health, 100, barTopLeft, entityHeight, entity);
+                                ArmorBar.DrawArmorBar(this, entity.Armor, 100, barTopRight, height, entity);
+                            }
+                        }
+                        //Vector2 barPos = new(entity.Head2D.X);
+                        //float EntityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
+
+                        //ArmorBar.DrawArmorBar(this, entity.Armor, 100, barPos, EntityHeight, entity);
+                    }
                 }
             }
             catch (Exception e)

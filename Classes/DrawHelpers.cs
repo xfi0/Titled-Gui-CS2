@@ -35,6 +35,19 @@ namespace Titled_Gui.Classes
                 drawList.AddRectFilled(glowTop, glowBottom, ImGui.ColorConvertFloat4ToU32(glowColor), rounding);
             }
         }
+        public static void DrawGlowBezier(ImDrawListPtr drawList, Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4, Vector4 color, float glowAmount, float thickness, int layers = 4)
+        {
+            for (int i = 1; i <= layers; i++)
+            {
+                float expansion = glowAmount * i;
+                float alpha = color.W * MathF.Exp(-i * 0.6f);
+                var glowColor = new Vector4(color.X, color.Y, color.Z, alpha);
+
+                Vector2 offset = new Vector2(expansion, expansion);
+                drawList.AddBezierCubic(p1 - offset, p2 - offset, p3 + offset, p4 + offset, ImGui.ColorConvertFloat4ToU32(glowColor), thickness + i);
+            }
+        }
+
         public static void DrawGradientRect(ImDrawListPtr DrawList, Vector2 RectTop, Vector2 RectBottom, Vector4 ColorStart, Vector4 ColorEnd, float Rounding = 0f)
         {
             float rounded = MathF.Min(Rounding, MathF.Abs(RectBottom.X - RectTop.X) * 0.5f);

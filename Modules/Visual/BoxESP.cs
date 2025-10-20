@@ -172,7 +172,7 @@ namespace Titled_Gui.Modules.Visual
             }
             catch (Exception e)
             {
-                SendNotification("ERROR", $"A Exception Was Thrown: {e}"); // no string interpolation wow
+                SendNotification("ERROR", $"A Exception Was Thrown: {e}");
             }
         }
         public static void RenderESPPreview(Vector2 center)
@@ -192,7 +192,7 @@ namespace Titled_Gui.Modules.Visual
                 HealthBar.DrawHealthBarPreview(center + new Vector2(-70, -100));
 
             if (ArmorBar.EnableArmorhBar)
-                ArmorBar.DrawArmorBarPreview(center + new Vector2(50, -40));
+                ArmorBar.DrawArmorBarPreview(center + new Vector2(70, -100));
 
             if (NameDisplay.Enabled)
                 NameDisplay.DrawNamePreview(center + new Vector2(70, -100));
@@ -292,6 +292,25 @@ namespace Titled_Gui.Modules.Visual
                     ImGui.GetWindowDrawList().AddLine(rectBottomRight, new(rectBottomRight.X, rectBottomRight.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor));
                     break;
             }
+        }
+        public static (Vector2 TopLeft, Vector2 BottomRight, Vector2 TopRight, Vector2 BottomLeft, Vector2 BottomMiddle)? GetBoxRect(Entity entity)
+        {
+            if (entity == null || entity.Position2D == Vector2.Zero || entity.ViewPosition2D == Vector2.Zero)
+                return null;
+
+            float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
+            float halfWidth = entityHeight / 3f;
+            float centerX = (entity.ViewPosition2D.X + entity.Position2D.X) / 2f;
+            float topY = entity.Bones2D != null && entity.Bones2D.Count > 2 ? entity.Bones2D[2].Y : entity.ViewPosition2D.Y;
+            float bottomY = entity.Position2D.Y;
+
+            Vector2 topLeft = new(centerX - halfWidth, topY);
+            Vector2 topRight = new(centerX + halfWidth, topY);
+            Vector2 bottomLeft = new(centerX - halfWidth, bottomY);
+            Vector2 bottomRight = new(centerX + halfWidth, bottomY);
+            Vector2 bottomMiddle = new(centerX, bottomY);
+
+            return (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle);
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Titled_Gui.Modules.Visual
         }
         public static void DrawESP()
         {
-            if (!BoxEnabled && !TextEnabled) return; // should i do this? i just thought less reading more good but idkr
+            if (!BoxEnabled && !TextEnabled) return;
 
             Vector3 Position = GetPos();
             float[] ViewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);

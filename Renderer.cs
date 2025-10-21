@@ -487,7 +487,7 @@ namespace Titled_Gui
                             //    });
                             //}
                             RenderBoolSetting("Eye Ray", ref EyeRay.Enabled);
-                            RenderBoolSetting("Gun Icon", ref GunDisplay.Enabled);
+                            RenderBoolSettingWith1ColorPicker("Gun Icon", ref GunDisplay.Enabled, ref GunDisplay.TextColor);
                             ImGui.EndChild();
 
                             ImGui.NextColumn();

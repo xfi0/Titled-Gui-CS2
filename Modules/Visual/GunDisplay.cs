@@ -63,9 +63,12 @@ namespace Titled_Gui.Modules.Visual
             if (!Enabled || e.Health == 0 || e.PawnAddress == GameState.LocalPlayer.PawnAddress || e == null || e.CurrentWeaponName == null) return;
 
             string Icon = GetIcon(e.CurrentWeaponName);
+            var rect = BoxESP.GetBoxRect(e);
+
+            if (rect == null) return;
 
             if (!string.IsNullOrEmpty(Icon))
-                GameState.renderer.drawList.AddText(Renderer.GunIconsFont, 24, new Vector2(e.Bones2D[2].X , e.Bones2D[2].Y), ImGui.ColorConvertFloat4ToU32(TextColor), Icon);
+                GameState.renderer.drawList.AddText(Renderer.GunIconsFont, 24, new Vector2(rect.Value.TopRight.X, rect.Value.TopRight.Y - 10f), ImGui.ColorConvertFloat4ToU32(TextColor), Icon);
             
         }
         public static string GetIcon(string Weapon)

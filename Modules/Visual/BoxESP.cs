@@ -34,7 +34,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawBoxESP(Entity entity, Entity localPlayer, Renderer renderer)
         {
-            if (!EnableESP  || entity == null || (TeamCheck && entity.Team == localPlayer.Team) || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || FlashCheck && GameState.LocalPlayer.IsFlashed || entity?.Bones2D?.Count < 0  || entity?.Bones2D == null) return;
+            if (!EnableESP ||entity == null || (TeamCheck && entity.Team == localPlayer.Team) || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || FlashCheck && GameState.LocalPlayer.IsFlashed || entity?.Bones2D?.Count < 0  || entity?.Bones2D == null) return;
 
             try
             {

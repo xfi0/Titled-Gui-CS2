@@ -26,7 +26,7 @@ namespace Titled_Gui.Modules.Rage
                 int dx = (int)(NewAngles.X - GameState.LocalPlayer.ViewAngles.X) / (int)Smoothing;
                 int dy = (int)(NewAngles.Y - GameState.LocalPlayer.ViewAngles.Y) / (int)Smoothing;
 
-                MoveMouse.MouseMove(dx, dy);
+                //MoveMouse.MouseMove(dx, dy);
                 //GameState.swed.WriteVec(GameState.client, Offsets.dwViewAngles, NewAngles);
             }
             OldPunch = PunchAngle;

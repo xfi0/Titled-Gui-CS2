@@ -518,6 +518,11 @@ namespace Titled_Gui
                             RenderBoolSetting("Draw Cross", ref Radar.DrawCrossb);
                             RenderBoolSettingWith1ColorPicker("C4 Box ESP", ref C4ESP.BoxEnabled, ref C4ESP.BoxColor);
                             RenderBoolSettingWith1ColorPicker("C4 Text ESP", ref C4ESP.TextEnabled, ref C4ESP.TextColor);
+
+                            RenderBoolSettingWith1ColorPicker("Dropped Weapon ESP", ref WorldESP.DroppedWeaponESP, ref WorldESP.WeaponTextColor);
+                            RenderBoolSettingWith2ColorPickers("Dropped Hostage ESP", ref WorldESP.HostageESP, ref WorldESP.HostageTextColor, ref WorldESP.HostageBoxColor);
+                            RenderBoolSettingWith2ColorPickers("Chicken ESP", ref WorldESP.ChickenESP, ref WorldESP.ChickenTextColor, ref WorldESP.ChickenBoxColor);
+                            RenderBoolSettingWith1ColorPicker("Projectile ESP", ref WorldESP.ProjectileESP, ref WorldESP.ProjectileTextColor);
                             ImGui.EndChild();
 
                             ImGui.EndChild();
@@ -535,9 +540,7 @@ namespace Titled_Gui
                                 foreach (var config in Configs.SavedConfigs.Keys)
                                 {
                                     if (ImGui.Selectable(config))
-                                    {
                                         Configs.SelectedConfig = config;
-                                    }
                                 }
                             }
                             ImGui.EndChild();
@@ -693,7 +696,7 @@ namespace Titled_Gui
                 {
                     GunDisplay.Draw(e);
                 }
-
+                WorldESP.EntityESP();
                 Radar.DrawRadar();
 
                 if (Modules.Visual.BoxESP.EnableESP)

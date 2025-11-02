@@ -103,7 +103,7 @@
 
 - If you have any bugs and or bans please open a issue saying the mods you had enabled, how long you cheated for, etc.
 - This has SOME memory writing features, like FOV changer, no flash, and bhop. 
-- This is the one and ONLY repository, other ones are not maintained or verified by me. They may contain maliscous releases / code.
+- This is the one and ONLY repository, other ones are not maintained or verified by me. They may contain malicious releases / code.
 <hr></hr>
 
 <img src="https://github.com/xfi0/Titled-Gui-CS2/blob/master/Docs/Preview1.png">

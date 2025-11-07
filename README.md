@@ -17,6 +17,10 @@
 
 <hr></hr>
 
+## Licensing
+This project is licensed under GPL Public V3, More information in LICENSE
+
+<hr></hr>
 ## 🛠 Features
 
 <details>

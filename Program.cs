@@ -39,10 +39,6 @@ try
                 {
                     GameState.renderer.UpdateEntities(entities);
                     GameState.Entities = [.. entities];
-                    foreach (Entity entity in entities)
-                    {
-
-                    }
                 }
                 //float[] ViewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
                 //foreach (float vm in ViewMatrix)

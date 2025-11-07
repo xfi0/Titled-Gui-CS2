@@ -13,7 +13,7 @@ namespace Titled_Gui.Modules.Visual
         public static bool TeamCheck = false;
         public static bool EnableESP = false;
         public static float BoxFillOpacity = 0.2f; // 20%
-        public static string[] Shapes = new string[] { "2D Box", "3D Box", "Edges" };
+        public static string[] Shapes = new string[] { "2D Box", "3D Box", "Edges", "Triangle" };
         public static int CurrentShape = 0;
         public static bool EnableDistanceTracker = false;
         public static bool InnerOutline = false;
@@ -154,20 +154,52 @@ namespace Titled_Gui.Modules.Visual
                         }
 
 
-                        renderer.drawList.AddLine(rectTopLeft, new(rectTopLeft.X + edgeWidth, rectTopLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
-                        renderer.drawList.AddLine(rectTopLeft, new(rectTopLeft.X, rectTopLeft.Y + edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectTopLeft, new(rectTopLeft.X + edgeWidth, rectTopLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
+                        renderer.drawList.AddLine(rectTopLeft, new(rectTopLeft.X, rectTopLeft.Y + edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor));
 
-                        renderer.drawList.AddLine(rectTopRight, new(rectTopRight.X - edgeWidth, rectTopRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
-                        renderer.drawList.AddLine(rectTopRight, new(rectTopRight.X, rectTopRight.Y + edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectTopRight, new(rectTopRight.X - edgeWidth, rectTopRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
+                        renderer.drawList.AddLine(rectTopRight, new(rectTopRight.X, rectTopRight.Y + edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor));
 
-                        renderer.drawList.AddLine(rectBottomLeft, new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
-                        renderer.drawList.AddLine(rectBottomLeft, new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectBottomLeft, new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
+                        renderer.drawList.AddLine(rectBottomLeft, new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor));
 
-                        renderer.drawList.AddLine(rectBottomRight, new(rectBottomRight.X - edgeWidth, rectBottomRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor)); 
-                        renderer.drawList.AddLine(rectBottomRight, new(rectBottomRight.X, rectBottomRight.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor)); 
+                        renderer.drawList.AddLine(rectBottomRight, new(rectBottomRight.X - edgeWidth, rectBottomRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
+                        renderer.drawList.AddLine(rectBottomRight, new(rectBottomRight.X, rectBottomRight.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor));
 
                         break;
 
+                    case 3: // Pyramid
+                        {
+                            float size = MathF.Max(halfWidth * 2f, entityHeight * 0.6f);
+                            Vector3 pos = entity.Position;
+
+                            Vector3 up = new(pos.X, pos.Y + size / 2f, pos.Z);
+                            Vector3 upLeft = new(pos.X - size / 2f, pos.Y - size / 2f, pos.Z - size / 2f);
+                            Vector3 upRight = new(pos.X + size / 2f, pos.Y - size / 2f, pos.Z - size / 2f);
+                            Vector3 left = new(pos.X - size / 2f, pos.Y - size / 2f, pos.Z + size / 2f);
+                            Vector3 right = new(pos.X + size / 2f, pos.Y - size / 2f, pos.Z + size / 2f);
+
+                            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+
+                            Vector2 s_up = Calculate.WorldToScreen(viewMatrix, up, GameState.renderer.screenSize);
+                            Vector2 s_upLeft = Calculate.WorldToScreen(viewMatrix, upLeft, GameState.renderer.screenSize);
+                            Vector2 s_upRight = Calculate.WorldToScreen(viewMatrix, upRight, GameState.renderer.screenSize);
+                            Vector2 s_left = Calculate.WorldToScreen(viewMatrix, left, GameState.renderer.screenSize);
+                            Vector2 s_right = Calculate.WorldToScreen(viewMatrix, right, GameState.renderer.screenSize);
+
+                            uint col = ImGui.ColorConvertFloat4ToU32(boxColor);
+
+                            renderer.drawList.AddLine(s_right, s_left, col);
+                            renderer.drawList.AddLine(s_right, s_upRight, col);
+                            renderer.drawList.AddLine(s_left, s_upLeft, col);
+                            renderer.drawList.AddLine(s_upRight, s_upLeft, col);
+
+                            renderer.drawList.AddLine(s_right, s_up, col);
+                            renderer.drawList.AddLine(s_left, s_up, col);
+                            renderer.drawList.AddLine(s_upLeft, s_up, col);
+                            renderer.drawList.AddLine(s_upRight, s_up, col);
+                        }
+                        break;
                 }
             }
             catch (Exception e)
@@ -175,6 +207,7 @@ namespace Titled_Gui.Modules.Visual
                 SendNotification("ERROR", $"A Exception Was Thrown: {e}");
             }
         }
+
         public static void RenderESPPreview(Vector2 center)
         {
             if (!EnableESPPreview) return;
@@ -293,6 +326,7 @@ namespace Titled_Gui.Modules.Visual
                     break;
             }
         }
+
         public static (Vector2 TopLeft, Vector2 BottomRight, Vector2 TopRight, Vector2 BottomLeft, Vector2 BottomMiddle)? GetBoxRect(Entity entity)
         {
             if (entity == null || entity.Position2D == Vector2.Zero || entity.ViewPosition2D == Vector2.Zero)

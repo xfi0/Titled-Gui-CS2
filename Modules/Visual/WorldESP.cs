@@ -12,10 +12,10 @@ namespace Titled_Gui.Modules.Visual
 {
     internal class WorldESP // pasted asf
     {
-        public static bool ChickenESP = true;
-        public static bool DroppedWeaponESP = true;
-        public static bool ProjectileESP = true;
-        public static bool HostageESP = true;
+        public static bool ChickenESP = false;
+        public static bool DroppedWeaponESP = false;
+        public static bool ProjectileESP = false;
+        public static bool HostageESP = false;
         public static Vector4 WeaponTextColor = new(1, 1, 1, 1);
         public static Vector4 ProjectileTextColor = new(1, 1, 1, 1);
         public static Vector4 ChickenTextColor = new(1, 1, 1, 1);
@@ -152,7 +152,6 @@ namespace Titled_Gui.Modules.Visual
                             float boxWidth = boxHeight * 1.6f;
                             Vector2 topLeft = new(ItemPosition2D.X - boxWidth / 2f, chickenHeight2D.Y);
                             Vector2 bottomRight = new(ItemPosition2D.X + boxWidth / 2f, ItemPosition2D.Y);
-                            Vector2 topRight = new(ItemPosition2D.X + boxWidth / 2 + 12.0f, chickenHeight2D.Y);
                             GameState.renderer.drawList.AddRect(topLeft, bottomRight, ImGui.ColorConvertFloat4ToU32(ChickenBoxColor));
                             GameState.renderer.drawList.AddText(ItemPosition2D, ImGui.ColorConvertFloat4ToU32(WeaponTextColor), "Chicken");
                         }
@@ -165,7 +164,6 @@ namespace Titled_Gui.Modules.Visual
                             float boxHeight = MathF.Abs(HostagesHeight2D.Y - ItemPosition2D.Y);
                             float boxWidth = boxHeight * 0.6f;
                             Vector2 topLeft = new(ItemPosition2D.X - boxWidth / 2f, HostagesHeight2D.Y);
-                            Vector2 topRight = new(ItemPosition2D.X + boxWidth / 2f + 12f, HostagesHeight2D.Y);
                             Vector2 bottomRight = new(ItemPosition2D.X + boxWidth / 2f, ItemPosition2D.Y);
 
                             GameState.renderer.drawList.AddRect(topLeft, bottomRight, ImGui.ColorConvertFloat4ToU32(HostageBoxColor));

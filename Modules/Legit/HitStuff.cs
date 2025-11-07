@@ -103,7 +103,7 @@ namespace Titled_Gui.Modules.Legit
                 float totalLife = 1500f; // 1.5 s
                 float alpha = Math.Clamp(1f - ((totalLife - LifeTime) / totalLife), 0.1f, 1f);
 
-                var TextColorAdjusted = new Vector4(TextColor.X, TextColor.Y, TextColor.Z, alpha);
+                Vector4 TextColorAdjusted = new(TextColor.X, TextColor.Y, TextColor.Z, alpha);
 
                 GameState.renderer.drawList.AddText(TextPos, ImGui.ColorConvertFloat4ToU32(TextColorAdjusted), hitText.Text);
             }

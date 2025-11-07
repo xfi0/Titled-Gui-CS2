@@ -195,7 +195,6 @@ namespace Titled_Gui
 
         private void RenderMainWindow()
         {
-            // toggle on tab
             if (ImGui.IsKeyPressed(OpenKey, false))
                 DrawWindow = !DrawWindow;
             
@@ -754,10 +753,6 @@ namespace Titled_Gui
                                 ArmorBar.DrawArmorBar(this, entity.Armor, 100, barTopRight, height, entity);
                             }
                         }
-                        //Vector2 barPos = new(entity.Head2D.X);
-                        //float EntityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
-
-                        //ArmorBar.DrawArmorBar(this, entity.Armor, 100, barPos, EntityHeight, entity);
                     }
                 }
             }
@@ -1177,7 +1172,6 @@ namespace Titled_Gui
                 foreach (Keys k in Enum.GetValues<Keys>())
                 {
                     if (k == Keys.None || k == Keys.Escape) continue;
-                    if (keys.Contains(k)) continue;
 
                     short state = User32.GetAsyncKeyState((int)k);
                     bool pressed = (state & 0x8000) != 0;
@@ -1211,9 +1205,8 @@ namespace Titled_Gui
             string keyName = KeyBind[Lable] ? "Press Any Key..." : (Key == ImGuiKey.None ? "None" : Key.ToString());
 
             if (ImGui.Button(keyName, new Vector2(100, 0)))
-            {
                 KeyBind[Lable] = true;
-            }
+            
 
             if (KeyBind[Lable])
             {
@@ -1224,13 +1217,11 @@ namespace Titled_Gui
                         if (imguiKey >= ImGuiKey.MouseLeft && imguiKey <= ImGuiKey.MouseWheelY) continue;
 
                         if (imguiKey == ImGuiKey.Escape)
-                        {
                             Key = ImGuiKey.Insert;
-                        }
+                        
                         else
-                        {
                             Key = imguiKey;
-                        }
+                        
 
                         KeyBind[Lable] = false;
                         break;

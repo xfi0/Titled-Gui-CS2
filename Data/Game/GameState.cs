@@ -35,5 +35,6 @@ namespace Titled_Gui.Data.Game
         public static int RoundHeadshots {  get; set; }
         public static int RoundKills { get; set; }
         public static int RoundDamage { get; set; }
+        public static IntPtr bulletServices { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ClickableTransparentOverlay;
 using ImGuiNET;
+using System.Media;
 using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
@@ -78,6 +79,10 @@ namespace Titled_Gui
            Keys.ControlKey, Keys.LControlKey, Keys.RControlKey,
            Keys.Menu, Keys.LMenu, Keys.RMenu
         ];
+        private static bool menuSounds = true;
+        private static float menuSoundsVolume = 0.8f;
+
+
         public void UpdateEntities(IEnumerable<Entity> newEntities) => entities = newEntities.ToList();
 
         public static void LoadFonts()
@@ -589,6 +594,8 @@ namespace Titled_Gui
                             RenderColorSetting("Line Color", ref LineColor);
                             ImGui.Text("Keybinds:");
                             RenderKeybindChooser("Open Keybind", ref OpenKey);
+                            RenderBoolSetting("Menu Sounds", ref menuSounds);
+                            RenderFloatSlider("Menu Sounds Volume", ref menuSoundsVolume, 0, 1);
                             ImGui.EndChild();
 
                             ImGui.NextColumn();
@@ -926,7 +933,12 @@ namespace Titled_Gui
             else
             {
                 pressed = ImGui.Button(label, new Vector2(tabSize.X, 40));
-                if (pressed) selectedTab = tabIndex;
+                if (pressed)
+                {
+                    selectedTab = tabIndex;
+                    if (menuSounds)
+                        Classes.PlaySound.PlaySoundFile("ClickSounds/Creamy", menuSoundsVolume);
+                }
             }
 
             var min = ImGui.GetItemRectMin();

@@ -8,7 +8,7 @@ using static Titled_Gui.Data.Game.GameState;
 
 namespace Titled_Gui.Data.Entity
 {
-    public class EntityManager()
+    public class EntityManager
     {
         public static IntPtr listEntry = IntPtr.Zero;
 

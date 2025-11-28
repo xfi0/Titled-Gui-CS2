@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text.RegularExpressions;
+using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Classes
 {
@@ -9,14 +10,25 @@ namespace Titled_Gui.Classes
         private static HttpClient httpClient = new();
         static OffsetGetter() 
         {
-            httpClient.Timeout = TimeSpan.FromSeconds(10);
-            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+            try
+            {
+                httpClient.Timeout = TimeSpan.FromSeconds(10);
+                httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"[OFFSETS FINDER] ERROR: {e.Message}");
+            }
         }
         // urls to pull the dumper outputs from
         private const string OffsetsUrl = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.cs";
+        private const string SecondaryOffsetsUrl = "https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/refs/heads/main/offsets.cs";
         private const string ClientDllUrl = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/client_dll.cs";
+        private const string SecondaryClientDllUrl = "https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/refs/heads/main/client_dll.cs";
         private const string ButtonsUrl = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/buttons.cs";
+        private const string SecondaryButtonsUrl = "https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/refs/heads/main/buttons.cs";
         private const string Engine2Url = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/engine2_dll.cs";
+        private const string SecondaryEngine2Url = "https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/refs/heads/main/engine2_dll.cs";
 
         private static string OffsetsContent = string.Empty;
         private static string ClientDllContent = string.Empty;
@@ -125,6 +137,25 @@ namespace Titled_Gui.Classes
 
                 Console.WriteLine($"[OFFSET FINDER] Found: {offsets.Count}");
                 UpdateOffsetsClass();
+                if (GameState.swed.ReadPointer(GameState.client, Offsets.dwViewMatrix) == IntPtr.Zero)
+                {
+                    Console.WriteLine("[OFFSET FINDER] ERROR: a2x didnt NOT update correctly, trying secondary source");
+                    offsets.Clear();
+                    //Console.WriteLine("[Offset FINDER] DEBUGGING: " + Offsets.dwViewMatrix);
+
+                    OffsetsContent = await DownloadFile(SecondaryOffsetsUrl);
+                    ClientDllContent = await DownloadFile(SecondaryClientDllUrl);
+                    ButtonsContent = await DownloadFile(SecondaryButtonsUrl);
+                    Engine2Content = await DownloadFile(SecondaryEngine2Url);
+
+                    ParseOffsetsFile(OffsetsContent);
+                    ParseClientDllFile(ClientDllContent);
+                    ParseButtonsFile(ButtonsContent);
+                    ParseEngine2File(Engine2Content);
+                    UpdateOffsetsClass();
+                    //Console.WriteLine("[Offset FINDER] DEBUGGING: " + Offsets.dwViewMatrix);
+                    return;
+                }
                 Console.WriteLine("[OFFSET FINDER] Offsets Updated Successfully!");
             }
             catch (Exception ex)
@@ -267,7 +298,7 @@ namespace Titled_Gui.Classes
                             break;
                         }
                     }
-
+                  
                     if (!found)
                     {
                         Console.WriteLine($"[OFFSET FINDER] ERROR: No Offset Found {fieldName} (Tried: {string.Join(", ", sources.Select(s => s.Name))})");

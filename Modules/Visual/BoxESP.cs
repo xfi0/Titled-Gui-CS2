@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using SharpGen.Runtime.Win32;
 using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
@@ -13,7 +14,7 @@ namespace Titled_Gui.Modules.Visual
         public static bool TeamCheck = false;
         public static bool EnableESP = false;
         public static float BoxFillOpacity = 0.2f; // 20%
-        public static string[] Shapes = new string[] { "2D Box", "3D Box", "Edges", "Triangle" };
+        public static string[] Shapes = ["2D Box", "3D Box", "Edges", "Triangle"];
         public static int CurrentShape = 0;
         public static bool EnableDistanceTracker = false;
         public static bool InnerOutline = false;
@@ -25,8 +26,8 @@ namespace Titled_Gui.Modules.Visual
         public static Vector4 OutlineTeamColor = new(0, 1, 0, 1);
         public static float Rounding = 3f;
         public static bool FlashCheck = true; // THIS APPLIES TO ALL VISUALS BESIDES LIKE ONES THAT DONT HAVE ANYTHING TO DO WITH THE ENTITIES
-        public static float GlowAmount = 1f;
-        public static bool BoxFillGradient = true;
+        public static float GlowAmount = 0f;
+        public static bool BoxFillGradient = false;
         public static Vector4 BoxFillGradientColorTop = new(1f,1f,1f, BoxFillOpacity);
         public static Vector4 BoxFillGradientBottom = new(0f,0f,0f, BoxFillOpacity);
         public static float EdgeMultiplier = 0.25f; 

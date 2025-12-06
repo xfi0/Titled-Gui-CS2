@@ -19,8 +19,6 @@ namespace Titled_Gui.Data.Entity
         public IntPtr PawnAddress { get; set; } // pointer to the entity's pawn address
         public List<Vector3>? Bones { get; set; } // list of Bones for the entity
         public List<Vector2>? Bones2D { get; set; } // list of Bones in 2D space (screen space)
-        public IntPtr dwSensitivity { get; set; } // sensitivity for the local player
-        public float Sensitivity { get; set; } // sensitivity for the local player
         public string? Name { get; set; }
         public int Ammo { get; set; }
         public int Account, CashSpent, CashSpentTotal; 
@@ -53,5 +51,10 @@ namespace Titled_Gui.Data.Entity
         public IntPtr SpottedByState { get; set; }
         public Vector3 AngEyeAngles { get; set; }
         public Vector3 GunGameImmunityColor { get; set; }
+        public IntPtr gameSceneNode { get; set; }
+        /// <summary>
+        /// may only be for lp
+        /// </summary>
+        public float sensitivity { get; set; }
     }
 }

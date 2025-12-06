@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using System;
 using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
@@ -12,7 +13,7 @@ namespace Titled_Gui.Modules.Visual
         public static bool DrawOnSelf = false;
         public static bool EnableChams = false;
 
-        public static void DrawChams(Entity entity)
+        public static void DrawChams(Entity entity) // TODO: switch to hitbox rendering
         {
             if (entity == null || entity.Bones2D == null || (DrawOnSelf && entity == GameState.LocalPlayer) || BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed || entity.Bones2D.Count <= 0) return;
 

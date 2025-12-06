@@ -2,7 +2,7 @@
 
 namespace Titled_Gui.Data.Game
 {
-    internal class ActionTrackingServices : Classes.ThreadService // i dont think this is right
+    internal class ActionTrackingServices // i dont think this is right add the threaded service when this needs to be used, removed for cpu useage sake
     {
         public static void Update()
         {
@@ -13,9 +13,9 @@ namespace Titled_Gui.Data.Game
 
             //Console.WriteLine(GameState.swed.ReadFloat(GameState.ActionTrackingServices + Offsets.m_iNumRoundKillsHeadshots));
         }
-        protected override void FrameAction()
-        {
-            Update();
-        }
+        //protected override void FrameAction()
+        //{
+        //    Update(); 
+        //}
     }
 }

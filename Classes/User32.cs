@@ -50,6 +50,7 @@ namespace Titled_Gui.Classes
         public const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
         public const uint MOUSEEVENTF_LEFTUP = 0x0004;
         public const uint KEYEVENTF_KEYDOWN = 0x0000;
+        public const uint KEYEVENTF_SCANCODE = 0x0008;
         public const uint KEYEVENTF_KEYUP = 0x0002;
         public const byte VK_SPACE = 0x20;
         private const int WH_KEYBOARD_LL = 13;

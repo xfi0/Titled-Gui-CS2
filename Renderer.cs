@@ -206,7 +206,7 @@ namespace Titled_Gui
             BGdrawList = ImGui.GetBackgroundDrawList();
             if (DrawWindow)
             {
-                BGdrawList.AddRectFilled(Vector2.Zero, screenSize, ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.5f)));
+                BGdrawList.AddRectFilled(Vector2.Zero, screenSize, ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.5f))); // ts the dimmed background TODO: make a opacity changer
                 DrawParticles(NumberOfParticles);
                 ImGui.SetNextWindowPos(new Vector2((screenSize.X - 800) / 2f, (screenSize.Y - 600) / 2f), ImGuiCond.Always);
 
@@ -219,7 +219,7 @@ namespace Titled_Gui
                 style.WindowMinSize = new Vector2(32.0f, 32.0f);
                 style.WindowTitleAlign = new Vector2(0.5f, 0.5f);
                 style.WindowMenuButtonPosition = ImGuiDir.Left;
-                style.ChildRounding = 12f;
+                style.ChildRounding = 0f;
                 style.ChildBorderSize = 1f;
                 style.PopupRounding = 4f;
                 style.PopupBorderSize = 1.0f;
@@ -304,7 +304,7 @@ namespace Titled_Gui
 
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
                 ImGui.Begin("", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoDocking);
-                ImGui.SetWindowSize(new(800, 600));
+                ImGui.SetWindowSize(new(850, 650));
 
                 Vector2 tabPos = ImGui.GetCursorScreenPos();
                 tabSize = new(100, ImGui.GetContentRegionAvail().Y);
@@ -382,15 +382,15 @@ namespace Titled_Gui
                         case 0: // legit
                             ImGui.Columns(2, "Legit Columns", true);
                             ImGui.BeginChild("LeftLegit");
-                            //RenderBoolSetting("Auto BHOP", ref Modules.Legit.Bhop.BhopEnable);
+                            RenderBoolSettingWithWarning("Auto BHOP", ref Modules.Legit.Bhop.BhopEnable);
                             //RenderBoolSetting("Jump Shot", ref Modules.Legit.JumpHack.JumpHackEnabled);
                             RenderBoolSetting("Hit Sound", ref HitStuff.Enabled);
                             RenderFloatSlider("Hit Sound Volume", ref HitStuff.Volume, 0, 1);
                             RenderIntCombo("Current Hit Sound", ref HitStuff.CurrentHitSound, HitStuff.HitSounds, HitStuff.HitSounds.Length);
                             RenderBoolSettingWith1ColorPicker("Headshot Text", ref HitStuff.EnableHeadshotText, ref HitStuff.TextColor);
 
-                            RenderBoolSetting("Jump Shot", ref Modules.Legit.JumpHack.JumpHackEnabled);
-                            RenderKeybindChooser("Jump Shot Keybind", ref JumpHack.JumpHotkey);
+                            //RenderBoolSetting("Jump Shot", ref Modules.Legit.JumpHack.JumpHackEnabled);
+                            //RenderKeybindChooser("Jump Shot Keybind", ref JumpHack.JumpHotkey);
 
                             ImGui.NextColumn();
                             ImGui.EndChild();
@@ -410,7 +410,6 @@ namespace Titled_Gui
                             RenderSettingsSection("Aimbot Settings", () =>
                             {
                                 RenderIntCombo("Aim Bone", ref Aimbot.CurrentBone, Aimbot.Bones, Aimbot.Bones.Length, 160f); // bone that aimbot aims on
-                                RenderIntCombo("Aim Method", ref Aimbot.CurrentAimMethod, Aimbot.AimbotMethods, Aimbot.AimbotMethods.Length);
                                 RenderKeybindChooser("Aimbot Keybind", ref Aimbot.AimbotKey);
                                 RenderBoolSetting("Aim On Team", ref Modules.Rage.Aimbot.Team);
                                 RenderFloatSlider("Smoothing X", ref Aimbot.SmoothingX, 0, 20, "%.2f");
@@ -421,9 +420,10 @@ namespace Titled_Gui
                                 RenderIntSlider("FOV Size", ref Modules.Rage.Aimbot.FovSize, 10, 1000, "%d");
                                 RenderColorSetting("FOV Color", ref Modules.Rage.Aimbot.FovColor);
                                 RenderBoolSetting("Visibility Check", ref Aimbot.VisibilityCheck);
+                                RenderBoolSetting("Target Line", ref Aimbot.targetLine);
                             });
 
-                            RenderBoolSetting("RCS", ref RCS.Enabled);
+                            RenderBoolSetting("RCS", ref RCS.enabled);
                             ImGui.EndChild();
 
                             ImGui.NextColumn();
@@ -513,8 +513,9 @@ namespace Titled_Gui
 
                             RenderCategoryHeader("Other Visuals");
                             RenderBoolSetting("Enable Bomb Timer", ref Modules.Visual.BombTimerOverlay.EnableTimeOverlay);
-                            RenderBoolSetting("Anti Flash", ref Modules.Visual.NoFlash.NoFlashEnable);
-                            RenderBoolSetting("FOV Changer", ref FovChanger.Enabled);
+                            RenderBoolSettingWithWarning("Anti Flash", ref Modules.Visual.NoFlash.NoFlashEnable);
+                            RenderBoolSettingWithWarning("FOV Changer", ref FovChanger.Enabled);
+                            RenderBoolSettingWithWarning("Third Person", ref ThirdPerson.enabled);
                             RenderIntSlider("Desired FOV", ref FovChanger.FOV, 60, 160);
 
                             RenderBoolSettingWith2ColorPickers("Radar", ref Radar.IsEnabled, ref Radar.EnemyPointColor, ref Radar.TeamPointColor);
@@ -665,6 +666,8 @@ namespace Titled_Gui
         {
             try
             {
+                if (Aimbot.targetLine)
+                    Aimbot.RenderTargetLine();
                 HitStuff.CreateHitText();
 
                 if (EyeRay.Enabled)
@@ -901,7 +904,6 @@ namespace Titled_Gui
                     ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero); // transparent background
                     ImGui.PushStyleColor(ImGuiCol.ButtonHovered, Vector4.Zero);
                     ImGui.PushStyleColor(ImGuiCol.ButtonActive, Vector4.Zero);
-                    ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1, 1, 1, 1));
                 }
                 else
                 {
@@ -919,14 +921,18 @@ namespace Titled_Gui
                     ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
                     ImGui.PushStyleColor(ImGuiCol.ButtonHovered, Vector4.Zero);
                     ImGui.PushStyleColor(ImGuiCol.ButtonActive, Vector4.Zero);
-                    ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1, 1, 1, 1));
-                }
+               }
                 else
                 {
                     ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
                 }
                 pressed = ImGui.Button(label, new Vector2(tabSize.X, 40));
-                if (pressed) selectedTab = tabIndex;
+                if (pressed)
+                {
+                    selectedTab = tabIndex;
+                    if (menuSounds)
+                        Classes.PlaySound.PlaySoundFile("ClickSounds/Creamy", menuSoundsVolume);
+                }
                 ImGui.PopStyleColor(isSelected ? 4 : 1);
                 ImGui.PopFont();
             }
@@ -1043,6 +1049,82 @@ namespace Titled_Gui
                 onChanged?.Invoke();
             }
         }
+        private static Dictionary<string, bool> openPopups = [];
+        private static Dictionary<string, bool> previousValues = [];
+        private static void RenderBoolSettingWithWarning(string label, ref bool value, Action? onChanged = null, float widgetWidth = 0f)
+        {
+            if (!openPopups.ContainsKey(label))
+                openPopups[label] = false;
+
+            if (!previousValues.ContainsKey(label))
+                previousValues[label] = value;
+
+            bool temp = value;
+            RenderRowRightAligned(label, () =>
+            {
+                float height = ImGui.GetFrameHeight();
+                float width = height * 1.7f;
+                float radius = height / 2f - 2f;
+
+                float colWidth = ImGui.GetColumnWidth();
+                float spacing = ImGui.GetStyle().ItemSpacing.X;
+                float posX = ImGui.GetCursorPosX() + colWidth - width - spacing;
+                ImGui.SetCursorPosX(posX);
+
+                Vector2 p = ImGui.GetCursorScreenPos();
+                var drawList = ImGui.GetWindowDrawList();
+                string strId = "##" + label;
+
+                ImGui.InvisibleButton(strId, new Vector2(width, height));
+                if (ImGui.IsItemClicked())
+                {
+                    temp = !temp;
+                    if (!previousValues[label] && temp)
+                        openPopups[label] = true;
+                }
+
+                float t = temp ? 1f : 0f;
+
+                drawList.AddRectFilled(p, new Vector2(p.X + width, p.Y + height),
+                    ImGui.ColorConvertFloat4ToU32(trackCol), height);
+
+                float knobX = p.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
+                float knobY = p.Y + radius + 2f;
+
+                Vector4 knobColor = temp ? knobOn : knobOff;
+
+                drawList.AddCircleFilled(new Vector2(knobX, knobY), radius,
+                    ImGui.ColorConvertFloat4ToU32(knobColor), 36);
+
+                drawList.AddCircle(new Vector2(knobX, knobY), radius,
+                    ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
+            }, widgetWidth);
+            string popupId = "warning##" + label;
+            if (openPopups[label])
+                ImGui.OpenPopup(popupId);
+
+            bool tempref = openPopups[label];
+
+            //ImGui.SetNextWindowSize(new Vector2(200, 200));
+            if (ImGui.BeginPopupModal(popupId, ref tempref, ImGuiWindowFlags.AlwaysAutoResize))
+            {
+                ImGui.Text("WARNING\nThis feature uses WPM and or may be detected.\n Use at your own risk.");
+                ImGui.Separator();
+                if (ImGui.Button("OK", new Vector2(120, 0)))
+                    openPopups[label] = false; ImGui.CloseCurrentPopup();
+                
+
+                ImGui.EndPopup();
+            }
+            previousValues[label] = temp;
+            if (temp != value)
+            {
+                value = temp;
+                onChanged?.Invoke();
+            }
+        }
+
+
 
         private void RenderBoolSettingWith2ColorPickers(string label, ref bool value, ref Vector4 color1, ref Vector4 color2)
         {

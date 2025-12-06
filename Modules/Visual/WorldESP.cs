@@ -83,7 +83,7 @@ namespace Titled_Gui.Modules.Visual
             {"weapon_glock", "Glock-18"}
         };
 
-        
+
         private static string GetWeaponType(string itemIdentifier)
         {
             return WeaponsType.TryGetValue(itemIdentifier, out var value) ? value : "Unknown Weapon Type";
@@ -113,7 +113,7 @@ namespace Titled_Gui.Modules.Visual
                 ulong ItemNode = GameState.swed.ReadULong((nint)Item + Offsets.m_pGameSceneNode);
                 Vector3 ItemOrigin = GameState.swed.ReadVec((nint)ItemNode + Offsets.m_vecAbsOrigin);
                 Vector2 ItemPosition2D = Calculate.WorldToScreen(ViewMatrix, ItemOrigin, GameState.renderer.screenSize);
-            
+
 
                 ulong ItemInfo = GameState.swed.ReadULong((nint)(Item + 0x10));
                 ulong ItemTypePtr = GameState.swed.ReadULong((nint)(ItemInfo + 0x20));
@@ -160,7 +160,7 @@ namespace Titled_Gui.Modules.Visual
                         {
                             Vector3 hostagesHeight = ItemOrigin + new Vector3(0f, 0f, 72f);
                             Vector2 HostagesHeight2D = Calculate.WorldToScreen(ViewMatrix, hostagesHeight, GameState.renderer.screenSize);
-                            
+
                             float boxHeight = MathF.Abs(HostagesHeight2D.Y - ItemPosition2D.Y);
                             float boxWidth = boxHeight * 0.6f;
                             Vector2 topLeft = new(ItemPosition2D.X - boxWidth / 2f, HostagesHeight2D.Y);

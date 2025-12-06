@@ -161,8 +161,8 @@ namespace Titled_Gui.Classes
                 },
                 ["RCS"] = new JObject
                 {
-                    ["RCS Enabled"] = RCS.Enabled,
-                    ["RCS Strength"] = RCS.Strength
+                    ["RCS Enabled"] = RCS.enabled,
+                    ["RCS Strength"] = RCS.strength
                 },
                 ["Trigger Bot"] = new JObject
                 {
@@ -418,8 +418,8 @@ namespace Titled_Gui.Classes
                 #endregion
 
                 #region RCS
-                RCS.Enabled = configData["RCS"]?["RCS Enabled"]?.ToObject<bool>() ?? RCS.Enabled;
-                RCS.Strength = configData["RCS"]?["RCS Strength"]?.ToObject<float>() ?? RCS.Strength;
+                RCS.enabled = configData["RCS"]?["RCS Enabled"]?.ToObject<bool>() ?? RCS.enabled;
+                RCS.strength = configData["RCS"]?["RCS Strength"]?.ToObject<float>() ?? RCS.strength;
                 #endregion
 
                 #region Trigger Bot

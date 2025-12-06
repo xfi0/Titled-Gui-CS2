@@ -1,15 +1,12 @@
-# IF YOU ARE A DEV FEEL FREE TO DO ANY OF THESE AND SUBMIT A PULL REQUEST
-
 # Important
+Fix trigger bot
 
 # Middle Ground
-Trigger bot not use crosshair index bs instead use a raycast or sum
-Menu useable in game
+VPK or any other better visual check that supports occulusion checking
 
 # Least Important
-Radar, 
-Finish Configs,
 Bhop Using Keyboard Input,
-For Visuals Color Picker With Transparency If Applicable
-armor Bar Display on good pos
-ping display
+Fix Color picker GUI Bugs,
+Improve color pickers,
+ping display,
+Change all variables to camel case

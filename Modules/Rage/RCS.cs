@@ -6,36 +6,36 @@ namespace Titled_Gui.Modules.Rage
 {
     public class RCS : Classes.ThreadService
     {
-        public static bool Enabled = false;
-        public static float Strength = 100f; // in precents so 1 == 100%, 0.5 == 50% etc
-        public static Vector3 OldPunch = new();
-        public static int StartBullet = 1;
-        public static float Smoothing = 5f;
+        public static bool enabled = false;
+        public static float strength = 100f; // in precents so 1 == 100%, 0.5 == 50% etc
+        public static Vector3 oldPunch = new();
+        private static int startBullet = 1;
         public static void RunRCS()
         {
-            if (!Enabled || GameState.LocalPlayer.Health == 0 || (User32.GetAsyncKeyState(0x01) & 0x8000) == 0) return;
+            if (!enabled || GameState.LocalPlayer.Health == 0 || (User32.GetAsyncKeyState(0x01) & 0x8000) == 0)
+                return;
 
-            Vector3 PunchAngle = GameState.LocalPlayer.AimPunchAngle * Strength / 100 * 2;
-
-            if (GameState.LocalPlayer.ShotsFired > StartBullet)
+            if (GameState.LocalPlayer.ShotsFired > startBullet)
             {
-                Vector3 NewAngles = GameState.LocalPlayer.ViewAngles + OldPunch - PunchAngle;
-                NewAngles.X = Calculate.NormalizeAngle(NewAngles.X);
-                NewAngles.Y = Calculate.NormalizeAngle(NewAngles.Y);
+                Vector3 aimPunch = GameState.LocalPlayer.AimPunchAngle * (strength / 100f);
+                Vector3 newAngles;
+                aimPunch.X = Calculate.NormalizeAngle(aimPunch.X);
+                aimPunch.Y = Calculate.NormalizeAngle(aimPunch.Y);
 
-                int dx = (int)(NewAngles.X - GameState.LocalPlayer.ViewAngles.X) / (int)Smoothing;
-                int dy = (int)(NewAngles.Y - GameState.LocalPlayer.ViewAngles.Y) / (int)Smoothing;
-
-                //MoveMouse.MouseMove(dx, dy);
-                //GameState.swed.WriteVec(GameState.client, Offsets.dwViewAngles, NewAngles);
+                newAngles.X = (aimPunch.Y - oldPunch.Y) * 2.0f / (0.022f * GameState.LocalPlayer.sensitivity) / 1;
+                newAngles.Y = -(aimPunch.X - oldPunch.X) * 2.0f / (0.022f * GameState.LocalPlayer.sensitivity) / 1;
+                User32.mouse_event(User32.MOUSEEVENTF_MOVE, (uint)(-newAngles.X * -1), (uint)newAngles.Y, 0, 0);
+                oldPunch = aimPunch;
             }
-            OldPunch = PunchAngle;
+            else
+                oldPunch = new(0, 0, 0);
+            
         }
 
 
         protected override void FrameAction()
         {
-            if (!Enabled) return;
+            if (!enabled) return;
 
             RunRCS();
         }

@@ -1,6 +1,8 @@
-﻿namespace Titled_Gui.Data.Game
+﻿using System;
+
+namespace Titled_Gui.Data.Game
 {
-    internal class GlobalVar : Classes.ThreadService
+    internal class GlobalVar
     {
         private static ulong address;
         private static readonly ulong TickCountOffset = 0x48;
@@ -23,6 +25,7 @@
 
         public static int GetTickCount()
         {
+            Update();
             if (address == 0) return -1;
 
             int tickCount = GameState.swed.ReadInt((nint)(address + TickCountOffset));
@@ -31,51 +34,82 @@
 
         public static float GetRealTime()
         {
+            Update();
+            if (address == 0) return -1;
+
             return GameState.swed.ReadFloat((nint)(address + RealTimeOffset));
         }
 
         public static int GetFrameCount()
         {
+            Update();
+            if (address == 0) return -1;
+
             return GameState.swed.ReadInt((nint)(address + FrameCountOffset));
         }
 
         public static int GetMaxClients()
         {
+            Update();
+            if (address == 0) return -1;
+
             return GameState.swed.ReadInt((nint)(address + MaxClientsOffset));
         }
 
         public static int GetIntervalPerTick()
         {
+            Update();
+            if (address == 0) return -1;
+
             return GameState.swed.ReadInt((nint)(address + IntervalPerTickOffset));
         }
 
         public static float GetIntervalPerTick2()
         {
+            Update();
+            if (address == 0) return -1;
+
             return GameState.swed.ReadFloat((nint)(address + IntervalPerTick2Offset));
         }
 
         public static float GetcurrentTime()
         {
+            Update();
+            if (address == 0) return -1;
+
             return GameState.swed.ReadFloat((nint)(address + CurrentTimeOffset));
         }
 
         public static float GetcurrentTime2()
         {
+            Update();
+            if (address == 0) return -1;
+
             return GameState.swed.ReadFloat((nint)(address + CurrentTime2Offset));
         }
 
         public static int GetCurrentMap()
         {
+            Update();
+            if (address == 0) return -1;
+
             return GameState.swed.ReadChar((nint)(address + CurrentMapOffset));
         }
 
-        public static int GetCurrentMapName()
-        {
-            return GameState.swed.ReadChar((nint)(address + CurrentMapNameOffset));
-        }
-        protected override void FrameAction()
+        public static string GetCurrentMapName()
         {
             Update();
+            if (address == 0) return "";
+
+            nint mapNamePtr = GameState.swed.ReadPointer((nint)(address + CurrentMapOffset));
+
+            string raw = GameState.swed.ReadString(mapNamePtr, 64);
+            raw = raw.Trim('\0', ' ', '\r', '\n').Split('\0')[0].Replace("?", "").Replace("\0", "");
+            if (raw.Length > 0 && raw[0] == '_')
+                raw = raw.Substring(1);
+
+            return raw;
+            //return GameState.swed.ReadString((nint)(address + CurrentMapNameOffset), 64);
         }
     }
 }

@@ -9,11 +9,11 @@ namespace Titled_Gui.Modules.Visual
 {
     public static class BoneESP
     {
-        public static float BoneThickness = 5f;
+        public static float BoneThickness = 4.5f;
         public static bool EnableBoneESP = false;
         public static bool TeamCheck = false;
         public static Vector4 BoneColor = new(1f, 1f, 1f, 1f);
-        public static float GlowAmount = 1f;
+        public static float GlowAmount = 0f;
         public static string[] Types = ["Straight", "Beizer"];
         public static int CurrentType = 0;
 
@@ -65,7 +65,7 @@ namespace Titled_Gui.Modules.Visual
                 if (IsValidScreenPoint(boneA) && IsValidScreenPoint(boneB))
                 {
                     float boneLength = Vector2.Distance(boneA, boneB);
-                    float curve = Math.Clamp(boneLength * 0.12f, 2f, 8f);
+                    float curve = Math.Clamp(boneLength * 0.15f, 2f, 8f);
                     if (GlowAmount > 0)
                     {
                         switch (CurrentType)
@@ -84,7 +84,7 @@ namespace Titled_Gui.Modules.Visual
                     {
                         case 0:
                             renderer.drawList.AddLine(boneA, boneB, boneColor, thickness); //draw a line between the Bones
-                            renderer.drawList.AddCircleFilled(boneA, thickness * 2, boneColor); //draw a circle at the start bone
+                            renderer.drawList.AddCircleFilled(boneA, thickness * 1.5f, boneColor); //draw a circle at the start bone
                             break;
                         case 1:
                             renderer.drawList.AddBezierCubic(boneB, (boneB + boneA) * 0.5f + Vector2.Normalize(new Vector2(-(boneA - boneB).Y, (boneA - boneB).X)) * curve, (boneB + boneA) * 0.5f + Vector2.Normalize(new Vector2(-(boneA - boneB).Y, (boneA - boneB).X)) * (curve * 0.5f), boneA, boneColor, thickness);

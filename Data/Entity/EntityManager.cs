@@ -3,6 +3,8 @@ using System.Numerics;
 using System.Reflection;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Game.MapParser;
+using Vortice.Mathematics;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using static Titled_Gui.Data.Game.GameState;
 
@@ -58,10 +60,9 @@ namespace Titled_Gui.Data.Entity
         {
             IntPtr localPlayerPawn = GameState.swed.ReadPointer(GameState.client + Offsets.dwLocalPlayerPawn);
             GameState.LocalPlayerPawn = localPlayerPawn;
-
             float[] ViewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
-            IntPtr sceneNode = GameState.swed.ReadPointer(GameState.currentPawn, Offsets.m_pGameSceneNode);
-            IntPtr boneMatrix = GameState.swed.ReadPointer(sceneNode, Offsets.m_modelState + 0x80);
+            IntPtr GameSceneNode = GameState.swed.ReadPointer(GameState.currentPawn, Offsets.m_pGameSceneNode);
+            IntPtr boneMatrix = GameState.swed.ReadPointer(GameSceneNode, Offsets.m_modelState + 0x80);
             IntPtr dwSensitivity = GameState.swed.ReadPointer(GameState.client + Offsets.dwSensitivity);
             float sensitivity = GameState.swed.ReadFloat(dwSensitivity + Offsets.dwSensitivity_sensitivity);
             IntPtr clippingWeapon = GameState.swed.ReadPointer(localPlayerPawn + Offsets.m_pClippingWeapon);
@@ -106,8 +107,6 @@ namespace Titled_Gui.Data.Entity
                 Bones = Calculate.ReadBones(boneMatrix),
                 Name = GameState.swed.ReadString(currentController, Offsets.m_iszPlayerName, 32),
                 Bones2D = Calculate.ReadBones2D(Calculate.ReadBones(boneMatrix), ViewMatrix, renderer.screenSize),
-                dwSensitivity = dwSensitivity,
-                Sensitivity = GameState.swed.ReadFloat(GameState.client + Offsets.dwSensitivity, Offsets.dwSensitivity_sensitivity),
                 Velocity = GameState.swed.ReadVec(GameState.LocalPlayerPawn, Offsets.m_vecAbsVelocity),
                 ViewAngles = GameState.swed.ReadVec(client, Offsets.dwViewAngles),
                 Armor = GameState.swed.ReadInt(localPlayerPawn, Offsets.m_ArmorValue),
@@ -126,18 +125,29 @@ namespace Titled_Gui.Data.Entity
                 //HasBomb = GameState.swed.ReadBool(localPlayer, Offsets.)
                 IsDefusing = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bIsDefusing),
                 InBombZone = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bInBombZone),
+                sensitivity = sensitivity
             };
 
             return localPlayer;
         }
 
-        //public static bool Visible()
-        //{
-        //    if (localPlayer == null) return false;
-
-        //    Ray ray = new(localPlayer.Bones[2], localPlayer.EyeDirection);
-        //    if (ray.Intersects(localPlayer.Bones[2],))
-        //}
+        public static bool Visible(Entity e)
+        {
+            if (LocalPlayer == null || LocalPlayer.Bones == null || e.Position2D == new Vector2(-99f, -99f) || e.Health <= 0 || e == null) return false;
+            MapLoader mapLoader = new();
+            mapLoader.LoadMap(GlobalVar.GetCurrentMapName());
+            Ray ray = new(GameState.LocalPlayer.Bones[2], LocalPlayer.EyeDirection);
+            foreach (var bone in e.Bones)
+            {
+                BoundingSphere sphere = new(bone, 0.08f);
+                float? t = ray.Intersects(sphere);
+                if (t.HasValue)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         private static readonly Dictionary<nint, int> Shots = [];
 
         public static bool IsShooting()
@@ -167,8 +177,8 @@ namespace Titled_Gui.Data.Entity
             try
             {
                 float[] ViewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
-                IntPtr sceneNode = GameState.swed.ReadPointer(GameState.currentPawn, Offsets.m_pGameSceneNode);
-                IntPtr boneMatrix = GameState.swed.ReadPointer(sceneNode, Offsets.m_modelState + 0x80);
+                IntPtr GameSceneNode = GameState.swed.ReadPointer(GameState.currentPawn, Offsets.m_pGameSceneNode);
+                IntPtr boneMatrix = GameState.swed.ReadPointer(GameSceneNode, Offsets.m_modelState + 0x80);
                 IntPtr dwSensitivity = GameState.swed.ReadPointer(GameState.client + Offsets.dwSensitivity);
                 float sensitivity = GameState.swed.ReadFloat(dwSensitivity + Offsets.dwSensitivity_sensitivity);
 
@@ -203,6 +213,7 @@ namespace Titled_Gui.Data.Entity
                     View = GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset),
                     Position2D = Calculate.WorldToScreen(ViewMatrix, GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), renderer.screenSize),
                     ViewPosition2D = Calculate.WorldToScreen(ViewMatrix, Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)), renderer.screenSize),
+                    //Visible = Visible(entity),
                     Visible = swed.ReadBool(currentPawn, Offsets.m_entitySpottedState + Offsets.m_bSpotted),
                     SpottedByState = swed.ReadPointer(pawnAddress + 0x2718),
                     Head = Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)),
@@ -211,14 +222,10 @@ namespace Titled_Gui.Data.Entity
                     Bones = Calculate.ReadBones(boneMatrix),
                     Name = GameState.swed.ReadString(currentController, Offsets.m_iszPlayerName, 32),
                     Bones2D = Calculate.ReadBones2D(Calculate.ReadBones(boneMatrix), ViewMatrix, renderer.screenSize),
-                    dwSensitivity = dwSensitivity,
-                    Sensitivity = GameState.swed.ReadFloat(GameState.client + Offsets.dwSensitivity, Offsets.dwSensitivity_sensitivity),
                     Velocity = GameState.swed.ReadVec(GameState.LocalPlayerPawn, Offsets.m_vecAbsVelocity),
                     ViewAngles = GameState.swed.ReadVec(client, Offsets.dwViewAngles),
                     AimPunchAngle = GameState.swed.ReadVec(pawnAddress + Offsets.m_aimPunchAngle),
                     AimPunchAngleVel = GameState.swed.ReadVec(pawnAddress + Offsets.m_aimPunchCache),
-                    //CurrentWeapon = currentWeapon,
-                    //WeaponIndex = weaponIndex,
                     Armor = GameState.swed.ReadInt(pawnAddress, Offsets.m_ArmorValue),
                     IsScoped = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsScoped),
                     IsBuyMenuOpen = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsBuyMenuOpen),
@@ -235,8 +242,11 @@ namespace Titled_Gui.Data.Entity
                     Ping = (int)GameState.swed.ReadUInt(currentController, Offsets.m_iPing),
                     IsWalking = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsWalking),
                     AngEyeAngles = GameState.swed.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
+                    gameSceneNode = GameSceneNode,
+                    sensitivity = sensitivity
                 };
-
+                //entity.Visible = Visible(entity);
+                //if (entity.Visible)
                 //Console.WriteLine(entity.Visible + " " + entity.Name);
                 entity.IsEnemy = entity.Team != GameState.LocalPlayer.Team;
 

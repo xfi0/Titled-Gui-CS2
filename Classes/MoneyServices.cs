@@ -3,8 +3,9 @@ using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Classes
 {
-    internal class MoneyServices : ThreadService
-    {
+    internal class MoneyServices
+    //: ThreadService
+    { // same here, wasnt used so removed for cpu usage sake
         public static void UpdateStuff()
         {
             GameState.MoneyServices = GameState.swed.ReadPointer(GameState.currentController, Offsets.m_pInGameMoneyServices);
@@ -21,10 +22,11 @@ namespace Titled_Gui.Classes
                 //Thread.Sleep(100);
             }
         }
-        protected override void FrameAction()
-        {
-            UpdateStuff();
-            //MoneyTest();
-        }
+        //protected override void FrameAction()
+        //{
+
+        //    UpdateStuff();
+        //    //MoneyTest();
+        //}
     }
 }

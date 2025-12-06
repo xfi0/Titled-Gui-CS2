@@ -1,12 +1,15 @@
 ﻿using ImGuiNET;
+using Swed64;
 using System.Numerics;
 using Titled_Gui;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Modules.Visual;
 
 try
 {
+    if (GameState.swed == null) return;
     // initialization
     EntityManager entityManager = new();
     await OffsetGetter.UpdateOffsetsAsync();
@@ -40,12 +43,7 @@ try
                     GameState.renderer.UpdateEntities(entities);
                     GameState.Entities = [.. entities];
                 }
-                //float[] ViewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
-                //foreach (float vm in ViewMatrix)
-                //{
-                //    Console.WriteLine(vm);
-                //}
-                //Console.WriteLine(GameState.swed.ReadFloat(LocalPlayerPawn, Offsets.m_flFlashBangTime));
+                Thread.Sleep(1);
             }
             catch (Exception e)
             {
@@ -59,7 +57,6 @@ try
     };
     entityUpdateThread.Start();
     ThreadService.StartAllThreadServices();
-
     while (true)
     {
         Thread.Sleep(1);

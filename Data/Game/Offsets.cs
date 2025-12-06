@@ -71,5 +71,6 @@
         public static int m_bInBombZone = 0x0;
         public static int m_vecAbsOrigin = 0x0;
         public static int m_GunGameImmunityColor = 0x0;
+        public static int m_flEmitSoundTime = 0x0;
     }
 }

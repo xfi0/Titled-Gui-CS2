@@ -105,6 +105,7 @@ namespace Titled_Gui.Classes
             { "m_iShotsFired", new() { new Offset("m_iShotsFired") } },
             { "m_vecAbsOrigin", new() { new Offset("m_vecAbsOrigin") } },
             { "m_GunGameImmunityColor", new() { new Offset("m_GunGameImmunityColor") } },
+            { "m_flEmitSoundTime", new() { new Offset("m_flEmitSoundTime") } },
 
             // EXPLICIT CLASS THING
             { "m_pActionTrackingServices", new() { new Offset("m_pActionTrackingServices", "CCSPlayerController") } },

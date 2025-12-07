@@ -1054,83 +1054,83 @@ namespace Titled_Gui
                 onChanged?.Invoke();
             }
         }
-        private static Dictionary<string, bool> openPopups = [];
-        private static Dictionary<string, bool> previousValues = [];
-        private static void RenderBoolSettingWithWarning(string label, ref bool value, Action? onChanged = null, float widgetWidth = 0f)
-        {
-            if (!openPopups.ContainsKey(label))
-                openPopups[label] = false;
+         private static Dictionary<string, bool> openPopups = new Dictionary<string, bool>();
+  private static Dictionary<string, bool> previousValues = new Dictionary<string, bool>();
 
-            if (!previousValues.ContainsKey(label))
-                previousValues[label] = value;
+  private static void RenderBoolSettingWithWarning(string label, ref bool value, Action? onChanged = null, float widgetWidth = 0f)
+  {
+      if (!openPopups.ContainsKey(label))
+          openPopups[label] = false;
 
-            bool temp = value;
-            RenderRowRightAligned(label, () =>
-            {
-                float height = ImGui.GetFrameHeight();
-                float width = height * 1.7f;
-                float radius = height / 2f - 2f;
+      if (!previousValues.ContainsKey(label))
+          previousValues[label] = value;
 
-                float colWidth = ImGui.GetColumnWidth();
-                float spacing = ImGui.GetStyle().ItemSpacing.X;
-                float posX = ImGui.GetCursorPosX() + colWidth - width - spacing;
-                ImGui.SetCursorPosX(posX);
+      bool temp = value;
+      RenderRowRightAligned(label, () =>
+      {
+          float height = ImGui.GetFrameHeight();
+          float width = height * 1.7f;
+          float radius = height / 2f - 2f;
 
-                Vector2 p = ImGui.GetCursorScreenPos();
-                var drawList = ImGui.GetWindowDrawList();
-                string strId = "##" + label;
+          float colWidth = ImGui.GetColumnWidth();
+          float spacing = ImGui.GetStyle().ItemSpacing.X;
+          float posX = ImGui.GetCursorPosX() + colWidth - width - spacing;
+          ImGui.SetCursorPosX(posX);
 
-                ImGui.InvisibleButton(strId, new Vector2(width, height));
-                if (ImGui.IsItemClicked())
-                {
-                    temp = !temp;
-                    if (!previousValues[label] && temp)
-                        openPopups[label] = true;
-                }
+          Vector2 p = ImGui.GetCursorScreenPos();
+          var drawList = ImGui.GetWindowDrawList();
+          string strId = "##" + label;
 
-                float t = temp ? 1f : 0f;
+          ImGui.InvisibleButton(strId, new Vector2(width, height));
+          if (ImGui.IsItemClicked())
+          {
+              temp = !temp;
+              if (!previousValues[label] && temp)
+                  openPopups[label] = true;
+          }
 
-                drawList.AddRectFilled(p, new Vector2(p.X + width, p.Y + height),
-                    ImGui.ColorConvertFloat4ToU32(trackCol), height);
+          float t = temp ? 1f : 0f;
 
-                float knobX = p.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
-                float knobY = p.Y + radius + 2f;
+          drawList.AddRectFilled(p, new Vector2(p.X + width, p.Y + height),
+              ImGui.ColorConvertFloat4ToU32(trackCol), height);
 
-                Vector4 knobColor = temp ? knobOn : knobOff;
+          float knobX = p.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
+          float knobY = p.Y + radius + 2f;
 
-                drawList.AddCircleFilled(new Vector2(knobX, knobY), radius,
-                    ImGui.ColorConvertFloat4ToU32(knobColor), 36);
+          Vector4 knobColor = temp ? knobOn : knobOff;
 
-                drawList.AddCircle(new Vector2(knobX, knobY), radius,
-                    ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
-            }, widgetWidth);
-            string popupId = "warning##" + label;
-            if (openPopups[label])
-                ImGui.OpenPopup(popupId);
+          drawList.AddCircleFilled(new Vector2(knobX, knobY), radius,
+              ImGui.ColorConvertFloat4ToU32(knobColor), 36);
 
-            bool tempref = openPopups[label];
+          drawList.AddCircle(new Vector2(knobX, knobY), radius,
+              ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
+      }, widgetWidth);
 
-            //ImGui.SetNextWindowSize(new Vector2(200, 200));
-            if (ImGui.BeginPopupModal(popupId, ref tempref, ImGuiWindowFlags.AlwaysAutoResize))
-            {
-                ImGui.Text("WARNING\nThis feature uses WPM and or may be detected.\n Use at your own risk.");
-                ImGui.Separator();
-                if (ImGui.Button("OK", new Vector2(120, 0)))
-                    openPopups[label] = false; ImGui.CloseCurrentPopup();
-                
+      string popupId = "warning##" + label;
+      if (openPopups[label])
+          ImGui.OpenPopup(popupId);
+      var tempref = openPopups[label];
+      ImGui.SetNextWindowPos(GameState.renderer.screenSize / 2);
+      if (ImGui.BeginPopupModal(popupId, ref tempref, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoMove))
+      {
+          ImGui.Text("WARNING\nThis feature uses WPM and may be detected.\nUse at your own risk.");
+          ImGui.Separator();
+          if (ImGui.Button("OK", new Vector2(120, 0)))
+          {
+              openPopups[label] = false;
+              ImGui.CloseCurrentPopup();
+          }
+          ImGui.EndPopup();
+      }
 
-                ImGui.EndPopup();
-            }
-            previousValues[label] = temp;
-            if (temp != value)
-            {
-                value = temp;
-                onChanged?.Invoke();
-            }
-        }
+      previousValues[label] = temp;
 
-
-
+      if (temp != value)
+      {
+          value = temp;
+          onChanged?.Invoke();
+      }
+  }
         private void RenderBoolSettingWith2ColorPickers(string label, ref bool value, ref Vector4 color1, ref Vector4 color2)
         {
             ImGui.PushID(label);

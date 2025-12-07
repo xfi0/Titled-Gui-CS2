@@ -12,7 +12,7 @@ namespace Titled_Gui.Modules.Rage
         public static bool Enabled = false;
         public static int MinDelay = 0;
         public static int MaxDelay = 10;  
-        public static bool TeamCheck = false;
+        public static bool TeamCheck = true;
         public static int TriggerKey = (int)Keys.MButton;
         public static bool RequireKeybind = true; // if enabled keybind is needed
         public static bool OnTarget = false;

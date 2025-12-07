@@ -430,6 +430,7 @@ namespace Titled_Gui
 
                             ImGui.BeginChild("RightRage");
                             RenderBoolSetting("Triggerbot", ref Modules.Rage.TriggerBot.Enabled);
+                            RenderBoolSetting("Team Check", ref Modules.Rage.TriggerBot.TeamCheck);
                             RenderKeybindChooser($"Trigger Bot Keybind", ref TriggerBot.TriggerKey);
                             RenderIntSlider("Max Delay", ref Modules.Rage.TriggerBot.MaxDelay, 0, 1000, "%d");
                             RenderIntSlider("Min Delay", ref Modules.Rage.TriggerBot.MinDelay, 0, 1000, "%d");

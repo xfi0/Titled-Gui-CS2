@@ -734,6 +734,10 @@ namespace Titled_Gui
                 }
                 foreach (var entity in GameState.Entities)
                 {
+                    SoundESP.DrawSoundESP(entity);
+                }
+                foreach (var entity in GameState.Entities)
+                {
                     if (entity != null)
                     {
                         var rect = BoxESP.GetBoxRect(entity);

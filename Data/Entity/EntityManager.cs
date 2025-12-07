@@ -243,7 +243,8 @@ namespace Titled_Gui.Data.Entity
                     IsWalking = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsWalking),
                     AngEyeAngles = GameState.swed.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
                     gameSceneNode = GameSceneNode,
-                    sensitivity = sensitivity
+                    sensitivity = sensitivity,
+                    emitSoundTime = GameState.swed.ReadFloat(pawnAddress, Offsets.m_flEmitSoundTime)
                 };
                 //entity.Visible = Visible(entity);
                 //if (entity.Visible)

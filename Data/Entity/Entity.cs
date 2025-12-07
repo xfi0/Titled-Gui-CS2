@@ -56,5 +56,6 @@ namespace Titled_Gui.Data.Entity
         /// may only be for lp
         /// </summary>
         public float sensitivity { get; set; }
+        public float emitSoundTime { get; set; }
     }
 }

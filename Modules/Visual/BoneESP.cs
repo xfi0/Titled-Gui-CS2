@@ -1,7 +1,8 @@
-﻿using ImGuiNET;
+using ImGuiNET;
 using System.Numerics;
 using System.Windows.Forms.VisualStyles;
 using Titled_Gui.Classes;
+using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Data.Game.GameState;
 
@@ -13,10 +14,12 @@ namespace Titled_Gui.Modules.Visual
         public static bool EnableBoneESP = false;
         public static bool TeamCheck = false;
         public static Vector4 BoneColor = new(1f, 1f, 1f, 1f);
+        public static Vector4 visibleBoneColor = new(1f, 1f, 1f, 1f);
+        public static Vector4 occludedBoneColor = new(0f, 0f, 1f, 1f);
         public static float GlowAmount = 0f;
         public static string[] Types = ["Straight", "Beizer"];
         public static int CurrentType = 0;
-
+        public static bool visibilityCheck = true;
         public static readonly (int, int)[] BoneConnections = 
         [
             (0, 1), // Waist to Neck
@@ -50,7 +53,7 @@ namespace Titled_Gui.Modules.Visual
         }
         public static void DrawBoneLines(Data.Entity.Entity entity, Renderer renderer)
         {
-            if (!EnableBoneESP || entity == null || entity.Bones2D == null || (TeamCheck && entity.Team == GameState.LocalPlayer.Team) || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Bones == null || entity.Health == 0 || BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) return; 
+            if (!EnableBoneESP || entity == null || entity.Bones2D == null || (TeamCheck && entity.Team == GameState.LocalPlayer.Team) || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Bones == null || entity.Health == 0 || BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed || entity.Position2D == new Vector2(-99, -99)) return; 
 
             float thickness = Math.Clamp(BoneThickness / (entity.Distance * 0.1f), 0.5f, 1f); // calculate thickness based on Distance, minimum 0.5f and maximum 2f stops it from being massive
             uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb(0.5f) : BoneColor); //get color
@@ -62,6 +65,19 @@ namespace Titled_Gui.Modules.Visual
 
                 Vector2 boneA = entity.Bones2D[a];
                 Vector2 boneB = entity.Bones2D[b];
+                if (visibilityCheck)
+                {
+                    //if (Classes.VisibilityCheck.BVH.VisibleBone(entity.Bones[a]) && Classes.VisibilityCheck.BVH.VisibleBone(entity.Bones[b]))
+                    //{
+                        //renderer.drawList.AddLine(boneA, boneB, ImGui.ColorConvertFloat4ToU32(visibleBoneColor), thickness);
+                        //Console.WriteLine("thing a");
+                    //}
+                    //else
+                    //{
+                        //renderer.drawList.AddLine(boneA, boneB, ImGui.ColorConvertFloat4ToU32(occludedBoneColor), thickness);
+                        //Console.WriteLine("thing b");
+                    //}
+                }
                 if (IsValidScreenPoint(boneA) && IsValidScreenPoint(boneB))
                 {
                     float boneLength = Vector2.Distance(boneA, boneB);
@@ -100,8 +116,10 @@ namespace Titled_Gui.Modules.Visual
 
                 if (GlowAmount > 0)
                     DrawHelpers.DrawGlowCircle(renderer.drawList, HeadPos, radius, BoneColor, GlowAmount);
-
-                renderer.drawList.AddCircleFilled(HeadPos, radius, boneColor); // draw a circle at the Head bone extra big
+                if (entity.Visible)
+                    renderer.drawList.AddCircleFilled(HeadPos, radius, boneColor); // draw a circle at the Head bone extra big
+                else
+                    renderer.drawList.AddCircleFilled(HeadPos, radius, ImGui.ColorConvertFloat4ToU32(new(1, 0, 0, 1)));
             }
         }
 

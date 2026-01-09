@@ -1,4 +1,4 @@
-﻿using ImGuiNET;
+using ImGuiNET;
 using Swed64;
 using System.Numerics;
 using Titled_Gui;
@@ -70,4 +70,3 @@ catch (Exception e)
 {
     Console.WriteLine("Exception: " + e.Message);
 }
-

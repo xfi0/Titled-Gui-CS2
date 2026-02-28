@@ -7,19 +7,23 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/xfi0/Titled-Gui-CS2?style=flat-square)
 ![GitHub stars](https://img.shields.io/github/stars/xfi0/Titled-Gui-CS2?style=flat-square)
 ![C# Build Status](https://img.shields.io/github/actions/workflow/status/xfi0/Titled-Gui-CS2/dotnet.yml?branch=master&label=BUILD&style=flat-square)
-![Game](https://camo.githubusercontent.com/b0fa2e220bcef6eac697ee68889005822be30338fdd3584a95a9f58ccff21e2a/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4353322d3030303030303f7374796c653d666f722d7468652d6261646765266c6f676f3d636f756e7465722d737472696b65266c6f676f436f6c6f723d7768697465)
+![Game](https://camo.githubusercontent.com/80226a27790f718b8b47fc10ad34b6768690b9ed6a0dd3b6697c2e51ce3d801a/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4353322d3030303030303f7374796c653d666f722d7468652d6261646765266c6f676f3d636f756e7465722d737472696b65266c6f676f436f6c6f723d7768697465)
 ![External](https://img.shields.io/badge/EXTERNAL-20B2AA?style=flat-square)
 </div>
 <hr></hr>
 
-<p align="center">Titled is a advanced external cheat with minimal memory writing, great features, and full custimization.</p>
+<p align="center">Titled is an advanced external cheat featuring minimal memory writing, great features, and full customization</p>
 <p align="center">⭐Please, star this repo if you enjoyed it!⭐</p>
 
 <hr></hr>
 
+## 🌐 Community  
+![Discord](https://invidget.switchblade.xyz/SXV8Bmy4Tt)
+<hr></hr>
+
 ## 📖 Licensing
 This project is licensed under GPL Public V3, More information in LICENSE
-
+**TL;DR:** You may use this source code only if your project is also open source and licensed under GPL v3.0.
 <hr></hr>
 
 ## 🛠 Features

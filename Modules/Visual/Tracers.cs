@@ -12,7 +12,12 @@ namespace Titled_Gui.Modules.Visual
         public static bool EnableTracers = false;
         public static bool TeamCheck = false;
         public static float LineThickness = 1f;
-        public static string[] StartPositions = ["Middle", "Bottom", "Top"];
+        public static List<string> StartPositions = new()
+        {
+            "Middle",
+            "Bottom",
+            "Top"
+        };
         public static string[] EndPositions = ["Bottom", "Top"];
         public static int CurrentStartPos = 0;
         public static int CurrentEndPos = 0;
@@ -42,7 +47,7 @@ namespace Titled_Gui.Modules.Visual
                 case 1: EndPos = new(entity.Bones2D[2].X, entity.Bones2D[2].Y + _headOffset); break;
             }
 
-            Vector4 lineColor = RGB ? Colors.Rgb(RGBSpeed) : (LocalPlayer.Team == entity.Team ? TeamColor : EnemyColor);
+            Vector4 lineColor = RGB ? Colors.Rgb() : (LocalPlayer.Team == entity.Team ? TeamColor : EnemyColor);
             renderer.drawList.AddLine(StartPos, EndPos, ImGui.ColorConvertFloat4ToU32(lineColor), LineThickness); // add line for non rgb just liek Team color
         }
         public static void DrawTracerPreview(Vector2 position)

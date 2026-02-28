@@ -226,7 +226,7 @@ namespace Titled_Gui.Modules.Visual
 
             if (Colors.RGB)
             {
-                boxColor = Colors.Rgb(0.5f);
+                boxColor = Colors.Rgb();
             }
 
             boxColor.W = BoxFillOpacity;
@@ -279,7 +279,7 @@ namespace Titled_Gui.Modules.Visual
             float topY = position.Y - entityHeight / 2;
             float bottomY = position.Y + entityHeight / 2;
 
-            Vector4 boxColor = Colors.RGB ? Colors.Rgb(0.5f) : Colors.EnemyColor;
+            Vector4 boxColor = Colors.RGB ? Colors.Rgb() : Colors.EnemyColor;
             boxColor.W = BoxFillOpacity;
 
             Vector4 fillColor = boxColor;

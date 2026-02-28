@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Media;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Nodes;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
@@ -12,6 +13,10 @@ using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
 using static Titled_Gui.Data.Game.MapParser.MapLoader;
+using static Titled_Gui.ImGUI.Widgets.Toggles;
+using static Titled_Gui.ImGUI.Widgets.ColorPickers;
+using static Titled_Gui.ImGUI.Widgets.Combos;
+using static Titled_Gui.ImGUI.Widgets.Sliders;
 
 namespace Titled_Gui
 {
@@ -21,7 +26,7 @@ namespace Titled_Gui
         private IntPtr _menuLogoTexture;
         private uint _width;
         private uint _height;
-        
+
 
         //entity copy  
         public List<Entity> entities = [];
@@ -47,8 +52,6 @@ namespace Titled_Gui
         public static Vector4 HeaderEndCol = new(1, 1, 1, 0);
         public static float windowAlpha = 1f;
         private float animationSpeed = 0.15f;
-        private static float WidgetColumnWidth = 160f;
-        private static float LabelPadding = 4f;
         public static ImFontPtr TextFontNormal;
         public static ImFontPtr TextFontBig;
         public static ImFontPtr TextFont48;
@@ -62,9 +65,6 @@ namespace Titled_Gui
         public static bool IsTextFont48Loaded => !TextFont48.Equals(default(ImFontPtr));
         public static bool IsTextFont60Loaded => !TextFont60.Equals(default(ImFontPtr));
         public static bool IsIconFontLoaded => !IconFont.Equals(default(ImFontPtr));
-        public static Vector4 trackCol = new(0.18f, 0.18f, 0.20f, 1f);
-        public static Vector4 knobOff = new(0.15f, 0.15f, 0.15f, 1f);
-        public static Vector4 knobOn = new(0.2745f, 0.3176f, 0.4510f, 1.0f);
         public static bool IsIconFont1Loaded => !IconFont1.Equals(default(ImFontPtr));
         public static bool IsGunIconFontLoaded => !GunIconsFont.Equals(default(ImFontPtr));
         public static Vector4 ParticleColor = new(1f, 1f, 1f, 1f);
@@ -78,12 +78,14 @@ namespace Titled_Gui
         public static List<Vector2> Velocities = [];
         public static float MaxLineDistance = 300f;
         public static ImGuiKey OpenKey = ImGuiKey.Insert;
+
         public static HashSet<Keys> keys =
         [
-           Keys.ShiftKey, Keys.LShiftKey, Keys.RShiftKey,
-           Keys.ControlKey, Keys.LControlKey, Keys.RControlKey,
-           Keys.Menu, Keys.LMenu, Keys.RMenu
+            Keys.ShiftKey, Keys.LShiftKey, Keys.RShiftKey,
+            Keys.ControlKey, Keys.LControlKey, Keys.RControlKey,
+            Keys.Menu, Keys.LMenu, Keys.RMenu
         ];
+
         private static bool menuSounds = true;
         private static float menuSoundsVolume = 0.8f;
         private static bool _enableVsync = true;
@@ -111,8 +113,10 @@ namespace Titled_Gui
                 unsafe
                 {
                     fixed (ushort* pIcons = icons)
-                        IconFont1 = io.Fonts.AddFontFromFileTTF(Path.Combine(Base, "Lineicons.ttf"), 36.0f, null, (IntPtr)pIcons);
+                        IconFont1 = io.Fonts.AddFontFromFileTTF(Path.Combine(Base, "Lineicons.ttf"), 36.0f, null,
+                            (IntPtr)pIcons);
                 }
+
                 io.Fonts.Build();
             }
             catch (Exception e)
@@ -135,7 +139,7 @@ namespace Titled_Gui
             {
                 var io = ImGui.GetIO();
                 io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard; // keyboard nav
-                io.ConfigFlags |= ImGuiConfigFlags.NavEnableGamepad;  // gamepad nav
+                io.ConfigFlags |= ImGuiConfigFlags.NavEnableGamepad; // gamepad nav
                 io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
                 io.Framerate = 0;
                 this.VSync = _enableVsync;
@@ -152,6 +156,7 @@ namespace Titled_Gui
                 Console.WriteLine(ex);
             }
         }
+
         public void RenderWaterMark()
         {
             if (EnableWaterMark && IsTextFontBigLoaded)
@@ -164,7 +169,8 @@ namespace Titled_Gui
                 style.WindowRounding = 12f;
                 var drawList = ImGui.GetWindowDrawList();
                 Vector2 textPosition = ImGui.GetWindowPos() + new Vector2(20, 20);
-                drawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 20), ImGui.ColorConvertFloat4ToU32(accentColor), "Titled");
+                drawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 20), ImGui.ColorConvertFloat4ToU32(accentColor),
+                    "Titled");
                 timeSinceLastUpdate += ImGui.GetIO().DeltaTime;
 
                 if (timeSinceLastUpdate >= fpsUpdateInterval)
@@ -173,12 +179,15 @@ namespace Titled_Gui
                     timeSinceLastUpdate = 0.0f;
                 }
 
-                drawList.AddText(new(textPosition.X, textPosition.Y + 20f), ImGui.ColorConvertFloat4ToU32(TextCol), $"FPS: {Math.Round(lastFPS)}");
-                drawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 20), ImGui.ColorConvertFloat4ToU32(accentColor), "Titled");
+                drawList.AddText(new(textPosition.X, textPosition.Y + 20f), ImGui.ColorConvertFloat4ToU32(TextCol),
+                    $"FPS: {Math.Round(lastFPS)}");
+                drawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 20), ImGui.ColorConvertFloat4ToU32(accentColor),
+                    "Titled");
                 ImGui.PopFont();
                 ImGui.End();
             }
         }
+
         private void RenderESPOverlay()
         {
             ImGui.SetNextWindowSize(ScreenSize);
@@ -212,9 +221,12 @@ namespace Titled_Gui
             BGdrawList = ImGui.GetBackgroundDrawList();
             if (DrawWindow)
             {
-                BGdrawList.AddRectFilled(Vector2.Zero, ScreenSize, ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.5f))); // ts the dimmed background TODO: make a opacity changer
+                BGdrawList.AddRectFilled(Vector2.Zero, ScreenSize,
+                    ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f,
+                        0.5f))); // ts the dimmed background TODO: make a opacity changer
                 DrawParticles(NumberOfParticles);
-                ImGui.SetNextWindowPos(new Vector2((ScreenSize.X - 800) / 2f, (ScreenSize.Y - 600) / 2f), ImGuiCond.Always);
+                ImGui.SetNextWindowPos(new Vector2((ScreenSize.X - 800) / 2f, (ScreenSize.Y - 600) / 2f),
+                    ImGuiCond.Always);
 
                 ImGuiStylePtr style = ImGui.GetStyle();
                 style.Alpha = windowAlpha;
@@ -257,65 +269,114 @@ namespace Titled_Gui
                 style.Colors[(int)ImGuiCol.Text] = new(0.274f, 0.317f, 0.450f, 1.0f);
                 style.Colors[(int)ImGuiCol.TextDisabled] = new(0.2745098173618317f, 0.3176470696926117f, 0.4501f, 1.0f);
                 style.Colors[(int)ImGuiCol.WindowBg] = new(0.078f, 0.0862f, 0.101f, 1.0f);
-                style.Colors[(int)ImGuiCol.ChildBg] = new(0.09411764889955521f, 0.1019607856869698f, 0.1176470592617989f, 1.0f);
-                style.Colors[(int)ImGuiCol.PopupBg] = new(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
-                style.Colors[(int)ImGuiCol.Border] = new(0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f);
-                style.Colors[(int)ImGuiCol.BorderShadow] = new(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
-                style.Colors[(int)ImGuiCol.FrameBg] = new Vector4(0.1137254908680916f, 0.125490203499794f, 0.1529411822557449f, 1.0f);
-                style.Colors[(int)ImGuiCol.FrameBgHovered] = new(0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f);
-                style.Colors[(int)ImGuiCol.FrameBgActive] = new Vector4(0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f);
-                style.Colors[(int)ImGuiCol.TitleBg] = new Vector4(0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f);
-                style.Colors[(int)ImGuiCol.TitleBgActive] = new Vector4(0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f);
-                style.Colors[(int)ImGuiCol.TitleBgCollapsed] = new Vector4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
-                style.Colors[(int)ImGuiCol.MenuBarBg] = new Vector4(0.09803921729326248f, 0.105882354080677f, 0.1215686276555061f, 1.0f);
-                style.Colors[(int)ImGuiCol.ScrollbarBg] = new Vector4(0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f);
-                style.Colors[(int)ImGuiCol.ScrollbarGrab] = new Vector4(0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f);
-                style.Colors[(int)ImGuiCol.ScrollbarGrabHovered] = new Vector4(0.1568627506494522f, 0.168627455830574f, 0.1921568661928177f, 1.0f);
-                style.Colors[(int)ImGuiCol.ScrollbarGrabActive] = new Vector4(0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f);
-                style.Colors[(int)ImGuiCol.CheckMark] = new Vector4(0.2745098173618317f, 0.3176470696926117f, 0.4509803950786591f, 1.0f);
-                style.Colors[(int)ImGuiCol.SliderGrab] = new Vector4(0.2745098173618317f, 0.3176470696926117f, 0.4509803950786591f, 1.0f);
-                style.Colors[(int)ImGuiCol.SliderGrabActive] = new Vector4(0.6000000238418579f, 0.9647058844566345f, 0.0313725508749485f, 1.0f);
+                style.Colors[(int)ImGuiCol.ChildBg] =
+                    new(0.09411764889955521f, 0.1019607856869698f, 0.1176470592617989f, 1.0f);
+                style.Colors[(int)ImGuiCol.PopupBg] =
+                    new(0.0784313753247261f, 0.0862f, 0.1019607856869698f, 1.0f);
+                style.Colors[(int)ImGuiCol.Border] =
+                    new(0.1568627506494522f, 0.168f, 0.1921568661928177f, 1.0f);
+                style.Colors[(int)ImGuiCol.BorderShadow] =
+                    new(0.0784313753247261f, 0.086f, 0.1019607856869698f, 1.0f);
+                style.Colors[(int)ImGuiCol.FrameBg] =
+                    new Vector4(0.1137254908680916f, 0.125490203499794f, 0.1529411822557449f, 1.0f);
+                style.Colors[(int)ImGuiCol.FrameBgHovered] =
+                    new(0.1568627506494522f, 0.168f, 0.1921568661928177f, 1.0f);
+                style.Colors[(int)ImGuiCol.FrameBgActive] = new Vector4(0.1568627506494522f, 0.168f,
+                    0.1921568661928177f, 1.0f);
+                style.Colors[(int)ImGuiCol.TitleBg] = new Vector4(0.0470588244497776f, 0.0549f,
+                    0.07058823853731155f, 1.0f);
+                style.Colors[(int)ImGuiCol.TitleBgActive] = new Vector4(0.0470588244497776f, 0.0549f,
+                    0.07058823853731155f, 1.0f);
+                style.Colors[(int)ImGuiCol.TitleBgCollapsed] = new Vector4(0.0784313753247261f, 0.08627451211214066f,
+                    0.1019607856869698f, 1.0f);
+                style.Colors[(int)ImGuiCol.MenuBarBg] =
+                    new Vector4(0.09803921729326248f, 0.105882354080677f, 0.121f, 1.0f);
+                style.Colors[(int)ImGuiCol.ScrollbarBg] = new Vector4(0.0470f, 0.0549f,
+                    0.07058823853731155f, 1.0f);
+                style.Colors[(int)ImGuiCol.ScrollbarGrab] = new Vector4(0.1176470592617989f, 0.1333333402872086f,
+                    0.1490196138620377f, 1.0f);
+                style.Colors[(int)ImGuiCol.ScrollbarGrabHovered] = new Vector4(0.1568627506494522f, 0.168627455830574f,
+                    0.1921568661928177f, 1.0f);
+                style.Colors[(int)ImGuiCol.ScrollbarGrabActive] = new Vector4(0.1176470592617989f, 0.1333333402872086f,
+                    0.1490196138620377f, 1.0f);
+                style.Colors[(int)ImGuiCol.CheckMark] =
+                    new Vector4(0.2745098173618317f, 0.3176470696926117f, 0.4509803950786591f, 1.0f);
+                style.Colors[(int)ImGuiCol.SliderGrab] = new Vector4(0.2745098173618317f, 0.3176470696926117f,
+                    0.4509803950786591f, 1.0f);
+                style.Colors[(int)ImGuiCol.SliderGrabActive] = new Vector4(0.6000000238418579f, 0.9647058844566345f,
+                    0.0313725508749485f, 1.0f);
                 style.Colors[(int)ImGuiCol.Button] = SidebarColor;
-                style.Colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.1803921610116959f, 0.1882352977991104f, 0.196078434586525f, 1.0f);
-                style.Colors[(int)ImGuiCol.ButtonActive] = new Vector4(0.1529411822557449f, 0.1529411822557449f, 0.1529411822557449f, 1.0f);
-                style.Colors[(int)ImGuiCol.Header] = new Vector4(0.1411764770746231f, 0.1647058874368668f, 0.2078431397676468f, 1.0f);
-                style.Colors[(int)ImGuiCol.HeaderHovered] = new Vector4(0.105882354080677f, 0.105882354080677f, 0.105882354080677f, 1.0f);
-                style.Colors[(int)ImGuiCol.HeaderActive] = new Vector4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
-                style.Colors[(int)ImGuiCol.Separator] = new Vector4(0.1294117718935013f, 0.1490196138620377f, 0.1921568661928177f, 1.0f);
-                style.Colors[(int)ImGuiCol.SeparatorHovered] = new Vector4(0.1568627506494522f, 0.1843137294054031f, 0.250980406999588f, 1.0f);
-                style.Colors[(int)ImGuiCol.SeparatorActive] = new Vector4(0.1568627506494522f, 0.1843137294054031f, 0.250980406999588f, 1.0f);
-                style.Colors[(int)ImGuiCol.ResizeGrip] = new Vector4(0.1450980454683304f, 0.1450980454683304f, 0.1450980454683304f, 1.0f);
-                style.Colors[(int)ImGuiCol.ResizeGripHovered] = new Vector4(0.2745098173618317f, 0.3176470696926117f, 0.4509803950786591f, 1.0f);
+                style.Colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.1803921610116959f, 0.1882352977991104f,
+                    0.196078434586525f, 1.0f);
+                style.Colors[(int)ImGuiCol.ButtonActive] = new Vector4(0.1529411822557449f, 0.1529411822557449f,
+                    0.1529411822557449f, 1.0f);
+                style.Colors[(int)ImGuiCol.Header] =
+                    new Vector4(0.1411764770746231f, 0.1647058874368668f, 0.2078431397676468f, 1.0f);
+                style.Colors[(int)ImGuiCol.HeaderHovered] =
+                    new Vector4(0.105882354080677f, 0.105882354080677f, 0.105882354080677f, 1.0f);
+                style.Colors[(int)ImGuiCol.HeaderActive] = new Vector4(0.0784313753247261f, 0.08627451211214066f,
+                    0.1019607856869698f, 1.0f);
+                style.Colors[(int)ImGuiCol.Separator] =
+                    new Vector4(0.1294117718935013f, 0.1490196138620377f, 0.1921568661928177f, 1.0f);
+                style.Colors[(int)ImGuiCol.SeparatorHovered] = new Vector4(0.1568627506494522f, 0.1843137294054031f,
+                    0.250980406999588f, 1.0f);
+                style.Colors[(int)ImGuiCol.SeparatorActive] = new Vector4(0.1568627506494522f, 0.1843137294054031f,
+                    0.250980406999588f, 1.0f);
+                style.Colors[(int)ImGuiCol.ResizeGrip] = new Vector4(0.1450980454683304f, 0.1450980454683304f,
+                    0.1450980454683304f, 1.0f);
+                style.Colors[(int)ImGuiCol.ResizeGripHovered] = new Vector4(0.2745098173618317f, 0.3176470696926117f,
+                    0.4509803950786591f, 1.0f);
                 style.Colors[(int)ImGuiCol.ResizeGripActive] = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-                style.Colors[(int)ImGuiCol.Tab] = new Vector4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
-                style.Colors[(int)ImGuiCol.TabHovered] = new Vector4(0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f);
-                style.Colors[(int)ImGuiCol.TabActive] = new Vector4(0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f);
-                style.Colors[(int)ImGuiCol.TabUnfocused] = new Vector4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
-                style.Colors[(int)ImGuiCol.TabUnfocusedActive] = new Vector4(0.125490203499794f, 0.2745098173618317f, 0.572549045085907f, 1.0f);
-                style.Colors[(int)ImGuiCol.PlotLines] = new Vector4(0.5215686559677124f, 0.6000000238418579f, 0.7019608020782471f, 1.0f);
-                style.Colors[(int)ImGuiCol.PlotLinesHovered] = new Vector4(0.03921568766236305f, 0.9803921580314636f, 0.9803921580314636f, 1.0f);
-                style.Colors[(int)ImGuiCol.PlotHistogram] = new Vector4(0.0313725508749485f, 0.9490196108818054f, 0.843137264251709f, 1.0f);
-                style.Colors[(int)ImGuiCol.PlotHistogramHovered] = new Vector4(0.1568627506494522f, 0.1843137294054031f, 0.250980406999588f, 1.0f);
-                style.Colors[(int)ImGuiCol.TableHeaderBg] = new Vector4(0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f);
-                style.Colors[(int)ImGuiCol.TableBorderStrong] = new Vector4(0.0470588244497776f, 0.05490196123719215f, 0.07058823853731155f, 1.0f);
+                style.Colors[(int)ImGuiCol.Tab] =
+                    new Vector4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
+                style.Colors[(int)ImGuiCol.TabHovered] = new Vector4(0.1176470592617989f, 0.1333333402872086f,
+                    0.1490196138620377f, 1.0f);
+                style.Colors[(int)ImGuiCol.TabActive] =
+                    new Vector4(0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f);
+                style.Colors[(int)ImGuiCol.TabUnfocused] = new Vector4(0.0784313753247261f, 0.08627451211214066f,
+                    0.1019607856869698f, 1.0f);
+                style.Colors[(int)ImGuiCol.TabUnfocusedActive] = new Vector4(0.125490203499794f, 0.2745098173618317f,
+                    0.572549045085907f, 1.0f);
+                style.Colors[(int)ImGuiCol.PlotLines] =
+                    new Vector4(0.5215686559677124f, 0.6000000238418579f, 0.7019608020782471f, 1.0f);
+                style.Colors[(int)ImGuiCol.PlotLinesHovered] = new Vector4(0.03921568766236305f, 0.9803921580314636f,
+                    0.9803921580314636f, 1.0f);
+                style.Colors[(int)ImGuiCol.PlotHistogram] = new Vector4(0.0313725508749485f, 0.9490196108818054f,
+                    0.843137264251709f, 1.0f);
+                style.Colors[(int)ImGuiCol.PlotHistogramHovered] = new Vector4(0.1568627506494522f, 0.1843137294054031f,
+                    0.250980406999588f, 1.0f);
+                style.Colors[(int)ImGuiCol.TableHeaderBg] = new Vector4(0.0470588244497776f, 0.05490196123719215f,
+                    0.07058823853731155f, 1.0f);
+                style.Colors[(int)ImGuiCol.TableBorderStrong] = new Vector4(0.0470588244497776f, 0.05490196123719215f,
+                    0.07058823853731155f, 1.0f);
                 style.Colors[(int)ImGuiCol.TableBorderLight] = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-                style.Colors[(int)ImGuiCol.TableRowBg] = new Vector4(0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f);
-                style.Colors[(int)ImGuiCol.TableRowBgAlt] = new Vector4(0.09803921729326248f, 0.105882354080677f, 0.1215686276555061f, 1.0f);
-                style.Colors[(int)ImGuiCol.TextSelectedBg] = new Vector4(0.1803921610116959f, 0.1882352977991104f, 0.196078434586525f, 1.0f);
-                style.Colors[(int)ImGuiCol.DragDropTarget] = new Vector4(0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f);
-                style.Colors[(int)ImGuiCol.NavHighlight] = new Vector4(0.2666666805744171f, 0.2901960909366608f, 1.0f, 1.0f);
-                style.Colors[(int)ImGuiCol.NavWindowingHighlight] = new Vector4(0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f);
-                style.Colors[(int)ImGuiCol.NavWindowingDimBg] = new Vector4(0.196078434586525f, 0.1764705926179886f, 0.545f, 0.501f);
+                style.Colors[(int)ImGuiCol.TableRowBg] = new Vector4(0.1176470592617989f, 0.1333333402872086f,
+                    0.1490196138620377f, 1.0f);
+                style.Colors[(int)ImGuiCol.TableRowBgAlt] = new Vector4(0.09803921729326248f, 0.105882354080677f,
+                    0.1215686276555061f, 1.0f);
+                style.Colors[(int)ImGuiCol.TextSelectedBg] = new Vector4(0.1803921610116959f, 0.1882352977991104f,
+                    0.196078434586525f, 1.0f);
+                style.Colors[(int)ImGuiCol.DragDropTarget] =
+                    new Vector4(0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f);
+                style.Colors[(int)ImGuiCol.NavHighlight] =
+                    new Vector4(0.2666666805744171f, 0.2901960909366608f, 1.0f, 1.0f);
+                style.Colors[(int)ImGuiCol.NavWindowingHighlight] =
+                    new Vector4(0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f);
+                style.Colors[(int)ImGuiCol.NavWindowingDimBg] =
+                    new Vector4(0.196078434586525f, 0.1764705926179886f, 0.545f, 0.501f);
                 style.Colors[(int)ImGuiCol.ModalWindowDimBg] = new Vector4(0.196078434586525f, 0.176f, 0.545f, 0.501f);
 
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-                ImGui.Begin("", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoDocking);
+                ImGui.Begin("",
+                    ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar |
+                    ImGuiWindowFlags.NoDocking);
                 ImGui.SetWindowSize(new(850, 650));
 
                 Vector2 tabPos = ImGui.GetCursorScreenPos();
                 tabSize = new(100, ImGui.GetContentRegionAvail().Y);
                 var drawList = ImGui.GetWindowDrawList();
-                drawList.AddRectFilled(tabPos, tabPos + tabSize, ImGui.ColorConvertFloat4ToU32(SidebarColor), 12.0f, ImDrawFlags.RoundCornersLeft);
+                drawList.AddRectFilled(tabPos, tabPos + tabSize, ImGui.ColorConvertFloat4ToU32(SidebarColor), 12.0f,
+                    ImDrawFlags.RoundCornersLeft);
 
                 ImGui.BeginChild("Sidebar", tabSize, ImGuiChildFlags.None, ImGuiWindowFlags.NoBackground);
                 {
@@ -323,7 +384,8 @@ namespace Titled_Gui
                     float offset = (ImGui.GetContentRegionAvail().X - LogoWidth) * 0.5f;
                     ImGui.SetCursorPosX(ImGui.GetCursorPosX() + offset);
 
-                    AddOrGetImagePointer(AppContext.BaseDirectory + "Resources\\MenuLogo.png", true, out _menuLogoTexture, out _width, out _height);
+                    AddOrGetImagePointer(AppContext.BaseDirectory + "Resources\\MenuLogo.png", true,
+                        out _menuLogoTexture, out _width, out _height);
                     ImGui.Image(_menuLogoTexture, new(120, 120));
                     ImGui.Spacing();
 
@@ -375,7 +437,9 @@ namespace Titled_Gui
                 Vector2 mainPos = ImGui.GetCursorScreenPos();
                 Vector2 mainSize = ImGui.GetContentRegionAvail();
 
-                drawList.AddRectFilled(mainPos, mainPos + mainSize, ImGui.ColorConvertFloat4ToU32(new(0.094f, 0.102f, 0.118f, 1.0f)), 12.0f, ImDrawFlags.RoundCornersBottom);
+                drawList.AddRectFilled(mainPos, mainPos + mainSize,
+                    ImGui.ColorConvertFloat4ToU32(new(0.094f, 0.102f, 0.118f, 1.0f)), 12.0f,
+                    ImDrawFlags.RoundCornersBottom);
 
                 ImGui.BeginChild("MainContent", mainSize, ImGuiChildFlags.None, ImGuiWindowFlags.NoBackground);
                 {
@@ -388,12 +452,14 @@ namespace Titled_Gui
                         case 0: // legit
                             ImGui.Columns(2, "Legit Columns", true);
                             ImGui.BeginChild("LeftLegit");
-                            RenderBoolSettingWithWarning("Auto BHOP", ref Bhop.BhopEnable);
+                            RenderBoolSettingWithWarning("Auto Bunny Hop", ref Bhop.BhopEnable);
                             //RenderBoolSetting("Jump Shot", ref Modules.Legit.JumpHack.JumpHackEnabled);
                             RenderBoolSetting("Hit Sound", ref HitStuff.Enabled);
                             RenderFloatSlider("Hit Sound Volume", ref HitStuff.Volume, 0, 1);
-                            RenderIntCombo("Current Hit Sound", ref HitStuff.CurrentHitSound, HitStuff.HitSounds, HitStuff.HitSounds.Length);
-                            RenderBoolSettingWith1ColorPicker("Headshot Text", ref HitStuff.EnableHeadshotText, ref HitStuff.TextColor);
+                            RenderIntCombo("Current Hit Sound", ref HitStuff.CurrentHitSound,
+                                HitStuff.HitSounds, HitStuff.HitSounds.Count, true);
+                            RenderBoolSettingWith1ColorPicker("Headshot Text", ref HitStuff.EnableHeadshotText,
+                                ref HitStuff.TextColor);
 
                             //RenderBoolSetting("Jump Shot", ref Modules.Legit.JumpHack.JumpHackEnabled);
                             //RenderKeybindChooser("Jump Shot Keybind", ref JumpHack.JumpHotkey);
@@ -415,7 +481,8 @@ namespace Titled_Gui
 
                             RenderSettingsSection("Aimbot Settings", () =>
                             {
-                                RenderIntCombo("Aim Bone", ref Aimbot.CurrentBone, Aimbot.Bones, Aimbot.Bones.Length, 160f); // bone that aimbot aims on
+                                RenderIntCombo("Aim Bone", ref Aimbot.CurrentBone, Aimbot.Bones.ToList(),
+                                    Aimbot.Bones.Length); // bone that aimbot aims on
                                 RenderKeybindChooser("Aimbot Keybind", ref Aimbot.AimbotKey);
                                 RenderBoolSetting("Aim On Team", ref Modules.Rage.Aimbot.Team);
                                 RenderFloatSlider("Smoothing X", ref Aimbot.SmoothingX, 0, 20, "%.2f");
@@ -455,18 +522,23 @@ namespace Titled_Gui
 
                             //RenderSettingsSection("ESP Settings", () =>
                             //{
-                            RenderIntCombo("ESP Shape", ref BoxESP.CurrentShape, BoxESP.Shapes, BoxESP.Shapes.Length); // shape dropdown
+                            RenderIntCombo("ESP Shape", ref BoxESP.CurrentShape, BoxESP.Shapes.ToList(),
+                                BoxESP.Shapes.Length, false); // shape dropdown
                             RenderBoolSetting("Team Check", ref BoxESP.TeamCheck);
                             RenderBoolSetting("Enable RGB", ref Colors.RGB);
-                            RenderBoolSettingWith2ColorPickers("Box Fill Gradient", ref BoxESP.BoxFillGradient, ref BoxESP.BoxFillGradientColorTop, ref BoxESP.BoxFillGradientBottom);
+                            RenderBoolSettingWith2ColorPickers("Box Fill Gradient", ref BoxESP.BoxFillGradient,
+                                ref BoxESP.BoxFillGradientColorTop, ref BoxESP.BoxFillGradientBottom);
                             RenderFloatSlider("Box Fill Opacity", ref BoxESP.BoxFillOpacity, 0.0f, 1.0f, "%.2f");
-                            RenderBoolSettingWith1ColorPicker("Inner Outline", ref BoxESP.InnerOutline, ref BoxESP.InnerOutlineColor);
+                            RenderBoolSettingWith1ColorPicker("Inner Outline", ref BoxESP.InnerOutline,
+                                ref BoxESP.InnerOutlineColor);
                             RenderFloatSlider("ESP Rounding", ref BoxESP.Rounding, 1f, 5f);
                             RenderFloatSlider("ESP Glow", ref BoxESP.GlowAmount, 0f, 5f);
                             RenderColorSetting("Team Color", ref Colors.TeamColor);
                             RenderColorSetting("Enemy Color", ref Colors.EnemyColor);
-                            RenderBoolSettingWith2ColorPickers("Outer Outline", ref BoxESP.OuterOutline, ref BoxESP.OutlineEnemyColor, ref BoxESP.OutlineTeamColor);
-                            RenderBoolSettingWith2ColorPickers("Visibility Check", ref BoneESP.visibilityCheck, ref BoxESP.occludedEnemy, ref BoxESP.occludedTeam);
+                            RenderBoolSettingWith2ColorPickers("Outer Outline", ref BoxESP.OuterOutline,
+                                ref BoxESP.OutlineEnemyColor, ref BoxESP.OutlineTeamColor);
+                            RenderBoolSettingWith2ColorPickers("Visibility Check", ref BoneESP.visibilityCheck,
+                                ref BoxESP.occludedEnemy, ref BoxESP.occludedTeam);
                             //});
                             RenderBoolSetting("Flash Check", ref BoxESP.FlashCheck);
                             RenderBoolSetting("Enable Health Bar", ref Modules.Visual.HealthBar.EnableHealthBar);
@@ -474,14 +546,17 @@ namespace Titled_Gui
                             RenderBoolSetting("Show Distance Text", ref BoxESP.EnableDistanceTracker);
 
                             RenderBoolSetting("Enable Tracers", ref Tracers.EnableTracers);
-                            RenderIntCombo("Tracer Start Position", ref Tracers.CurrentStartPos, Tracers.StartPositions, Tracers.StartPositions.Length);
-                            RenderIntCombo("Tracer End Position", ref Tracers.CurrentEndPos, Tracers.EndPositions, Tracers.EndPositions.Length);
+                            RenderIntCombo("Tracer Start Position", ref Tracers.CurrentStartPos,
+                                Tracers.StartPositions, Tracers.StartPositions.Count, false);
+                            RenderIntCombo("Tracer End Position", ref Tracers.CurrentEndPos,
+                                Tracers.EndPositions.ToList(), Tracers.EndPositions.Length);
                             RenderFloatSlider("Tracer Thickness", ref Tracers.LineThickness, 0.05f, 5f);
 
                             RenderBoolSetting("Show Name", ref NameDisplay.Enabled);
 
                             RenderBoolSetting("Enable Bone ESP", ref Modules.Visual.BoneESP.EnableBoneESP);
-                            RenderIntCombo("Bone ESP Type", ref BoneESP.CurrentType, BoneESP.Types, BoneESP.Types.Length);
+                            RenderIntCombo("Bone ESP Type", ref BoneESP.CurrentType, BoneESP.Types.ToList(),
+                                BoneESP.Types.Length);
                             RenderBoolSetting("Team Check", ref BoneESP.TeamCheck);
                             //RenderFloatSlider("Bone Thickness", ref BoneESP.BoneThickness, 1f, 10f, "%.1f");
                             RenderColorSetting("Bone Color", ref BoneESP.BoneColor);
@@ -499,9 +574,12 @@ namespace Titled_Gui
                             //    });
                             //}
                             RenderBoolSetting("Eye Ray", ref EyeRay.Enabled);
-                            RenderBoolSettingWith1ColorPicker("Gun Icon", ref GunDisplay.Enabled, ref GunDisplay.TextColor);
-                            RenderBoolSettingWith2ColorPickers("Sound ESP", ref SoundESP.Enabled, ref SoundESP.TeamColor, ref SoundESP.EnemyColor);
-                            RenderBoolSettingWith1ColorPicker("Ping Display", ref PingDisplay.Enabled, ref PingDisplay.PingTextColor);
+                            RenderBoolSettingWith1ColorPicker("Gun Icon", ref GunDisplay.Enabled,
+                                ref GunDisplay.TextColor);
+                            RenderBoolSettingWith2ColorPickers("Sound ESP", ref SoundESP.Enabled,
+                                ref SoundESP.TeamColor, ref SoundESP.EnemyColor);
+                            RenderBoolSettingWith1ColorPicker("Ping Display", ref PingDisplay.Enabled,
+                                ref PingDisplay.PingTextColor);
                             ImGui.EndChild();
 
                             ImGui.NextColumn();
@@ -513,31 +591,40 @@ namespace Titled_Gui
                             RenderCategoryHeader("ESP Preview");
 
                             float Offset = -30f;
-                            Vector2 previewCenter = ImGui.GetCursorScreenPos() + new Vector2(ImGui.GetContentRegionAvail().X / 2, PreviewHeight / 2 + Offset);
+                            Vector2 previewCenter = ImGui.GetCursorScreenPos() +
+                                                    new Vector2(ImGui.GetContentRegionAvail().X / 2,
+                                                        PreviewHeight / 2 + Offset);
 
                             BoxESP.RenderESPPreview(previewCenter);
 
                             ImGui.EndChild();
 
-                            ImGui.BeginChild("EtraVisuals", new(0, 0));
+                            ImGui.BeginChild("Extra Visuals", new(0, 0));
 
                             RenderCategoryHeader("Other Visuals");
-                            RenderBoolSetting("Enable Bomb Timer", ref Modules.Visual.BombTimerOverlay.EnableTimeOverlay);
+                            RenderBoolSetting("Enable Bomb Timer",
+                                ref Modules.Visual.BombTimerOverlay.EnableTimeOverlay);
                             RenderBoolSettingWithWarning("Anti Flash", ref Modules.Visual.NoFlash.NoFlashEnable);
                             RenderBoolSettingWithWarning("FOV Changer", ref FovChanger.Enabled);
                             RenderBoolSettingWithWarning("Third Person", ref ThirdPerson.enabled);
                             RenderIntSlider("Desired FOV", ref FovChanger.FOV, 60, 160);
 
-                            RenderBoolSettingWith2ColorPickers("Radar", ref Radar.IsEnabled, ref Radar.EnemyPointColor, ref Radar.TeamPointColor);
+                            RenderBoolSettingWith2ColorPickers("Radar", ref Radar.IsEnabled, ref Radar.EnemyPointColor,
+                                ref Radar.TeamPointColor);
                             RenderBoolSetting("Draw Team", ref Radar.DrawOnTeam);
                             RenderBoolSetting("Draw Cross", ref Radar.DrawCrossb);
                             RenderBoolSettingWith1ColorPicker("C4 Box ESP", ref C4ESP.BoxEnabled, ref C4ESP.BoxColor);
-                            RenderBoolSettingWith1ColorPicker("C4 Text ESP", ref C4ESP.TextEnabled, ref C4ESP.TextColor);
+                            RenderBoolSettingWith1ColorPicker("C4 Text ESP", ref C4ESP.TextEnabled,
+                                ref C4ESP.TextColor);
 
-                            RenderBoolSettingWith1ColorPicker("Dropped Weapon ESP", ref WorldESP.DroppedWeaponESP, ref WorldESP.WeaponTextColor);
-                            RenderBoolSettingWith2ColorPickers("Dropped Hostage ESP", ref WorldESP.HostageESP, ref WorldESP.HostageTextColor, ref WorldESP.HostageBoxColor);
-                            RenderBoolSettingWith2ColorPickers("Chicken ESP", ref WorldESP.ChickenESP, ref WorldESP.ChickenTextColor, ref WorldESP.ChickenBoxColor);
-                            RenderBoolSettingWith1ColorPicker("Projectile ESP", ref WorldESP.ProjectileESP, ref WorldESP.ProjectileTextColor);
+                            RenderBoolSettingWith1ColorPicker("Dropped Weapon ESP", ref WorldESP.DroppedWeaponESP,
+                                ref WorldESP.WeaponTextColor);
+                            RenderBoolSettingWith2ColorPickers("Dropped Hostage ESP", ref WorldESP.HostageESP,
+                                ref WorldESP.HostageTextColor, ref WorldESP.HostageBoxColor);
+                            RenderBoolSettingWith2ColorPickers("Chicken ESP", ref WorldESP.ChickenESP,
+                                ref WorldESP.ChickenTextColor, ref WorldESP.ChickenBoxColor);
+                            RenderBoolSettingWith1ColorPicker("Projectile ESP", ref WorldESP.ProjectileESP,
+                                ref WorldESP.ProjectileTextColor);
                             ImGui.EndChild();
 
                             ImGui.EndChild();
@@ -551,13 +638,13 @@ namespace Titled_Gui
                             ImGui.Text("Available Configs:");
 
                             ImGui.BeginChild("ConfigList", new(0, 200), ImGuiChildFlags.Border);
+                        {
+                            foreach (var config in Configs.SavedConfigs.Keys)
                             {
-                                foreach (var config in Configs.SavedConfigs.Keys)
-                                {
-                                    if (ImGui.Selectable(config))
-                                        Configs.SelectedConfig = config;
-                                }
+                                if (ImGui.Selectable(config))
+                                    Configs.SelectedConfig = config;
                             }
+                        }
                             ImGui.EndChild();
                             ImGui.Spacing();
 
@@ -584,6 +671,7 @@ namespace Titled_Gui
                             {
                                 Configs.LoadConfig(Configs.SelectedConfig);
                             }
+
                             ImGui.EndChild();
                             ImGui.Columns(1);
                             break;
@@ -599,7 +687,8 @@ namespace Titled_Gui
 
                             RenderFloatSlider("Window Alpha", ref windowAlpha, 0.1f, 1.0f, "%.2f");
                             RenderColorSetting("Accent Color", ref accentColor);
-                            RenderFloatSlider("Animation Speed", ref animationSpeed, 0.01f, 1.0f, "%.2f"); // TODO make like open and close anim maybe tab swtichs
+                            RenderFloatSlider("Animation Speed", ref animationSpeed, 0.01f, 1.0f,
+                                "%.2f"); // TODO make like open and close anim maybe tab swtichs
                             RenderFloatSlider("Particle Speed", ref ParticleSpeed, 0, 10);
                             RenderColorSetting("Particle Color", ref ParticleColor);
                             RenderColorSetting("Line Color", ref LineColor);
@@ -622,7 +711,8 @@ namespace Titled_Gui
                             ImGui.Text($"Titled GUI V{Configs.Version}");
                             ImGui.Text("External Cheat Made By xfi0 / domok.");
                             ImGui.Text("More Info On" + Configs.Link);
-                            ImGui.Text("If You Paid For This You Have Been Scammed, This Never Was And Never Will Be Paid");
+                            ImGui.Text(
+                                "If You Paid For This You Have Been Scammed, This Never Was And Never Will Be Paid");
 
                             ImGui.EndChild();
 
@@ -634,8 +724,10 @@ namespace Titled_Gui
 
                 ImGui.End();
             }
+
             RunAllModules();
         }
+
         public void DrawParticles(int num)
         {
             while (Positions.Count < num || Velocities.Count < num) // only add if there isnt eg 50 drawn
@@ -648,10 +740,12 @@ namespace Titled_Gui
             {
                 Positions[i] += Velocities[i] * ParticleSpeed;
 
-                if (Positions[i].X < 0 || Positions[i].X > ScreenSize.X || Positions[i].Y < 0 || Positions[i].Y > ScreenSize.Y)
+                if (Positions[i].X < 0 || Positions[i].X > ScreenSize.X || Positions[i].Y < 0 ||
+                    Positions[i].Y > ScreenSize.Y)
                 {
                     Positions[i] = new Vector2(random.Next((int)ScreenSize.X), random.Next((int)ScreenSize.Y));
-                    Velocities[i] = new Vector2((float)(random.NextDouble() * 2 - 1), (float)(random.NextDouble() * 2 - 1));
+                    Velocities[i] = new Vector2((float)(random.NextDouble() * 2 - 1),
+                        (float)(random.NextDouble() * 2 - 1));
                 }
 
                 DrawHelpers.DrawGlowCircleFilled(drawList, Positions[i], ParticleRadius, ParticleColor, 1.1f);
@@ -665,7 +759,9 @@ namespace Titled_Gui
                     if (dist < MaxLineDistance)
                     {
                         float alpha = 1f - (dist / MaxLineDistance);
-                        drawList.AddLine(Positions[i], Positions[j], ImGui.ColorConvertFloat4ToU32(new Vector4(LineColor.X, LineColor.Y, LineColor.Z, LineColor.W * alpha)), 1f);
+                        drawList.AddLine(Positions[i], Positions[j],
+                            ImGui.ColorConvertFloat4ToU32(new Vector4(LineColor.X, LineColor.Y, LineColor.Z,
+                                LineColor.W * alpha)), 1f);
                     }
                 }
             }
@@ -691,6 +787,7 @@ namespace Titled_Gui
                         NameDisplay.DrawName(e, this);
                     }
                 }
+
                 if (Aimbot.DrawFov && Aimbot.AimbotEnable && Aimbot.UseFOV)
                     Aimbot.DrawCircle(Aimbot.FovSize, Aimbot.FovColor);
 
@@ -704,6 +801,15 @@ namespace Titled_Gui
                         }
                     }
                 }
+
+                if (PingDisplay.Enabled)
+                {
+                    foreach (Entity? entity in GameState.Entities)
+                    {
+                        PingDisplay.DrawPing(entity, this);
+                    }
+                }
+
                 C4ESP.DrawESP();
                 if (Chams.EnableChams)
                 {
@@ -712,10 +818,12 @@ namespace Titled_Gui
                         Chams.DrawChams(entity);
                     }
                 }
+
                 foreach (var e in GameState.Entities)
                 {
                     GunDisplay.Draw(e);
                 }
+
                 WorldESP.EntityESP();
                 Radar.DrawRadar();
 
@@ -726,27 +834,32 @@ namespace Titled_Gui
                         BoxESP.DrawBoxESP(entity, localPlayer, this);
                     }
                 }
+
                 if (BoxESP.EnableDistanceTracker)
                 {
                     foreach (var entity in entities)
                     {
-                        DistanceTextThingy(entity);
+                        Titled_Gui.Modules.Visual.DistanceText.DrawDistance(entity);
                     }
                 }
+
                 if (Tracers.EnableTracers)
                 {
                     foreach (var entity in GameState.Entities)
                     {
-                        if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck && entity.Team != GameState.LocalPlayer.Team))
+                        if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck &&
+                                                                 entity.Team != GameState.LocalPlayer.Team))
                         {
                             Tracers.DrawTracers(entity, this);
                         }
                     }
                 }
+
                 foreach (var entity in GameState.Entities)
                 {
                     SoundESP.DrawSoundESP(entity);
                 }
+
                 foreach (var entity in GameState.Entities)
                 {
                     if (entity != null)
@@ -762,6 +875,7 @@ namespace Titled_Gui
                         }
                     }
                 }
+
                 if (ArmorBar.EnableArmorhBar)
                 {
                     foreach (var entity in GameState.Entities)
@@ -786,14 +900,6 @@ namespace Titled_Gui
                 Console.WriteLine(e);
             }
         }
-        public static void DistanceTextThingy(Entity? e)
-        {
-            if (e == null || (BoxESP.TeamCheck && e?.Team == GameState.LocalPlayer.Team) || e?.Health <= 0 || e?.PawnAddress == GameState.LocalPlayer.PawnAddress || e?.Distance == null || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed)) return;
-
-            string distText = $"{(int)e.Distance / 100}m";
-            Vector2 textPos = new(e.Position2D.X + 2, e.Position2D.Y);
-            GameState.renderer.drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new(1f, 1f, 1f, 1f)), distText);
-        }
 
         private static void DrawGearIcon(Vector2 center, uint color)
         {
@@ -808,7 +914,8 @@ namespace Titled_Gui
 
             ImGui.PopFont();
         }
-        public static void RenderTitle(string Text)
+
+        public static void RenderTitle(string text)
         {
             if (!IsTextFontBigLoaded) return;
 
@@ -816,18 +923,19 @@ namespace Titled_Gui
 
             Vector2 offsetPos = new(ImGui.GetCursorScreenPos().X + 4, ImGui.GetCursorScreenPos().Y + 2);
 
-            ImGui.GetWindowDrawList().AddText(offsetPos, ImGui.ColorConvertFloat4ToU32(TextCol), Text);
+            ImGui.GetWindowDrawList().AddText(offsetPos, ImGui.ColorConvertFloat4ToU32(TextCol), text);
 
             ImGui.PopFont();
 
-            Vector2 textSize = ImGui.CalcTextSize(Text);
+            Vector2 textSize = ImGui.CalcTextSize(text);
 
             ImGui.Dummy(new Vector2(0, textSize.Y + 8));
 
             // sep line
             Vector2 start = ImGui.GetCursorScreenPos();
             Vector2 end = new(start.X + ImGui.GetContentRegionAvail().X, start.Y);
-            ImGui.GetWindowDrawList().AddLine(start, end, ImGui.ColorConvertFloat4ToU32(new Vector4(0.15f, 0.17f, 0.20f, 1.0f)), 1.0f);
+            ImGui.GetWindowDrawList().AddLine(start, end,
+                ImGui.ColorConvertFloat4ToU32(new Vector4(0.15f, 0.17f, 0.20f, 1.0f)), 1.0f);
 
             ImGui.Dummy(new Vector2(0, 6)); // spacing below
         }
@@ -846,7 +954,9 @@ namespace Titled_Gui
             Vector2 rectPos = new(cursorPos.X, cursorPos.Y);
             Vector2 rectSize = new(childSize.X / 2, textSize.Y + 8.3f); // half of the child
 
-            ImGui.GetWindowDrawList().AddRectFilledMultiColor(rectPos, rectPos + rectSize, ImGui.ColorConvertFloat4ToU32(HeaderStartCol), ImGui.ColorConvertFloat4ToU32(MainContentCol), ImGui.ColorConvertFloat4ToU32(MainContentCol), ImGui.ColorConvertFloat4ToU32(HeaderStartCol));
+            ImGui.GetWindowDrawList().AddRectFilledMultiColor(rectPos, rectPos + rectSize,
+                ImGui.ColorConvertFloat4ToU32(HeaderStartCol), ImGui.ColorConvertFloat4ToU32(MainContentCol),
+                ImGui.ColorConvertFloat4ToU32(MainContentCol), ImGui.ColorConvertFloat4ToU32(HeaderStartCol));
 
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 1 / 2);
 
@@ -887,6 +997,7 @@ namespace Titled_Gui
 
             ImGui.Columns(1);
         }
+
         private static void RenderGradientText(string text, Vector4 startColor, Vector4 endColor)
         {
             var drawList = ImGui.GetWindowDrawList();
@@ -924,6 +1035,7 @@ namespace Titled_Gui
                 {
                     ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
                 }
+
                 ImGui.PopStyleColor(isSelected ? 4 : 1);
             }
 
@@ -941,13 +1053,15 @@ namespace Titled_Gui
                 {
                     ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
                 }
+
                 pressed = ImGui.Button(label, new Vector2(tabSize.X, 40));
                 if (pressed)
                 {
                     selectedTab = tabIndex;
                     if (menuSounds)
-                        Classes.PlaySound.PlaySoundFile("ClickSounds/Creamy", menuSoundsVolume);
+                        Classes.PlaySound.PlaySoundFile("ClickSounds/Creamy.wav", menuSoundsVolume);
                 }
+
                 ImGui.PopStyleColor(isSelected ? 4 : 1);
                 ImGui.PopFont();
             }
@@ -958,330 +1072,37 @@ namespace Titled_Gui
                 {
                     selectedTab = tabIndex;
                     if (menuSounds)
-                        Classes.PlaySound.PlaySoundFile("ClickSounds/Creamy", menuSoundsVolume);
+                        Classes.PlaySound.PlaySoundFile("ClickSounds/Creamy.wav", menuSoundsVolume);
                 }
             }
 
             var min = ImGui.GetItemRectMin();
             var max = ImGui.GetItemRectMax();
             var borderColor = isSelected ? SidebarColor + new Vector4(0.02f, 0.01f, 0.01f, 1f) : SidebarColor;
-            drawList.AddLine(new Vector2(min.X, min.Y), new Vector2(max.X, min.Y), ImGui.ColorConvertFloat4ToU32(borderColor), 1.5f);
-            drawList.AddLine(new Vector2(min.X, max.Y), new Vector2(max.X, max.Y), ImGui.ColorConvertFloat4ToU32(borderColor), 1.5f);
+            drawList.AddLine(new Vector2(min.X, min.Y), new Vector2(max.X, min.Y),
+                ImGui.ColorConvertFloat4ToU32(borderColor), 1.5f);
+            drawList.AddLine(new Vector2(min.X, max.Y), new Vector2(max.X, max.Y),
+                ImGui.ColorConvertFloat4ToU32(borderColor), 1.5f);
 
             ImGui.PopFont();
             ImGui.PopStyleVar(); // restore spacing
         }
+      
+        //private static void RenderIntCombo(string label, ref int current, string[] items, int itemCount, float widgetWidth = 160f)
+        //{
+        //    int temp = current;
+
+        //    RenderRowRightAligned(label, () =>
+        //    {
+        //        ImGui.Combo("##" + label, ref temp, items, items.Length);
+        //    }, widgetWidth);
+
+        //    if (temp != current)
+        //    {
+        //        current = temp;
+        //    }
+        //}
 
-
-
-        private static void RenderRow(string label, Action renderWidget, bool rightAlignWidget = false)
-        {
-            ImGui.Columns(2, null, false);
-
-            ImGui.Indent(LabelPadding);
-            ImGui.Text(label);
-            ImGui.Unindent(LabelPadding);
-            ImGui.NextColumn();
-
-            float colWidth = ImGui.GetColumnWidth();
-            float spacing = ImGui.GetStyle().ItemSpacing.X;
-            float widgetWidth = WidgetColumnWidth;
-
-            if (rightAlignWidget)
-            {
-                float posX = ImGui.GetCursorPosX() + colWidth - widgetWidth - spacing;
-                ImGui.SetCursorPosX(posX);
-            }
-
-            ImGui.PushItemWidth(widgetWidth);
-            renderWidget();
-            ImGui.PopItemWidth();
-
-            ImGui.NextColumn();
-            ImGui.Columns(1);
-        }
-
-        private static void RenderRowRightAligned(string label, Action renderWidget, float widgetWidth = 0f)
-        {
-            ImGui.Columns(2, null, false);
-
-            ImGui.Indent(LabelPadding);
-            ImGui.Text(label);
-            ImGui.Unindent(LabelPadding);
-            ImGui.NextColumn();
-
-            float colWidth = ImGui.GetColumnWidth();
-            float spacing = ImGui.GetStyle().ItemSpacing.X;
-            float desired = widgetWidth <= 0f ? 200f : widgetWidth;
-            desired = Math.Min(desired, colWidth - spacing);
-
-            float posX = ImGui.GetCursorPosX() + colWidth - desired - spacing;
-            ImGui.SetCursorPosX(posX);
-
-            ImGui.PushItemWidth(desired);
-            renderWidget();
-            ImGui.PopItemWidth();
-
-            ImGui.NextColumn();
-            ImGui.Columns(1);
-        }
-        private static void RenderBoolSetting(string label, ref bool value, Action? onChanged = null, float widgetWidth = 0f)
-        {
-            bool temp = value;
-            RenderRowRightAligned(label, () =>
-            {
-                float height = ImGui.GetFrameHeight();
-                float width = height * 1.7f;
-                float radius = height / 2f - 2f;
-
-                float colWidth = ImGui.GetColumnWidth();
-                float spacing = ImGui.GetStyle().ItemSpacing.X;
-                float posX = ImGui.GetCursorPosX() + colWidth - width - spacing;
-                ImGui.SetCursorPosX(posX);
-
-                Vector2 p = ImGui.GetCursorScreenPos();
-                var drawList = ImGui.GetWindowDrawList();
-                string strId = "##" + label;
-
-                ImGui.InvisibleButton(strId, new Vector2(width, height));
-                if (ImGui.IsItemClicked()) temp = !temp;
-
-                float t = temp ? 1f : 0f;
-
-                drawList.AddRectFilled(p, new Vector2(p.X + width, p.Y + height), ImGui.ColorConvertFloat4ToU32(trackCol), height); // track
-
-                float knobX = p.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
-                float knobY = p.Y + radius + 2f;
-                Vector4 knobColor = temp ? knobOn : knobOff;
-                // knob
-                drawList.AddCircleFilled(new Vector2(knobX, knobY), radius, ImGui.ColorConvertFloat4ToU32(knobColor), 36);
-                drawList.AddCircle(new Vector2(knobX, knobY), radius, ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
-            }, widgetWidth);
-
-            if (temp != value)
-            {
-                value = temp;
-                onChanged?.Invoke();
-            }
-        }
-        private static Dictionary<string, bool> OpenPopups = [];
-        private static Dictionary<string, bool> PreviousValues = [];
-
-        private static void RenderBoolSettingWithWarning(string label, ref bool value, Action? onChanged = null,
-            float widgetWidth = 0f)
-        {
-            if (!OpenPopups.ContainsKey(label))
-                OpenPopups[label] = false;
-
-            if (!PreviousValues.ContainsKey(label))
-                PreviousValues[label] = value;
-
-            bool temp = value;
-
-            RenderRowRightAligned(label, () =>
-            {
-                float height = ImGui.GetFrameHeight();
-                float width = height * 1.7f;
-                float radius = height / 2f - 2f;
-                float colWidth = ImGui.GetColumnWidth();
-                float spacing = ImGui.GetStyle().ItemSpacing.X;
-                float posX = ImGui.GetCursorPosX() + colWidth - width - spacing;
-
-                ImGui.SetCursorPosX(posX);
-
-                Vector2 p = ImGui.GetCursorScreenPos();
-                var drawList = ImGui.GetWindowDrawList();
-                string strId = "##" + label;
-                ImGui.InvisibleButton(strId, new Vector2(width, height));
-
-                if (ImGui.IsItemClicked())
-                {
-                    temp = !temp;
-                    if (!PreviousValues[label] && temp)
-                        OpenPopups[label] = true;
-                }
-
-                float t = temp ? 1f : 0f;
-
-                drawList.AddRectFilled(p, new Vector2(p.X + width, p.Y + height),
-                    ImGui.ColorConvertFloat4ToU32(trackCol), height);
-
-                float knobX = p.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
-                float knobY = p.Y + radius + 2f;
-
-                Vector4 knobColor = temp ? knobOn : knobOff;
-
-                drawList.AddCircleFilled(new Vector2(knobX, knobY), radius,
-                    ImGui.ColorConvertFloat4ToU32(knobColor), 36);
-                drawList.AddCircle(new Vector2(knobX, knobY), radius,
-                    ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
-
-            }, widgetWidth);
-
-            string popupId = "warning##" + label;
-            if (OpenPopups[label])
-                ImGui.OpenPopup(popupId);
-
-            bool tempref = OpenPopups[label];
-            //ImGui.SetNextWindowSize(new Vector2(200, 200));
-
-            if (ImGui.BeginPopupModal(popupId, ref tempref, ImGuiWindowFlags.AlwaysAutoResize))
-            {
-                ImGui.Text("WARNING\nThis feature uses WPM and or may be detected.\n Use at your own risk.");
-                ImGui.Separator();
-
-                if (ImGui.Button("OK", new Vector2(120, 0)))
-                {
-                    OpenPopups[label] = false;
-                    ImGui.CloseCurrentPopup();
-                }
-
-                ImGui.EndPopup();
-            }
-
-            PreviousValues[label] = temp;
-
-            if (temp != value)
-            {
-                value = temp;
-                onChanged?.Invoke();
-            }
-        }
-
-
-
-        private void RenderBoolSettingWith2ColorPickers(string label, ref bool value, ref Vector4 color1, ref Vector4 color2)
-        {
-            ImGui.PushID(label);
-
-            var tmp1 = color1;
-            var tmp2 = color2;
-            var tmpVal = value;
-
-            RenderRowRightAligned(label, () =>
-            {
-                ImGui.ColorEdit4("##" + label + "col1", ref tmp1, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
-                ImGui.SameLine();
-
-                ImGui.ColorEdit4("##" + label + "col2", ref tmp2, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
-                ImGui.SameLine();
-
-                ImGui.Checkbox("##" + label + "checkmark", ref tmpVal);
-            }, widgetWidth: 73f);
-
-            if (!tmp1.Equals(color1))
-            {
-                color1 = tmp1;
-            }
-            if (!tmp2.Equals(color2))
-            {
-                color2 = tmp2;
-            }
-            if (tmpVal != value)
-            {
-                value = tmpVal;
-            }
-
-            ImGui.PopID();
-        }
-        private static void ColorEdit(string label, ref Vector4 col, ImGuiColorEditFlags flags)
-        {
-            // TODO: make a custom color picker with options like gradient and stuff
-            ImGui.ColorEdit4(label, ref col, flags);
-        }
-        private static void RenderBoolSettingWith1ColorPicker(string label, ref bool value, ref Vector4 color1)
-        {
-            ImGui.PushID(label);
-
-            bool tmpVal = value;
-            Vector4 tmpColor = color1;
-
-            RenderRowRightAligned(label, () =>
-            {
-                Vector2 rowStart = ImGui.GetCursorScreenPos();
-                float rowWidth = ImGui.GetColumnWidth();
-                float paddingRight = 7f;
-
-                ImGui.SetCursorScreenPos(rowStart + new Vector2(0, 0));
-                ColorEdit("##" + label + "_col1", ref tmpColor, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
-
-                float height = ImGui.GetFrameHeight();
-                float width = height * 1.7f;
-                float radius = height / 2f - 2f;
-                Vector2 knobPos = new(rowStart.X + rowWidth - width - paddingRight, rowStart.Y);
-
-                var drawList = ImGui.GetWindowDrawList();
-                ImGui.SetCursorScreenPos(knobPos);
-
-                ImGui.InvisibleButton("##" + label + "_toggle", new Vector2(width, height));
-                if (ImGui.IsItemClicked()) tmpVal = !tmpVal;
-
-                float t = tmpVal ? 1f : 0f;
-                drawList.AddRectFilled(knobPos, new Vector2(knobPos.X + width, knobPos.Y + height), ImGui.ColorConvertFloat4ToU32(trackCol), height);
-                float knobX = knobPos.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
-                float knobY = knobPos.Y + radius + 2f;
-                drawList.AddCircleFilled(new Vector2(knobX, knobY), radius, ImGui.ColorConvertFloat4ToU32(tmpVal ? knobOn : knobOff), 36);
-                drawList.AddCircle(new Vector2(knobX, knobY), radius, ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
-            });
-
-            if (!tmpColor.Equals(color1)) color1 = tmpColor;
-            value = tmpVal;
-
-            ImGui.PopID();
-        }
-
-
-
-        private static void RenderIntCombo(string label, ref int current, string[] items, int itemCount, float widgetWidth = 160f)
-        {
-            int temp = current;
-
-            RenderRowRightAligned(label, () =>
-            {
-                ImGui.Combo("##" + label, ref temp, items, items.Length);
-            }, widgetWidth);
-
-            if (temp != current)
-            {
-                current = temp;
-            }
-        }
-        private static void RenderColorSetting(string label, ref Vector4 color, Action? onChanged = null, float widgetWidth = 160f)
-        {
-            Vector4 temp = color;
-            RenderRowRightAligned(label, () =>
-            {
-                ColorEdit("##" + label, ref temp, ImGuiColorEditFlags.None);
-            }, widgetWidth);
-
-            if (!temp.Equals(color))
-            {
-                color = temp;
-                onChanged?.Invoke();
-            }
-        }
-
-        private static void RenderFloatSlider(string label, ref float value, float min, float max, string format = "%.2f", float widgetWidth = 200f)
-        {
-            float temp = value;
-            RenderRowRightAligned(label, () =>
-            {
-                ImGui.SliderFloat("##" + label, ref temp, min, max, format);
-            }, widgetWidth);
-
-            if (temp != value) value = temp;
-        }
-
-        private static void RenderIntSlider(string label, ref int value, int min, int max, string format = "%d", float widgetWidth = 200f)
-        {
-            int temp = value;
-            RenderRowRightAligned(label, () =>
-            {
-                ImGui.SliderInt("##" + label, ref temp, min, max, format);
-            }, widgetWidth);
-
-            if (temp != value) value = temp;
-        }
         public static void RenderKeybindChooser(string label, ref int key)
         {
             ImGui.PushID(label);

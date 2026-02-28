@@ -27,7 +27,7 @@ namespace Titled_Gui.Modules.Visual
             Vector2 filledTop = topLeft + new Vector2(0, height - filledHeight);
 
             if (Colors.RGB)
-                HealthColor = Colors.Rgb(e.Health);
+                HealthColor = Colors.Rgb();
             
             else
             {

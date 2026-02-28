@@ -7,7 +7,7 @@ namespace Titled_Gui.Classes
         public static Vector4 EnemyColor = new(1, 0, 0, 1);// red
         public static Vector4 TeamColor = new(0, 1, 0, 1);// green 
         public static bool RGB = false; // toggle for RGB color
-        public static Vector4 Rgb(float speed1)
+        public static Vector4 Rgb()
         {
             float time = (float)DateTime.Now.TimeOfDay.TotalSeconds;
             float speed = (MathF.Sin(time * MathF.PI) + 1) / 2;

@@ -25,7 +25,7 @@ namespace Titled_Gui.Modules.Visual
             renderer.drawList.AddRectFilled(topRight, topRight + new Vector2(ArmorBarWidth, height), ImGui.ColorConvertFloat4ToU32(new(0.2f, 0.2f, 0.2f, 1f)), Rounding);
 
             Vector2 filledTop = topRight + new Vector2(0, height - filledHeight);
-            ArmorColor = Colors.RGB ? Colors.Rgb(healthPercentage) : new(0.1f, 0f, 1f, 1f);
+            ArmorColor = Colors.RGB ? Colors.Rgb() : new(0.1f, 0f, 1f, 1f);
 
             renderer.drawList.AddRectFilled(filledTop, filledTop + new Vector2(ArmorBarWidth, filledHeight), ImGui.ColorConvertFloat4ToU32(ArmorColor), Rounding);
         }

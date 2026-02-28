@@ -63,7 +63,7 @@ namespace Titled_Gui.Modules.Visual
             float thickness =
                 Math.Clamp(BoneThickness / (entity.Distance * 0.1f), 0.5f,
                     1f); // calculate thickness based on Distance, minimum 0.5f and maximum 2f stops it from being massive
-            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb(0.5f) : BoneColor); //get color
+            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb() : BoneColor); //get color
 
             foreach (var (a, b) in BoneConnections)
             {

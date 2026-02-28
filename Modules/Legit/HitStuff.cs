@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using System.Media;
+using ImGuiNET;
 using NAudio.Wave;
 using System.Numerics;
 using Titled_Gui.Data.Game;
@@ -7,7 +8,11 @@ namespace Titled_Gui.Modules.Legit
 {
     internal class HitStuff : Classes.ThreadService // could usesome settings
     {
-        public static string[] HitSounds = new string[] { "Never Lose", "Skeet" };
+        public static List<string> HitSounds = new()
+        {
+            "Never Lose", 
+            "Skeet"
+        };
         public static int CurrentHitSound = 0;
         public static bool Enabled = false;
         public static bool EnableHeadshotText = false;
@@ -60,33 +65,7 @@ namespace Titled_Gui.Modules.Legit
 
         private static void PlaySound(string soundName)
         {
-            if (string.IsNullOrEmpty(soundName)) 
-                return;
-
-            try
-            {
-                string path = Path.Combine("Resources", $"{soundName.Replace(" ", "")}.wav");
-
-                AudioFileReader file = new(path);
-                WaveOutEvent player = new();
-                player.Init(file);
-                player.Volume = Volume;
-                player.Play();
-
-                player.PlaybackStopped += (s, e) =>
-                {
-                    file.Dispose();
-                    player.Dispose();
-                };
-            }
-            catch (FileNotFoundException)
-            {
-                Console.WriteLine("File Was Not Found.");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            Titled_Gui.Classes.PlaySound.PlaySoundWithCheck(soundName, Volume);
         }
         public static void CreateHitText()
         {

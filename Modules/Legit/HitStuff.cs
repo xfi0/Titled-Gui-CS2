@@ -1,12 +1,10 @@
-﻿using System.Media;
-using ImGuiNET;
-using NAudio.Wave;
+﻿using ImGuiNET;
 using System.Numerics;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Legit
 {
-    internal class HitStuff : Classes.ThreadService // could usesome settings
+    internal class HitStuff : Classes.ThreadService // could use some settings
     {
         public static List<string> HitSounds = new()
         {

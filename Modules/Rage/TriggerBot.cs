@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Threading;
 using Titled_Gui.Classes;
-using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Classes.User32;
 

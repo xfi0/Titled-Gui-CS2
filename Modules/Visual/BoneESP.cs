@@ -1,10 +1,8 @@
 using ImGuiNET;
 using System.Numerics;
-using System.Windows.Forms.VisualStyles;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
-using static Titled_Gui.Data.Game.GameState;
 
 namespace Titled_Gui.Modules.Visual
 {

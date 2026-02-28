@@ -1,10 +1,4 @@
-﻿using NAudio;
-using NAudio.Wave;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Linq;
-using Titled_Gui.Data.Game;
+﻿using NAudio.Wave;
 
 namespace Titled_Gui.Classes
 {

@@ -1,8 +1,4 @@
-﻿using ImGuiNET;
-using System;
-using System.Numerics;
-using Titled_Gui.Classes;
-using Titled_Gui.Data.Entity;
+﻿using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual

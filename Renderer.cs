@@ -12,6 +12,7 @@ using Titled_Gui.Data.Game;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
+using ZstdSharp.Unsafe;
 using static Titled_Gui.Data.Game.MapParser.MapLoader;
 using static Titled_Gui.ImGUI.Widgets.Toggles;
 using static Titled_Gui.ImGUI.Widgets.ColorPickers;
@@ -696,7 +697,7 @@ namespace Titled_Gui
                             RenderKeybindChooser("Open Keybind", ref OpenKey);
                             RenderBoolSetting("Menu Sounds", ref menuSounds);
                             RenderFloatSlider("Menu Sounds Volume", ref menuSoundsVolume, 0, 1);
-                            ImGui.Text("Preformance");
+                            ImGui.Text("Performance");
                             RenderBoolSetting("Use Old Visibility Check", ref EntityManager.UseOldVisibilityCheck);
                             RenderBoolSetting("VSync", ref _enableVsync);
                             ImGui.EndChild();
@@ -811,17 +812,21 @@ namespace Titled_Gui
                 }
 
                 C4ESP.DrawESP();
+
                 if (Chams.EnableChams)
                 {
-                    foreach (Entity entity in entities)
+                    foreach (Entity? entity in entities)
                     {
                         Chams.DrawChams(entity);
                     }
                 }
 
-                foreach (var e in GameState.Entities)
+                if (GunDisplay.Enabled)
                 {
-                    GunDisplay.Draw(e);
+                    foreach (var e in GameState.Entities)
+                    {
+                        GunDisplay.Draw(e);
+                    }
                 }
 
                 WorldESP.EntityESP();
@@ -829,9 +834,9 @@ namespace Titled_Gui
 
                 if (Modules.Visual.BoxESP.EnableESP)
                 {
-                    foreach (var entity in entities)
+                    foreach (Entity? entity in entities)
                     {
-                        BoxESP.DrawBoxESP(entity, localPlayer, this);
+                        BoxESP.DrawBoxESP(entity, this);
                     }
                 }
 

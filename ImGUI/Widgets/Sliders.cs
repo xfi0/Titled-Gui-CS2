@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ImGuiNET;
+﻿using ImGuiNET;
 using static Titled_Gui.ImGUI.Widgets.Misc;
 
 namespace Titled_Gui.ImGUI.Widgets

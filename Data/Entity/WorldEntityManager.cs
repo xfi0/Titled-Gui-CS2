@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text;
-using System.Windows.Forms;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Game;
 

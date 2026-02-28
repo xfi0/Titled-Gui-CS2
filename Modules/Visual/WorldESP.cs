@@ -1,10 +1,5 @@
 ﻿using ImGuiNET;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Numerics;
-using System.Text;
-using System.Windows.Forms;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Numerics;
+﻿using System.Numerics;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Modules.Visual.BoneESP;
 

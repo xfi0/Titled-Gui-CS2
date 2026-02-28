@@ -23,7 +23,7 @@ namespace Titled_Gui.Modules.Visual
         public static int CurrentEndPos = 0;
         private static Vector2 StartPos = new();
         private static Vector2 EndPos = new();
-        private static float _headOffset = 50f;
+        private static float headOffset = 50f;
         public static float RGBSpeed = 0.5f;
         public static void DrawTracers(Entity? entity, Renderer renderer)
         {
@@ -44,7 +44,7 @@ namespace Titled_Gui.Modules.Visual
             switch (CurrentEndPos)
             {
                 case 0: EndPos = entity.Position2D; break;
-                case 1: EndPos = new(entity.Bones2D[2].X, entity.Bones2D[2].Y + _headOffset); break;
+                case 1: EndPos = new(entity.Bones2D[2].X, entity.Bones2D[2].Y + headOffset); break;
             }
 
             Vector4 lineColor = RGB ? Colors.Rgb() : (LocalPlayer.Team == entity.Team ? TeamColor : EnemyColor);

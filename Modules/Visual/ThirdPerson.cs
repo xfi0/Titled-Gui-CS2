@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Titled_Gui.Data.Game;
+﻿using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
 {

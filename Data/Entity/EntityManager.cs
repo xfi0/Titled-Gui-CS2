@@ -1,15 +1,9 @@
-using ImGuiNET;
-using K4os.Compression.LZ4.Internal;
 using System.Diagnostics;
 using System.Numerics;
-using System.Reflection;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Game.MapParser;
-using Vortice.Mathematics;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using static Titled_Gui.Data.Game.GameState;
-using static Titled_Gui.Data.Game.MapParser.MapLoader;
 
 namespace Titled_Gui.Data.Entity
 {

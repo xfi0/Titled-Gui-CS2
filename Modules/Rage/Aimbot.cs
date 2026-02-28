@@ -1,11 +1,8 @@
 ﻿using ImGuiNET;
-using System.Diagnostics;
-using System.Net.Http.Headers;
 using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
-using Titled_Gui.Data.Game.MapParser;
 using Titled_Gui.Modules.Visual;
 using static Titled_Gui.Data.Game.GameState;
 

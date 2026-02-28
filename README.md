@@ -118,17 +118,3 @@ This project is licensed under GPL Public V3, More information in LICENSE
 <img src="https://github.com/xfi0/Titled-Gui-CS2/blob/master/Docs/Preview1.png">
 
 <hr></hr>
-
-## 🤝 Contributing
-### I accept contributions! Please follow these steps:
-
-- Fork the project
-
-- Code Your Feature
-
-- Commit your changes (git commit -m 'Add some AmazingFeature')
-
-- Push to master branch (git push origin master)
-
-- Open a Pull Request
-

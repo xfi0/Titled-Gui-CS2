@@ -52,14 +52,23 @@ namespace Titled_Gui.Data.Entity
         public IntPtr SpottedByState { get; set; }
         public Vector3 AngEyeAngles { get; set; }
         public Vector3 GunGameImmunityColor { get; set; }
-        public IntPtr gameSceneNode { get; set; }
-        public float sensitivity { get; set; }
-        public float emitSoundTime { get; set; }
-        public Vector3 eyePosition { get; set; }
-        public Vector3 vecMin { get; set; }
-        public Vector3 vecMax { get; set; }
-        public IntPtr hitboxComponent { get; set; }
-        public bool dormant { get; set; }
+        public IntPtr GameSceneNode { get; set; }
+        public float Sensitivity { get; set; }
+        public float EmitSoundTime { get; set; }
+        public Vector3 EyePosition { get; set; }
+        public Vector3 VecMin { get; set; }
+        public Vector3 VecMax { get; set; }
+        public IntPtr HitboxComponent { get; set; }
+        public bool IsDormant { get; set; }
+
+        public bool IsValid
+        {
+            get
+            {
+                return this.PawnAddress != IntPtr.Zero && this.LifeState != 256 && this.Health > 0 && this.Position2D != new Vector2(-99, -99);
+            }
+        }
+     
         public string GetSchemaName()
         {
             var identity = GameState.swed.ReadPointer(GameState.currentPawn + Offsets.m_pEntity);

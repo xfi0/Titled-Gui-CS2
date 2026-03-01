@@ -19,16 +19,15 @@ namespace Titled_Gui.Modules.Visual
             public float StartTime { get; set; }
             public float LifeTime { get; set; }
         }
-        public static void DrawSoundESP(Entity e)
+        public static void DrawSoundESP(Entity? e)
         {
             if (!Enabled || e == null || e.Health <= 0) return;
 
-            if (!emitTimes.ContainsKey(e) || e.emitSoundTime > emitTimes[e])
-            {
-                emitTimes[e] = e.emitSoundTime;
-            }
+            if (!emitTimes.ContainsKey(e) || e.EmitSoundTime > emitTimes[e]) 
+                emitTimes[e] = e.EmitSoundTime;
+            
 
-            if (e.emitSoundTime == emitTimes[e])
+            if (e.EmitSoundTime == emitTimes[e])
                 return;
 
             //Console.WriteLine(e.emitSoundTime);
@@ -53,7 +52,7 @@ namespace Titled_Gui.Modules.Visual
                 points.Add(new Point
                 {
                     Position = point2D,
-                    StartTime = e.emitSoundTime,
+                    StartTime = e.EmitSoundTime,
                     LifeTime = DateTime.Now.Second
                 });
             }

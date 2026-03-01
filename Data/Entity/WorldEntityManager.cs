@@ -90,66 +90,77 @@ namespace Titled_Gui.Data.Entity
         {
             return EntityType.TryGetValue(itemIdentifier, out var value) ? value : "Unknown Entity Type";
         }
-        public List<WorldEntity> GetWorldEntities()
+        public List<WorldEntity?> GetWorldEntities()
         {
-            List<WorldEntity> worldEntities = new List<WorldEntity>();
-            for (int i = 65; i < 1024; i++)
+            try
             {
-                listEntry = GameState.swed.ReadPointer(GameState.EntityList + 0x8 * ((i & 0x7FFF) >> 9) + 16);
-                if (listEntry == 0) continue;
+                List<WorldEntity?> worldEntities = new List<WorldEntity?>();
+                for (int i = 65; i < 2048; i++)
+                {
+                    listEntry = GameState.swed.ReadPointer(GameState.EntityList + 0x8 * ((i & 0x7FFF) >> 9) + 16);
+                    if (listEntry == 0) continue;
 
-                var item = GameState.swed.ReadPointer(listEntry + 0x70 * (i & 0x1FF));
-                if (item == 0) continue;
+                    var pawnAddress = GameState.swed.ReadPointer(listEntry + 0x70 * (i & 0x1FF));
+                    if (pawnAddress == 0) continue;
 
-                IntPtr itemNode = GameState.swed.ReadPointer(item + Offsets.m_pGameSceneNode);
-                if (itemNode == 0) continue;
+                    IntPtr itemNode = GameState.swed.ReadPointer(pawnAddress + Offsets.m_pGameSceneNode);
+                    if (itemNode == 0) continue;
 
-                IntPtr itemInfo = GameState.swed.ReadPointer((item + 0x10));
-                if (itemInfo == 0) continue;
+                    IntPtr itemInfo = GameState.swed.ReadPointer((pawnAddress + 0x10));
+                    if (itemInfo == 0) continue;
 
-                IntPtr itemTypePtr = GameState.swed.ReadPointer((itemInfo + 0x20));
-                if (itemTypePtr == 0) continue;
+                    IntPtr itemTypePtr = GameState.swed.ReadPointer((itemInfo + 0x20));
+                    if (itemTypePtr == 0) continue;
 
-                byte[] buffer = GameState.swed.ReadBytes(itemTypePtr, 128);
-                int len = Array.IndexOf<byte>(buffer, 0);
-                if (len < 0) len = buffer.Length;
+                    byte[] buffer = GameState.swed.ReadBytes(itemTypePtr, 128);
+                    int len = Array.IndexOf<byte>(buffer, 0);
+                    if (len < 0) len = buffer.Length;
 
-                string type = Encoding.UTF8.GetString(buffer, 0, len >= 0 ? len : buffer.Length).Trim().Split('\0')[0].Replace("?", "").Replace("\0", "");
-                if (string.IsNullOrWhiteSpace(type))
-                    continue;
+                    string type =
+                        Encoding.UTF8.GetString(buffer, 0, len >= 0 ? len : buffer.Length).Trim().Split('\0')[0]
+                            .Replace("?", "").Replace("\0", "");
+                    if (string.IsNullOrWhiteSpace(type))
+                        continue;
 
-                WorldEntity worldEntity = PopulateEntity(item);
-                if (worldEntity.Position2D == new Vector2(-99, -99) || worldEntity == null || worldEntity.PawnAddress == 0x0) 
-                    continue;
+                    WorldEntity? worldEntity = PopulateEntity(pawnAddress, type, itemNode);
 
-                worldEntities.Add(worldEntity);
+                    if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99) ||
+                        worldEntity.Position.X == 0 || worldEntity.Position.Y == 0 || worldEntity.PawnAddress == 0x0)
+                        continue;
+
+                    worldEntities.Add(worldEntity);
+                }
+
+                return worldEntities != null ? worldEntities : new List<WorldEntity?>();
             }
-            return worldEntities;
+            catch (Exception ex)
+            {
+                Console.WriteLine("World Entity Loop Exception: " + ex);
+            }
+
+            return new List<WorldEntity?>();
         }
-        public WorldEntity PopulateEntity(nint worldEntity)
+
+        public WorldEntity? PopulateEntity(nint pawnAddress, string type, IntPtr itemNode)
         {
             float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
-            nint itemNode = GameState.swed.ReadPointer(worldEntity + Offsets.m_pGameSceneNode);
-            Vector3 itemOrigin = GameState.swed.ReadVec((nint)itemNode + Offsets.m_vecAbsOrigin);
-            IntPtr itemInfo = GameState.swed.ReadPointer((worldEntity + 0x10));
-            IntPtr itemTypePtr = GameState.swed.ReadPointer((itemInfo + 0x20));
+            Vector3 itemOrigin = GameState.swed.ReadVec((nint)itemNode + Offsets.m_vecOrigin);
+            IntPtr collisionBase = pawnAddress + Offsets.m_Collision;
 
-
-            byte[] buffer = GameState.swed.ReadBytes(itemTypePtr, 128);
-            int len = Array.IndexOf<byte>(buffer, 0);
-            if (len < 0) len = buffer.Length;
-            string type = Encoding.UTF8.GetString(buffer, 0, len >= 0 ? len : buffer.Length).Trim().Split('\0')[0].Replace("?", "").Replace("\0", "");
-           
             WorldEntity newWorldEntity = new()
             {
-                PawnAddress = worldEntity,
+                PawnAddress = pawnAddress,
                 ItemNode = itemNode,
                 Position = itemOrigin,
                 Position2D = Calculate.WorldToScreen(viewMatrix, itemOrigin),
                 DisplayName = "",
-                Type = EntityKind.Unknown
+                Type = EntityKind.Unknown,
+                RawType = type,
+                VecMax = GameState.swed.ReadVec(collisionBase, Offsets.m_vecMaxs),
+                VecMin = GameState.swed.ReadVec(collisionBase, Offsets.m_vecMins)
             };
+
             if (WeaponsType.TryGetValue(type, out var weaponName))
             {
                 newWorldEntity.Type = EntityKind.Weapon;
@@ -173,17 +184,19 @@ namespace Titled_Gui.Data.Entity
 
             return newWorldEntity;
         }
-        private readonly List<WorldEntity> lastSnapshot = new();
+
+        private readonly List<WorldEntity?> _lastSnapshot = new();
 
         protected override void FrameAction()
         {
             Thread.SpinWait(5);
-            var fresh = GetWorldEntities();
-            lock (lastSnapshot)
+            List<WorldEntity?> newSnapshot = GetWorldEntities();
+
+            lock (_lastSnapshot)
             {
-                lastSnapshot.Clear();
-                lastSnapshot.AddRange(fresh);
-                GameState.worldEntities = lastSnapshot.ToList();
+                _lastSnapshot.Clear();
+                _lastSnapshot.AddRange(newSnapshot);
+                GameState.worldEntities = _lastSnapshot.ToList();
             }
         }
     }

@@ -9,10 +9,13 @@ namespace Titled_Gui.Modules.Visual
         public static bool DrawOnSelf = false;
         public static bool EnableChams = false;
 
-        public static void DrawChams(Entity? entity)
+        public static void Draw(Entity? entity)
         {
-            if (entity == null || entity.Bones2D == null || (DrawOnSelf && entity == GameState.LocalPlayer) || BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed || entity.Bones2D.Count <= 0) return;
-
+            if (entity == null || entity.Bones2D == null ||
+                (DrawOnSelf && entity == GameState.LocalPlayer) ||
+                BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed ||
+                entity.Bones2D.Count <= 0 || !EnableChams)
+                return;
         }
     }
 }

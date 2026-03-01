@@ -121,6 +121,8 @@ namespace Titled_Gui.Classes
             { "m_bSmokeEffectSpawned", new() { new Offset("m_bSmokeEffectSpawned") } },
             { "m_bSmokeVolumeDataReceived", new() { new Offset("m_bSmokeVolumeDataReceived") } },
             { "m_nVoxelUpdate", new() { new Offset("m_nVoxelUpdate") } },
+            { "m_hOwnerEntity", new() { new Offset("m_hOwnerEntity") } },
+
 
             // EXPLICIT CLASS THING
             { "m_pActionTrackingServices", new() { new Offset("m_pActionTrackingServices", "CCSPlayerController") } },

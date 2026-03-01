@@ -31,6 +31,7 @@ namespace Titled_Gui.Modules.Rage
         public static bool VisibilityCheck = true;
         public static bool targetLine = true;
         private static Entity? target = null;
+
         public static void EnableAimbot() // TODO: return to old pos setting #7
         {
             try
@@ -95,7 +96,7 @@ namespace Titled_Gui.Modules.Rage
                                 newAngles = new Vector2(GameState.swed.ReadVec(client, Offsets.dwViewAngles).X, GameState.swed.ReadVec(client, Offsets.dwViewAngles).Y); // if entity is null dont change anything
                         }
                     }
-                    else //fallback that if youre at there body flick to whatever chosen bone 
+                    else //fallback that if you're at their body flick to whatever chosen bone 
                     {
                         newAngles = Calculate.CalculateAngles(playerView, CurrentBoneV3);
                     }

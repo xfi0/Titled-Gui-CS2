@@ -105,15 +105,15 @@ namespace Titled_Gui.Modules.Visual
                     case 1: // 3D box
                         Vector3[] corners3D =
                         [
-                            entity.Position + new Vector3(entity.vecMin.X, entity.vecMin.Y, entity.vecMin.Z),
-                            entity.Position + new Vector3(entity.vecMax.X, entity.vecMin.Y, entity.vecMin.Z),
-                            entity.Position + new Vector3(entity.vecMin.X, entity.vecMax.Y, entity.vecMin.Z),
-                            entity.Position + new Vector3(entity.vecMax.X, entity.vecMax.Y, entity.vecMin.Z),
+                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMin.Y, entity.VecMin.Z),
+                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMin.Y, entity.VecMin.Z),
+                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMax.Y, entity.VecMin.Z),
+                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMax.Y, entity.VecMin.Z),
 
-                            entity.Position + new Vector3(entity.vecMin.X, entity.vecMin.Y, entity.vecMax.Z),
-                            entity.Position + new Vector3(entity.vecMax.X, entity.vecMin.Y, entity.vecMax.Z),
-                            entity.Position + new Vector3(entity.vecMin.X, entity.vecMax.Y, entity.vecMax.Z),
-                            entity.Position + new Vector3(entity.vecMax.X, entity.vecMax.Y, entity.vecMax.Z)
+                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMin.Y, entity.VecMax.Z),
+                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMin.Y, entity.VecMax.Z),
+                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMax.Y, entity.VecMax.Z),
+                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMax.Y, entity.VecMax.Z)
                         ];
 
                         var corners2D = new Vector2[8];
@@ -123,20 +123,7 @@ namespace Titled_Gui.Modules.Visual
                             if (corners2D[i] == new Vector2(-99, -99)) return;
                         }
 
-                        GameState.renderer.drawList.AddLine(corners2D[0], corners2D[1], preConvertedColor, thickness);
-                        GameState.renderer.drawList.AddLine(corners2D[1], corners2D[3], preConvertedColor, thickness);
-                        GameState.renderer.drawList.AddLine(corners2D[3], corners2D[2], preConvertedColor, thickness);
-                        GameState.renderer.drawList.AddLine(corners2D[2], corners2D[0], preConvertedColor, thickness);
-
-                        GameState.renderer.drawList.AddLine(corners2D[4], corners2D[5], preConvertedColor, thickness);
-                        GameState.renderer.drawList.AddLine(corners2D[5], corners2D[7], preConvertedColor, thickness);
-                        GameState.renderer.drawList.AddLine(corners2D[7], corners2D[6], preConvertedColor, thickness);
-                        GameState.renderer.drawList.AddLine(corners2D[6], corners2D[4], preConvertedColor, thickness);
-
-                        GameState.renderer.drawList.AddLine(corners2D[0], corners2D[4], preConvertedColor, thickness);
-                        GameState.renderer.drawList.AddLine(corners2D[1], corners2D[5], preConvertedColor, thickness);
-                        GameState.renderer.drawList.AddLine(corners2D[2], corners2D[6], preConvertedColor, thickness);
-                        GameState.renderer.drawList.AddLine(corners2D[3], corners2D[7], preConvertedColor, thickness);
+                        WorldESP.Draw3DBoxESP(corners2D, preConvertedColor, thickness); // applicable here
                         break;
 
 
@@ -204,15 +191,15 @@ namespace Titled_Gui.Modules.Visual
                     {
                         Vector3[] pyramidCorners3D =
                         [
-                            entity.Position + new Vector3(entity.vecMin.X, entity.vecMin.Y, entity.vecMin.Z),
-                            entity.Position + new Vector3(entity.vecMax.X, entity.vecMin.Y, entity.vecMin.Z),
-                            entity.Position + new Vector3(entity.vecMin.X, entity.vecMax.Y, entity.vecMin.Z),
-                            entity.Position + new Vector3(entity.vecMax.X, entity.vecMax.Y, entity.vecMin.Z),
+                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMin.Y, entity.VecMin.Z),
+                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMin.Y, entity.VecMin.Z),
+                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMax.Y, entity.VecMin.Z),
+                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMax.Y, entity.VecMin.Z),
 
-                            entity.Position + new Vector3(entity.vecMin.X / 2, 0, entity.vecMax.Z),
-                            entity.Position + new Vector3(entity.vecMax.X / 2, 0, entity.vecMax.Z),
-                            entity.Position + new Vector3(entity.vecMin.X / 2, 0, entity.vecMax.Z),
-                            entity.Position + new Vector3(entity.vecMax.X / 2, 0, entity.vecMax.Z)
+                            entity.Position + new Vector3(entity.VecMin.X / 2, 0, entity.VecMax.Z),
+                            entity.Position + new Vector3(entity.VecMax.X / 2, 0, entity.VecMax.Z),
+                            entity.Position + new Vector3(entity.VecMin.X / 2, 0, entity.VecMax.Z),
+                            entity.Position + new Vector3(entity.VecMax.X / 2, 0, entity.VecMax.Z)
                         ];
 
                         var pyramidCorners2D = new Vector2[8];

@@ -3,21 +3,28 @@ using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using static ValveResourceFormat.ResourceTypes.EntityLump;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class WorldESP // pasted asf
+    internal class WorldESP
     {
+        #region Bools/Toggles
         public static bool ChickenESP = false;
         public static bool DroppedWeaponESP = false;
         public static bool ProjectileESP = false;
         public static bool HostageESP = false;
+        public static bool DrawBoxes = true;
+        public static bool DrawText = true;
+        #endregion
+
+        #region Colors
         public static Vector4 WeaponTextColor = new(1, 1, 1, 1);
         public static Vector4 ProjectileTextColor = new(1, 1, 1, 1);
         public static Vector4 ChickenTextColor = new(1, 1, 1, 1);
-        public static Vector4 ChickenBoxColor = new(1, 1, 1, 1);
         public static Vector4 HostageTextColor = new(1, 1, 1, 1);
-        public static Vector4 HostageBoxColor = new(1, 1, 1, 1);
+        public static Vector4 BoxColor = new(1, 1, 1, 1);
+        #endregion Colors
 
         private static readonly Dictionary<string, string> EntityType = new() {
             {"chicken", "Chicken"},
@@ -125,17 +132,22 @@ namespace Titled_Gui.Modules.Visual
                 return;
 
             float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            float thickness = 2f;
 
-            Vector3 hostagesHeight = worldEntity.Position + new Vector3(0f, 0f, 72f);
-            Vector2 HostagesHeight2D = Calculate.WorldToScreen(viewMatrix, hostagesHeight);
+            uint preConvertedColor = ImGui.ColorConvertFloat4ToU32(BoxColor);
+            Vector3[] corners3D = worldEntity.Get3DCorners(worldEntity);
 
-            float boxHeight = MathF.Abs(HostagesHeight2D.Y - worldEntity.Position2D.Y);
-            float boxWidth = boxHeight * 0.6f;
-            Vector2 topLeft = new(worldEntity.Position2D.X - boxWidth / 2f, HostagesHeight2D.Y);
-            Vector2 bottomRight = new(worldEntity.Position2D.X + boxWidth / 2f, worldEntity.Position2D.Y);
+            var corners2D = new Vector2[8];
+            for (int i = 0; i < corners2D.Length; i++)
+            {
+                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                if (corners2D[i] == new Vector2(-99, -99)) return;
+            }
+            if (DrawBoxes)
+                Draw3DBoxESP(corners2D, preConvertedColor, thickness);
 
-            GameState.renderer.drawList.AddRect(topLeft, bottomRight, ImGui.ColorConvertFloat4ToU32(HostageBoxColor));
-            GameState.renderer.drawList.AddText(worldEntity.Position2D, ImGui.ColorConvertFloat4ToU32(WeaponTextColor), "Hostage");
+            if (DrawText)
+                GameState.renderer.drawList.AddText(worldEntity.Position2D, ImGui.ColorConvertFloat4ToU32(HostageTextColor), "Hostage");
         }
 
         private static void DrawProjectileESP(WorldEntity? worldEntity)
@@ -143,7 +155,25 @@ namespace Titled_Gui.Modules.Visual
             if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
-            GameState.renderer.drawList.AddText(worldEntity.Position2D, ImGui.ColorConvertFloat4ToU32(WeaponTextColor), worldEntity.DisplayName);
+            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            float thickness = 2f;
+
+            uint preConvertedColor = ImGui.ColorConvertFloat4ToU32(BoxColor);
+            Vector3[] corners3D = worldEntity.Get3DCorners(worldEntity);
+
+            var corners2D = new Vector2[8];
+            for (int i = 0; i < corners2D.Length; i++)
+            {
+                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                if (corners2D[i] == new Vector2(-99, -99)) return;
+            }
+
+            if (DrawBoxes)
+                Draw3DBoxESP(corners2D, preConvertedColor, thickness);
+
+            if (DrawText)
+                GameState.renderer.drawList.AddText(worldEntity.Position2D,
+                    ImGui.ColorConvertFloat4ToU32(ProjectileTextColor), worldEntity.DisplayName);
         }
 
         private static void DrawWeaponESP(WorldEntity? worldEntity)
@@ -151,23 +181,75 @@ namespace Titled_Gui.Modules.Visual
             if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
-            GameState.renderer.drawList.AddText(worldEntity.Position2D, ImGui.ColorConvertFloat4ToU32(WeaponTextColor), worldEntity.DisplayName);
+            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            float thickness = 2f;
+
+            uint preConvertedColor = ImGui.ColorConvertFloat4ToU32(BoxColor);
+            Vector3[] corners3D = worldEntity.Get3DCorners(worldEntity);
+
+            var corners2D = new Vector2[8];
+            for (int i = 0; i < corners2D.Length; i++)
+            {
+                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                if (corners2D[i] == new Vector2(-99, -99)) return;
+            }
+
+            if (DrawBoxes)
+                Draw3DBoxESP(corners2D, preConvertedColor, thickness);
+            if (DrawText)
+                GameState.renderer.drawList.AddText(worldEntity.Position2D,
+                    ImGui.ColorConvertFloat4ToU32(WeaponTextColor), worldEntity.DisplayName);
         }
+
         private static void DrawChickenESP(WorldEntity? worldEntity)
         {
             if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
             float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
-            Vector3 chickenHeight = worldEntity.Position + new Vector3(0f, 0f, 20f);
-            Vector2 chickenHeight2D = Calculate.WorldToScreen(viewMatrix, chickenHeight);
+            float thickness = 2f;
 
-            float boxHeight = MathF.Abs(chickenHeight2D.Y - worldEntity.Position2D.Y);
-            float boxWidth = boxHeight * 1.6f;
-            Vector2 topLeft = new(worldEntity.Position2D.X - boxWidth / 2f, chickenHeight2D.Y);
-            Vector2 bottomRight = new(worldEntity.Position2D.X + boxWidth / 2f, worldEntity.Position2D.Y);
-            GameState.renderer.drawList.AddRect(topLeft, bottomRight, ImGui.ColorConvertFloat4ToU32(ChickenBoxColor));
-            GameState.renderer.drawList.AddText(worldEntity.Position2D, ImGui.ColorConvertFloat4ToU32(WeaponTextColor), "Chicken");
+            uint preConvertedColor = ImGui.ColorConvertFloat4ToU32(BoxColor);
+            Vector3[] corners3D = worldEntity.Get3DCorners(worldEntity);
+            var corners2D = new Vector2[8];
+
+            for (int i = 0; i < corners2D.Length; i++)
+            {
+                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                if (corners2D[i] == new Vector2(-99, -99)) return;
+            }
+
+            if (DrawBoxes)
+                Draw3DBoxESP(corners2D, preConvertedColor, thickness);
+            if (DrawText)
+                GameState.renderer.drawList.AddText(worldEntity.Position2D,
+                    ImGui.ColorConvertFloat4ToU32(ChickenTextColor),
+                    "Chicken");
+        }
+
+        public static void Draw3DBoxESP(Vector2[] corners2D, uint preConvertedColor, float thickness)
+        {
+            try
+            {
+                GameState.renderer.drawList.AddLine(corners2D[0], corners2D[1], preConvertedColor, thickness);
+                GameState.renderer.drawList.AddLine(corners2D[1], corners2D[3], preConvertedColor, thickness);
+                GameState.renderer.drawList.AddLine(corners2D[3], corners2D[2], preConvertedColor, thickness);
+                GameState.renderer.drawList.AddLine(corners2D[2], corners2D[0], preConvertedColor, thickness);
+
+                GameState.renderer.drawList.AddLine(corners2D[4], corners2D[5], preConvertedColor, thickness);
+                GameState.renderer.drawList.AddLine(corners2D[5], corners2D[7], preConvertedColor, thickness);
+                GameState.renderer.drawList.AddLine(corners2D[7], corners2D[6], preConvertedColor, thickness);
+                GameState.renderer.drawList.AddLine(corners2D[6], corners2D[4], preConvertedColor, thickness);
+
+                GameState.renderer.drawList.AddLine(corners2D[0], corners2D[4], preConvertedColor, thickness);
+                GameState.renderer.drawList.AddLine(corners2D[1], corners2D[5], preConvertedColor, thickness);
+                GameState.renderer.drawList.AddLine(corners2D[2], corners2D[6], preConvertedColor, thickness);
+                GameState.renderer.drawList.AddLine(corners2D[3], corners2D[7], preConvertedColor, thickness);
+            }
+            catch (IndexOutOfRangeException ex)
+            {
+                Console.WriteLine("Index Out Of Bounds Of The Array Drawing 3D Boxes");
+            }
         }
     }
 }

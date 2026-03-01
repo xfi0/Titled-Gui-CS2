@@ -14,7 +14,7 @@ namespace Titled_Gui.Modules.Visual
         public static float ArmorBarWidth = 5f;
         public static float Rounding = 2.3f;
         public static Vector4 ArmorColor = new(0.1f, 0f, 1f, 1f);
-        public static void DrawArmorBar(Entity e, Renderer renderer, float Armor, float MaxArmor, Vector2 topRight, float height)
+        public static void DrawArmorBar(Entity? e, Renderer renderer, float Armor, float MaxArmor, Vector2 topRight, float height)
         {
             if (!EnableArmorhBar || e == null || (!TeamCheck && e.Team == GameState.LocalPlayer.Team) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || e.Armor < 1) return;
 

@@ -17,7 +17,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawHealthBar(Entity? e,float health, float maxHealth, Vector2 topLeft, float height)
         {
-            if (!EnableHealthBar || (!DrawOnSelf && e.PawnAddress == GameState.LocalPlayer.PawnAddress) || e == null || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || (BoxESP.TeamCheck && e.Team == GameState.LocalPlayer.Team)) return;
+            if (!EnableHealthBar || e == null || (!DrawOnSelf && e.PawnAddress == GameState.LocalPlayer.PawnAddress) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || (BoxESP.TeamCheck && e.Team == GameState.LocalPlayer.Team)) return;
 
             float healthPercentage = Math.Clamp(health / maxHealth, 0f, 1f); // percentage of the box that is currently filled
             float filledHeight = height * healthPercentage;

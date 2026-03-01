@@ -107,5 +107,6 @@
         public static int m_bSmokeEffectSpawned = 0x14B1;
         public static int m_pEntity = 0x10;
         public static int m_designerName = 0x10;
+        public static int m_hOwnerEntity = 0x0;
     }
 }

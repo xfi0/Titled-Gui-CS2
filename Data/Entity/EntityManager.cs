@@ -41,7 +41,7 @@ namespace Titled_Gui.Data.Entity
 
                     Entity? entity = PopulateEntity(GameState.currentPawn);
 
-                    if (entity != null)
+                    if (entity != null && entity.Position.X != 0 && entity.Position.Y != 0)
                         entities?.Add(entity);
 
                 }
@@ -49,7 +49,7 @@ namespace Titled_Gui.Data.Entity
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine("Entity List Exception: " + ex.ToString());
                 return null;
             }
         }
@@ -123,12 +123,12 @@ namespace Titled_Gui.Data.Entity
                 //HasBomb = GameState.swed.ReadBool(localPlayer, Offsets.)
                 IsDefusing = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bIsDefusing),
                 InBombZone = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bInBombZone),
-                sensitivity = sensitivity,
-                gameSceneNode = GameState.swed.ReadPointer(localPlayerPawn, Offsets.m_pGameSceneNode),
+                Sensitivity = sensitivity,
+                GameSceneNode = GameState.swed.ReadPointer(localPlayerPawn, Offsets.m_pGameSceneNode),
 
             };
             //localPlayer.Visible = Visible(localPlayer);
-            localPlayer.eyePosition = GetEyePosition(localPlayer);
+            localPlayer.EyePosition = GetEyePosition(localPlayer);
             return localPlayer;
         }
         public class VisibilityCheck : ThreadService
@@ -137,10 +137,10 @@ namespace Titled_Gui.Data.Entity
 
             public static bool Visible(Entity? e)
             {
-                if (e == null || LocalPlayer?.Bones == null || e.Health <= 0 || e.Position2D == new Vector2(-99, -99) || e.Bones == null || mapLoaderInstance == null || e.dormant)
+                if (e == null || LocalPlayer?.Bones == null || e.Health <= 0 || e.Position2D == new Vector2(-99, -99) || e.Bones == null || mapLoaderInstance == null || e.IsDormant)
                     return false;
 
-                Vector3 origin = LocalPlayer.eyePosition;
+                Vector3 origin = LocalPlayer.EyePosition;
                 Vector3 target = e.Bones[2]; // head
                 if (!UseOldVisibilityCheck)
                     return mapLoaderInstance.IsVisible(origin, target);
@@ -179,7 +179,7 @@ namespace Titled_Gui.Data.Entity
 
         public static Vector3 GetEyePosition(Entity e)
         {
-            Vector3 origin = swed.ReadVec(e.gameSceneNode + Offsets.m_vecOrigin);
+            Vector3 origin = swed.ReadVec(e.GameSceneNode + Offsets.m_vecOrigin);
             Vector3 view = swed.ReadVec(e.PawnAddress + Offsets.m_vecViewOffset);
             return origin + view;
         }
@@ -276,16 +276,16 @@ namespace Titled_Gui.Data.Entity
                     Ping = (int)GameState.swed.ReadUInt(currentController, Offsets.m_iPing),
                     IsWalking = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsWalking),
                     AngEyeAngles = GameState.swed.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
-                    gameSceneNode = gameSceneNode,
-                    sensitivity = sensitivity,
-                    emitSoundTime = GameState.swed.ReadFloat(pawnAddress, Offsets.m_flEmitSoundTime),
-                    eyePosition = new(0, 0, 0),
-                    vecMax = swed.ReadVec(collisionBase + Offsets.m_vecMaxs),
-                    vecMin = swed.ReadVec(collisionBase + Offsets.m_vecMins),
-                    hitboxComponent = swed.ReadPointer(pawnAddress, Offsets.m_CHitboxComponent),
-                    dormant = GameState.swed.ReadBool(gameSceneNode, Offsets.m_bDormant)
+                    GameSceneNode = gameSceneNode,
+                    Sensitivity = sensitivity,
+                    EmitSoundTime = GameState.swed.ReadFloat(pawnAddress, Offsets.m_flEmitSoundTime),
+                    EyePosition = new(0, 0, 0),
+                    VecMax = swed.ReadVec(collisionBase + Offsets.m_vecMaxs),
+                    VecMin = swed.ReadVec(collisionBase + Offsets.m_vecMins),
+                    HitboxComponent = swed.ReadPointer(pawnAddress, Offsets.m_CHitboxComponent),
+                    IsDormant = GameState.swed.ReadBool(gameSceneNode, Offsets.m_bDormant)
                 };
-                entity.eyePosition = GetEyePosition(entity);
+                entity.EyePosition = GetEyePosition(entity);
 
                 if (entity.Position2D != new Vector2(-99, -99) && !UseOldVisibilityCheck)
                     entity.Visible = VisibilityCheck.Visible(entity);

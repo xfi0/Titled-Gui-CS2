@@ -1,13 +1,8 @@
-﻿using Datamodel;
-using ImGuiNET;
-using Swed64;
-using System.Diagnostics;
-using System.Numerics;
+﻿using ImGuiNET;
 using Titled_Gui;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
-using Titled_Gui.Modules.Visual;
 
 try
 {

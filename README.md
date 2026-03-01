@@ -108,6 +108,12 @@ This project is licensed under GPL Public V3, More information in LICENSE
    ```
   2. Run the solution in debug mode (x64)
 
+### Useage
+1. Run the compiled .exe, or run the program in Visual Studio.
+2. Click insert, or FN + L.
+3. Note, you may have to click on the watermark and then insert for the menu to open.
+4. Enjoy!
+
 ### Notes
 
 - If you have any bugs and or bans please open a issue saying the mods you had enabled, how long you cheated for, etc.

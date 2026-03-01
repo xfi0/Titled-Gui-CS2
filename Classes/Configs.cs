@@ -268,6 +268,15 @@ namespace Titled_Gui.Classes
                 ["Spectator Count Overlay"] = new JObject
                 {
                     //["Spectator Count Overlay Enabled"] = SpectatorCountOverlay.en
+                },
+                ["World ESP"] = new JObject()
+                {
+                    ["Draw Boxes"] = WorldESP.DrawBoxes,
+                    ["Draw Text"] = WorldESP.DrawText,
+                    ["Chicken ESP Enabled"] = WorldESP.ChickenESP,
+                    ["Hostage ESP Enabled"] = WorldESP.HostageESP,
+                    ["Dropped Weapon ESP Enabled"] = WorldESP.DroppedWeaponESP,
+                    ["Thrown Projectile ESP Enabled"] = WorldESP.ProjectileESP,
                 }
             };
 
@@ -532,6 +541,16 @@ namespace Titled_Gui.Classes
 
                 #region Spectator Count Overlay
                 //SpectatorCountOverlay.Enabled = configData["Spectator Count Overlay"]?["Spectator Count Overlay Enabled"]?.ToObject<bool>() ?? SpectatorCountOverlay.Enabled;
+                #endregion
+
+                #region WorldESP
+
+                WorldESP.DrawText = configData["World ESP"]?["Draw Text"]?.ToObject<bool>() ?? WorldESP.DrawText;
+                WorldESP.DrawBoxes = configData["World ESP"]?["Draw Boxes"]?.ToObject<bool>() ?? WorldESP.DrawText;
+                WorldESP.ChickenESP = configData["World ESP"]?["Chicken ESP Enabled"]?.ToObject<bool>() ?? WorldESP.DrawText;
+                WorldESP.HostageESP = configData["World ESP"]?["Hostage ESP Enabled"]?.ToObject<bool>() ?? WorldESP.HostageESP;
+                WorldESP.DroppedWeaponESP = configData["World ESP"]?["Dropped Weapon ESP Enabled"]?.ToObject<bool>() ?? WorldESP.DroppedWeaponESP;
+                WorldESP.ProjectileESP = configData["World ESP"]?["Thrown Projectile ESP Enabled"]?.ToObject<bool>() ?? WorldESP.ProjectileESP;
                 #endregion
             }
             catch (Exception e)

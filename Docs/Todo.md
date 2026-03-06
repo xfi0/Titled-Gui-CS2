@@ -9,5 +9,4 @@ Menu useable in game
 Bhop Using Keyboard Input,
 Fix Color picker GUI Bugs,
 Improve color pickers,
-ping display,
 Fix naming scheme

@@ -1,6 +1,6 @@
 # Important
 Fix trigger bot
-
+h
 # Middle Ground
 Trigger bot not use crosshair index bs instead use a raycast or sum
 Menu useable in game

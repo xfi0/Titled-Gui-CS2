@@ -10,7 +10,7 @@ namespace Titled_Gui.Classes
     internal class Configs : Classes.ThreadService
     {
         public static string MenuName = "Titled";
-        public static string Version = "1.6";
+        public static string Version = "1.7";
         public static string Author = "https://github.com/xfi0";
         public static string Link = "https://github.com/xfi0/Titled-Gui-CS2";
 

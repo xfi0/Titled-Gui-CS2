@@ -13,7 +13,7 @@ namespace Titled_Gui.Modules.Visual
         public static bool TeamCheck = false;
         public static bool EnableESP = false;
         public static float BoxFillOpacity = 0.2f; // 20%
-
+        public static bool FillBox = true;
         public static string[] Shapes =
             ["2D Box", "3D Box", "Edges", "Pyramid", "Star", "Hexagon", "Rhombus", "Pentagram", "Pentagon"];
 
@@ -38,8 +38,10 @@ namespace Titled_Gui.Modules.Visual
         public static Vector4 BoxFillGradientBottom = new(0f, 0f, 0f, BoxFillOpacity);
         public static float EdgeMultiplier = 0.25f;
         public static bool EnableESPPreview = true;
-        public static Vector4 occludedEnemy = new(1, 1, 0, 1);
-        public static Vector4 occludedTeam = new(0, 0, 1, 1);
+        public static Vector4 OccludedEnemy = new(1, 1, 0, 1);
+        public static Vector4 OccludedTeam = new(0, 0, 1, 1);
+        public static Vector4 EnemyFill = new(1, 0, 0, BoxFillOpacity);
+        public static Vector4 TeamFill = new(0, 1, 0, BoxFillOpacity);
 
         public static void DrawBoxESP(Entity? entity, Renderer renderer)
         {
@@ -54,7 +56,7 @@ namespace Titled_Gui.Modules.Visual
                 Vector4 boxColor = GetBoxColor(entity);
                 Vector4 outlineColor = isTeam ? OutlineTeamColor : OutlineEnemyColor;
                 float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
-                Vector4 fillColor = boxColor;
+                Vector4 fillColor = isTeam ? TeamFill : EnemyFill;
                 fillColor.W = BoxFillOpacity;
 
 
@@ -94,7 +96,7 @@ namespace Titled_Gui.Modules.Visual
 
                     case 1: // 3D box
                     {
-                        if (Draw3DBox(entity, viewMatrix, preConvertedOutlineColor, thickness)) return;
+                        if (Draw3DBox(entity, viewMatrix, preConvertedOutlineColor, preConvertedFillColor, thickness)) return;
                     }
                         break;
 
@@ -102,13 +104,13 @@ namespace Titled_Gui.Modules.Visual
                     case 2: //  edges
                     {
                         DrawEdgeBox(GameState.renderer.drawList, centerX, halfWidth, topY, bottomY, outlineColor,
-                            preConvertedOutlineColor);
+                            preConvertedOutlineColor, preConvertedFillColor);
                     }
                         break;
 
                     case 3: // Pyramid
                     {
-                        if (DrawPyramid(entity, viewMatrix, preConvertedOutlineColor, thickness)) return;
+                        if (DrawPyramid(entity, viewMatrix, preConvertedOutlineColor, preConvertedFillColor, thickness)) return;
                         break;
                     }
                     case 4: // star of david
@@ -129,32 +131,7 @@ namespace Titled_Gui.Modules.Visual
                     }
                     case 7: // pentagram
                     {
-                        float radius = (bottomY - topY) / 2f;
-
-                        Vector2[] points = new Vector2[6];
-                        for (int i = 0; i < 6; i++)
-                        {
-                            points[i] = new Vector2(
-                                centerX + radius * MathF.Cos(MathF.PI * i * 6 / 5 - MathF.PI / 2),
-                                centerY + radius * MathF.Sin(MathF.PI * i * 6 / 5 - MathF.PI / 2)
-                            );
-                        }
-
-
-                        for (int i = 0; i < 6; i++)
-                        {
-                            Vector2 current = points[i];
-                            Vector2 next = points[(i + 1) % 6];
-
-                            if (GlowAmount > 0f)
-                                DrawHelpers.DrawGlowLine(renderer.drawList, current, next, outlineColor,
-                                    GlowAmount);
-
-
-                            DrawHelpers.DrawGlowLine(renderer.drawList, current, next, outlineColor,
-                                GlowAmount);
-                        }
-
+                        DrawPentagram(GameState.renderer.drawList, bottomY, topY, centerX, centerY, outlineColor, preConvertedOutlineColor);
                         break;
                     }
                     case 8: // pentagon
@@ -167,6 +144,35 @@ namespace Titled_Gui.Modules.Visual
             catch (Exception e)
             {
                 Console.WriteLine($"An exception was thrown: {e}");
+            }
+        }
+
+        private static void DrawPentagram(ImDrawListPtr imDrawListPtr, float bottomY, float topY, float centerX, float centerY,
+            Vector4 outlineColor, uint preConvertedOutlineColor)
+        {
+            float radius = (bottomY - topY) / 2f;
+
+            Vector2[] points = new Vector2[6];
+            for (int i = 0; i < 6; i++)
+            {
+                points[i] = new Vector2(
+                    centerX + radius * MathF.Cos(MathF.PI * i * 6 / 5 - MathF.PI / 2),
+                    centerY + radius * MathF.Sin(MathF.PI * i * 6 / 5 - MathF.PI / 2)
+                );
+            }
+
+
+            for (int i = 0; i < 6; i++)
+            {
+                Vector2 current = points[i];
+                Vector2 next = points[(i + 1) % 6];
+
+                if (GlowAmount > 0f)
+                    DrawHelpers.DrawGlowLine(imDrawListPtr, current, next, outlineColor,
+                        GlowAmount);
+
+
+                imDrawListPtr.AddLine(current, next, preConvertedOutlineColor);
             }
         }
 
@@ -248,64 +254,59 @@ namespace Titled_Gui.Modules.Visual
                 thickness);
         }
 
-        private static bool DrawPyramid(Entity entity, float[] viewMatrix, uint preConvertedColor, float thickness)
+        private static bool DrawPyramid(Entity entity, float[] viewMatrix, uint preConvertedColor,
+            uint preConvertedFillColor, float thickness)
         {
             float yaw = entity.AngEyeAngles.Y * (MathF.PI / 180f);
             float cos = MathF.Cos(yaw);
             float sin = MathF.Sin(yaw);
 
-            Vector3[] pyramidCorners3D =
+            Vector3[] corners3D =
             [
                 RotateCorner(entity.Position, entity.VecMin.X, entity.VecMin.Y, entity.VecMin.Z, cos, sin),
                 RotateCorner(entity.Position, entity.VecMax.X, entity.VecMin.Y, entity.VecMin.Z, cos, sin),
                 RotateCorner(entity.Position, entity.VecMin.X, entity.VecMax.Y, entity.VecMin.Z, cos, sin),
                 RotateCorner(entity.Position, entity.VecMax.X, entity.VecMax.Y, entity.VecMin.Z, cos, sin),
-
-                RotateCorner(entity.Position, entity.VecMin.X / 2, 0, entity.VecMax.Z, cos, sin),
-                RotateCorner(entity.Position, entity.VecMax.X / 2, 0, entity.VecMax.Z, cos, sin),
-                RotateCorner(entity.Position, entity.VecMin.X / 2, 0, entity.VecMax.Z, cos, sin),
-                RotateCorner(entity.Position, entity.VecMax.X / 2, 0, entity.VecMax.Z, cos, sin)
+                entity.Position + new Vector3(0, 0, entity.VecMax.Z)
             ];
 
-            var pyramidCorners2D = new Vector2[8];
-            for (int i = 0; i < pyramidCorners2D.Length; i++)
+            var corners2D = new Vector2[5];
+            for (int i = 0; i < 5; i++)
             {
-                pyramidCorners2D[i] = Calculate.WorldToScreen(viewMatrix, pyramidCorners3D[i]);
-                if (pyramidCorners2D[i] == new Vector2(-99, -99)) return true;
+                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                if (corners2D[i] == new Vector2(-99, -99)) return true;
             }
 
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[0], pyramidCorners2D[1], preConvertedColor,
-                thickness);
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[1], pyramidCorners2D[3], preConvertedColor,
-                thickness);
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[3], pyramidCorners2D[2], preConvertedColor,
-                thickness);
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[2], pyramidCorners2D[0], preConvertedColor,
-                thickness);
+            GameState.renderer.drawList.AddLine(corners2D[0], corners2D[1], preConvertedColor, thickness);
+            GameState.renderer.drawList.AddLine(corners2D[1], corners2D[3], preConvertedColor, thickness);
+            GameState.renderer.drawList.AddLine(corners2D[3], corners2D[2], preConvertedColor, thickness);
+            GameState.renderer.drawList.AddLine(corners2D[2], corners2D[0], preConvertedColor, thickness);
 
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[4], pyramidCorners2D[5], preConvertedColor,
-                thickness);
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[5], pyramidCorners2D[7], preConvertedColor,
-                thickness);
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[7], pyramidCorners2D[6], preConvertedColor,
-                thickness);
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[6], pyramidCorners2D[4], preConvertedColor,
-                thickness);
+            GameState.renderer.drawList.AddLine(corners2D[0], corners2D[4], preConvertedColor, thickness);
+            GameState.renderer.drawList.AddLine(corners2D[1], corners2D[4], preConvertedColor, thickness);
+            GameState.renderer.drawList.AddLine(corners2D[2], corners2D[4], preConvertedColor, thickness);
+            GameState.renderer.drawList.AddLine(corners2D[3], corners2D[4], preConvertedColor, thickness);
 
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[0], pyramidCorners2D[4], preConvertedColor,
-                thickness);
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[1], pyramidCorners2D[5], preConvertedColor,
-                thickness);
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[2], pyramidCorners2D[6], preConvertedColor,
-                thickness);
-            GameState.renderer.drawList.AddLine(pyramidCorners2D[3], pyramidCorners2D[7], preConvertedColor,
-                thickness);
+            if (FillBox)
+            {
+                GameState.renderer.drawList.AddQuadFilled(corners2D[0], corners2D[1], corners2D[3], corners2D[2],
+                    preConvertedFillColor);
+                GameState.renderer.drawList.AddTriangleFilled(corners2D[0], corners2D[1], corners2D[4],
+                    preConvertedFillColor);
+                GameState.renderer.drawList.AddTriangleFilled(corners2D[1], corners2D[3], corners2D[4],
+                    preConvertedFillColor);
+                GameState.renderer.drawList.AddTriangleFilled(corners2D[3], corners2D[2], corners2D[4],
+                    preConvertedFillColor);
+                GameState.renderer.drawList.AddTriangleFilled(corners2D[2], corners2D[0], corners2D[4],
+                    preConvertedFillColor);
+            }
+
             return false;
         }
 
         private static void DrawEdgeBox(ImDrawListPtr imDrawListPtr, float centerX, float halfWidth, float topY,
             float bottomY,
-            Vector4 boxColor, uint preConvertedColor)
+            Vector4 boxColor, uint preConvertedColor, uint preConvertedFillColor)
         {
             Vector2 rectTopLeft = new(centerX - halfWidth, topY);
             Vector2 rectTopRight = new(centerX + halfWidth, topY);
@@ -363,9 +364,12 @@ namespace Titled_Gui.Modules.Visual
             imDrawListPtr.AddLine(rectBottomRight,
                 new(rectBottomRight.X, rectBottomRight.Y - edgeHeight),
                 preConvertedColor);
+
+            if (FillBox)
+                imDrawListPtr.AddRectFilled(rectTopLeft, rectBottomRight, preConvertedFillColor);
         }
 
-        private static bool Draw3DBox(Entity entity, float[] viewMatrix, uint preConvertedColor, float thickness)
+        private static bool Draw3DBox(Entity entity, float[] viewMatrix, uint preConvertedOutlineColor, uint preConvertedFillColor, float rounding)
         {
             float yaw = entity.AngEyeAngles.Y * (MathF.PI / 180f);
             float cos = MathF.Cos(yaw);
@@ -390,7 +394,7 @@ namespace Titled_Gui.Modules.Visual
                 if (corners2D[i] == new Vector2(-99, -99)) return true;
             }
 
-            WorldESP.Draw3DBoxESP(corners2D, preConvertedColor, thickness); // applicable here
+            WorldESP.Draw3DBoxESP(corners2D, preConvertedOutlineColor, FillBox, rounding, preConvertedFillColor); // applicable here
             return false;
         }
 
@@ -413,9 +417,11 @@ namespace Titled_Gui.Modules.Visual
                         BoxFillOpacity),
                     new Vector4(BoxFillGradientBottom.X, BoxFillGradientBottom.Y, BoxFillGradientBottom.Z,
                         BoxFillOpacity), Rounding);
-
             else
-                imDrawListPtr.AddRectFilled(rectTop, rectBottom, preConvertedFillColor, Rounding);
+            {
+                if (FillBox)
+                    imDrawListPtr.AddRectFilled(rectTop, rectBottom, preConvertedFillColor, Rounding);
+            }
 
             if (OuterOutline)
             {
@@ -431,7 +437,7 @@ namespace Titled_Gui.Modules.Visual
 
             if (BoneESP.visibilityCheck && !entity.Visible)
             {
-                boxColor = entity.Team == GameState.LocalPlayer.Team ? occludedTeam : occludedEnemy;
+                boxColor = entity.Team == GameState.LocalPlayer.Team ? OccludedTeam : OccludedEnemy;
             }
             else
             {
@@ -516,6 +522,7 @@ namespace Titled_Gui.Modules.Visual
 
                 case 1: // 3D box preview
                 {
+
                     float offset = halfWidth * 0.4f;
 
                     Vector2 frontTopLeft = new(centerX - halfWidth, topY);
@@ -528,6 +535,22 @@ namespace Titled_Gui.Modules.Visual
                     Vector2 backBottomLeft = new(centerX - halfWidth + offset, bottomY - offset);
                     Vector2 backBottomRight = new(centerX + halfWidth + offset, bottomY - offset);
 
+
+                    if (FillBox)
+                    {
+                        windowDrawList.AddQuadFilled(frontTopLeft, frontTopRight, frontBottomRight, frontBottomLeft,
+                            ImGui.ColorConvertFloat4ToU32(EnemyFill));
+                        windowDrawList.AddQuadFilled(backTopLeft, backTopRight, backBottomRight, backBottomLeft,
+                            ImGui.ColorConvertFloat4ToU32(EnemyFill));
+                        windowDrawList.AddQuadFilled(frontTopLeft, backTopLeft, backBottomLeft, frontBottomLeft,
+                            ImGui.ColorConvertFloat4ToU32(EnemyFill));
+                        windowDrawList.AddQuadFilled(frontTopRight, backTopRight, backBottomRight, frontBottomRight,
+                            ImGui.ColorConvertFloat4ToU32(EnemyFill));
+                        windowDrawList.AddQuadFilled(frontTopLeft, frontTopRight, backTopRight, backTopLeft,
+                            ImGui.ColorConvertFloat4ToU32(EnemyFill));
+                        windowDrawList.AddQuadFilled(frontBottomLeft, frontBottomRight, backBottomRight, backBottomLeft,
+                            ImGui.ColorConvertFloat4ToU32(EnemyFill));
+                    }
 
                     windowDrawList.AddLine(frontTopLeft, frontTopRight, preConvertedOutlineColor);
                     windowDrawList.AddLine(frontTopRight, frontBottomRight, preConvertedOutlineColor);
@@ -546,37 +569,41 @@ namespace Titled_Gui.Modules.Visual
 
                 case 2: // edges
                 {
-                    Vector2 rectTopLeft = new(centerX - halfWidth, topY);
-                    Vector2 rectTopRight = new(centerX + halfWidth, topY);
-                    Vector2 rectBottomLeft = new(centerX - halfWidth, bottomY);
-                    Vector2 rectBottomRight = new(centerX + halfWidth, bottomY);
-
-                    float edgeWidth = (rectTopRight.X - rectTopLeft.X) * EdgeMultiplier;
-                    float edgeHeight = (rectBottomLeft.Y - rectTopLeft.Y) * EdgeMultiplier;
                     DrawEdgeBox(windowDrawList, centerX, halfWidth, topY, bottomY, OutlineEnemyColor,
-                        ImGui.ColorConvertFloat4ToU32(OutlineEnemyColor));
-                    windowDrawList.AddLine(rectTopLeft, new(rectTopLeft.X + edgeWidth, rectTopLeft.Y),
-                        ImGui.ColorConvertFloat4ToU32(boxColor));
-                    windowDrawList.AddLine(rectTopLeft, new(rectTopLeft.X, rectTopLeft.Y + edgeHeight),
-                        ImGui.ColorConvertFloat4ToU32(boxColor));
-                    windowDrawList.AddLine(rectTopRight, new(rectTopRight.X - edgeWidth, rectTopRight.Y),
-                        ImGui.ColorConvertFloat4ToU32(boxColor));
-                    windowDrawList.AddLine(rectTopRight, new(rectTopRight.X, rectTopRight.Y + edgeHeight),
-                        ImGui.ColorConvertFloat4ToU32(boxColor));
-                    windowDrawList.AddLine(rectBottomLeft,
-                        new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
-                    windowDrawList.AddLine(rectBottomLeft,
-                        new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor));
-                    windowDrawList.AddLine(rectBottomRight,
-                        new(rectBottomRight.X - edgeWidth, rectBottomRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
-                    windowDrawList.AddLine(rectBottomRight,
-                        new(rectBottomRight.X, rectBottomRight.Y - edgeHeight),
-                        ImGui.ColorConvertFloat4ToU32(boxColor));
+                        ImGui.ColorConvertFloat4ToU32(OutlineEnemyColor), ImGui.ColorConvertFloat4ToU32(EnemyFill));
                 }
                     break;
                 case 3:
                 {
+                    float offset = halfWidth * 0.4f;
+                    float apexX = centerX + offset * 0.5f;
+                    float apexY = topY - halfWidth / 2;
 
+                    Vector2 baseBottomLeft = new(centerX - halfWidth, bottomY);
+                    Vector2 baseBottomRight = new(centerX + halfWidth, bottomY);
+                    Vector2 baseBackLeft = new(centerX - halfWidth + offset, bottomY - offset);
+                    Vector2 baseBackRight = new(centerX + halfWidth + offset, bottomY - offset);
+                    Vector2 apex = new(apexX, apexY);
+
+                    if (FillBox)
+                    {
+                        windowDrawList.AddQuadFilled(baseBottomLeft, baseBottomRight, baseBackRight, baseBackLeft,
+                            ImGui.ColorConvertFloat4ToU32(EnemyFill));
+                        windowDrawList.AddTriangleFilled(baseBottomLeft, baseBottomRight, apex, ImGui.ColorConvertFloat4ToU32(EnemyFill));
+                        windowDrawList.AddTriangleFilled(baseBottomRight, baseBackRight, apex, ImGui.ColorConvertFloat4ToU32(EnemyFill));
+                        windowDrawList.AddTriangleFilled(baseBackRight, baseBackLeft, apex, ImGui.ColorConvertFloat4ToU32(EnemyFill));
+                        windowDrawList.AddTriangleFilled(baseBackLeft, baseBottomLeft, apex, ImGui.ColorConvertFloat4ToU32(EnemyFill));
+                    }
+
+                    windowDrawList.AddLine(baseBottomLeft, baseBottomRight, preConvertedOutlineColor);
+                    windowDrawList.AddLine(baseBottomRight, baseBackRight, preConvertedOutlineColor);
+                    windowDrawList.AddLine(baseBackRight, baseBackLeft, preConvertedOutlineColor);
+                    windowDrawList.AddLine(baseBackLeft, baseBottomLeft, preConvertedOutlineColor);
+
+                    windowDrawList.AddLine(baseBottomLeft, apex, preConvertedOutlineColor);
+                    windowDrawList.AddLine(baseBottomRight, apex, preConvertedOutlineColor);
+                    windowDrawList.AddLine(baseBackLeft, apex, preConvertedOutlineColor);
+                    windowDrawList.AddLine(baseBackRight, apex, preConvertedOutlineColor);
                 }
                     break;
                 case 4:
@@ -593,11 +620,11 @@ namespace Titled_Gui.Modules.Visual
                 case 6:
                 {
                     DrawPolygon(windowDrawList, centerX, centerY, bottomY, topY, 4, OutlineEnemyColor, preConvertedOutlineColor, 2);
-                }
+                    }
                     break;
                 case 7:
                 {
-                    DrawPolygon(windowDrawList, centerX, centerY, bottomY, topY, 4, OutlineEnemyColor, preConvertedOutlineColor, 2);
+                    DrawPentagram(windowDrawList, bottomY, topY, centerX, centerY, OutlineEnemyColor, preConvertedOutlineColor);
                 }
                     break;
                 case 8:

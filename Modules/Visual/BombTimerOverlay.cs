@@ -1,6 +1,8 @@
 ﻿using ImGuiNET;
 using System.Numerics;
+using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Game.C4;
 using static Titled_Gui.Renderer;
 
 namespace Titled_Gui.Modules.Visual
@@ -11,46 +13,13 @@ namespace Titled_Gui.Modules.Visual
         public static bool BombPlanted = false;
         private static int? TimePlanted = 0;
 
-        public static void Initialize()
-        {
-            try
-            {
-                // counting
-                GameState.GameRules = GameState.swed.ReadPointer(GameState.client, Offsets.dwGameRules);
-
-                if (GameState.GameRules == IntPtr.Zero)
-                    Thread.Sleep(100);
-                
-
-                BombPlanted = GameState.swed.ReadBool(GameState.GameRules, Offsets.m_bBombPlanted);
-
-                if (BombPlanted)
-                {
-                    for (int i = 0; i < 40; i++) // if bomb gets planted start counting
-                    {
-                        BombPlanted = GameState.swed.ReadBool(GameState.GameRules, Offsets.m_bBombPlanted);
-                        if (!BombPlanted) { TimePlanted = 40; break; } // defusal
-
-                        TimePlanted = 40 - i;
-                        Thread.Sleep(1000); // sleep 1 sec on success
-                    }
-                }
-                else
-                    Thread.Sleep(100);
-                
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Thread.Sleep(1000);
-            }
-        }
-        
-
         public static void TimeOverlay() // TODO diplay more info
         {
             if (!EnableTimeOverlay) return; // if false dont draw
 
+            Types.C4? c4 = C4Info.C4;
+            if (c4 == null)
+                return;
             // overlay
             var style = ImGui.GetStyle();
             style.WindowRounding = 5f;
@@ -68,17 +37,13 @@ namespace Titled_Gui.Modules.Visual
             Vector2 windowSize = new(240f, 100f);
             ImGui.SetNextWindowSize(windowSize, ImGuiCond.Once); // ensure that the like size doesnt reset to the defualt on resize
             ImGui.SetNextWindowPos(new Vector2((GameState.renderer.ScreenSize.X - windowSize.X) / 2, 10));
-            ImGui.Begin(BombPlanted ? "C4 Has Been Planted" : "C4 Has Not Been Planted", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar);
+            ImGui.Begin("", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar);
            
             ImDrawListPtr imDrawList = ImGui.GetWindowDrawList();
-            imDrawList.AddText(Renderer.TextFontNormal, 18f, ImGui.GetWindowPos() + new Vector2(10, 0), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), BombPlanted ? "C4 Has Been Planted" : "C4 Has Not Been Planted");
-            imDrawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 20), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), TimePlanted.ToString());
+            imDrawList.AddText(Renderer.TextFontNormal, 18f, ImGui.GetWindowPos() + new Vector2(20, 5), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), BombPlanted ? "C4 Has Been Planted" : "C4 Has Not Been Planted");
+            imDrawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 25), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), "Exploding In: " + TimePlanted.ToString());
+            imDrawList.AddText(ImGui.GetWindowPos() + new Vector2(40, 25), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), "Planted At Site: " + BombPlanted);
             ImGui.End();
-        }
-
-        protected override void FrameAction()
-        {
-            Initialize(); // call everyframe without checking if its enabled to keep timer up to date holy smart
         }
     }
 }

@@ -144,7 +144,7 @@ namespace Titled_Gui.Modules.Visual
                 if (corners2D[i] == new Vector2(-99, -99)) return;
             }
             if (DrawBoxes)
-                Draw3DBoxESP(corners2D, preConvertedColor, thickness);
+                Draw3DBoxESP(corners2D, preConvertedColor, false, thickness);
 
             if (DrawText)
                 GameState.renderer.drawList.AddText(worldEntity.Position2D, ImGui.ColorConvertFloat4ToU32(HostageTextColor), "Hostage");
@@ -169,7 +169,7 @@ namespace Titled_Gui.Modules.Visual
             }
 
             if (DrawBoxes)
-                Draw3DBoxESP(corners2D, preConvertedColor, thickness);
+                Draw3DBoxESP(corners2D, preConvertedColor, false, thickness);
 
             if (DrawText)
                 GameState.renderer.drawList.AddText(worldEntity.Position2D,
@@ -195,7 +195,7 @@ namespace Titled_Gui.Modules.Visual
             }
 
             if (DrawBoxes)
-                Draw3DBoxESP(corners2D, preConvertedColor, thickness);
+                Draw3DBoxESP(corners2D, preConvertedColor, false, thickness);
             if (DrawText)
                 GameState.renderer.drawList.AddText(worldEntity.Position2D,
                     ImGui.ColorConvertFloat4ToU32(WeaponTextColor), worldEntity.DisplayName);
@@ -220,7 +220,7 @@ namespace Titled_Gui.Modules.Visual
             }
 
             if (DrawBoxes)
-                Draw3DBoxESP(corners2D, preConvertedColor, thickness);
+                Draw3DBoxESP(corners2D, preConvertedColor, false, thickness);
 
             if (DrawText)
                 GameState.renderer.drawList.AddText(worldEntity.Position2D,
@@ -228,24 +228,39 @@ namespace Titled_Gui.Modules.Visual
                     "Chicken");
         }
 
-        public static void Draw3DBoxESP(Vector2[] corners2D, uint preConvertedColor, float thickness)
+        public static void Draw3DBoxESP(Vector2[] corners2D, uint preConvertedColor, bool filled, float rounding, uint preConvertedFilledColor = 0)
         {
             try
             {
-                GameState.renderer.drawList.AddLine(corners2D[0], corners2D[1], preConvertedColor, thickness);
-                GameState.renderer.drawList.AddLine(corners2D[1], corners2D[3], preConvertedColor, thickness);
-                GameState.renderer.drawList.AddLine(corners2D[3], corners2D[2], preConvertedColor, thickness);
-                GameState.renderer.drawList.AddLine(corners2D[2], corners2D[0], preConvertedColor, thickness);
+                if (filled)
+                {
+                    // bottom face
+                    GameState.renderer.drawList.AddQuadFilled(corners2D[0], corners2D[1], corners2D[3], corners2D[2], preConvertedFilledColor);
+                    // top face
+                    GameState.renderer.drawList.AddQuadFilled(corners2D[4], corners2D[5], corners2D[7], corners2D[6], preConvertedFilledColor);
+                    // front face
+                    GameState.renderer.drawList.AddQuadFilled(corners2D[0], corners2D[1], corners2D[5], corners2D[4], preConvertedFilledColor);
+                    // back face
+                    GameState.renderer.drawList.AddQuadFilled(corners2D[2], corners2D[3], corners2D[7], corners2D[6], preConvertedFilledColor);
+                    // left face
+                    GameState.renderer.drawList.AddQuadFilled(corners2D[0], corners2D[2], corners2D[6], corners2D[4], preConvertedFilledColor);
+                    // right face
+                    GameState.renderer.drawList.AddQuadFilled(corners2D[1], corners2D[3], corners2D[7], corners2D[5], preConvertedFilledColor);
+                }
+                GameState.renderer.drawList.AddLine(corners2D[0], corners2D[1], preConvertedColor, rounding);
+                GameState.renderer.drawList.AddLine(corners2D[1], corners2D[3], preConvertedColor, rounding);
+                GameState.renderer.drawList.AddLine(corners2D[3], corners2D[2], preConvertedColor, rounding);
+                GameState.renderer.drawList.AddLine(corners2D[2], corners2D[0], preConvertedColor, rounding);
 
-                GameState.renderer.drawList.AddLine(corners2D[4], corners2D[5], preConvertedColor, thickness);
-                GameState.renderer.drawList.AddLine(corners2D[5], corners2D[7], preConvertedColor, thickness);
-                GameState.renderer.drawList.AddLine(corners2D[7], corners2D[6], preConvertedColor, thickness);
-                GameState.renderer.drawList.AddLine(corners2D[6], corners2D[4], preConvertedColor, thickness);
+                GameState.renderer.drawList.AddLine(corners2D[4], corners2D[5], preConvertedColor, rounding);
+                GameState.renderer.drawList.AddLine(corners2D[5], corners2D[7], preConvertedColor, rounding);
+                GameState.renderer.drawList.AddLine(corners2D[7], corners2D[6], preConvertedColor, rounding);
+                GameState.renderer.drawList.AddLine(corners2D[6], corners2D[4], preConvertedColor, rounding);
 
-                GameState.renderer.drawList.AddLine(corners2D[0], corners2D[4], preConvertedColor, thickness);
-                GameState.renderer.drawList.AddLine(corners2D[1], corners2D[5], preConvertedColor, thickness);
-                GameState.renderer.drawList.AddLine(corners2D[2], corners2D[6], preConvertedColor, thickness);
-                GameState.renderer.drawList.AddLine(corners2D[3], corners2D[7], preConvertedColor, thickness);
+                GameState.renderer.drawList.AddLine(corners2D[0], corners2D[4], preConvertedColor, rounding);
+                GameState.renderer.drawList.AddLine(corners2D[1], corners2D[5], preConvertedColor, rounding);
+                GameState.renderer.drawList.AddLine(corners2D[2], corners2D[6], preConvertedColor, rounding);
+                GameState.renderer.drawList.AddLine(corners2D[3], corners2D[7], preConvertedColor, rounding);
             }
             catch (IndexOutOfRangeException ex)
             {

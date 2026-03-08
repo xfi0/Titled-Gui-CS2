@@ -14,6 +14,12 @@ namespace Titled_Gui.Data.Entity
             public bool IsVisible { get; set; }
         }
 
+        public enum BombSite
+        {
+            A = 0,
+            B,
+            Unknown
+        }
         public class Hitbox
         {
             public nint m_name; // CUtlString
@@ -30,6 +36,15 @@ namespace Titled_Gui.Data.Entity
             public Color m_cRenderColor; // Color
             public UInt16 m_nHitBoxIndex; // uint16
         }
-        
+
+        public class C4
+        {
+            public BombSite PlantedSite = BombSite.Unknown;
+            public Vector3 Position { get; set; }
+            public Vector2 Position2D { get; set; }
+            public float ExplosionTime { get; set; } = 40;
+            public bool BeingDefused { get; set; }
+            public bool Planted { get; set; }
+        }
     }
 }

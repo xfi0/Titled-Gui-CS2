@@ -13,7 +13,7 @@ namespace Titled_Gui.Classes
             for (int i = 1; i <= layers; i++)
             {
                 float t = i / (float)layers;
-                float expansion = glowAmount * t;
+                float expansion = glowAmount * t * 1.25f;
                 float alpha = color.W * 0.025f * (1f - t);
                 if (alpha < 0.001f) continue;
 
@@ -32,7 +32,7 @@ namespace Titled_Gui.Classes
             for (int i = 1; i <= layers; i++)
             {
                 float t = i / (float)layers;
-                float expansion = glowAmount * t;
+                float expansion = glowAmount * t * 1.25f;
                 float alpha = color.W * 0.025f * (1f - t);
                 if (alpha < 0.001f) continue;
 
@@ -45,7 +45,7 @@ namespace Titled_Gui.Classes
         }
 
         public static void DrawGlowLine(ImDrawListPtr drawList, Vector2 p1, Vector2 p2, Vector4 color,
-            float glowAmount, int layers = 8, float thickness = 0f)
+            float glowAmount, int layers = 12, float thickness = 0f)
         {
             Vector2 dir = Vector2.Normalize(p2 - p1);
             Vector2 normal = new(-dir.Y, dir.X);
@@ -53,8 +53,8 @@ namespace Titled_Gui.Classes
             for (int i = 1; i <= layers; i++)
             {
                 float t = i / (float)layers;
-                float offset = glowAmount * t;
-                float alpha = color.W * 0.025f * (1f - t);
+                float offset = glowAmount * t * 1.25f;
+                float alpha = color.W * 0.075f * (1f - t);
                 if (alpha < 0.001f) continue;
 
                 uint col = ImGui.ColorConvertFloat4ToU32(new Vector4(color.X, color.Y, color.Z, alpha));
@@ -72,11 +72,11 @@ namespace Titled_Gui.Classes
             for (int i = 1; i <= layers; i++)
             {
                 float t = i / (float)layers;
-                float r = radius + glowAmount * t;
+                float expansion = radius + glowAmount * t * 1.25f;
                 float alpha = color.W * 0.025f * (1f - t);
                 if (alpha < 0.001f) continue;
 
-                drawList.AddCircle(center, r,
+                drawList.AddCircle(center, expansion,
                     ImGui.ColorConvertFloat4ToU32(new Vector4(color.X, color.Y, color.Z, alpha)));
             }
         }
@@ -87,11 +87,11 @@ namespace Titled_Gui.Classes
             for (int i = 1; i <= layers; i++)
             {
                 float t = i / (float)layers;
-                float r = radius + glowAmount * t;
+                float expansion = radius + glowAmount * t * 1.25f;
                 float alpha = color.W * 0.025f * (1f - t);
                 if (alpha < 0.001f) continue;
 
-                drawList.AddCircleFilled(center, r,
+                drawList.AddCircleFilled(center, expansion,
                     ImGui.ColorConvertFloat4ToU32(new Vector4(color.X, color.Y, color.Z, alpha)));
             }
         }
@@ -102,15 +102,15 @@ namespace Titled_Gui.Classes
             for (int i = 1; i <= layers; i++)
             {
                 float t = i / (float)layers;
-                float offset = glowAmount * t;
+                float expansion = glowAmount * t * 1.25f;
                 float alpha = color.W * 0.025f * (1f - t);
                 if (alpha < 0.001f) continue;
 
                 uint col = ImGui.ColorConvertFloat4ToU32(new Vector4(color.X, color.Y, color.Z, alpha));
-                drawList.AddText(pos + new Vector2(-offset, -offset), col, text);
-                drawList.AddText(pos + new Vector2(offset, -offset), col, text);
-                drawList.AddText(pos + new Vector2(-offset, offset), col, text);
-                drawList.AddText(pos + new Vector2(offset, offset), col, text);
+                drawList.AddText(pos + new Vector2(-expansion, -expansion), col, text);
+                drawList.AddText(pos + new Vector2(expansion, -expansion), col, text);
+                drawList.AddText(pos + new Vector2(-expansion, expansion), col, text);
+                drawList.AddText(pos + new Vector2(expansion, expansion), col, text);
             }
         }
 
@@ -120,7 +120,7 @@ namespace Titled_Gui.Classes
             for (int i = 1; i <= layers; i++)
             {
                 float t = i / (float)layers;
-                float expansion = glowAmount * t;
+                float expansion = glowAmount * t * 1.25f;
                 float alpha = color.W * 0.025f * (1f - t);
                 if (alpha < 0.001f) continue;
 
@@ -137,7 +137,7 @@ namespace Titled_Gui.Classes
             for (int i = 1; i <= layers; i++)
             {
                 float t = i / (float)layers;
-                float expansion = glowAmount * t;
+                float expansion = glowAmount * t * 1.25f;
                 float alpha = color.W * 0.025f * (1f - t);
                 if (alpha < 0.001f) continue;
 
@@ -156,7 +156,7 @@ namespace Titled_Gui.Classes
             for (int i = 1; i <= layers; i++)
             {
                 float t = i / (float)layers;
-                float expansion = glowAmount * t;
+                float expansion = glowAmount * t * 1.25f;
                 float alpha = color.W * 0.025f * (1f - t);
                 if (alpha < 0.001f) continue;
 

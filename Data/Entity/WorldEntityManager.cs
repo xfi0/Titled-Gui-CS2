@@ -65,7 +65,8 @@ namespace Titled_Gui.Data.Entity
             {"weapon_cz75a", "CZ75-Auto"},
             {"weapon_deagle", "Desert Eagle"},
             {"weapon_revolver", "R8 Revolver"},
-            {"weapon_glock", "Glock-18"}
+            {"weapon_glock", "Glock-18"},
+            {"weapon_c4", "C4"}
         };
         public enum EntityKind 
         { 
@@ -76,26 +77,13 @@ namespace Titled_Gui.Data.Entity
             Hostage 
         }
 
-        private static string GetWeaponType(string itemIdentifier)
-        {
-            return WeaponsType.TryGetValue(itemIdentifier, out var value) ? value : "Unknown Weapon Type";
-        }
 
-        private static string GetProjectileType(string itemIdentifier)
-        {
-            return ProjectilesType.TryGetValue(itemIdentifier, out var value) ? value : "Unknown Projectile Type";
-        }
-
-        private static string GetEntityType(string itemIdentifier)
-        {
-            return EntityType.TryGetValue(itemIdentifier, out var value) ? value : "Unknown Entity Type";
-        }
         public List<WorldEntity?> GetWorldEntities()
         {
             try
             {
                 List<WorldEntity?> worldEntities = new List<WorldEntity?>();
-                for (int i = 65; i < 2048; i++)
+                for (int i = 65; i < 1024; i++)
                 {
                     listEntry = GameState.swed.ReadPointer(GameState.EntityList + 0x8 * ((i & 0x7FFF) >> 9) + 16);
                     if (listEntry == 0) continue;
@@ -191,7 +179,6 @@ namespace Titled_Gui.Data.Entity
 
         protected override void FrameAction()
         {
-            Thread.SpinWait(5);
             List<WorldEntity?> newSnapshot = GetWorldEntities();
 
             lock (_lastSnapshot)
@@ -200,6 +187,8 @@ namespace Titled_Gui.Data.Entity
                 _lastSnapshot.AddRange(newSnapshot);
                 GameState.worldEntities = _lastSnapshot.ToList();
             }
+
+            Thread.SpinWait(20);
         }
     }
 }

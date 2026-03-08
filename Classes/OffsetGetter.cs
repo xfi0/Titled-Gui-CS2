@@ -123,6 +123,9 @@ namespace Titled_Gui.Classes
             { "m_nVoxelUpdate", new() { new Offset("m_nVoxelUpdate") } },
             { "m_hOwnerEntity", new() { new Offset("m_hOwnerEntity") } },
             { "m_nodeToWorld", new() { new Offset("m_nodeToWorld") } },
+            { "m_nBombSite", new() { new Offset("m_nBombSite") } },
+            { "m_bBeingDefused", new() { new Offset("m_bBeingDefused") } },
+            { "m_bC4Activated", new() { new Offset("m_bC4Activated") } },
 
 
             // EXPLICIT CLASS THING

@@ -23,7 +23,6 @@
         public static int m_modelState = 0x170;
         public static int m_pGameSceneNode = 0x328;
         public static int dwCSGOInput = 0x1A75250;
-        public static int m_flC4Blow = 0xFC0;
         public static int current_time = 0x5C0;
         public static int dwGlobalVars = 0x1849EB0;
         public static int dwPlantedC4 = 0x1A702F8;
@@ -109,5 +108,9 @@
         public static int m_designerName = 0x10;
         public static int m_hOwnerEntity = 0x0;
         public static int m_nodeToWorld = 0x0;
+        public static int m_flC4Blow = 0x0;
+        public static int m_nBombSite = 0x0;
+        public static int m_bBeingDefused = 0x0;
+        public static int m_bC4Activated = 0x0;
     }
 }

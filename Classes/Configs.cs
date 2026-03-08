@@ -90,17 +90,17 @@ namespace Titled_Gui.Classes
                     },
                     ["Occluded Enemy Color"] = new JObject
                     {
-                        ["X"] = BoxESP.occludedEnemy.X,
-                        ["Y"] = BoxESP.occludedEnemy.Y,
-                        ["Z"] = BoxESP.occludedEnemy.Z,
-                        ["W"] = BoxESP.occludedEnemy.W,
+                        ["X"] = BoxESP.OccludedEnemy.X,
+                        ["Y"] = BoxESP.OccludedEnemy.Y,
+                        ["Z"] = BoxESP.OccludedEnemy.Z,
+                        ["W"] = BoxESP.OccludedEnemy.W,
                     },
                     ["Occluded Team Color"] = new JObject
                     {
-                        ["X"] = BoxESP.occludedTeam.X,
-                        ["Y"] = BoxESP.occludedTeam.Y,
-                        ["Z"] = BoxESP.occludedTeam.Z,
-                        ["W"] = BoxESP.occludedTeam.W,
+                        ["X"] = BoxESP.OccludedTeam.X,
+                        ["Y"] = BoxESP.OccludedTeam.Y,
+                        ["Z"] = BoxESP.OccludedTeam.Z,
+                        ["W"] = BoxESP.OccludedTeam.W,
                     },
 
                 },
@@ -372,17 +372,18 @@ namespace Titled_Gui.Classes
                     configData["ESP"]?["Outline Team Color"]?["Y"]?.ToObject<float>() ?? BoxESP.OutlineTeamColor.Y,
                     configData["ESP"]?["Outline Team Color"]?["Z"]?.ToObject<float>() ?? BoxESP.OutlineTeamColor.Z,
                     configData["ESP"]?["Outline Team Color"]?["W"]?.ToObject<float>() ?? BoxESP.OutlineTeamColor.W
-                ); BoxESP.occludedEnemy = new Vector4(
-                    configData["ESP"]?["Outline Enemy Color"]?["X"]?.ToObject<float>() ?? BoxESP.occludedEnemy.X,
-                    configData["ESP"]?["Outline Enemy Color"]?["Y"]?.ToObject<float>() ?? BoxESP.occludedEnemy.Y,
-                    configData["ESP"]?["Outline Enemy Color"]?["Z"]?.ToObject<float>() ?? BoxESP.occludedEnemy.Z,
-                    configData["ESP"]?["Outline Enemy Color"]?["W"]?.ToObject<float>() ?? BoxESP.occludedEnemy.W
                 );
-                BoxESP.occludedTeam = new Vector4(
-                    configData["ESP"]?["Occluded Team Color"]?["X"]?.ToObject<float>() ?? BoxESP.occludedTeam.X,
-                    configData["ESP"]?["Occluded Team Color"]?["Y"]?.ToObject<float>() ?? BoxESP.occludedTeam.Y,
-                    configData["ESP"]?["Occluded Team Color"]?["Z"]?.ToObject<float>() ?? BoxESP.occludedTeam.Z,
-                    configData["ESP"]?["Occluded Team Color"]?["W"]?.ToObject<float>() ?? BoxESP.occludedTeam.W
+                BoxESP.OccludedEnemy = new Vector4(
+                    configData["ESP"]?["Outline Enemy Color"]?["X"]?.ToObject<float>() ?? BoxESP.OccludedEnemy.X,
+                    configData["ESP"]?["Outline Enemy Color"]?["Y"]?.ToObject<float>() ?? BoxESP.OccludedEnemy.Y,
+                    configData["ESP"]?["Outline Enemy Color"]?["Z"]?.ToObject<float>() ?? BoxESP.OccludedEnemy.Z, 
+                    configData["ESP"]?["Outline Enemy Color"]?["W"]?.ToObject<float>() ?? BoxESP.OccludedEnemy.W
+                );
+                BoxESP.OccludedTeam = new Vector4(
+                    configData["ESP"]?["Occluded Team Color"]?["X"]?.ToObject<float>() ?? BoxESP.OccludedTeam.X,
+                    configData["ESP"]?["Occluded Team Color"]?["Y"]?.ToObject<float>() ?? BoxESP.OccludedTeam.Y,
+                    configData["ESP"]?["Occluded Team Color"]?["Z"]?.ToObject<float>() ?? BoxESP.OccludedTeam.Z,
+                    configData["ESP"]?["Occluded Team Color"]?["W"]?.ToObject<float>() ?? BoxESP.OccludedTeam.W
                 );
                 #endregion
 

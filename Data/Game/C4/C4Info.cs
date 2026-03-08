@@ -66,7 +66,8 @@ namespace Titled_Gui.Data.Game.C4
                 Position2D = Calculate.WorldToScreen(viewMatrix, position),
                 PlantedSite = (BombSite)GameState.swed.ReadInt(c4, Offsets.m_nBombSite),
                 BeingDefused = GameState.swed.ReadBool(c4 + Offsets.m_bBeingDefused),
-                Planted = GameState.swed.ReadBool(c4 + Offsets.m_bC4Activated)
+                Planted = GameState.swed.ReadBool(c4 + Offsets.m_bC4Activated),
+                Matrix = GameState.swed.ReadMatrix(node + Offsets.m_nodeToWorld)
             };
 
             Thread.SpinWait(20);

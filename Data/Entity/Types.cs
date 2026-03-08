@@ -46,6 +46,7 @@ namespace Titled_Gui.Data.Entity
             public float ExplosionTime { get; set; } = 40;
             public bool BeingDefused { get; set; }
             public bool Planted { get; set; }
+            public float[] Matrix { get; set; }
         }
     }
 }

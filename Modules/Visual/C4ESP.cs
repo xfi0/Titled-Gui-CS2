@@ -22,22 +22,57 @@ namespace Titled_Gui.Modules.Visual
 
             if (c4 == null || !c4.Planted || c4.Position == new Vector3(0, 0, 0) || c4.Position2D == new Vector2(-99, -99))
                 return;
+            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            Vector3[] corners3D = Get3DCorners(c4);
+            Console.WriteLine(corners3D.Length);
+            Vector2[] corners2D = new Vector2[corners3D.Length];
+
+            for (int i = 0; i < corners3D.Length; i++)
+            {
+                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                if (corners2D[i] == new Vector2(-99, -99))
+                    return;
+            }
 
             if (TextEnabled)
                 GameState.renderer.drawList.AddText(c4.Position2D, ImGui.ColorConvertFloat4ToU32(TextColor), "C4");
 
             if (BoxEnabled)
             {
-                GameState.renderer.drawList.AddRect(c4.Position2D, new(
-                    c4.Position2D.X + 10 *
-                    (float)Math.Clamp(Vector2.Distance(c4.Position2D, GameState.LocalPlayer.Position2D), 1.5, 10),
-                    c4.Position2D.Y + 10), ImGui.ColorConvertFloat4ToU32(BoxColor));
+                WorldESP.Draw3DBoxESPFromMatrix(corners2D, ImGui.ColorConvertFloat4ToU32(new Vector4(1,1,1,1)), false, 2);
             }
         }
 
-        //private static Vector3[] Get3DCorners(Vector3 position, float[] matrix)
-        //{
-           
-        //}
+        private static Vector3[] Get3DCorners(Types.C4? c4)
+        {
+            if (c4 == null)
+                return Array.Empty<Vector3>();
+            
+            float cos = c4.Matrix[6];
+            float sin = c4.Matrix[7];
+
+            Vector3 vecMin = new(-4f, -5.8f, -2f);
+            Vector3 vecMax = new(4f, 5.8f, 2f);
+
+            return
+            [
+                RotateCorner(c4.Position, vecMin.X, vecMin.Y, vecMin.Z, cos, sin),
+                RotateCorner(c4.Position, vecMax.X, vecMin.Y, vecMin.Z, cos, sin),
+                RotateCorner(c4.Position, vecMin.X, vecMax.Y, vecMin.Z, cos, sin),
+                RotateCorner(c4.Position, vecMax.X, vecMax.Y, vecMin.Z, cos, sin),
+                RotateCorner(c4.Position, vecMin.X, vecMin.Y, vecMax.Z, cos, sin),
+                RotateCorner(c4.Position, vecMax.X, vecMin.Y, vecMax.Z, cos, sin),
+                RotateCorner(c4.Position, vecMin.X, vecMax.Y, vecMax.Z, cos, sin),
+                RotateCorner(c4.Position, vecMax.X, vecMax.Y, vecMax.Z, cos, sin),
+            ];
+        }
+        private static Vector3 RotateCorner(Vector3 origin, float x, float y, float z, float cos, float sin)
+        {
+            return new Vector3(
+                origin.X + x * cos - y * sin,
+                origin.Y + x * sin + y * cos,
+                origin.Z + z
+            );
+        }
     }
 }

@@ -158,7 +158,9 @@ namespace Titled_Gui.Data.Entity
                 Type = EntityKind.Unknown,
                 RawType = type,
                 VecMax = GameState.swed.ReadVec(collisionBase, Offsets.m_vecMaxs),
-                VecMin = GameState.swed.ReadVec(collisionBase, Offsets.m_vecMins)
+                VecMin = GameState.swed.ReadVec(collisionBase, Offsets.m_vecMins),
+                Matrix = GameState.swed.ReadMatrix(itemNode + Offsets.m_nodeToWorld),
+                Rotation = GameState.swed.ReadMatrix(itemNode + Offsets.m_angRotation)
             };
 
             if (WeaponsType.TryGetValue(type, out var weaponName))

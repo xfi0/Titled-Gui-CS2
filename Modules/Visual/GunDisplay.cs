@@ -57,7 +57,7 @@ namespace Titled_Gui.Modules.Visual
         public static Vector4 TextColor = new(1, 1, 1, 1);
         public static void Draw(Entity? e)
         {
-            if (!Enabled || e == null || e.Health == 0 || e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.CurrentWeaponName == null) return;
+            if (!Enabled || e == null || e.Health == 0 || e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.CurrentWeaponName == null || e.Position2D == new Vector2(-99, -99)) return;
 
             string icon = GetIcon(e.CurrentWeaponName);
             var rect = BoxESP.GetBoxRect(e);

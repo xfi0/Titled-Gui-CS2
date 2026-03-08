@@ -7,7 +7,7 @@ namespace Titled_Gui.Modules.Visual
     {
         public static float BoneThickness = 10f;
         public static bool DrawOnSelf = false;
-        public static bool EnableChams = false;
+        public static bool EnableChams = true;
 
         public static void Draw(Entity? entity)
         {
@@ -16,6 +16,7 @@ namespace Titled_Gui.Modules.Visual
                 BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed ||
                 entity.Bones2D.Count <= 0 || !EnableChams)
                 return;
+                
         }
     }
 }

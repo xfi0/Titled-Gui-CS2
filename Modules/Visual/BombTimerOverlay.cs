@@ -19,7 +19,7 @@ namespace Titled_Gui.Modules.Visual
                 GameState.GameRules = GameState.swed.ReadPointer(GameState.client, Offsets.dwGameRules);
 
                 if (GameState.GameRules == IntPtr.Zero)
-                    Thread.Sleep(10);
+                    Thread.Sleep(100);
                 
 
                 BombPlanted = GameState.swed.ReadBool(GameState.GameRules, Offsets.m_bBombPlanted);

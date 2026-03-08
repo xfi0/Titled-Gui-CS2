@@ -11,7 +11,7 @@ namespace Titled_Gui.Modules.Visual
         {
             if (e == null || (BoxESP.TeamCheck && e?.Team == GameState.LocalPlayer.Team) || e?.Health <= 0 ||
                 e?.PawnAddress == GameState.LocalPlayer.PawnAddress || e?.Distance == null ||
-                (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed)) return;
+                (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || e.Position2D == new Vector2(-99, -99)) return;
 
             string distText = $"{(int)e.Distance / 100}m";
             Vector2 textPos = new(e.Position2D.X + 2, e.Position2D.Y);

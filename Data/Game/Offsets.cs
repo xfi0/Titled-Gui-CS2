@@ -108,5 +108,6 @@
         public static int m_pEntity = 0x10;
         public static int m_designerName = 0x10;
         public static int m_hOwnerEntity = 0x0;
+        public static int m_nodeToWorld = 0x0;
     }
 }

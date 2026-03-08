@@ -9,13 +9,13 @@ namespace Titled_Gui.Modules.Rage
         public static bool Enabled = false;
         public static float Strength = 100f; // in precents so 1 == 100%, 0.5 == 50% etc
         public static Vector3 OldPunch = new(0, 0, 0);
-        private static int startBullet = 1;
+        private static int StartBullet = 1;
         public static void RunRCS()
         {
             if (!Enabled || GameState.LocalPlayer.Health == 0 || (User32.GetAsyncKeyState(0x01) & 0x8000) == 0)
                 return;
 
-            if (GameState.LocalPlayer.ShotsFired > startBullet)
+            if (GameState.LocalPlayer.ShotsFired > StartBullet)
             {
                 Vector3 aimPunch = GameState.LocalPlayer.AimPunchAngle * (Strength / 100f);
                 Vector3 newAngles;
@@ -24,7 +24,7 @@ namespace Titled_Gui.Modules.Rage
 
                 newAngles.X = (aimPunch.Y - OldPunch.Y) * 2.0f / (0.022f * GameState.LocalPlayer.Sensitivity) / 1;
                 newAngles.Y = -(aimPunch.X - OldPunch.X) * 2.0f / (0.022f * GameState.LocalPlayer.Sensitivity) / 1;
-                User32.mouse_event(User32.MOUSEEVENTF_MOVE, (uint)(-newAngles.X * -1), (uint)newAngles.Y, 0, 0);
+                User32.mouse_event(User32.MOUSEEVENTF_MOVE, (uint)newAngles.X, (uint)newAngles.Y, 0, 0);
                 OldPunch = aimPunch;
             }
             else

@@ -18,7 +18,7 @@ namespace Titled_Gui.Data.Entity
         public bool Visible { get; set; } // visibility of the entity
         public float Distance { get; set; } // Distance to the entity,from the local player
         public IntPtr PawnAddress { get; set; } // pointer to the entity's pawn address
-        public List<Vector3>? Bones { get; set; } // list of Bones for the entity
+        public List<Types.Bone>? Bones { get; set; } // list of Bones for the entity
         public List<Vector2>? Bones2D { get; set; } // list of Bones in 2D space (screen space)
         public string? Name { get; set; }
         public int Ammo { get; set; }

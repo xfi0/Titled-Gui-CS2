@@ -1,6 +1,10 @@
 ﻿using System.Numerics;
+using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Modules.Visual;
+using ValveResourceFormat.ResourceTypes.ModelAnimation;
 using static Titled_Gui.Modules.Visual.BoneESP;
+using Bone = Titled_Gui.Data.Entity.Types.Bone;
 
 namespace Titled_Gui.Classes
 {
@@ -53,28 +57,38 @@ namespace Titled_Gui.Classes
             while (angle < -180) angle += 360;
             return angle;
         }
-        public static List<Vector3> ReadBones(nint boneAddress)
+        private static int[] BonesToCheck = {0,5,6,8,9,11,13,14,16,23,26,27};
+      
+        public static List<Bone> ReadBones(nint boneAddress, float[] viewMatrix)
         {
             byte[] boneBytes = GameState.swed.ReadBytes(boneAddress, 27 * 32 + 16);
-            List<Vector3> bones = [];
+            List<Bone> bones = new();
+
             foreach (var boneId in Enum.GetValues<BoneIds>())
             {
                 float x = BitConverter.ToSingle(boneBytes, (int)boneId * 32 + 0);
                 float y = BitConverter.ToSingle(boneBytes, (int)boneId * 32 + 4);
                 float z = BitConverter.ToSingle(boneBytes, (int)boneId * 32 + 8);
                 Vector3 currentBone = new(x, y, z);
-                bones.Add(currentBone);
+                Bone bone = new()
+                {
+                    Position = currentBone,
+                };
+                //if (BonesToCheck.Contains((int)boneId))
+                //    bone.IsVisible = VisibilityCheck.Visible(GameState.LocalPlayer.EyePosition, bone.Position);
+
+                bone.Position2D = WorldToScreen(viewMatrix, bone.Position);
+                bones.Add(bone);
             }
             return bones;
         }
 
-        public static List<Vector2> ReadBones2D(List<Vector3> bones, float[] viewMatrix, Vector2 screenSize)
+        public static List<Vector2> ReadBones2D(List<Bone> bones)
         {
             List<Vector2> bones2d = [];
-            foreach (Vector3 bone in bones)
+            foreach (Bone bone in bones)
             {
-                Vector2 bone2d = WorldToScreen(viewMatrix, bone);
-                bones2d.Add(bone2d);
+                bones2d.Add(bone.Position2D);
             }
             return bones2d;
         }

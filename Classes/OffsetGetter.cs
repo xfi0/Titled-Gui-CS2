@@ -122,6 +122,7 @@ namespace Titled_Gui.Classes
             { "m_bSmokeVolumeDataReceived", new() { new Offset("m_bSmokeVolumeDataReceived") } },
             { "m_nVoxelUpdate", new() { new Offset("m_nVoxelUpdate") } },
             { "m_hOwnerEntity", new() { new Offset("m_hOwnerEntity") } },
+            { "m_nodeToWorld", new() { new Offset("m_nodeToWorld") } },
 
 
             // EXPLICIT CLASS THING

@@ -5,20 +5,22 @@ using System.Diagnostics;
 using System.Media;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.Pkcs;
 using System.Text.Json.Nodes;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Game.VRF;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
 using Titled_Gui.Notifications;
 using ZstdSharp.Unsafe;
 using static Titled_Gui.Data.Game.MapParser.MapLoader;
-using static Titled_Gui.ImGUI.Widgets.Toggles;
 using static Titled_Gui.ImGUI.Widgets.ColorPickers;
 using static Titled_Gui.ImGUI.Widgets.Combos;
 using static Titled_Gui.ImGUI.Widgets.Sliders;
+using static Titled_Gui.ImGUI.Widgets.Toggles;
 
 namespace Titled_Gui
 {
@@ -672,7 +674,7 @@ namespace Titled_Gui
                             ImGui.Text("External Cheat Made By xfi0 / domok.");
                             ImGui.Text("More Info On" + Configs.Link);
                             ImGui.Text(
-                                "If You Paid For This You Have Been Scammed, This Never Was And Never Will Be Paid");
+                                "If You Paid For This You Have Been Scammed, This Never Was, And Never Will Be Paid");
 
                             ImGui.EndChild();
 
@@ -826,19 +828,20 @@ namespace Titled_Gui
 
                 foreach (var entity in GameState.Entities)
                 {
-                    if (entity != null)
-                    {
-                        var rect = BoxESP.GetBoxRect(entity);
-                        if (rect != null)
-                        {
-                            var (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle) = rect.Value;
-                            Vector2 barTopLeft = new(topLeft.X - HealthBar.HealthBarWidth - 2, topLeft.Y);
-                            float height = bottomRight.Y - topLeft.Y;
+                    if (entity == null)
+                        continue;
 
-                            Modules.Visual.HealthBar.DrawHealthBar(entity, entity.Health, 100, barTopLeft, height);
-                        }
-                    }
+                    var rect = BoxESP.GetBoxRect(entity);
+                    if (rect == null)
+                        continue;
+
+                    var (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle) = rect.Value;
+                    Vector2 barTopLeft = new(topLeft.X - HealthBar.HealthBarWidth - 2, topLeft.Y);
+                    float height = bottomRight.Y - topLeft.Y;
+
+                    HealthBar.DrawHealthBar(entity, entity.Health, 100, barTopLeft, height);
                 }
+
 
                 if (ArmorBar.EnableArmorhBar)
                 {
@@ -858,6 +861,8 @@ namespace Titled_Gui
                         }
                     }
                 }
+                //GernadeHelper.DrawAllLineups();
+
             }
             catch (Exception e)
             {
@@ -939,27 +944,6 @@ namespace Titled_Gui
             ImGui.Dummy(new Vector2(textSize.X, textSize.Y + 1));
             ImGui.Separator();
             ImGui.Spacing();
-        }
-
-
-        private static void RenderLeftRightLableThing(string label, Action renderWidget)
-        {
-            ImGui.Columns(2, null, false);
-
-            // left
-            ImGui.SetColumnWidth(0, 200);
-            ImGui.Text(label);
-            ImGui.NextColumn();
-
-            // right
-            float widgetWidth = ImGui.CalcItemWidth();
-            float availWidth = ImGui.GetColumnWidth() - ImGui.GetStyle().ItemSpacing.X;
-            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + availWidth - widgetWidth);
-
-            renderWidget();
-            ImGui.NextColumn();
-
-            ImGui.Columns(1);
         }
 
         private static void RenderGradientText(string text, Vector4 startColor, Vector4 endColor)
@@ -1044,10 +1028,7 @@ namespace Titled_Gui
             var min = ImGui.GetItemRectMin();
             var max = ImGui.GetItemRectMax();
             var borderColor = isSelected ? SidebarColor + new Vector4(0.02f, 0.01f, 0.01f, 1f) : SidebarColor;
-            drawList.AddLine(new Vector2(min.X, min.Y), new Vector2(max.X, min.Y),
-                ImGui.ColorConvertFloat4ToU32(borderColor), 1.5f);
-            drawList.AddLine(new Vector2(min.X, max.Y), new Vector2(max.X, max.Y),
-                ImGui.ColorConvertFloat4ToU32(borderColor), 1.5f);
+       
 
             ImGui.PopFont();
             ImGui.PopStyleVar(); // restore spacing

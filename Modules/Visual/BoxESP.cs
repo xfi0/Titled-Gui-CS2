@@ -3,6 +3,8 @@ using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using static ValveResourceFormat.ResourceTypes.EntityLump;
+using Entity = Titled_Gui.Data.Entity.Entity;
 
 namespace Titled_Gui.Modules.Visual
 {
@@ -11,7 +13,10 @@ namespace Titled_Gui.Modules.Visual
         public static bool TeamCheck = false;
         public static bool EnableESP = false;
         public static float BoxFillOpacity = 0.2f; // 20%
-        public static string[] Shapes = ["2D Box", "3D Box", "Edges", "Triangle"];
+
+        public static string[] Shapes =
+            ["2D Box", "3D Box", "Edges", "Pyramid", "Star", "Hexagon", "Rhombus", "Pentagram", "Pentagon"];
+
         public static int CurrentShape = 0;
         public static bool EnableDistanceTracker = false;
         public static bool InnerOutline = false;
@@ -22,37 +27,58 @@ namespace Titled_Gui.Modules.Visual
         public static Vector4 OutlineEnemyColor = new(1, 0, 0, 1);
         public static Vector4 OutlineTeamColor = new(0, 1, 0, 1);
         public static float Rounding = 0f;
-        public static bool FlashCheck = true; // THIS APPLIES TO ALL VISUALS BESIDES LIKE ONES THAT DONT HAVE ANYTHING TO DO WITH THE ENTITIES
+
+        public static bool
+            FlashCheck =
+                true; // THIS APPLIES TO ALL VISUALS BESIDES LIKE ONES THAT DONT HAVE ANYTHING TO DO WITH THE ENTITIES
+
         public static float GlowAmount = 0f;
         public static bool BoxFillGradient = false;
-        public static Vector4 BoxFillGradientColorTop = new(1f,1f,1f, BoxFillOpacity);
-        public static Vector4 BoxFillGradientBottom = new(0f,0f,0f, BoxFillOpacity);
-        public static float EdgeMultiplier = 0.25f; 
+        public static Vector4 BoxFillGradientColorTop = new(1f, 1f, 1f, BoxFillOpacity);
+        public static Vector4 BoxFillGradientBottom = new(0f, 0f, 0f, BoxFillOpacity);
+        public static float EdgeMultiplier = 0.25f;
         public static bool EnableESPPreview = true;
         public static Vector4 occludedEnemy = new(1, 1, 0, 1);
         public static Vector4 occludedTeam = new(0, 0, 1, 1);
+
         public static void DrawBoxESP(Entity? entity, Renderer renderer)
         {
-            if (!EnableESP || entity == null || (TeamCheck && entity.Team == GameState.LocalPlayer.Team) || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || (FlashCheck && GameState.LocalPlayer.IsFlashed) || entity?.Bones2D?.Count < 0 || entity?.Bones2D == null || entity.Position2D == new Vector2(-99, -99)) return;
+            if (!EnableESP || entity == null || (TeamCheck && entity.Team == GameState.LocalPlayer.Team) ||
+                entity.PawnAddress == GameState.LocalPlayer.PawnAddress ||
+                (FlashCheck && GameState.LocalPlayer.IsFlashed) || entity?.Bones2D?.Count < 0 ||
+                entity?.Bones2D == null || entity.Position2D == new Vector2(-99, -99)) return;
 
             try
             {
+                bool isTeam = entity.Team == GameState.LocalPlayer.Team;
                 Vector4 boxColor = GetBoxColor(entity);
+                Vector4 outlineColor = isTeam ? OutlineTeamColor : OutlineEnemyColor;
                 float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
-
                 Vector4 fillColor = boxColor;
                 fillColor.W = BoxFillOpacity;
+
+
                 var preConvertedColor = ImGui.ColorConvertFloat4ToU32(boxColor);
                 var preConvertedFillColor = ImGui.ColorConvertFloat4ToU32(fillColor);
-
+                var preConvertedOutlineColor =
+                    ImGui.ColorConvertFloat4ToU32(isTeam ? OutlineTeamColor : OutlineEnemyColor);
                 //var min2D = Calculate.WorldToScreen(viewMatrix, entity.vecMin);
                 //var max2D = Calculate.WorldToScreen(viewMatrix, entity.vecMax);
 
                 float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
                 float halfWidth = entityHeight / 3f;
                 float centerX = (entity.ViewPosition2D.X + entity.Position2D.X) / 2f;
-                float topY = entity.ViewPosition2D.Y;
-                float bottomY = entity.Position2D.Y;
+                Vector3 hitboxTop = entity.Position + new Vector3(0, 0, entity.VecMax.Z);
+                Vector3 hitboxBottom = entity.Position + new Vector3(0, 0, entity.VecMin.Z);
+                Vector2 top2D = Calculate.WorldToScreen(viewMatrix, hitboxTop);
+                Vector2 bottom2D = Calculate.WorldToScreen(viewMatrix, hitboxBottom);
+
+                if (top2D == new Vector2(-99, -99)) return;
+                if (bottom2D == new Vector2(-99, -99)) return;
+
+                float topY = top2D.Y;
+                float bottomY = bottom2D.Y;
+                float centerY = (topY + bottomY) / 2f;
                 Vector2 rectTop = new(centerX - halfWidth, topY);
                 Vector2 rectBottom = new(centerX + halfWidth, bottomY);
                 float thickness = 2f;
@@ -60,181 +86,80 @@ namespace Titled_Gui.Modules.Visual
                 switch (CurrentShape)
                 {
                     case 0: // 2D box
-
-                        if (GlowAmount > 0f)
-                        {
-                            if (entity.Team == GameState.LocalPlayer.Team)
-                                DrawHelpers.DrawGlowRect(renderer.drawList, rectTop, rectBottom, OutlineTeamColor,
-                                    Rounding, GlowAmount);
-
-                            else
-                                DrawHelpers.DrawGlowRect(renderer.drawList, rectTop, rectBottom, OutlineEnemyColor,
-                                    Rounding, GlowAmount);
-                        }
-
-                        if (InnerOutline)
-                            GameState.renderer.drawList.AddRect(rectTop - InnerOutlineThickness,
-                                rectBottom + InnerOutlineThickness, ImGui.ColorConvertFloat4ToU32(InnerOutlineColor),
-                                Rounding);
-
-                        if (BoxFillGradient)
-                            DrawHelpers.DrawGradientRect(renderer.drawList, rectTop, rectBottom,
-                                new(BoxFillGradientColorTop.X, BoxFillGradientColorTop.Y, BoxFillGradientColorTop.Z,
-                                    BoxFillOpacity),
-                                new Vector4(BoxFillGradientBottom.X, BoxFillGradientBottom.Y, BoxFillGradientBottom.Z,
-                                    BoxFillOpacity), Rounding);
-
-                        else
-                            renderer.drawList.AddRectFilled(rectTop, rectBottom, preConvertedFillColor, Rounding);
-
-                        if (OuterOutline)
-                        {
-                            if (entity.Team == GameState.LocalPlayer.Team)
-                                renderer.drawList.AddRect(rectTop + OuterOutlineThickness,
-                                    rectBottom + OuterOutlineThickness, ImGui.ColorConvertFloat4ToU32(OutlineTeamColor),
-                                    Rounding); // outside
-
-                            else
-                                renderer.drawList.AddRect(rectTop + OuterOutlineThickness,
-                                    rectBottom + OuterOutlineThickness,
-                                    ImGui.ColorConvertFloat4ToU32(OutlineEnemyColor), Rounding); // outside
-                        }
-
+                    {
+                        Draw2DBox(GameState.renderer.drawList, rectTop, rectBottom, preConvertedFillColor,
+                            preConvertedOutlineColor, outlineColor);
+                    }
                         break;
 
                     case 1: // 3D box
-                        Vector3[] corners3D =
-                        [
-                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMin.Y, entity.VecMin.Z),
-                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMin.Y, entity.VecMin.Z),
-                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMax.Y, entity.VecMin.Z),
-                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMax.Y, entity.VecMin.Z),
-
-                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMin.Y, entity.VecMax.Z),
-                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMin.Y, entity.VecMax.Z),
-                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMax.Y, entity.VecMax.Z),
-                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMax.Y, entity.VecMax.Z)
-                        ];
-
-                        var corners2D = new Vector2[8];
-                        for (int i = 0; i < corners2D.Length; i++)
-                        {
-                            corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
-                            if (corners2D[i] == new Vector2(-99, -99)) return;
-                        }
-
-                        WorldESP.Draw3DBoxESP(corners2D, preConvertedColor, thickness); // applicable here
+                    {
+                        if (Draw3DBox(entity, viewMatrix, preConvertedOutlineColor, thickness)) return;
+                    }
                         break;
 
 
                     case 2: //  edges
-                        Vector2 rectTopLeft = new(centerX - halfWidth, topY);
-                        Vector2 rectTopRight = new(centerX + halfWidth, topY);
-                        Vector2 rectBottomLeft = new(centerX - halfWidth, bottomY);
-                        Vector2 rectBottomRight = new(centerX + halfWidth, bottomY);
-
-                        float edgeWidth = (rectTopRight.X - rectTopLeft.X) * EdgeMultiplier;
-                        float edgeHeight = (rectBottomLeft.Y - rectTopLeft.Y) * EdgeMultiplier;
-                        Vector2 topLeftSide = new(centerX + halfWidth, bottomY);
-                        //if (Outline)
-                        //    renderer.drawList.AddRect(rectTopLeft + OutlineThickness, topLeftSide + OutlineThickness, ImGui.ColorConvertFloat4ToU32(boxColor) & 0xFF000000, Rounding);
-
-                        if (GlowAmount > 0f)
-                        {
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopLeft,
-                                new(rectTopLeft.X + edgeWidth, rectTopLeft.Y), boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopLeft,
-                                new(rectTopLeft.X, rectTopLeft.Y + edgeHeight), boxColor, GlowAmount);
-
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopRight,
-                                new(rectTopRight.X - edgeWidth, rectTopRight.Y), boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectTopRight,
-                                new(rectTopRight.X, rectTopRight.Y + edgeHeight), boxColor, GlowAmount);
-
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomLeft,
-                                new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomLeft,
-                                new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), boxColor, GlowAmount);
-
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomRight,
-                                new(rectBottomRight.X - edgeWidth, rectBottomRight.Y), boxColor, GlowAmount);
-                            DrawHelpers.DrawGlowLine(renderer.drawList, rectBottomRight,
-                                new(rectBottomRight.X, rectBottomRight.Y - edgeHeight), boxColor, GlowAmount);
-                        }
-
-
-                        renderer.drawList.AddLine(rectTopLeft, new(rectTopLeft.X + edgeWidth, rectTopLeft.Y),
-                            ImGui.ColorConvertFloat4ToU32(boxColor));
-                        renderer.drawList.AddLine(rectTopLeft, new(rectTopLeft.X, rectTopLeft.Y + edgeHeight),
-                            ImGui.ColorConvertFloat4ToU32(boxColor));
-
-                        renderer.drawList.AddLine(rectTopRight, new(rectTopRight.X - edgeWidth, rectTopRight.Y),
-                            ImGui.ColorConvertFloat4ToU32(boxColor));
-                        renderer.drawList.AddLine(rectTopRight, new(rectTopRight.X, rectTopRight.Y + edgeHeight),
-                            ImGui.ColorConvertFloat4ToU32(boxColor));
-
-                        renderer.drawList.AddLine(rectBottomLeft, new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y),
-                            ImGui.ColorConvertFloat4ToU32(boxColor));
-                        renderer.drawList.AddLine(rectBottomLeft, new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight),
-                            ImGui.ColorConvertFloat4ToU32(boxColor));
-
-                        renderer.drawList.AddLine(rectBottomRight,
-                            new(rectBottomRight.X - edgeWidth, rectBottomRight.Y),
-                            ImGui.ColorConvertFloat4ToU32(boxColor));
-                        renderer.drawList.AddLine(rectBottomRight,
-                            new(rectBottomRight.X, rectBottomRight.Y - edgeHeight),
-                            ImGui.ColorConvertFloat4ToU32(boxColor));
-
+                    {
+                        DrawEdgeBox(GameState.renderer.drawList, centerX, halfWidth, topY, bottomY, outlineColor,
+                            preConvertedOutlineColor);
+                    }
                         break;
 
                     case 3: // Pyramid
                     {
-                        Vector3[] pyramidCorners3D =
-                        [
-                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMin.Y, entity.VecMin.Z),
-                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMin.Y, entity.VecMin.Z),
-                            entity.Position + new Vector3(entity.VecMin.X, entity.VecMax.Y, entity.VecMin.Z),
-                            entity.Position + new Vector3(entity.VecMax.X, entity.VecMax.Y, entity.VecMin.Z),
+                        if (DrawPyramid(entity, viewMatrix, preConvertedOutlineColor, thickness)) return;
+                        break;
+                    }
+                    case 4: // star of david
+                    {
+                        DrawStarOfDavid(renderer.drawList, bottomY, topY, centerX, centerY, outlineColor,
+                            preConvertedOutlineColor, thickness);
+                        break;
+                    }
+                    case 5: // hexagon
+                    {
+                        DrawPolygon(GameState.renderer.drawList, centerX, centerY, bottomY, topY, 6, outlineColor, preConvertedOutlineColor, 2);
+                        break;
+                    }
+                    case 6: // rhombus
+                    {
+                        DrawPolygon(GameState.renderer.drawList, centerX, centerY, bottomY, topY, 4, outlineColor, preConvertedOutlineColor, 2);
+                        break;
+                    }
+                    case 7: // pentagram
+                    {
+                        float radius = (bottomY - topY) / 2f;
 
-                            entity.Position + new Vector3(entity.VecMin.X / 2, 0, entity.VecMax.Z),
-                            entity.Position + new Vector3(entity.VecMax.X / 2, 0, entity.VecMax.Z),
-                            entity.Position + new Vector3(entity.VecMin.X / 2, 0, entity.VecMax.Z),
-                            entity.Position + new Vector3(entity.VecMax.X / 2, 0, entity.VecMax.Z)
-                        ];
-
-                        var pyramidCorners2D = new Vector2[8];
-                        for (int i = 0; i < pyramidCorners2D.Length; i++)
+                        Vector2[] points = new Vector2[6];
+                        for (int i = 0; i < 6; i++)
                         {
-                            pyramidCorners2D[i] = Calculate.WorldToScreen(viewMatrix, pyramidCorners3D[i]);
-                            if (pyramidCorners2D[i] == new Vector2(-99, -99)) return;
+                            points[i] = new Vector2(
+                                centerX + radius * MathF.Cos(MathF.PI * i * 6 / 5 - MathF.PI / 2),
+                                centerY + radius * MathF.Sin(MathF.PI * i * 6 / 5 - MathF.PI / 2)
+                            );
                         }
 
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[0], pyramidCorners2D[1], preConvertedColor,
-                            thickness);
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[1], pyramidCorners2D[3], preConvertedColor,
-                            thickness);
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[3], pyramidCorners2D[2], preConvertedColor,
-                            thickness);
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[2], pyramidCorners2D[0], preConvertedColor,
-                            thickness);
 
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[4], pyramidCorners2D[5], preConvertedColor,
-                            thickness);
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[5], pyramidCorners2D[7], preConvertedColor,
-                            thickness);
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[7], pyramidCorners2D[6], preConvertedColor,
-                            thickness);
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[6], pyramidCorners2D[4], preConvertedColor,
-                            thickness);
+                        for (int i = 0; i < 6; i++)
+                        {
+                            Vector2 current = points[i];
+                            Vector2 next = points[(i + 1) % 6];
 
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[0], pyramidCorners2D[4], preConvertedColor,
-                            thickness);
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[1], pyramidCorners2D[5], preConvertedColor,
-                            thickness);
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[2], pyramidCorners2D[6], preConvertedColor,
-                            thickness);
-                        GameState.renderer.drawList.AddLine(pyramidCorners2D[3], pyramidCorners2D[7], preConvertedColor,
-                            thickness);
+                            if (GlowAmount > 0f)
+                                DrawHelpers.DrawGlowLine(renderer.drawList, current, next, outlineColor,
+                                    GlowAmount);
+
+
+                            DrawHelpers.DrawGlowLine(renderer.drawList, current, next, outlineColor,
+                                GlowAmount);
+                        }
+
+                        break;
+                    }
+                    case 8: // pentagon
+                    {
+                        DrawPolygon(GameState.renderer.drawList, centerX, centerY, bottomY, topY, 5, outlineColor, preConvertedOutlineColor, 2);
                         break;
                     }
                 }
@@ -244,6 +169,262 @@ namespace Titled_Gui.Modules.Visual
                 Console.WriteLine($"An exception was thrown: {e}");
             }
         }
+
+
+        private static void DrawPolygon(ImDrawListPtr imDrawListPtr,float centerX, float centerY, float bottomY, float topY, int sides,
+            Vector4 outlineColor, uint preConvertedOutlineColor, float thickness)
+        {
+            float radius = (bottomY - topY) / 2f;
+
+            Vector2[] points = new Vector2[sides];
+            for (int i = 0; i < sides; i++)
+            {
+                points[i] = new Vector2(
+                    centerX + radius * MathF.Cos(MathF.PI * 2 * i / sides - MathF.PI * 2),
+                    centerY + radius * MathF.Sin(MathF.PI * 2 * i / sides - MathF.PI * 2)
+                );
+            }
+
+
+            for (int i = 0; i < sides; i++)
+            {
+                Vector2 current = points[i];
+                Vector2 next = points[(i + 1) % sides];
+
+                if (GlowAmount > 0f)
+                {
+                    DrawHelpers.DrawGlowLine(imDrawListPtr, current, next, outlineColor,
+                        GlowAmount);
+                }
+
+                imDrawListPtr.AddLine(current, next, preConvertedOutlineColor);
+            }
+        }
+
+        private static void DrawStarOfDavid(ImDrawListPtr imDrawListPtr, float bottomY, float topY, float centerX, float centerY,
+            Vector4 boxColor, uint preConvertedOutlineColor, float thickness)
+        {
+            float radius = (bottomY - topY) / 2f;
+            // 0.866 / sin(60°) is offset from center to each vertex
+            Vector2 triangle1Top = new(centerX, centerY - radius);
+            Vector2 triangle1BottomLeft = new(centerX - radius * 0.866f, centerY + radius * 0.5f);
+            Vector2 triangle1BottomRight = new(centerX + radius * 0.866f, centerY + radius * 0.5f);
+
+            Vector2 triangle2Bottom = new(centerX, centerY + radius);
+            Vector2 triangle2TopLeft = new(centerX - radius * 0.866f, centerY - radius * 0.5f);
+            Vector2 triangle2TopRight = new(centerX + radius * 0.866f, centerY - radius * 0.5f);
+
+            if (GlowAmount > 0f)
+            {
+                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle1Top, triangle1BottomLeft, boxColor,
+                    GlowAmount);
+                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle1BottomLeft, triangle1BottomRight,
+                    boxColor, GlowAmount);
+                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle1BottomRight, triangle1Top, boxColor,
+                    GlowAmount);
+                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle2Bottom, triangle2TopLeft, boxColor,
+                    GlowAmount);
+                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle2TopLeft, triangle2TopRight, boxColor,
+                    GlowAmount);
+                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle2TopRight, triangle2Bottom, boxColor,
+                    GlowAmount);
+            }
+
+            // triangle 1
+
+            imDrawListPtr.AddLine(triangle1Top, triangle1BottomLeft, preConvertedOutlineColor,
+                thickness);
+            imDrawListPtr.AddLine(triangle1BottomLeft, triangle1BottomRight, preConvertedOutlineColor,
+                thickness);
+            imDrawListPtr.AddLine(triangle1BottomRight, triangle1Top, preConvertedOutlineColor,
+                thickness);
+
+            // triangle 2
+            imDrawListPtr.AddLine(triangle2Bottom, triangle2TopLeft, preConvertedOutlineColor,
+                thickness);
+            imDrawListPtr.AddLine(triangle2TopLeft, triangle2TopRight, preConvertedOutlineColor,
+                thickness);
+            imDrawListPtr.AddLine(triangle2TopRight, triangle2Bottom, preConvertedOutlineColor,
+                thickness);
+        }
+
+        private static bool DrawPyramid(Entity entity, float[] viewMatrix, uint preConvertedColor, float thickness)
+        {
+            float yaw = entity.AngEyeAngles.Y * (MathF.PI / 180f);
+            float cos = MathF.Cos(yaw);
+            float sin = MathF.Sin(yaw);
+
+            Vector3[] pyramidCorners3D =
+            [
+                RotateCorner(entity.Position, entity.VecMin.X, entity.VecMin.Y, entity.VecMin.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMax.X, entity.VecMin.Y, entity.VecMin.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMin.X, entity.VecMax.Y, entity.VecMin.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMax.X, entity.VecMax.Y, entity.VecMin.Z, cos, sin),
+
+                RotateCorner(entity.Position, entity.VecMin.X / 2, 0, entity.VecMax.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMax.X / 2, 0, entity.VecMax.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMin.X / 2, 0, entity.VecMax.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMax.X / 2, 0, entity.VecMax.Z, cos, sin)
+            ];
+
+            var pyramidCorners2D = new Vector2[8];
+            for (int i = 0; i < pyramidCorners2D.Length; i++)
+            {
+                pyramidCorners2D[i] = Calculate.WorldToScreen(viewMatrix, pyramidCorners3D[i]);
+                if (pyramidCorners2D[i] == new Vector2(-99, -99)) return true;
+            }
+
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[0], pyramidCorners2D[1], preConvertedColor,
+                thickness);
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[1], pyramidCorners2D[3], preConvertedColor,
+                thickness);
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[3], pyramidCorners2D[2], preConvertedColor,
+                thickness);
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[2], pyramidCorners2D[0], preConvertedColor,
+                thickness);
+
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[4], pyramidCorners2D[5], preConvertedColor,
+                thickness);
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[5], pyramidCorners2D[7], preConvertedColor,
+                thickness);
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[7], pyramidCorners2D[6], preConvertedColor,
+                thickness);
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[6], pyramidCorners2D[4], preConvertedColor,
+                thickness);
+
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[0], pyramidCorners2D[4], preConvertedColor,
+                thickness);
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[1], pyramidCorners2D[5], preConvertedColor,
+                thickness);
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[2], pyramidCorners2D[6], preConvertedColor,
+                thickness);
+            GameState.renderer.drawList.AddLine(pyramidCorners2D[3], pyramidCorners2D[7], preConvertedColor,
+                thickness);
+            return false;
+        }
+
+        private static void DrawEdgeBox(ImDrawListPtr imDrawListPtr, float centerX, float halfWidth, float topY,
+            float bottomY,
+            Vector4 boxColor, uint preConvertedColor)
+        {
+            Vector2 rectTopLeft = new(centerX - halfWidth, topY);
+            Vector2 rectTopRight = new(centerX + halfWidth, topY);
+            Vector2 rectBottomLeft = new(centerX - halfWidth, bottomY);
+            Vector2 rectBottomRight = new(centerX + halfWidth, bottomY);
+
+            float edgeWidth = (rectTopRight.X - rectTopLeft.X) * EdgeMultiplier;
+            float edgeHeight = (rectBottomLeft.Y - rectTopLeft.Y) * EdgeMultiplier;
+            Vector2 topLeftSide = new(centerX + halfWidth, bottomY);
+            //if (Outline)
+            //    renderer.drawList.AddRect(rectTopLeft + OutlineThickness, topLeftSide + OutlineThickness, ImGui.ColorConvertFloat4ToU32(boxColor) & 0xFF000000, Rounding);
+
+            if (GlowAmount > 0f)
+            {
+                DrawHelpers.DrawGlowLine(imDrawListPtr, rectTopLeft,
+                    new(rectTopLeft.X + edgeWidth, rectTopLeft.Y), boxColor, GlowAmount);
+                DrawHelpers.DrawGlowLine(imDrawListPtr, rectTopLeft,
+                    new(rectTopLeft.X, rectTopLeft.Y + edgeHeight), boxColor, GlowAmount);
+
+                DrawHelpers.DrawGlowLine(imDrawListPtr, rectTopRight,
+                    new(rectTopRight.X - edgeWidth, rectTopRight.Y), boxColor, GlowAmount);
+                DrawHelpers.DrawGlowLine(imDrawListPtr, rectTopRight,
+                    new(rectTopRight.X, rectTopRight.Y + edgeHeight), boxColor, GlowAmount);
+
+                DrawHelpers.DrawGlowLine(imDrawListPtr, rectBottomLeft,
+                    new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), boxColor, GlowAmount);
+                DrawHelpers.DrawGlowLine(imDrawListPtr, rectBottomLeft,
+                    new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), boxColor, GlowAmount);
+
+                DrawHelpers.DrawGlowLine(imDrawListPtr, rectBottomRight,
+                    new(rectBottomRight.X - edgeWidth, rectBottomRight.Y), boxColor, GlowAmount);
+                DrawHelpers.DrawGlowLine(imDrawListPtr, rectBottomRight,
+                    new(rectBottomRight.X, rectBottomRight.Y - edgeHeight), boxColor, GlowAmount);
+            }
+
+
+            imDrawListPtr.AddLine(rectTopLeft, new(rectTopLeft.X + edgeWidth, rectTopLeft.Y),
+                ImGui.ColorConvertFloat4ToU32(boxColor));
+            imDrawListPtr.AddLine(rectTopLeft, new(rectTopLeft.X, rectTopLeft.Y + edgeHeight),
+                ImGui.ColorConvertFloat4ToU32(boxColor));
+
+            imDrawListPtr.AddLine(rectTopRight, new(rectTopRight.X - edgeWidth, rectTopRight.Y),
+                ImGui.ColorConvertFloat4ToU32(boxColor));
+            imDrawListPtr.AddLine(rectTopRight, new(rectTopRight.X, rectTopRight.Y + edgeHeight),
+                preConvertedColor);
+
+            imDrawListPtr.AddLine(rectBottomLeft, new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y),
+                preConvertedColor);
+            imDrawListPtr.AddLine(rectBottomLeft, new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight),
+                preConvertedColor);
+
+            imDrawListPtr.AddLine(rectBottomRight,
+                new(rectBottomRight.X - edgeWidth, rectBottomRight.Y),
+                preConvertedColor);
+            imDrawListPtr.AddLine(rectBottomRight,
+                new(rectBottomRight.X, rectBottomRight.Y - edgeHeight),
+                preConvertedColor);
+        }
+
+        private static bool Draw3DBox(Entity entity, float[] viewMatrix, uint preConvertedColor, float thickness)
+        {
+            float yaw = entity.AngEyeAngles.Y * (MathF.PI / 180f);
+            float cos = MathF.Cos(yaw);
+            float sin = MathF.Sin(yaw);
+
+            Vector3[] corners3D =
+            [
+                RotateCorner(entity.Position, entity.VecMin.X, entity.VecMin.Y, entity.VecMin.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMax.X, entity.VecMin.Y, entity.VecMin.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMin.X, entity.VecMax.Y, entity.VecMin.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMax.X, entity.VecMax.Y, entity.VecMin.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMin.X, entity.VecMin.Y, entity.VecMax.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMax.X, entity.VecMin.Y, entity.VecMax.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMin.X, entity.VecMax.Y, entity.VecMax.Z, cos, sin),
+                RotateCorner(entity.Position, entity.VecMax.X, entity.VecMax.Y, entity.VecMax.Z, cos, sin),
+            ];
+
+            var corners2D = new Vector2[8];
+            for (int i = 0; i < corners2D.Length; i++)
+            {
+                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                if (corners2D[i] == new Vector2(-99, -99)) return true;
+            }
+
+            WorldESP.Draw3DBoxESP(corners2D, preConvertedColor, thickness); // applicable here
+            return false;
+        }
+
+        private static void Draw2DBox(ImDrawListPtr imDrawListPtr, Vector2 rectTop, Vector2 rectBottom,
+            uint preConvertedFillColor, uint preConvertedOutlineColor, Vector4 outlineColor)
+        {
+
+            if (GlowAmount > 0f)
+                DrawHelpers.DrawGlowRect(imDrawListPtr, rectTop, rectBottom, outlineColor, Rounding, GlowAmount);
+
+
+            if (InnerOutline)
+                imDrawListPtr.AddRect(rectTop - InnerOutlineThickness,
+                    rectBottom + InnerOutlineThickness, ImGui.ColorConvertFloat4ToU32(InnerOutlineColor),
+                    Rounding);
+
+            if (BoxFillGradient)
+                DrawHelpers.DrawGradientRect(imDrawListPtr, rectTop, rectBottom,
+                    new(BoxFillGradientColorTop.X, BoxFillGradientColorTop.Y, BoxFillGradientColorTop.Z,
+                        BoxFillOpacity),
+                    new Vector4(BoxFillGradientBottom.X, BoxFillGradientBottom.Y, BoxFillGradientBottom.Z,
+                        BoxFillOpacity), Rounding);
+
+            else
+                imDrawListPtr.AddRectFilled(rectTop, rectBottom, preConvertedFillColor, Rounding);
+
+            if (OuterOutline)
+            {
+                imDrawListPtr.AddRect(rectTop + OuterOutlineThickness,
+                    rectBottom + OuterOutlineThickness, preConvertedOutlineColor,
+                    Rounding); // outside
+            }
+        }
+
         private static Vector4 GetBoxColor(Entity entity)
         {
             Vector4 boxColor = new(1, 1, 1, 1);
@@ -265,8 +446,10 @@ namespace Titled_Gui.Modules.Visual
             boxColor.W = BoxFillOpacity;
             if (BoxFillGradient)
             {
-                boxColor = new(BoxFillGradientColorTop.X, BoxFillGradientColorTop.Y, BoxFillGradientColorTop.Z, BoxFillOpacity);
+                boxColor = new(BoxFillGradientColorTop.X, BoxFillGradientColorTop.Y, BoxFillGradientColorTop.Z,
+                    BoxFillOpacity);
             }
+
             return boxColor;
         }
 
@@ -298,77 +481,71 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawDistancePreview(Vector2 position)
         {
-            ImGui.GetWindowDrawList().AddText(position + new Vector2(0, 60), ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)), "15m");
+            ImGui.GetWindowDrawList().AddText(position + new Vector2(0, 60),
+                ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)), "15m");
         }
 
         public static void DrawBoxPreview(Vector2 position)
         {
             if (!EnableESPPreview) return;
 
-            float entityHeight = 200f; 
+            float entityHeight = 200f;
             float halfWidth = entityHeight / 3f;
             float centerX = position.X;
 
             float topY = position.Y - entityHeight / 2;
             float bottomY = position.Y + entityHeight / 2;
+            float centerY = (topY + bottomY) / 2f;
+
+            Vector2 rectTop = new(centerX - halfWidth, topY);
+            Vector2 rectBottom = new(centerX + halfWidth, bottomY);
 
             Vector4 boxColor = Colors.RGB ? Colors.Rgb() : Colors.EnemyColor;
             boxColor.W = BoxFillOpacity;
 
             Vector4 fillColor = boxColor;
-            fillColor.W = BoxFillOpacity;
+            uint preConvertedOutlineColor = ImGui.ColorConvertFloat4ToU32(OutlineEnemyColor);
+
+            var windowDrawList = ImGui.GetWindowDrawList();
             switch (CurrentShape)
             {
                 case 0: // 2D box
-                    Vector2 rectTop = new(centerX - halfWidth, topY);
-                    Vector2 rectBottom = new(centerX + halfWidth, bottomY);
-
-                    if (GlowAmount > 0f)
-                        DrawHelpers.DrawGlowRect(ImGui.GetWindowDrawList(), rectTop, rectBottom, boxColor, Rounding, GlowAmount);
-
-                    if (InnerOutline)
-                        ImGui.GetWindowDrawList().AddRect(rectTop + InnerOutlineThickness, rectBottom + InnerOutlineThickness, ImGui.ColorConvertFloat4ToU32(boxColor) & 0xFF000000, Rounding);
-
-                    if (BoxFillGradient)
-                        DrawHelpers.DrawGradientRect(ImGui.GetWindowDrawList(), rectTop, rectBottom, new(BoxFillGradientColorTop.X, BoxFillGradientColorTop.Y, BoxFillGradientColorTop.Z, BoxFillOpacity), new Vector4(BoxFillGradientBottom.X, BoxFillGradientBottom.Y, BoxFillGradientBottom.Z, BoxFillOpacity), Rounding);
-
-                    else
-                        ImGui.GetWindowDrawList().AddRectFilled(rectTop, rectBottom, ImGui.ColorConvertFloat4ToU32(fillColor), Rounding);
-
-                    ImGui.GetWindowDrawList().AddRect(rectTop, rectBottom, ImGui.ColorConvertFloat4ToU32(boxColor), Rounding); // outside
+                    Draw2DBox(windowDrawList, rectTop, rectBottom, ImGui.ColorConvertFloat4ToU32(fillColor),
+                        ImGui.ColorConvertFloat4ToU32(OutlineEnemyColor), OutlineEnemyColor);
                     break;
 
-                case 1: // 3D box
-                    float depth = halfWidth;
-                    Vector3[] corners =
-                    [
-                     new(position.X - halfWidth, position.Y + entityHeight / 2, position.Y - depth),
-                     new(position.X + halfWidth, position.Y + entityHeight / 2, position.Y - depth),
-                     new(position.X + halfWidth, position.Y + entityHeight / 2, position.Y + depth),
-                     new(position.X - halfWidth, position.Y + entityHeight / 2, position.Y + depth),
-                     new(position.X - halfWidth, position.Y - entityHeight / 2, position.Y - depth),
-                     new(position.X + halfWidth, position.Y - entityHeight / 2, position.Y - depth),
-                     new(position.X + halfWidth, position.Y - entityHeight / 2, position.Y + depth),
-                     new(position.X - halfWidth, position.Y - entityHeight / 2, position.Y + depth),
-                    ];
+                case 1: // 3D box preview
+                {
+                    float offset = halfWidth * 0.4f;
 
-                    float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
-                    Vector2[] corners2D = new Vector2[corners.Length];
+                    Vector2 frontTopLeft = new(centerX - halfWidth, topY);
+                    Vector2 frontTopRight = new(centerX + halfWidth, topY);
+                    Vector2 frontBottomLeft = new(centerX - halfWidth, bottomY);
+                    Vector2 frontBottomRight = new(centerX + halfWidth, bottomY);
 
-                    for (int i = 0; i < corners.Length; i++)
-                    {
-                        corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners[i]);
-                    }
+                    Vector2 backTopLeft = new(centerX - halfWidth + offset, topY - offset);
+                    Vector2 backTopRight = new(centerX + halfWidth + offset, topY - offset);
+                    Vector2 backBottomLeft = new(centerX - halfWidth + offset, bottomY - offset);
+                    Vector2 backBottomRight = new(centerX + halfWidth + offset, bottomY - offset);
 
-                    for (int i = 0; i < 4; i++)
-                    {
-                        ImGui.GetWindowDrawList().AddLine(corners2D[i], corners2D[(i + 1) % 4], ImGui.ColorConvertFloat4ToU32(boxColor));
-                        ImGui.GetWindowDrawList().AddLine(corners2D[i + 4], corners2D[((i + 1) % 4) + 4], ImGui.ColorConvertFloat4ToU32(boxColor));
-                        ImGui.GetWindowDrawList().AddLine(corners2D[i], corners2D[i + 4], ImGui.ColorConvertFloat4ToU32(boxColor));
-                    }
+
+                    windowDrawList.AddLine(frontTopLeft, frontTopRight, preConvertedOutlineColor);
+                    windowDrawList.AddLine(frontTopRight, frontBottomRight, preConvertedOutlineColor);
+                    windowDrawList.AddLine(frontBottomRight, frontBottomLeft, preConvertedOutlineColor);
+                    windowDrawList.AddLine(frontBottomLeft, frontTopLeft, preConvertedOutlineColor);
+                    windowDrawList.AddLine(backTopLeft, backTopRight, preConvertedOutlineColor);
+                    windowDrawList.AddLine(backTopRight, backBottomRight, preConvertedOutlineColor);
+                    windowDrawList.AddLine(backBottomRight, backBottomLeft, preConvertedOutlineColor);
+                    windowDrawList.AddLine(backBottomLeft, backTopLeft, preConvertedOutlineColor);
+                    windowDrawList.AddLine(frontTopLeft, backTopLeft, preConvertedOutlineColor);
+                    windowDrawList.AddLine(frontTopRight, backTopRight, preConvertedOutlineColor);
+                    windowDrawList.AddLine(frontBottomLeft, backBottomLeft, preConvertedOutlineColor);
+                    windowDrawList.AddLine(frontBottomRight, backBottomRight, preConvertedOutlineColor);
                     break;
+                }
 
                 case 2: // edges
+                {
                     Vector2 rectTopLeft = new(centerX - halfWidth, topY);
                     Vector2 rectTopRight = new(centerX + halfWidth, topY);
                     Vector2 rectBottomLeft = new(centerX - halfWidth, bottomY);
@@ -376,20 +553,72 @@ namespace Titled_Gui.Modules.Visual
 
                     float edgeWidth = (rectTopRight.X - rectTopLeft.X) * EdgeMultiplier;
                     float edgeHeight = (rectBottomLeft.Y - rectTopLeft.Y) * EdgeMultiplier;
-
-                    ImGui.GetWindowDrawList().AddLine(rectTopLeft, new(rectTopLeft.X + edgeWidth, rectTopLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
-                    ImGui.GetWindowDrawList().AddLine(rectTopLeft, new(rectTopLeft.X, rectTopLeft.Y + edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor));
-                    ImGui.GetWindowDrawList().AddLine(rectTopRight, new(rectTopRight.X - edgeWidth, rectTopRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
-                    ImGui.GetWindowDrawList().AddLine(rectTopRight, new(rectTopRight.X, rectTopRight.Y + edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor));
-                    ImGui.GetWindowDrawList().AddLine(rectBottomLeft, new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
-                    ImGui.GetWindowDrawList().AddLine(rectBottomLeft, new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor));
-                    ImGui.GetWindowDrawList().AddLine(rectBottomRight, new(rectBottomRight.X - edgeWidth, rectBottomRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
-                    ImGui.GetWindowDrawList().AddLine(rectBottomRight, new(rectBottomRight.X, rectBottomRight.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor));
+                    DrawEdgeBox(windowDrawList, centerX, halfWidth, topY, bottomY, OutlineEnemyColor,
+                        ImGui.ColorConvertFloat4ToU32(OutlineEnemyColor));
+                    windowDrawList.AddLine(rectTopLeft, new(rectTopLeft.X + edgeWidth, rectTopLeft.Y),
+                        ImGui.ColorConvertFloat4ToU32(boxColor));
+                    windowDrawList.AddLine(rectTopLeft, new(rectTopLeft.X, rectTopLeft.Y + edgeHeight),
+                        ImGui.ColorConvertFloat4ToU32(boxColor));
+                    windowDrawList.AddLine(rectTopRight, new(rectTopRight.X - edgeWidth, rectTopRight.Y),
+                        ImGui.ColorConvertFloat4ToU32(boxColor));
+                    windowDrawList.AddLine(rectTopRight, new(rectTopRight.X, rectTopRight.Y + edgeHeight),
+                        ImGui.ColorConvertFloat4ToU32(boxColor));
+                    windowDrawList.AddLine(rectBottomLeft,
+                        new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
+                    windowDrawList.AddLine(rectBottomLeft,
+                        new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), ImGui.ColorConvertFloat4ToU32(boxColor));
+                    windowDrawList.AddLine(rectBottomRight,
+                        new(rectBottomRight.X - edgeWidth, rectBottomRight.Y), ImGui.ColorConvertFloat4ToU32(boxColor));
+                    windowDrawList.AddLine(rectBottomRight,
+                        new(rectBottomRight.X, rectBottomRight.Y - edgeHeight),
+                        ImGui.ColorConvertFloat4ToU32(boxColor));
+                }
                     break;
+                case 3:
+                {
+
+                }
+                    break;
+                case 4:
+                {
+                    DrawStarOfDavid(windowDrawList, bottomY, topY, centerX, centerY, OutlineEnemyColor,
+                        preConvertedOutlineColor, 2);
+                }
+                    break;
+                case 5:
+                {
+                    DrawPolygon(windowDrawList, centerX, centerY, bottomY, topY, 6, OutlineEnemyColor, preConvertedOutlineColor, 2);
+                }
+                    break;
+                case 6:
+                {
+                    DrawPolygon(windowDrawList, centerX, centerY, bottomY, topY, 4, OutlineEnemyColor, preConvertedOutlineColor, 2);
+                }
+                    break;
+                case 7:
+                {
+                    DrawPolygon(windowDrawList, centerX, centerY, bottomY, topY, 4, OutlineEnemyColor, preConvertedOutlineColor, 2);
+                }
+                    break;
+                case 8:
+                {
+                    DrawPolygon(windowDrawList, centerX, centerY, bottomY, topY, 5, OutlineEnemyColor, preConvertedOutlineColor, 2);
+                    break;
+                }
             }
         }
 
-        public static (Vector2 TopLeft, Vector2 BottomRight, Vector2 TopRight, Vector2 BottomLeft, Vector2 BottomMiddle)? GetBoxRect(Entity? entity)
+        private static Vector3 RotateCorner(Vector3 origin, float x, float y, float z, float cos, float sin)
+        {
+            return new Vector3(
+                origin.X + x * cos - y * sin,
+                origin.Y + x * sin + y * cos,
+                origin.Z + z
+            );
+        }
+
+        public static (Vector2 TopLeft, Vector2 BottomRight, Vector2 TopRight, Vector2 BottomLeft, Vector2 BottomMiddle)
+            ? GetBoxRect(Entity? entity)
         {
             if (entity == null || entity.Position2D == Vector2.Zero || entity.ViewPosition2D == Vector2.Zero)
                 return null;
@@ -397,7 +626,9 @@ namespace Titled_Gui.Modules.Visual
             float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
             float halfWidth = entityHeight / 3f;
             float centerX = (entity.ViewPosition2D.X + entity.Position2D.X) / 2f;
-            float topY = entity.Bones2D != null && entity.Bones2D.Count > 2 ? entity.Bones2D[2].Y : entity.ViewPosition2D.Y;
+            float topY = entity.Bones2D != null && entity.Bones2D.Count > 2
+                ? entity.Bones2D[2].Y
+                : entity.ViewPosition2D.Y;
             float bottomY = entity.Position2D.Y;
 
             Vector2 topLeft = new(centerX - halfWidth, topY);

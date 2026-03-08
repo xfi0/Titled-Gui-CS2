@@ -14,7 +14,7 @@ namespace Titled_Gui.Data.Game.VRF
             {
                 Vector3 dir = end - origin;
 
-                float invX = 1f / dir.X, invY = 1f / dir.Y, invZ = 1f / dir.Z;
+                float invX = dir.X == 0f ? float.MaxValue : 1f / dir.X, invY = dir.Y == 0f ? float.MaxValue : 1f / dir.Y, invZ = dir.Z == 0f ? float.MaxValue : 1f / dir.Z;
 
                 float t1 = (Min.X - origin.X) * invX;
                 float t2 = (Max.X - origin.X) * invX;
@@ -26,20 +26,20 @@ namespace Titled_Gui.Data.Game.VRF
                 float tmin = Math.Max(Math.Max(Math.Min(t1, t2), Math.Min(t3, t4)), Math.Min(t5, t6));
                 float tmax = Math.Min(Math.Min(Math.Max(t1, t2), Math.Max(t3, t4)), Math.Max(t5, t6));
 
-                return tmax >= 0 && tmin <= tmax;
+                return tmax >= 0 && tmin <= tmax && tmin <= 1f;
             }
         };
         public struct Triangle
         {
             public Vector3 Point1, Point2, Point3;
 
-            public bool Intercect(Vector3 origin, Vector3 end)
+            public bool Intersect(Vector3 origin, Vector3 dir)
             {
                 Vector3 edge1, edge2, h, s, q;
                 float a, f, u, v, t;
                 edge1 = Point2 - Point1;
                 edge2 = Point3 - Point1;
-                h = Vector3.Cross(end - origin, edge2);
+                h = Vector3.Cross(dir, edge2);
                 a = Vector3.Dot(edge1, h);
                 if (a > -Epsilon && a < Epsilon)
                     return false;
@@ -52,7 +52,7 @@ namespace Titled_Gui.Data.Game.VRF
                     return false;
 
                 q = Vector3.Cross(s, edge1);
-                v = f * Vector3.Dot((end - origin), q);
+                v = f * Vector3.Dot(dir, q);
 
                 if (v < 0f || u + v > 1f)
                     return false;

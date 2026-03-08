@@ -32,7 +32,8 @@ namespace Titled_Gui.Modules.Visual
 
                     Vector2 end = new(head.X + dx * clampedLength, head.Y + dy * clampedLength);
 
-                    if (end == new Vector2(-99, -99)) continue;
+                    if (end == new Vector2(-99, -99)) 
+                        continue;
 
                     GameState.renderer.drawList.AddLine(head, end, ImGui.ColorConvertFloat4ToU32(EyeRayColor));
                     //Console.WriteLine("DRAWING" + Head + " " + End);

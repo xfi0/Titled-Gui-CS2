@@ -1,15 +1,17 @@
 ﻿using ImGuiNET;
 using System.Numerics;
+using ValveResourceFormat.ResourceTypes;
 using static Titled_Gui.ImGUI.Widgets.ColorPickers;
 using static Titled_Gui.ImGUI.Widgets.Misc;
+using static ValveResourceFormat.Blocks.ResourceIntrospectionManifest.ResourceDiskEnum;
 
 namespace Titled_Gui.ImGUI.Widgets
 {
     internal class Toggles
     {
-        public static Vector4 trackCol = new(0.18f, 0.18f, 0.20f, 1f);
-        public static Vector4 knobOff = new(0.15f, 0.15f, 0.15f, 1f);
-        public static Vector4 knobOn = new(0.2745f, 0.3176f, 0.4510f, 1.0f);
+        private static Vector4 trackColor = new(0.18f, 0.18f, 0.20f, 1f);
+        private static Vector4 KnobOffColor = new(0.15f, 0.15f, 0.15f, 1f);
+        private static Vector4 KnobOnColor = new(0.2745f, 0.3176f, 0.4510f, 1.0f);
 
         private static Dictionary<string, bool> OpenPopups = [];
         private static Dictionary<string, bool> PreviousValues = [];
@@ -23,33 +25,15 @@ namespace Titled_Gui.ImGUI.Widgets
             RenderRowRightAligned(label, () =>
             {
                 Vector2 rowStart = ImGui.GetCursorScreenPos();
-                float rowWidth = ImGui.GetColumnWidth();
-                float paddingRight = 7f;
+                Vector2 knobPosition = CreateKnob(label, ref tmpVal);
 
-                ImGui.SetCursorScreenPos(rowStart + new Vector2(0, 0));
+                float height = ImGui.GetFrameHeight();
+                float gap = 6f;
+
+                ImGui.SetCursorScreenPos(new Vector2(knobPosition.X - height - gap, knobPosition.Y)); 
                 ColorEdit("##" + label + "_col1", ref tmpColor,
                     ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
 
-                float height = ImGui.GetFrameHeight();
-                float width = height * 1.7f;
-                float radius = height / 2f - 2f;
-                Vector2 knobPos = new(rowStart.X + rowWidth - width - paddingRight, rowStart.Y);
-
-                var drawList = ImGui.GetWindowDrawList();
-                ImGui.SetCursorScreenPos(knobPos);
-
-                ImGui.InvisibleButton("##" + label + "_toggle", new Vector2(width, height));
-                if (ImGui.IsItemClicked()) tmpVal = !tmpVal;
-
-                float t = tmpVal ? 1f : 0f;
-                drawList.AddRectFilled(knobPos, new Vector2(knobPos.X + width, knobPos.Y + height),
-                    ImGui.ColorConvertFloat4ToU32(trackCol), height);
-                float knobX = knobPos.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
-                float knobY = knobPos.Y + radius + 2f;
-                drawList.AddCircleFilled(new Vector2(knobX, knobY), radius,
-                    ImGui.ColorConvertFloat4ToU32(tmpVal ? knobOn : knobOff), 36);
-                drawList.AddCircle(new Vector2(knobX, knobY), radius,
-                    ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
             });
 
             if (!tmpColor.Equals(color1)) color1 = tmpColor;
@@ -63,31 +47,36 @@ namespace Titled_Gui.ImGUI.Widgets
         {
             ImGui.PushID(label);
 
-            var tmp1 = color1;
-            var tmp2 = color2;
+            var tmpColor1 = color1;
+            var tmpColor2 = color2;
             var tmpVal = value;
 
             RenderRowRightAligned(label, () =>
             {
-                ImGui.ColorEdit4("##" + label + "col1", ref tmp1,
+                Vector2 rowStart = ImGui.GetCursorScreenPos();
+                Vector2 knobPosition = CreateKnob(label, ref tmpVal);
+
+                float height = ImGui.GetFrameHeight();
+                float gap = 32f;
+
+                ImGui.SetCursorScreenPos(new Vector2(knobPosition.X - height - gap, knobPosition.Y));
+
+                ColorEdit("##" + label + "_col1", ref tmpColor1,
                     ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
                 ImGui.SameLine();
-
-                ImGui.ColorEdit4("##" + label + "col2", ref tmp2,
+                ColorEdit("##" + label + "_col2", ref tmpColor2,
                     ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
-                ImGui.SameLine();
 
-                ImGui.Checkbox("##" + label + "checkmark", ref tmpVal);
-            }, widgetWidth: 73f);
+            });
 
-            if (!tmp1.Equals(color1))
+            if (!tmpColor1.Equals(color1))
             {
-                color1 = tmp1;
+                color1 = tmpColor1;
             }
 
-            if (!tmp2.Equals(color2))
+            if (!tmpColor2.Equals(color2))
             {
-                color2 = tmp2;
+                color2 = tmpColor2;
             }
 
             if (tmpVal != value)
@@ -100,43 +89,16 @@ namespace Titled_Gui.ImGUI.Widgets
         public static void RenderBoolSetting(string label, ref bool value, Action? onChanged = null,
     float widgetWidth = 0f)
         {
-            bool temp = value;
+            bool tmpVal = value;
             RenderRowRightAligned(label, () =>
             {
-                float height = ImGui.GetFrameHeight();
-                float width = height * 1.7f;
-                float radius = height / 2f - 2f;
+                Vector2 knobPosition = CreateKnob(label, ref tmpVal);
 
-                float colWidth = ImGui.GetColumnWidth();
-                float spacing = ImGui.GetStyle().ItemSpacing.X;
-                float posX = ImGui.GetCursorPosX() + colWidth - width - spacing;
-                ImGui.SetCursorPosX(posX);
-
-                Vector2 p = ImGui.GetCursorScreenPos();
-                var drawList = ImGui.GetWindowDrawList();
-                string strId = "##" + label;
-
-                ImGui.InvisibleButton(strId, new Vector2(width, height));
-                if (ImGui.IsItemClicked()) temp = !temp;
-
-                float t = temp ? 1f : 0f;
-
-                drawList.AddRectFilled(p, new Vector2(p.X + width, p.Y + height),
-                    ImGui.ColorConvertFloat4ToU32(trackCol), height); // track
-
-                float knobX = p.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
-                float knobY = p.Y + radius + 2f;
-                Vector4 knobColor = temp ? knobOn : knobOff;
-                // knob
-                drawList.AddCircleFilled(new Vector2(knobX, knobY), radius, ImGui.ColorConvertFloat4ToU32(knobColor),
-                    36);
-                drawList.AddCircle(new Vector2(knobX, knobY), radius,
-                    ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
             }, widgetWidth);
 
-            if (temp != value)
+            if (tmpVal != value)
             {
-                value = temp;
+                value = tmpVal;
                 onChanged?.Invoke();
             }
         }
@@ -178,12 +140,12 @@ namespace Titled_Gui.ImGUI.Widgets
                 float t = temp ? 1f : 0f;
 
                 drawList.AddRectFilled(p, new Vector2(p.X + width, p.Y + height),
-                    ImGui.ColorConvertFloat4ToU32(trackCol), height);
+                    ImGui.ColorConvertFloat4ToU32(trackColor), height);
 
                 float knobX = p.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
                 float knobY = p.Y + radius + 2f;
 
-                Vector4 knobColor = temp ? knobOn : knobOff;
+                Vector4 knobColor = temp ? KnobOnColor : KnobOffColor;
 
                 drawList.AddCircleFilled(new Vector2(knobX, knobY), radius,
                     ImGui.ColorConvertFloat4ToU32(knobColor), 36);
@@ -220,6 +182,35 @@ namespace Titled_Gui.ImGUI.Widgets
                 value = temp;
                 onChanged?.Invoke();
             }
+        }
+        private static Vector2 CreateKnob(string label, ref bool value)
+        {
+            Vector2 rowStart = ImGui.GetCursorScreenPos();
+            float rowWidth = ImGui.GetColumnWidth();
+            float paddingRight = 7f;
+            float height = ImGui.GetFrameHeight();
+            float width = height * 1.7f;
+            float radius = height / 2f - 2f;
+            Vector2 knobPos = new(rowStart.X + rowWidth - width - paddingRight, rowStart.Y);
+
+            var drawList = ImGui.GetWindowDrawList();
+            ImGui.SetCursorScreenPos(knobPos);
+
+            ImGui.InvisibleButton("##" + label + "_toggle", new Vector2(width, height));
+            if (ImGui.IsItemClicked())
+                value = !value;
+
+            float t = value ? 1f : 0f;
+            drawList.AddRectFilled(knobPos, new Vector2(knobPos.X + width, knobPos.Y + height),
+                ImGui.ColorConvertFloat4ToU32(trackColor), height);
+            float knobX = knobPos.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
+            float knobY = knobPos.Y + radius + 2f;
+            drawList.AddCircleFilled(new Vector2(knobX, knobY), radius,
+                ImGui.ColorConvertFloat4ToU32(value ? KnobOnColor : KnobOffColor), 36);
+            drawList.AddCircle(new Vector2(knobX, knobY), radius,
+                ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
+
+            return knobPos;
         }
     }
 }

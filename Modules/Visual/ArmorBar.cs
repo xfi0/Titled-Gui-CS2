@@ -16,7 +16,7 @@ namespace Titled_Gui.Modules.Visual
         public static Vector4 ArmorColor = new(0.1f, 0f, 1f, 1f);
         public static void DrawArmorBar(Entity? e, Renderer renderer, float Armor, float MaxArmor, Vector2 topRight, float height)
         {
-            if (!EnableArmorhBar || e == null || (!TeamCheck && e.Team == GameState.LocalPlayer.Team) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || e.Armor < 1) return;
+            if (!EnableArmorhBar || e == null || (!TeamCheck && e.Team == GameState.LocalPlayer.Team) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || e.Armor < 1 || e.Position2D == new Vector2(-99,-99)) return;
 
             float healthPercentage = Math.Clamp(Armor / MaxArmor, 0f, 1f); // like percentage of box to be filled
             float filledHeight = height * healthPercentage;

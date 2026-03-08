@@ -221,6 +221,7 @@ namespace Titled_Gui.Modules.Visual
 
             if (DrawBoxes)
                 Draw3DBoxESP(corners2D, preConvertedColor, thickness);
+
             if (DrawText)
                 GameState.renderer.drawList.AddText(worldEntity.Position2D,
                     ImGui.ColorConvertFloat4ToU32(ChickenTextColor),

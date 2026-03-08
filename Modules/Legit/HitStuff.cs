@@ -49,22 +49,20 @@ namespace Titled_Gui.Modules.Legit
             }
             if (GameState.RoundHeadshots > PreviousHeadshots)
             {
-                Vector2 TextPos = new Vector2(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2);
+                Vector2 textPos = new Vector2(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2);
                 Texts.Add(new HitText
                 {
                     Text = "HEADSHOT",
                     ExpireAt = DateTime.Now.AddSeconds(1.5),
-                    Position = TextPos,
-                    BasePosition = TextPos
+                    Position = textPos,
+                    BasePosition = textPos
                 });
                 PreviousHeadshots = GameState.RoundHeadshots;
             }
         }
 
-        private static void PlaySound(string soundName)
-        {
-            Titled_Gui.Classes.PlaySound.PlaySoundWithCheck(soundName, Volume);
-        }
+        private static void PlaySound(string soundName) => Classes.PlaySound.PlaySoundWithCheck(soundName, Volume);
+        
         public static void CreateHitText()
         {
             ImGui.PushFont(Renderer.TextFont48);
@@ -80,26 +78,26 @@ namespace Titled_Gui.Modules.Legit
                 float X = hitText.BasePosition.X + 100f * MathF.Sin(hitText.State / 50f) - 50f;
                 float Y = hitText.BasePosition.Y - 50f + -(hitText.State * 2);
 
-                Vector2 TextPos = new(X, Y);
+                Vector2 textPos = new(X, Y);
 
-                float LifeTime = (float)(hitText.ExpireAt - DateTime.Now).TotalMilliseconds;
+                float lifeTime = (float)(hitText.ExpireAt - DateTime.Now).TotalMilliseconds;
                 float totalLife = 1500f; // 1.5 s
-                float alpha = Math.Clamp(1f - ((totalLife - LifeTime) / totalLife), 0.1f, 1f);
+                float alpha = Math.Clamp(1f - ((totalLife - lifeTime) / totalLife), 0.1f, 1f);
 
                 Vector4 TextColorAdjusted = new(TextColor.X, TextColor.Y, TextColor.Z, alpha);
 
-                GameState.renderer.drawList.AddText(TextPos, ImGui.ColorConvertFloat4ToU32(TextColorAdjusted), hitText.Text);
+                GameState.renderer.drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(TextColorAdjusted), hitText.Text);
             }
             ImGui.PopFont();
         }
 
 
-        protected override async void FrameAction()
+        protected override void FrameAction()
         {
             if (!Enabled && !EnableHeadshotText) return;
 
             Update();
-            await Task.Delay(15);
+            Thread.Sleep(15);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
@@ -21,7 +22,7 @@ namespace Titled_Gui.Modules.Visual
             return GameState.swed.ReadPointer(plantedPointer);
         }
 
-        public static IntPtr GetNode()
+        private static IntPtr GetNode()
         {
             IntPtr planted = GetPlanted();
             if (planted == IntPtr.Zero) return IntPtr.Zero;
@@ -29,13 +30,14 @@ namespace Titled_Gui.Modules.Visual
             return GameState.swed.ReadPointer(planted + Offsets.m_pGameSceneNode);
         }
 
-        public static Vector3 GetPos()
+        private static Vector3 GetPos()
         {
             IntPtr node = GetNode();
             if (node == IntPtr.Zero) return new Vector3(0, 0, 0);
 
             return GameState.swed.ReadVec(node + Offsets.m_vecAbsOrigin);
         }
+
         public static void DrawESP()
         {
             if (!BoxEnabled && !TextEnabled) return;
@@ -50,7 +52,30 @@ namespace Titled_Gui.Modules.Visual
                 GameState.renderer.drawList.AddText(position2D, ImGui.ColorConvertFloat4ToU32(TextColor), "C4");
 
             if (BoxEnabled)
-                GameState.renderer.drawList.AddRect(position2D, new(position2D.X + 10 * (float)Math.Clamp(Vector2.Distance(position2D, GameState.LocalPlayer.Position2D), 1.5, 10), position2D.Y + 10), ImGui.ColorConvertFloat4ToU32(BoxColor));
+            {
+                GameState.renderer.drawList.AddRect(position2D, new(
+                        position2D.X + 10 *
+                        (float)Math.Clamp(Vector2.Distance(position2D, GameState.LocalPlayer.Position2D), 1.5, 10),
+                        position2D.Y + 10), ImGui.ColorConvertFloat4ToU32(BoxColor));
+            }
+        }
+
+        private static Vector3[] Get3DCorners(Vector3 position, Vector3 vecMin, Vector3 vecMax)
+        {
+            if (float.IsNaN(vecMin.X) || float.IsNaN(vecMin.Y) || float.IsNaN(vecMin.Z))
+                return Array.Empty<Vector3>();
+
+            return
+            [
+                position + new Vector3(vecMin.X, vecMin.Y, vecMin.Z),
+                position + new Vector3(vecMax.X, vecMin.Y, vecMin.Z),
+                position + new Vector3(vecMin.X, vecMax.Y, vecMin.Z),
+                position + new Vector3(vecMax.X, vecMax.Y, vecMin.Z),
+                position + new Vector3(vecMin.X, vecMin.Y, vecMax.Z),
+                position + new Vector3(vecMax.X, vecMin.Y, vecMax.Z),
+                position + new Vector3(vecMin.X, vecMax.Y, vecMax.Z),
+                position + new Vector3(vecMax.X, vecMax.Y, vecMax.Z)
+            ];
         }
     }
 }

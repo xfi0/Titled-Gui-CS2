@@ -1,8 +1,11 @@
 ﻿using ImGuiNET;
+using System.Diagnostics;
 using Titled_Gui;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Modules.Visual;
+using Types = Titled_Gui.Data.Menu.Types;
 
 try
 {
@@ -57,7 +60,7 @@ try
     ThreadService.StartAllThreadServices();
     while (true)
     {
-        Thread.Sleep(1);
+        Thread.Sleep(100);
     }
 }
 catch (IndexOutOfRangeException)

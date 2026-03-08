@@ -48,7 +48,7 @@ namespace Titled_Gui.Modules.Rage
                     Vector3 playerView = LocalPlayer.Origin + LocalPlayer.View;
                     Vector2 newAngles;
 
-                    bool useHeadPosition = target?.Bones?[CurrentBoneIndex] != Vector3.Zero;
+                    bool useHeadPosition = target?.Bones?[CurrentBoneIndex].Position != Vector3.Zero;
                     if (useHeadPosition) //bone pos first
                     {
                         if (target?.Bones?[CurrentBoneIndex] != null && target.Bones.Count > 6)
@@ -75,7 +75,7 @@ namespace Titled_Gui.Modules.Rage
                                 if (CurrentBone != 5 && RandomChosen)
                                     RandomChosen = false;
 
-                                CurrentBoneV3 = target!.Bones![CurrentBoneIndex]!;
+                                CurrentBoneV3 = target!.Bones![CurrentBoneIndex]!.Position;
 
                                 if (CurrentBoneV3 != Vector3.Zero)
                                     newAngles = Calculate.CalculateAngles(playerView, CurrentBoneV3);

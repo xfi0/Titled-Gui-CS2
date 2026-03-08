@@ -15,7 +15,7 @@ namespace Titled_Gui.Modules.Visual
         public static Vector4 VisibleBoneColor = new(1f, 1f, 1f, 1f);
         public static Vector4 OccludedBoneColor = new(0f, 0f, 1f, 1f);
         public static float GlowAmount = 0f;
-        public static string[] Types = ["Straight", "Beizer"];
+        public static string[] Types = ["Straight", "Bezier"];
         public static int CurrentType = 0;
         public static bool visibilityCheck = true;
         public static readonly (int, int)[] BoneConnections = 
@@ -33,7 +33,7 @@ namespace Titled_Gui.Modules.Visual
             (0, 11), // Waist to KneeRight
             (11, 12), // KneeRight to FeetRight
         ];
-        public enum BoneIds // short simple 
+        public enum BoneIds
         {
             Waist = 0,
             Neck = 5,
@@ -68,8 +68,13 @@ namespace Titled_Gui.Modules.Visual
                 if (a >= entity.Bones2D.Count || b >= entity.Bones2D.Count)
                     continue;
 
-                Vector2 boneA = entity.Bones2D[a];
-                Vector2 boneB = entity.Bones2D[b];
+                Types.Bone boneA = entity.Bones[a];
+                Types.Bone boneB = entity.Bones[b];
+                Vector2 boneAPosition2D = boneA.Position2D;
+                Vector2 boneBPosition2D = boneB.Position2D;
+                if (boneBPosition2D == new Vector2(-99, -99) && boneAPosition2D == new Vector2(-99, -99))
+                    continue;
+
                 if (visibilityCheck)
                 {
                     //if (Classes.VisibilityCheck.BVH.VisibleBone(entity.Bones[a]) && Classes.VisibilityCheck.BVH.VisibleBone(entity.Bones[b]))
@@ -82,29 +87,33 @@ namespace Titled_Gui.Modules.Visual
                     //renderer.drawList.AddLine(boneA, boneB, ImGui.ColorConvertFloat4ToU32(occludedBoneColor), thickness);
                     //Console.WriteLine("thing b");
                     //}
+                    //if (boneA.IsVisible)
+                    //    Console.WriteLine("bone a vis");
+                    //if (boneB.IsVisible)
+                    //    Console.WriteLine("bone b vis" );
                 }
 
-                if (IsValidScreenPoint(boneA) && IsValidScreenPoint(boneB))
+                if (IsValidScreenPoint(boneAPosition2D) && IsValidScreenPoint(boneBPosition2D))
                 {
-                    float boneLength = Vector2.Distance(boneA, boneB);
+                    float boneLength = Vector2.Distance(boneAPosition2D, boneBPosition2D);
                     float curve = Math.Clamp(boneLength * 0.15f, 2f, 8f);
                     if (GlowAmount > 0)
                     {
                         switch (CurrentType)
                         {
                             case 0:
-                                DrawHelpers.DrawGlowLine(renderer.drawList, boneA, boneB, BoneColor, GlowAmount,
-                                    ThickNess: thickness);
-                                DrawHelpers.DrawGlowCircle(renderer.drawList, boneA, thickness * 2, BoneColor,
+                                DrawHelpers.DrawGlowLine(renderer.drawList, boneAPosition2D, boneBPosition2D, BoneColor, GlowAmount,
+                                    thickness: thickness);
+                                DrawHelpers.DrawGlowCircle(renderer.drawList, boneAPosition2D, thickness * 2, BoneColor,
                                     GlowAmount);
                                 break;
                             case 1:
-                                DrawHelpers.DrawGlowBezier(renderer.drawList, boneB,
-                                    (boneB + boneA) * 0.5f +
-                                    Vector2.Normalize(new Vector2(-(boneA - boneB).Y, (boneA - boneB).X)) * curve,
-                                    (boneB + boneA) * 0.5f +
-                                    Vector2.Normalize(new Vector2(-(boneA - boneB).Y, (boneA - boneB).X)) *
-                                    (curve * 0.5f), boneA, BoneColor, GlowAmount / 2, thickness);
+                                DrawHelpers.DrawGlowBezier(renderer.drawList, boneBPosition2D,
+                                    (boneBPosition2D + boneAPosition2D) * 0.5f +
+                                    Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y, (boneAPosition2D - boneBPosition2D).X)) * curve,
+                                    (boneBPosition2D + boneAPosition2D) * 0.5f +
+                                    Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y, (boneAPosition2D - boneBPosition2D).X)) *
+                                    (curve * 0.5f), boneAPosition2D, BoneColor, GlowAmount / 2, thickness);
                                 break;
                         }
                     }
@@ -112,18 +121,19 @@ namespace Titled_Gui.Modules.Visual
                     switch (CurrentType)
                     {
                         case 0:
-                            renderer.drawList.AddLine(boneA, boneB, boneColor,
-                                thickness); //draw a line between the Bones
-                            renderer.drawList.AddCircleFilled(boneA, thickness * 1.5f,
+                            renderer.drawList.AddLine(boneAPosition2D, boneBPosition2D, boneColor, thickness);
+                                //renderer.drawList.AddLine(boneAPosition2D, boneBPosition2D, !boneA.IsVisible ? boneColor : ImGui.ColorConvertFloat4ToU32(new Vector4(0,0,0,1)),
+                                //thickness); //draw a line between the Bones
+                            renderer.drawList.AddCircleFilled(boneAPosition2D, thickness * 1.5f,
                                 boneColor); //draw a circle at the start bone
                             break;
                         case 1:
-                            renderer.drawList.AddBezierCubic(boneB,
-                                (boneB + boneA) * 0.5f +
-                                Vector2.Normalize(new Vector2(-(boneA - boneB).Y, (boneA - boneB).X)) * curve,
-                                (boneB + boneA) * 0.5f +
-                                Vector2.Normalize(new Vector2(-(boneA - boneB).Y, (boneA - boneB).X)) * (curve * 0.5f),
-                                boneA, boneColor, thickness);
+                            renderer.drawList.AddBezierCubic(boneBPosition2D,
+                                (boneBPosition2D + boneAPosition2D) * 0.5f +
+                                Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y, (boneAPosition2D - boneBPosition2D).X)) * curve,
+                                (boneBPosition2D + boneAPosition2D) * 0.5f +
+                                Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y, (boneAPosition2D - boneBPosition2D).X)) * (curve * 0.5f),
+                                boneAPosition2D, boneColor, thickness);
                             break;
                     }
                 }

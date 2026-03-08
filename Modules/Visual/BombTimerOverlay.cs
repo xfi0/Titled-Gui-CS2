@@ -43,7 +43,7 @@ namespace Titled_Gui.Modules.Visual
                 ImGui.Begin("#c4 info",
                     ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar |
                     ImGuiWindowFlags.NoResize);
-                Console.WriteLine(c4.Planted.ToString());
+
                 ImDrawListPtr windowDrawList = ImGui.GetWindowDrawList();
                 windowDrawList.AddText(Renderer.TextFontNormal, 18f, ImGui.GetWindowPos() + new Vector2(20, 5), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), c4.Planted ? "C4 Has Been Planted" : "C4 Has Not Been Planted");
                 windowDrawList.AddText(Renderer.TextFontNormal, 18f,ImGui.GetWindowPos() + new Vector2(20, 25), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), $"Exploding In: {(c4.ExplosionTime > 0 ? MathF.Round(c4.ExplosionTime, 2).ToString() : "40")}");

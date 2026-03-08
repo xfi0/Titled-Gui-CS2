@@ -39,6 +39,7 @@ namespace Titled_Gui.Data.Entity
 
         public class C4
         {
+            public IntPtr Address { get; set; } = IntPtr.Zero;
             public BombSite PlantedSite = BombSite.Unknown;
             public Vector3 Position { get; set; }
             public Vector2 Position2D { get; set; }

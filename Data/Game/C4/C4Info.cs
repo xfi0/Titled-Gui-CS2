@@ -55,11 +55,12 @@ namespace Titled_Gui.Data.Game.C4
             Vector3 position = GetPos();
             float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
-            if (c4 == IntPtr.Zero || node == IntPtr.Zero || position == new Vector3(0, 0, 0))
+            if (c4 == IntPtr.Zero || node == IntPtr.Zero || position == new Vector3(0, 0, 0)) 
                 return;
-
+            
             C4 = new Types.C4()
             {
+                Address = c4,
                 ExplosionTime = GameState.swed.ReadFloat(c4 + Offsets.m_flC4Blow) - GlobalVar.GetCurrentTime(),
                 Position = position,
                 Position2D = Calculate.WorldToScreen(viewMatrix, position),

@@ -56,7 +56,7 @@ namespace Titled_Gui.Modules.Visual
                 Vector4 boxColor = GetBoxColor(entity);
                 Vector4 outlineColor = isTeam ? OutlineTeamColor : OutlineEnemyColor;
                 float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
-                Vector4 fillColor = isTeam ? TeamFill : EnemyFill;
+                Vector4 fillColor = entity.Visible ? (isTeam ? TeamFill : EnemyFill) : (isTeam ? OccludedTeam : OccludedEnemy);
                 fillColor.W = BoxFillOpacity;
 
 

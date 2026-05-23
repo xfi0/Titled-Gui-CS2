@@ -8,11 +8,11 @@ namespace Titled_Gui.Classes
     { // same here, wasnt used so removed for cpu usage sake
         public static void UpdateStuff()
         {
-            GameState.MoneyServices = GameState.swed.ReadPointer(GameState.currentController, Offsets.m_pInGameMoneyServices);
+            GameState.MoneyServices = GameState.swed.ReadPointer(GameState.LocalPlayer.Controller, Offsets.m_pInGameMoneyServices);
         }
         public static void MoneyTest()
         {
-            foreach (Entity e in GameState.Entities)
+            foreach (Entity? e in GameState.Entities)
             {
                 if (e == null) return;
 

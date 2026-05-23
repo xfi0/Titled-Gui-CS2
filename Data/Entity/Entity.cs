@@ -19,7 +19,6 @@ namespace Titled_Gui.Data.Entity
         public float Distance { get; set; } // Distance to the entity,from the local player
         public IntPtr PawnAddress { get; set; } // pointer to the entity's pawn address
         public List<Types.Bone>? Bones { get; set; } // list of Bones for the entity
-        public List<Vector2>? Bones2D { get; set; } // list of Bones in 2D space (screen space)
         public string? Name { get; set; }
         public int Ammo { get; set; }
         public int Account, CashSpent, CashSpentTotal;
@@ -60,6 +59,11 @@ namespace Titled_Gui.Data.Entity
         public Vector3 VecMax { get; set; }
         public IntPtr HitboxComponent { get; set; }
         public bool IsDormant { get; set; }
+        public List<Types.Hitbox>? HitBoxes { get; set; }
+        public IntPtr ObserverServices { get; set; }
+        public IntPtr Pawn { get; set; }
+        public IntPtr PlayerPawn { get; set; }
+        public IntPtr Controller { get; set; }
 
         public bool IsValid
         {

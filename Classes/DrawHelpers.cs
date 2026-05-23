@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using System.Numerics;
+using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Classes
 {
@@ -183,6 +184,115 @@ namespace Titled_Gui.Classes
             value = Math.Clamp(value, 0.0f, 1.0f);
             outValue = value;
             return;
+        }
+        // https://www.unknowncheats.me/forum/counter-strike-2-a/732412-external-hitbox-overlay-aka-chams.html
+        public static void DrawCapsule3D(
+     Vector3 vMin, Vector3 vMax, float oRadius,
+     Quaternion rotation, Vector3 origPos,
+     float[] viewMatrix, uint color, int segments = 12, float thickness = 1.0f)
+        {
+            Vector3 bottom = origPos + Vector3.Transform(vMax, rotation);
+            Vector3 top = origPos + Vector3.Transform(vMin, rotation);
+            Vector3 point = Extend(top, bottom, Vector3.Distance(top, bottom) * 2);
+
+            float radius = oRadius;
+            float radiusHalf = radius * 0.70710678f;
+
+            var topSmallCircle = new List<Vector3>();
+            var topCircle = new List<Vector3>();
+            var bottomSmallCircle = new List<Vector3>();
+            var bottomCircle = new List<Vector3>();
+
+            CreateCircle(Extend(top, bottom, -radiusHalf), point, radiusHalf, topSmallCircle, segments);
+            CreateCircle(top, point, radius, topCircle, segments);
+            CreateCircle(Extend(bottom, top, -radiusHalf), point, radiusHalf, bottomSmallCircle, segments);
+            CreateCircle(bottom, point, radius, bottomCircle, segments);
+
+            var worldPoints = new List<Vector3>(segments * 4 + 2);
+            worldPoints.Add(Extend(top, bottom, -radius));
+            worldPoints.Add(Extend(bottom, top, -radius));
+            worldPoints.AddRange(topSmallCircle);
+            worldPoints.AddRange(topCircle);
+            worldPoints.AddRange(bottomSmallCircle);
+            worldPoints.AddRange(bottomCircle);
+
+            var screenPoints = new List<Vector2>(worldPoints.Count);
+            foreach (var wp in worldPoints)
+            {
+                var sp = Calculate.WorldToScreen(viewMatrix, wp);
+                if (sp != new Vector2(-99, -99))
+                    screenPoints.Add(sp);
+            }
+
+            if (screenPoints.Count < 3) return;
+
+            var hull = ConvexHull(screenPoints);
+            if (hull.Count < 3) return;
+
+            uint fillColor = color & 0x00FFFFFF | 0x55000000;
+            uint outlineColor = color;
+
+            var drawList = GameState.renderer.drawList;
+            var hullArr = hull.ToArray();
+
+            drawList.AddConvexPolyFilled(ref hullArr[0], hull.Count, fillColor);
+            drawList.AddPolyline(ref hullArr[0], hull.Count, outlineColor, ImDrawFlags.Closed, thickness);
+        }
+
+        private static List<Vector2> ConvexHull(List<Vector2> points)
+        {
+            int n = points.Count;
+            if (n < 3) return points;
+
+            points.Sort((a, b) => a.X != b.X ? a.X.CompareTo(b.X) : a.Y.CompareTo(b.Y));
+
+            var hull = new List<Vector2>(n);
+
+            foreach (var p in points)
+            {
+                while (hull.Count >= 2 && Cross(hull[^2], hull[^1], p) <= 0)
+                    hull.RemoveAt(hull.Count - 1);
+
+                hull.Add(p);
+            }
+
+            int lowerSize = hull.Count;
+            for (int i = n - 2; i >= 0; i--)
+            {
+                while (hull.Count > lowerSize && Cross(hull[^2], hull[^1], points[i]) <= 0)
+                    hull.RemoveAt(hull.Count - 1);
+
+                hull.Add(points[i]);
+            }
+
+            hull.RemoveAt(hull.Count - 1);
+            return hull;
+        }
+
+        private static float Cross(Vector2 o, Vector2 a, Vector2 b) => (a.X - o.X) * (b.Y - o.Y) - (a.Y - o.Y) * (b.X - o.X);
+
+        private static void CreateCircle(Vector3 point, Vector3 center, float radius, List<Vector3> vec,
+            int segments = 12)
+        {
+            vec.Clear();
+
+            Vector3 normal = Vector3.Normalize(point - center);
+
+            Vector3 arbitrary = (MathF.Abs(normal.X) < 0.99f) ? new Vector3(1, 0, 0) : new Vector3(0, 1, 0);
+            Vector3 u = Vector3.Normalize(Vector3.Cross(normal, arbitrary));
+            Vector3 v = Vector3.Normalize(Vector3.Cross(normal, u));
+
+            for (int i = 0; i <= segments; i++)
+            {
+                float angle = (2.0f * MathF.PI * i) / segments;
+                Vector3 circlePoint = point + (u * MathF.Cos(angle) + v * MathF.Sin(angle)) * radius;
+                vec.Add(circlePoint);
+            }
+        }
+
+        private static Vector3 Extend(Vector3 from, Vector3 to, float distance)
+        {
+            return from + Vector3.Normalize(to - from) * distance;
         }
     }
 }

@@ -11,48 +11,148 @@ namespace Titled_Gui.Modules.Visual
         public static float BoneThickness = 4.5f;
         public static bool EnableBoneESP = false;
         public static bool TeamCheck = false;
-        public static Vector4 BoneColor = new(1f, 1f, 1f, 1f);
         public static Vector4 VisibleBoneColor = new(1f, 1f, 1f, 1f);
         public static Vector4 OccludedBoneColor = new(0f, 0f, 1f, 1f);
         public static float GlowAmount = 0f;
         public static string[] Types = ["Straight", "Bezier"];
         public static int CurrentType = 0;
         public static bool visibilityCheck = true;
-        public static readonly (int, int)[] BoneConnections = 
-        [
-            (0, 1), // Waist to Neck
-            (1, 2), // Neck to Head
-            (1, 3), // Neck to ShoulderLeft
-            (3, 4), // ShoulderLeft to ForeLeft
-            (4, 5), // ForeLeft to HandLeft
-            (1, 6), // Neck to ShoulderRight
-            (6, 7), // ShoulderRight to ForeRight
-            (7, 8), // ForeRight to HandRight
-            (0, 9), // Waist to KneeLeft
-            (9, 10), // KneeLeft to FeetLeft
-            (0, 11), // Waist to KneeRight
-            (11, 12), // KneeRight to FeetRight
-        ];
+        public static (int, int)[] GetBoneConnections(int team)
+        {
+            var ids = team == 2 ? typeof(BoneIds_T) : typeof(BoneIds_CT);
+
+            int Get(string name) => (int)Enum.Parse(ids, name);
+
+            return [
+                (Get("Pelvis"),       Get("Stomach")),
+                (Get("Stomach"),      Get("LowerChest")),
+                (Get("LowerChest"),   Get("UpperChest")),
+                (Get("UpperChest"),   Get("Neck")),
+                (Get("Neck"),         Get("Head")),
+                (Get("Neck"),         Get("LeftShoulder")),
+                (Get("LeftShoulder"), Get("LeftElbow")),
+                (Get("LeftElbow"),    Get("LeftHand")),
+                (Get("Neck"),         Get("RightShoulder")),
+                (Get("RightShoulder"),Get("RightElbow")),
+                (Get("RightElbow"),   Get("RightHand")),
+                (Get("Pelvis"),       Get("LeftThigh")),
+                (Get("LeftThigh"),    Get("LeftKnee")),
+                (Get("LeftKnee"),     Get("LeftLeg")),
+                (Get("Pelvis"),       Get("RightThigh")),
+                (Get("RightThigh"),   Get("RightKnee")),
+                (Get("RightKnee"),    Get("RightLeg")),
+            ];
+        }
         public enum BoneIds
         {
-            Waist = 0,
-            Neck = 5,
-            Head = 6,
-            ShoulderLeft = 8,
-            ForeLeft = 9,
-            HandLeft = 11,
-            ShoulderRight = 13,
-            ForeRight = 14,
-            HandRight = 16,
-            KneeLeft = 23,
-            FeetLeft = 24,
-            KneeRight = 26,
-            FeetRight = 27,
+            Head = 7,
+            Neck = 6,
+            UpperChest = 23,
+            LowerChest = 4,
+            Stomach = 3,
+            Pelvis = 1,
+            LeftShoulder = 9,
+            LeftElbow = 10,
+            LeftHand = 11,
+            RightShoulder = 13,
+            RightElbow = 14,
+            RightHand = 15,
+            LeftThigh = 17,
+            LeftKnee = 18,
+            LeftLeg = 19,
+            LeftFoot = 74,
+            RightThigh = 20,
+            RightKnee = 21,
+            RightLeg = 22,
+            RightFoot = 77,
+        }
+
+        public enum BoneIds_Full
+        {
+            Head = 7,
+            Neck = 6,
+            Neck_Upper = 6,
+            UpperChest = 23,
+            LowerChest = 4,
+            Stomach = 3,
+            Pelvis = 1,
+            Spine_0 = 2,
+            Spine_1 = 3,
+            Spine_2 = 4,
+            Spine_3 = 23,
+            Right_Clavicle = 12,
+            Left_Clavicle = 8,
+            LeftShoulder = 9,
+            Arm_Upper_Left = 9,
+            Arm_Upper_Right = 13,
+            Arm_Lower_Right = 14,
+            Arm_Lower_Left = 10,
+            LeftElbow = 10,
+            LeftHand = 11,
+            RightShoulder = 13,
+            RightElbow = 14,
+            RightHand = 15,
+            LeftThigh = 17,
+            LeftKnee = 18,
+            LeftLeg = 19,
+            LeftFoot = 74,
+            RightThigh = 20,
+            RightKnee = 21,
+            RightLeg = 22,
+            RightFoot = 77,
+        }
+
+        public enum BoneIds_T
+        {
+            Head = 7,
+            Neck = 6,
+            UpperChest = 23,
+            LowerChest = 4,
+            Stomach = 3,
+            Pelvis = 1,
+            LeftShoulder = 9,
+            LeftElbow = 10,
+            LeftHand = 11,
+            RightShoulder = 13,
+            RightElbow = 14,
+            RightHand = 15,
+            LeftThigh = 17,
+            LeftKnee = 18,
+            LeftLeg = 19,
+            LeftFoot = 74,
+            RightThigh = 20,
+            RightKnee = 21,
+            RightLeg = 22,
+            RightFoot = 77,
+        }
+
+        public enum BoneIds_CT
+        {
+            Head = 7,
+            Neck = 6,
+            UpperChest = 23,
+            LowerChest = 4,
+            Stomach = 3,
+            Pelvis = 1,
+            LeftShoulder = 9,
+            LeftElbow = 10,
+            LeftHand = 11,
+            RightShoulder = 13,
+            RightElbow = 14,
+            RightHand = 15,
+            LeftThigh = 17,
+            LeftKnee = 18,
+            LeftLeg = 19,
+            LeftFoot = 81,
+            RightThigh = 20,
+            RightKnee = 21,
+            RightLeg = 22,
+            RightFoot = 86,
         }
 
         public static void DrawBoneLines(Entity? entity, Renderer renderer)
         {
-            if (!EnableBoneESP || entity == null || entity.Bones2D == null ||
+            if (!EnableBoneESP || entity == null || entity.Bones == null ||
                 (TeamCheck && entity.Team == GameState.LocalPlayer.Team) ||
                 entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Bones == null || entity.Health == 0 ||
                 (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) ||
@@ -61,37 +161,26 @@ namespace Titled_Gui.Modules.Visual
             float thickness =
                 Math.Clamp(BoneThickness / (entity.Distance * 0.1f), 0.5f,
                     1f); // calculate thickness based on Distance, minimum 0.5f and maximum 2f stops it from being massive
-            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb() : BoneColor); //get color
 
-            foreach (var (a, b) in BoneConnections)
+            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb() : VisibleBoneColor); //get color
+
+            uint GetBoneColor(Types.Bone bone) =>
+                (!visibilityCheck || bone.IsVisible)
+                    ? boneColor
+                    : ImGui.ColorConvertFloat4ToU32(OccludedBoneColor);
+
+            var boneConnections = GetBoneConnections(entity.Team);
+            foreach (var (a, b) in boneConnections)
             {
-                if (a >= entity.Bones2D.Count || b >= entity.Bones2D.Count)
+                if (a >= entity.Bones.Count || b >= entity.Bones.Count)
                     continue;
 
                 Types.Bone boneA = entity.Bones[a];
                 Types.Bone boneB = entity.Bones[b];
                 Vector2 boneAPosition2D = boneA.Position2D;
                 Vector2 boneBPosition2D = boneB.Position2D;
-                if (boneBPosition2D == new Vector2(-99, -99) && boneAPosition2D == new Vector2(-99, -99))
+                if (boneBPosition2D == new Vector2(-99, -99) || boneAPosition2D == new Vector2(-99, -99))
                     continue;
-
-                if (visibilityCheck)
-                {
-                    //if (Classes.VisibilityCheck.BVH.VisibleBone(entity.Bones[a]) && Classes.VisibilityCheck.BVH.VisibleBone(entity.Bones[b]))
-                    //{
-                    //renderer.drawList.AddLine(boneA, boneB, ImGui.ColorConvertFloat4ToU32(visibleBoneColor), thickness);
-                    //Console.WriteLine("thing a");
-                    //}
-                    //else
-                    //{
-                    //renderer.drawList.AddLine(boneA, boneB, ImGui.ColorConvertFloat4ToU32(occludedBoneColor), thickness);
-                    //Console.WriteLine("thing b");
-                    //}
-                    //if (boneA.IsVisible)
-                    //    Console.WriteLine("bone a vis");
-                    //if (boneB.IsVisible)
-                    //    Console.WriteLine("bone b vis" );
-                }
 
                 if (IsValidScreenPoint(boneAPosition2D) && IsValidScreenPoint(boneBPosition2D))
                 {
@@ -102,18 +191,23 @@ namespace Titled_Gui.Modules.Visual
                         switch (CurrentType)
                         {
                             case 0:
-                                DrawHelpers.DrawGlowLine(renderer.drawList, boneAPosition2D, boneBPosition2D, BoneColor, GlowAmount,
+                                DrawHelpers.DrawGlowLine(renderer.drawList, boneAPosition2D, boneBPosition2D,
+                                    ImGui.ColorConvertU32ToFloat4(boneColor), GlowAmount,
                                     thickness: thickness);
-                                DrawHelpers.DrawGlowCircle(renderer.drawList, boneAPosition2D, thickness * 2, BoneColor,
+                                DrawHelpers.DrawGlowCircle(renderer.drawList, boneAPosition2D, thickness * 2,
+                                    ImGui.ColorConvertU32ToFloat4(boneColor),
                                     GlowAmount);
                                 break;
                             case 1:
                                 DrawHelpers.DrawGlowBezier(renderer.drawList, boneBPosition2D,
                                     (boneBPosition2D + boneAPosition2D) * 0.5f +
-                                    Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y, (boneAPosition2D - boneBPosition2D).X)) * curve,
+                                    Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y,
+                                        (boneAPosition2D - boneBPosition2D).X)) * curve,
                                     (boneBPosition2D + boneAPosition2D) * 0.5f +
-                                    Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y, (boneAPosition2D - boneBPosition2D).X)) *
-                                    (curve * 0.5f), boneAPosition2D, BoneColor, GlowAmount / 2, thickness);
+                                    Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y,
+                                        (boneAPosition2D - boneBPosition2D).X)) *
+                                    (curve * 0.5f), boneAPosition2D, ImGui.ColorConvertU32ToFloat4(boneColor),
+                                    GlowAmount / 2, thickness);
                                 break;
                         }
                     }
@@ -121,38 +215,62 @@ namespace Titled_Gui.Modules.Visual
                     switch (CurrentType)
                     {
                         case 0:
-                            renderer.drawList.AddLine(boneAPosition2D, boneBPosition2D, boneColor, thickness);
-                                //renderer.drawList.AddLine(boneAPosition2D, boneBPosition2D, !boneA.IsVisible ? boneColor : ImGui.ColorConvertFloat4ToU32(new Vector4(0,0,0,1)),
-                                //thickness); //draw a line between the Bones
+                            //renderer.drawList.AddLine(boneAPosition2D, boneBPosition2D, boneColor, thickness);
+                            renderer.drawList.AddLine(boneAPosition2D, boneBPosition2D,
+                                boneA.IsVisible ? boneColor : ImGui.ColorConvertFloat4ToU32(OccludedBoneColor),
+                                thickness); //draw a line between the Bones
                             renderer.drawList.AddCircleFilled(boneAPosition2D, thickness * 1.5f,
-                                boneColor); //draw a circle at the start bone
+                                boneA.IsVisible
+                                    ? boneColor
+                                    : ImGui.ColorConvertFloat4ToU32(
+                                        OccludedBoneColor)); //draw a circle at the start bone
                             break;
                         case 1:
                             renderer.drawList.AddBezierCubic(boneBPosition2D,
                                 (boneBPosition2D + boneAPosition2D) * 0.5f +
-                                Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y, (boneAPosition2D - boneBPosition2D).X)) * curve,
+                                Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y,
+                                    (boneAPosition2D - boneBPosition2D).X)) * curve,
                                 (boneBPosition2D + boneAPosition2D) * 0.5f +
-                                Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y, (boneAPosition2D - boneBPosition2D).X)) * (curve * 0.5f),
+                                Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y,
+                                    (boneAPosition2D - boneBPosition2D).X)) * (curve * 0.5f),
                                 boneAPosition2D, boneColor, thickness);
                             break;
                     }
                 }
             }
 
-            Vector2 headPos = entity.Bones2D[2];
+
+            var head = entity.Bones[(int)BoneIds.Head];
+            Vector2 headPos = head.Position2D;
             if (!IsValidScreenPoint(headPos))
                 return;
 
             float radius = Math.Clamp(10f / (entity.Distance * 0.05f), 3f, 10f);
 
             if (GlowAmount > 0)
-                DrawHelpers.DrawGlowCircle(renderer.drawList, headPos, radius, BoneColor, GlowAmount);
-            if (entity.Visible)
-                renderer.drawList.AddCircleFilled(headPos, radius,
-                    boneColor); // draw a circle at the Head bone extra big
-            else
-                renderer.drawList.AddCircleFilled(headPos, radius, ImGui.ColorConvertFloat4ToU32(new(1, 0, 0, 1)));
+                DrawHelpers.DrawGlowCircle(renderer.drawList, headPos, radius,
+                    head.IsVisible ? ImGui.ColorConvertU32ToFloat4(boneColor) : OccludedBoneColor, GlowAmount);
+            renderer.drawList.AddCircleFilled(headPos, radius,
+                head.IsVisible
+                    ? boneColor
+                    : ImGui.ColorConvertFloat4ToU32(OccludedBoneColor)); // draw a circle at the Head bone extra big
+            //DebugBones(entity, renderer);
+        }
 
+        private static void DebugBones(Entity entity, Renderer renderer)
+        {
+            for (int i = 0; i < entity.Bones.Count; i++)
+            {
+                var b = entity.Bones[i];
+                if (b.Position2D == new Vector2(-99, -99)) 
+                    continue;
+
+                var p = b.Position2D;
+                if (!IsValidScreenPoint(p)) 
+                    continue;
+
+                renderer.drawList.AddText(p, 0xFFFFFFFF, i.ToString());
+            }
         }
 
         public static bool IsValidScreenPoint(Vector2 pt)
@@ -206,14 +324,14 @@ namespace Titled_Gui.Modules.Visual
             foreach (var (A, B) in Segments)
             {
                 if (GlowAmount > 0)
-                    DrawHelpers.DrawGlowLine(DrawList, A, B, BoneColor, GlowAmount * 0.5f);
+                    DrawHelpers.DrawGlowLine(DrawList, A, B, VisibleBoneColor, GlowAmount * 0.5f);
 
                 DrawList.AddLine(A, B, UColor, BoneThickness * 0.5f);
                 DrawList.AddCircleFilled(A, BoneThickness * 0.5f, UColor);
             }
 
             if (GlowAmount > 0)
-                DrawHelpers.DrawGlowCircle(DrawList, Head, 10f, BoneColor, GlowAmount);
+                DrawHelpers.DrawGlowCircle(DrawList, Head, 10f, VisibleBoneColor, GlowAmount);
 
             DrawList.AddCircle(Head, 10f, UColor, 12, 0.7f);
         }

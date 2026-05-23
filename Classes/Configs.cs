@@ -4,13 +4,14 @@ using System.Numerics;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
+using ValveResourceFormat.ResourceTypes;
 
 namespace Titled_Gui.Classes
 {
     internal class Configs : Classes.ThreadService
     {
         public static string MenuName = "Titled";
-        public static string Version = "1.7";
+        public static string Version = "1.8";
         public static string Author = "https://github.com/xfi0";
         public static string Link = "https://github.com/xfi0/Titled-Gui-CS2";
 
@@ -65,7 +66,7 @@ namespace Titled_Gui.Classes
                         ["W"] = BoxESP.BoxFillGradientBottom.W,
                     },
                     ["ESP Flash Check"] = BoxESP.FlashCheck,
-                    ["Enable Distance Tracker"] = BoxESP.EnableDistanceTracker,
+                    ["Enable Distance Tracker"] = DistanceText.Enabled,
                     ["Outer Outline"] = BoxESP.OuterOutline,
                     ["Inner Outline Color"] = new JObject
                     {
@@ -138,10 +139,10 @@ namespace Titled_Gui.Classes
                     ["Bone ESP Glow Amount"] = BoneESP.GlowAmount,
                     ["Bone ESP Color"] = new JObject
                     {
-                        ["Bone ESP Color X"] = BoneESP.BoneColor.X,
-                        ["Bone ESP Color Y"] = BoneESP.BoneColor.Y,
-                        ["Bone ESP Color Z"] = BoneESP.BoneColor.Z,
-                        ["Bone ESP Color W"] = BoneESP.BoneColor.W,
+                        ["Bone ESP Color X"] = BoneESP.VisibleBoneColor.X,
+                        ["Bone ESP Color Y"] = BoneESP.VisibleBoneColor.Y,
+                        ["Bone ESP Color Z"] = BoneESP.VisibleBoneColor.Z,
+                        ["Bone ESP Color W"] = BoneESP.VisibleBoneColor.W,
                     }
                 },
                 ["HealthBar"] = new JObject
@@ -202,9 +203,9 @@ namespace Titled_Gui.Classes
                 },
                 ["Chams"] = new JObject
                 {
-                    ["Chams Enabled"] = Chams.EnableChams,
+                    ["Chams Enabled"] = Chams.Enabled,
                     ["Chams Thickness"] = Chams.BoneThickness,
-                    ["Chams Draw On Self"] = Chams.DrawOnSelf
+                    ["Chams Team Check"] = Chams.TeamCheck
                 },
                 ["No Flash"] = new JObject
                 {
@@ -223,7 +224,6 @@ namespace Titled_Gui.Classes
                 {
                     ["Armor Bar Enabled"] = ArmorBar.EnableArmorhBar,
                     ["Armor Bar Rounding"] = ArmorBar.Rounding,
-                    ["Armor Bar Team Check"] = ArmorBar.TeamCheck,
                     ["Armor Bar Draw On Self"] = ArmorBar.DrawOnSelf,
                     ["Armor Bar Width"] = ArmorBar.ArmorBarWidth,
                 },
@@ -277,6 +277,34 @@ namespace Titled_Gui.Classes
                     ["Hostage ESP Enabled"] = WorldESP.HostageESP,
                     ["Dropped Weapon ESP Enabled"] = WorldESP.DroppedWeaponESP,
                     ["Thrown Projectile ESP Enabled"] = WorldESP.ProjectileESP,
+                    ["Chicken Text Color"] = new JObject
+                    {
+                        ["X"] = WorldESP.ChickenTextColor.X,
+                        ["Y"] = WorldESP.ChickenTextColor.Y,
+                        ["Z"] = WorldESP.ChickenTextColor.Z,
+                        ["W"] = WorldESP.ChickenTextColor.W
+                    },
+                    ["Dropped Weapon Text Color"] = new JObject
+                    {
+                        ["X"] = WorldESP.WeaponTextColor.X,
+                        ["Y"] = WorldESP.WeaponTextColor.Y,
+                        ["Z"] = WorldESP.WeaponTextColor.Z,
+                        ["W"] = WorldESP.WeaponTextColor.W
+                    },
+                    ["Thrown Projectile Text Color"] = new JObject
+                    {
+                        ["X"] = WorldESP.ProjectileTextColor.X,
+                        ["Y"] = WorldESP.ProjectileTextColor.Y,
+                        ["Z"] = WorldESP.ProjectileTextColor.Z,
+                        ["W"] = WorldESP.ProjectileTextColor.W
+                    },
+                    ["Box Color"] = new JObject
+                    {
+                        ["X"] = WorldESP.BoxColor.X,
+                        ["Y"] = WorldESP.BoxColor.Y,
+                        ["Z"] = WorldESP.BoxColor.Z,
+                        ["W"] = WorldESP.BoxColor.W
+                    }
                 }
             };
 
@@ -353,7 +381,7 @@ namespace Titled_Gui.Classes
                     configData["ESP"]?["ESP Gradient Bottom"]?["W"]?.ToObject<float>() ?? BoxESP.BoxFillGradientBottom.W
                 );
                 BoxESP.FlashCheck = configData["ESP"]?["ESP Flash Check"]?.ToObject<bool>() ?? BoxESP.FlashCheck;
-                BoxESP.EnableDistanceTracker = configData["ESP"]?["Enable Distance Tracker"]?.ToObject<bool>() ?? BoxESP.EnableDistanceTracker;
+                DistanceText.Enabled = configData["ESP"]?["Enable Distance Tracker"]?.ToObject<bool>() ?? DistanceText.Enabled;
                 BoxESP.OuterOutline = configData["ESP"]?["Outer Outline"]?.ToObject<bool>() ?? BoxESP.OuterOutline;
                 BoxESP.InnerOutlineColor = new Vector4(
                     configData["ESP"]?["Inner Outline Color"]?["X"]?.ToObject<float>() ?? BoxESP.InnerOutlineColor.X,
@@ -416,11 +444,11 @@ namespace Titled_Gui.Classes
                 BoneESP.BoneThickness = configData["Bone ESP"]?["Bone ESP Thickness"]?.ToObject<float>() ?? BoneESP.BoneThickness;
                 BoneESP.TeamCheck = configData["Bone ESP"]?["Bone ESP Team Check"]?.ToObject<bool>() ?? BoneESP.TeamCheck;
                 BoneESP.GlowAmount = configData["Bone ESP"]?["Bone ESP Glow Amount"]?.ToObject<float>() ?? BoneESP.GlowAmount;
-                BoneESP.BoneColor = new Vector4(
-                    configData["Bone ESP"]?["Bone ESP Color"]?["Bone ESP Color X"]?.ToObject<float>() ?? BoneESP.BoneColor.X,
-                    configData["Bone ESP"]?["Bone ESP Color"]?["Bone ESP Color Y"]?.ToObject<float>() ?? BoneESP.BoneColor.Y,
-                    configData["Bone ESP"]?["Bone ESP Color"]?["Bone ESP Color Z"]?.ToObject<float>() ?? BoneESP.BoneColor.Z,
-                    configData["Bone ESP"]?["Bone ESP Color"]?["Bone ESP Color W"]?.ToObject<float>() ?? BoneESP.BoneColor.W
+                BoneESP.VisibleBoneColor = new Vector4(
+                    configData["Bone ESP"]?["Bone ESP Color"]?["Bone ESP Color X"]?.ToObject<float>() ?? BoneESP.VisibleBoneColor.X,
+                    configData["Bone ESP"]?["Bone ESP Color"]?["Bone ESP Color Y"]?.ToObject<float>() ?? BoneESP.VisibleBoneColor.Y,
+                    configData["Bone ESP"]?["Bone ESP Color"]?["Bone ESP Color Z"]?.ToObject<float>() ?? BoneESP.VisibleBoneColor.Z,
+                    configData["Bone ESP"]?["Bone ESP Color"]?["Bone ESP Color W"]?.ToObject<float>() ?? BoneESP.VisibleBoneColor.W
                 );
                 #endregion
 
@@ -480,9 +508,9 @@ namespace Titled_Gui.Classes
                 #endregion
 
                 #region Chams
-                Chams.EnableChams = configData["Chams"]?["Chams Enabled"]?.ToObject<bool>() ?? Chams.EnableChams;
+                Chams.Enabled = configData["Chams"]?["Chams Enabled"]?.ToObject<bool>() ?? Chams.Enabled;
                 Chams.BoneThickness = configData["Chams"]?["Chams Thickness"]?.ToObject<float>() ?? Chams.BoneThickness;
-                Chams.DrawOnSelf = configData["Chams"]?["Chams Draw On Self"]?.ToObject<bool>() ?? Chams.DrawOnSelf;
+                Chams.TeamCheck = configData["Chams"]?["Chams Team Check"]?.ToObject<bool>() ?? Chams.TeamCheck;
                 #endregion
 
                 #region No Flash
@@ -501,7 +529,6 @@ namespace Titled_Gui.Classes
                 #region Armor Bar
                 ArmorBar.EnableArmorhBar = configData["Armor Bar"]?["Armor Bar Enabled"]?.ToObject<bool>() ?? ArmorBar.EnableArmorhBar;
                 ArmorBar.Rounding = configData["Armor Bar"]?["Armor Bar Rounding"]?.ToObject<float>() ?? ArmorBar.Rounding;
-                ArmorBar.TeamCheck = configData["Armor Bar"]?["Armor Bar Team Check"]?.ToObject<bool>() ?? ArmorBar.TeamCheck;
                 ArmorBar.DrawOnSelf = configData["Armor Bar"]?["Armor Bar Draw On Self"]?.ToObject<bool>() ?? ArmorBar.DrawOnSelf;
                 ArmorBar.ArmorBarWidth = configData["Armor Bar"]?["Armor Bar Width"]?.ToObject<float>() ?? ArmorBar.ArmorBarWidth;
                 #endregion
@@ -552,6 +579,29 @@ namespace Titled_Gui.Classes
                 WorldESP.HostageESP = configData["World ESP"]?["Hostage ESP Enabled"]?.ToObject<bool>() ?? WorldESP.HostageESP;
                 WorldESP.DroppedWeaponESP = configData["World ESP"]?["Dropped Weapon ESP Enabled"]?.ToObject<bool>() ?? WorldESP.DroppedWeaponESP;
                 WorldESP.ProjectileESP = configData["World ESP"]?["Thrown Projectile ESP Enabled"]?.ToObject<bool>() ?? WorldESP.ProjectileESP;
+                WorldESP.ChickenTextColor = new Vector4(
+                    configData["World ESP"]?["Chicken Text Color"]?["X"]?.ToObject<float>() ?? WorldESP.ChickenTextColor.X,
+                    configData["World ESP"]?["Chicken Text Color"]?["Y"]?.ToObject<float>() ?? WorldESP.ChickenTextColor.Y,
+                    configData["World ESP"]?["Chicken Text Color"]?["Z"]?.ToObject<float>() ?? WorldESP.ChickenTextColor.Z,
+                    configData["World ESP"]?["Chicken Text Color"]?["W"]?.ToObject<float>() ?? WorldESP.ChickenTextColor.W
+                );
+                WorldESP.ProjectileTextColor = new Vector4(
+                    configData["World ESP"]?["Thrown Projectile Text Color"]?["X"]?.ToObject<float>() ?? WorldESP.ProjectileTextColor.X,
+                    configData["World ESP"]?["Thrown Projectile Text Color"]?["Y"]?.ToObject<float>() ?? WorldESP.ProjectileTextColor.Y,
+                    configData["World ESP"]?["Thrown Projectile Text Color"]?["Z"]?.ToObject<float>() ?? WorldESP.ProjectileTextColor.Z,
+                    configData["World ESP"]?["Thrown Projectile Text Color"]?["W"]?.ToObject<float>() ?? WorldESP.ProjectileTextColor.W
+                ); 
+                WorldESP.WeaponTextColor = new Vector4(
+                    configData["World ESP"]?["Dropped Weapon Text Color"]?["X"]?.ToObject<float>() ?? WorldESP.WeaponTextColor.X,
+                    configData["World ESP"]?["Dropped Weapon Text Color"]?["Y"]?.ToObject<float>() ?? WorldESP.WeaponTextColor.Y,
+                    configData["World ESP"]?["Dropped Weapon Text Color"]?["Z"]?.ToObject<float>() ?? WorldESP.WeaponTextColor.Z,
+                    configData["World ESP"]?["Dropped Weapon Text Color"]?["W"]?.ToObject<float>() ?? WorldESP.WeaponTextColor.W
+                );    WorldESP.BoxColor = new Vector4(
+                    configData["World ESP"]?["Box Color"]?["X"]?.ToObject<float>() ?? WorldESP.BoxColor.X,
+                    configData["World ESP"]?["Box Color"]?["Y"]?.ToObject<float>() ?? WorldESP.BoxColor.Y,
+                    configData["World ESP"]?["Box Color"]?["Z"]?.ToObject<float>() ?? WorldESP.BoxColor.Z,
+                    configData["World ESP"]?["Box Color"]?["W"]?.ToObject<float>() ?? WorldESP.BoxColor.W
+                );
                 #endregion
             }
             catch (Exception e)

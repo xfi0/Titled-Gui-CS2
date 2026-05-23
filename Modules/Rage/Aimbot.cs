@@ -19,7 +19,7 @@ namespace Titled_Gui.Modules.Rage
         public static string[] Bones = ["Head", "Neck", "Right Shoulder", "Left Shoulder", "Waist", "Random"];
         public static int CurrentBone = 0;
         public static int CurrentBoneIndex = 2;
-        public static Vector3 CurrentBoneV3 = Vector3.Zero;
+        public static Vector2 CurrentBone2D = Vector2.Zero;
         public static bool RandomChosen = false;
         public static int CurrentAimMethod = 0;
         public static float SmoothingX = 5f;
@@ -29,9 +29,11 @@ namespace Titled_Gui.Modules.Rage
         public static bool UseFOV = true;
         public static Random random = new();
         public static bool VisibilityCheck = true;
-        public static bool targetLine = true;
+        public static bool TargetLine = true;
         private static Entity? target = null;
-
+        private static float remainderX = 0f;
+        private static float remainderY = 0f;
+        private static Entity? previousTarget = null;
         public static void EnableAimbot() // TODO: return to old pos setting #7
         {
             try
@@ -42,80 +44,79 @@ namespace Titled_Gui.Modules.Rage
                 {
                     target = GetTarget();
 
-                    if (target == null) return;
+                    if (target == null || target.Bones == null || target.Bones.Count <= 0 || target.Bones == null) return;
 
+                    if (target != previousTarget)
+                    {
+                        RandomChosen = false;
+                        previousTarget = target;
+                    }
                     Vector2 screenCenter = new(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2);
-                    Vector3 playerView = LocalPlayer.Origin + LocalPlayer.View;
-                    Vector2 newAngles;
+                    Vector2 newAngles2D = Vector2.Zero;
+
+                    switch (CurrentBone)
+                    {
+                        case 0: CurrentBoneIndex = (int)BoneESP.BoneIds.Head; break;
+                        case 1: CurrentBoneIndex = (int)BoneESP.BoneIds.Neck; break;
+                        case 2: CurrentBoneIndex = (int)BoneESP.BoneIds.RightShoulder; break;
+                        case 3: CurrentBoneIndex = (int)BoneESP.BoneIds.LeftShoulder; break;
+                        case 4: CurrentBoneIndex = (int)BoneESP.BoneIds.Pelvis; break;
+                        case 5:
+                            if (!RandomChosen && target.Bones != null && target.Bones.Count > 0)
+                            {
+                                CurrentBoneIndex = random.Next(target.Bones.Count);
+                                RandomChosen = true;
+                            }
+                            break;
+                        default: CurrentBoneIndex = (int)BoneESP.BoneIds.Head; break;
+                    }
+
+                    if (CurrentBone != 5 && RandomChosen)
+                        RandomChosen = false;
 
                     bool useHeadPosition = target?.Bones?[CurrentBoneIndex].Position != Vector3.Zero;
                     if (useHeadPosition) //bone pos first
                     {
-                        if (target?.Bones?[CurrentBoneIndex] != null && target.Bones.Count > 6)
+                        if (target?.Bones?[CurrentBoneIndex] != null && target.Bones.Count > CurrentBoneIndex)
                         {
                             try
                             {
-                                switch (CurrentBone)
-                                {
-                                    case 0: CurrentBoneIndex = 2; break;
-                                    case 1: CurrentBoneIndex = 1; break;
-                                    case 2: CurrentBoneIndex = 6; break;
-                                    case 3: CurrentBoneIndex = 3; break;
-                                    case 4: CurrentBoneIndex = 0; break;
-                                    case 5:
-                                        if (!RandomChosen && target.Bones != null && target.Bones.Count > 0)
-                                        {
-                                            CurrentBoneIndex = random.Next(target.Bones.Count);
-                                            RandomChosen = true;
-                                        }
-                                        break;
-                                    default: CurrentBoneIndex = (int)BoneESP.BoneIds.Head; break;
-                                }
+                                CurrentBone2D = target.Bones[CurrentBoneIndex].Position2D;
 
-                                if (CurrentBone != 5 && RandomChosen)
-                                    RandomChosen = false;
-
-                                CurrentBoneV3 = target!.Bones![CurrentBoneIndex]!.Position;
-
-                                if (CurrentBoneV3 != Vector3.Zero)
-                                    newAngles = Calculate.CalculateAngles(playerView, CurrentBoneV3);
+                                if (CurrentBone2D != Vector2.Zero)
+                                    newAngles2D = CurrentBone2D;
                                 else
-                                    newAngles = Calculate.CalculateAngles(playerView, target.Position);
+                                    newAngles2D = target.Position2D;
                             }
                             catch (Exception e)
                             {
-                                newAngles = Calculate.CalculateAngles(playerView, CurrentBoneV3);
                                 Console.WriteLine(e.Message);
                             }
                         }
                         else
                         {
                             if (target != null)
-                                newAngles = Calculate.CalculateAngles(playerView, target.Head);
-                            else
-                                newAngles = new Vector2(GameState.swed.ReadVec(client, Offsets.dwViewAngles).X, GameState.swed.ReadVec(client, Offsets.dwViewAngles).Y); // if entity is null dont change anything
+                                newAngles2D = target.Head2D;
                         }
                     }
                     else //fallback that if you're at their body flick to whatever chosen bone 
                     {
-                        newAngles = Calculate.CalculateAngles(playerView, CurrentBoneV3);
+                        newAngles2D =  CurrentBone2D;
                     }
 
-                    if (float.IsNaN(newAngles.X) || float.IsNaN(newAngles.Y))
+                    if (float.IsNaN(newAngles2D.X) || float.IsNaN(newAngles2D.Y))
                         return;
 
-                    Vector2 newAngles2D =
-                        (target != null && target.Bones2D != null
-                        && CurrentBoneIndex < target.Bones2D.Count && target.Bones2D[CurrentBoneIndex] != Vector2.Zero)
-                        ? target.Bones2D[CurrentBoneIndex] : target?.Position2D ?? Vector2.Zero; // holy ts is long
-
-                    int dx = (int)(newAngles2D.X - screenCenter.X);
-                    int dy = (int)(newAngles2D.Y - screenCenter.Y);
+                    float dx = newAngles2D.X - screenCenter.X;
+                    float dy = newAngles2D.Y - screenCenter.Y;
                     MoveMousePos(dx, dy);
                 }
                 else
+                {
+                    remainderX = 0f;
+                    remainderY = 0f;
                     target = null;
-
+                }
             }
             catch (DivideByZeroException divideByZeroException)
             {
@@ -126,15 +127,18 @@ namespace Titled_Gui.Modules.Rage
                 Console.WriteLine("Aimbot exception: " + ex);
             }
         }
-        private static void MoveMousePos(int dx, int dy)
+        private static void MoveMousePos(float dx, float dy)
         {
-            if (SmoothingX > 0)
-                dx = (int)(dx / SmoothingX);
+            dx = (SmoothingX > 0 ? dx / SmoothingX : dx) + remainderX;
+            dy = (SmoothingY > 0 ? dy / SmoothingY : dy) + remainderY;
 
-            if (SmoothingY > 0)
-                dy = (int)(dy / SmoothingY);
-          
-            MoveMouse.MouseMove(dx, dy);
+            int ix = (int)dx;
+            int iy = (int)dy;
+
+            remainderX = dx - ix;
+            remainderY = dy - iy;
+
+            MoveMouse.MouseMove(ix, iy);
         }
         public static void DrawCircle(int size, Vector4 circleColor)
         {
@@ -181,9 +185,10 @@ namespace Titled_Gui.Modules.Rage
         }
         public static void RenderTargetLine()
         {
-            if (target == null) return;
+            if (target == null || target.Bones == null || target.Bones == null || target.Bones.Count <= CurrentBoneIndex) 
+                return;
 
-            GameState.renderer.drawList.AddLine(new(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2), target.Position2D, ImGui.ColorConvertFloat4ToU32(FovColor));
+            GameState.renderer.drawList.AddLine(new(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2), target.Bones[CurrentBoneIndex].Position2D, ImGui.ColorConvertFloat4ToU32(FovColor));
         }
 
         protected override void FrameAction()

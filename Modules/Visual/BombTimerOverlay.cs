@@ -38,7 +38,7 @@ namespace Titled_Gui.Modules.Visual
                 style.Colors[(int)ImGuiCol.HeaderActive] = accentColor;
                 Vector2 windowSize = new(240f, 100f);
                 ImGui.SetNextWindowSize(windowSize,
-                    ImGuiCond.Once); // ensure that the like size doesnt reset to the defualt on resize
+                    ImGuiCond.Once); // ensure that the like size doesn't reset to the default on resize
                 ImGui.SetNextWindowPos(new Vector2((GameState.renderer.ScreenSize.X - windowSize.X - 300) / 2, 0));
                 ImGui.Begin("#c4 info",
                     ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar |

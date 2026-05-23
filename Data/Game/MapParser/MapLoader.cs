@@ -15,24 +15,37 @@ namespace Titled_Gui.Data.Game.MapParser
         #region Misc Helpers
         public bool RayIntersectsKDTree(KDNode? node, Vector3 origin, Vector3 end)
         {
-            if (node == null) return false;
             Vector3 dir = end - origin;
+            Vector3 invDir = new(
+                dir.X == 0f ? float.MaxValue : 1f / dir.X,
+                dir.Y == 0f ? float.MaxValue : 1f / dir.Y,
+                dir.Z == 0f ? float.MaxValue : 1f / dir.Z
+            );
 
-            if (!node.bbox.Intersect(origin, end))
+            return RayIntersectsKDTreeInternal(node, origin, end, invDir);
+        }
+
+        private bool RayIntersectsKDTreeInternal(KDNode? node, Vector3 origin, Vector3 end, Vector3 invDir)
+        {
+            if (node == null) 
+                return false;
+
+            if (!node.bbox.Intersect(origin, end, invDir))
                 return false;
 
             if (node.Triangles.Length > 0)
             {
+                Vector3 dir = end - origin;
                 foreach (Triangle tri in node.Triangles)
                     if (tri.Intersect(origin, dir))
                         return true;
-
                 return false;
             }
 
-            if (RayIntersectsKDTree(node.Left, origin, end)) 
+            if (RayIntersectsKDTreeInternal(node.Left, origin, end, invDir))
                 return true;
-            return RayIntersectsKDTree(node.Right, origin, end);
+
+            return RayIntersectsKDTreeInternal(node.Right, origin, end, invDir);
         }
         private static BoundingBox CalculateBoundingBox(List<Triangle> triangles)
         {
@@ -62,8 +75,8 @@ namespace Titled_Gui.Data.Game.MapParser
             if (triangles.Count <= 0) return null;
 
             KDNode node = new();
-            node.bbox = CalculateBoundingBox(triangles);
             node.Axis = depth % 3;
+            node.bbox = CalculateBoundingBox(triangles);
 
             if (triangles.Count <= 3)
             {
@@ -71,11 +84,13 @@ namespace Titled_Gui.Data.Game.MapParser
                 return node;
             }
 
+            int axis = node.Axis;
+
             float[] centers = new float[triangles.Count];
             for (int i = 0; i < triangles.Count; i++)
             {
                 Triangle t = triangles[i];
-                centers[i] = node.Axis switch
+                centers[i] = axis switch
                 {
                     0 => (t.Point1.X + t.Point2.X + t.Point3.X) / 3f,
                     1 => (t.Point1.Y + t.Point2.Y + t.Point3.Y) / 3f,
@@ -88,13 +103,19 @@ namespace Titled_Gui.Data.Game.MapParser
 
             int mid = triangles.Count / 2;
 
-            List<Triangle> leftTriangles = indices.Take(mid).Select(i => triangles[i]).ToList(); // [..mid] is lowk ugly
-            List<Triangle> rightTriangles = indices.Skip(mid).Select(i => triangles[i]).ToList(); // same here, ik I can use [mid..] to splice, but it looks wierd
+            var leftTriangles = new List<Triangle>(mid);
+            var rightTriangles = new List<Triangle>(triangles.Count - mid);
 
-            if (triangles.Count > 1000 && depth < 4)
+            for (int i = 0; i < mid; i++) leftTriangles.Add(triangles[indices[i]]);
+            for (int i = mid; i < triangles.Count; i++) rightTriangles.Add(triangles[indices[i]]);
+
+            if (depth == 0 && triangles.Count > 1000)
             {
                 KDNode? left = null, right = null;
-                Parallel.Invoke(() => left = BuildKDTree(leftTriangles, depth + 1), () => right = BuildKDTree(rightTriangles, depth + 1));
+                Parallel.Invoke(
+                    () => left = BuildKDTree(leftTriangles, depth + 1),
+                    () => right = BuildKDTree(rightTriangles, depth + 1)
+                );
                 node.Left = left;
                 node.Right = right;
             }
@@ -107,7 +128,7 @@ namespace Titled_Gui.Data.Game.MapParser
             return node;
         }
         #endregion
-       
+
         public List<Triangle> Triangles = new List<Triangle>();
 
         public bool LoadMap(string mapName)

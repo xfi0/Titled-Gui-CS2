@@ -17,10 +17,12 @@ namespace Titled_Gui.Modules.Visual
             {
                 foreach (Entity? e in GameState.Entities)
                 {
-                    if (e == null || e.Bones2D == null || (!DrawOnTeam && e.Team == GameState.LocalPlayer.Team) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed)) 
+                    if (e == null || e.Bones == null || (!DrawOnTeam && e.Team == GameState.LocalPlayer.Team) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed)) 
                         continue;
 
-                    Vector2 head = e.Bones2D[2];
+                    Vector2 head = e.Bones[(int)BoneESP.BoneIds.Head].Position2D;
+                    if (head == Vector2.Zero || head == new Vector2(-99, -99)) 
+                        continue;
 
                     float yaw = e.AngEyeAngles.Y * (MathF.PI / 180.0f);
 

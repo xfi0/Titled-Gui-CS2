@@ -30,7 +30,6 @@ namespace Titled_Gui.Data.Game
         public static uint WeaponServices { get; set; }
         public static IntPtr ActionTrackingServices { get; set; }
         public static IntPtr BulletServices { get; set; }
-        public static IntPtr currentController = IntPtr.Zero;
         public static bool IsScoped { get; set; }
         public static IntPtr LocalController { get; set; }
         public static int RoundHeadshots {  get; set; }

@@ -32,11 +32,6 @@ try
                 if (entityManager != null)
                 {
                     entities = EntityManager.GetEntities();
-                    Entity localPlayer = EntityManager.GetLocalPlayer();
-
-                    GameState.LocalPlayer = localPlayer;
-
-                    GameState.renderer.UpdateLocalPlayer(localPlayer);
                 }
                 if (entities != null)
                 {
@@ -58,9 +53,10 @@ try
     entityUpdateThread.Start();
 
     ThreadService.StartAllThreadServices();
+
     while (true)
     {
-        Thread.Sleep(100);
+        Thread.Sleep(20);
     }
 }
 catch (IndexOutOfRangeException)

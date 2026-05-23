@@ -247,6 +247,7 @@ namespace Titled_Gui.Modules.Visual
                     // right face
                     GameState.renderer.drawList.AddQuadFilled(corners2D[1], corners2D[3], corners2D[7], corners2D[5], preConvertedFilledColor);
                 }
+
                 GameState.renderer.drawList.AddLine(corners2D[0], corners2D[1], preConvertedColor, rounding);
                 GameState.renderer.drawList.AddLine(corners2D[1], corners2D[2], preConvertedColor, rounding);
                 GameState.renderer.drawList.AddLine(corners2D[3], corners2D[2], preConvertedColor, rounding);
@@ -262,7 +263,7 @@ namespace Titled_Gui.Modules.Visual
                 GameState.renderer.drawList.AddLine(corners2D[2], corners2D[6], preConvertedColor, rounding);
                 GameState.renderer.drawList.AddLine(corners2D[3], corners2D[7], preConvertedColor, rounding);
             }
-            catch (IndexOutOfRangeException ex)
+            catch (IndexOutOfRangeException)
             {
                 Console.WriteLine("Index Out Of Bounds Of The Array Drawing 3D Boxes");
             }
@@ -286,6 +287,7 @@ namespace Titled_Gui.Modules.Visual
                     // right face
                     GameState.renderer.drawList.AddQuadFilled(corners2D[1], corners2D[3], corners2D[7], corners2D[5], preConvertedFilledColor);
                 }
+
                 GameState.renderer.drawList.AddLine(corners2D[0], corners2D[1], preConvertedColor, rounding);
                 GameState.renderer.drawList.AddLine(corners2D[1], corners2D[3], preConvertedColor, rounding);
                 GameState.renderer.drawList.AddLine(corners2D[3], corners2D[2], preConvertedColor, rounding);

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using System.Text;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Game;
@@ -7,7 +8,6 @@ namespace Titled_Gui.Data.Entity
 {
     public class WorldEntityManager : ThreadService
     {
-        private static IntPtr listEntry = IntPtr.Zero;
         private static readonly Dictionary<string, string> EntityType = new() {
             {"chicken", "Chicken"},
             {"hostage_entity", "Hostage"}
@@ -68,6 +68,63 @@ namespace Titled_Gui.Data.Entity
             {"weapon_glock", "Glock-18"},
             {"weapon_c4", "C4"}
         };
+        public static readonly Dictionary<int, string> WeaponNameMap = new(){
+            { 1, "deagle"},
+            { 2, "elite"},
+            { 3, "fiveseven"},
+            { 4, "glock"},
+            { 7, "ak47"},
+            { 8, "aug"},
+            { 9, "awp"},
+            { 10, "famas"},
+            { 11, "g3sg1"},
+            { 13, "galilar"},
+            { 14, "m249"},
+            { 16, "m4a1"},
+            { 17, "mac10"},
+            { 19, "p90"},
+            { 24, "ump"},
+            { 25, "xm1014"},
+            { 26, "bizon"},
+            { 27, "mag7"},
+            { 28, "negev"},
+            { 29, "sawedoff"},
+            { 30, "tec9"},
+            { 31, "taser"},
+            { 32, "hkp2000"},
+            { 33, "mp7"},
+            { 34, "mp9"},
+            { 35, "nova"},
+            { 36, "p250"},
+            { 38, "scar20"},
+            { 39, "sg556"},
+            { 40, "ssg08"},
+            { 42, "knife"},
+            { 43, "flashbang"},
+            { 44, "hegrenade"},
+            { 45, "smokegrenade"},
+            { 46, "molotov"},
+            { 47, "decoy"},
+            { 48, "incgrenade"},
+            { 49, "c4"},
+            { 59, "knife"}, // _t
+            { 60, "m4a1_silencer"},
+            { 61, "usp_silencer"},
+            { 63, "cz75a"},
+            { 64, "revolver"},
+            { 500, "knife"}, // bayonet
+            { 505, "knife"}, // _flip
+            { 506, "knife"}, // _gut
+            { 507, "knife"}, // _karambit
+            { 508, "knife"}, // _m9_bayonet
+            { 509, "knife"}, // _tactical
+            { 512, "knife"}, // _falchion
+            { 514, "knife"}, // _survival_bowie
+            { 515, "knife"}, // _butterfly
+            { 516, "knife"}, // _push
+            { 526, "knife"} // _kukri
+        };
+
         public enum EntityKind 
         { 
             Unknown = 0,
@@ -83,9 +140,11 @@ namespace Titled_Gui.Data.Entity
             try
             {
                 List<WorldEntity?> worldEntities = new List<WorldEntity?>();
+                float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+
                 for (int i = 65; i < 1024; i++)
                 {
-                    listEntry = GameState.swed.ReadPointer(GameState.EntityList + 0x8 * ((i & 0x7FFF) >> 9) + 16);
+                    IntPtr listEntry = GameState.swed.ReadPointer(GameState.EntityList + 0x8 * ((i & 0x7FFF) >> 9) + 16);
                     if (listEntry == 0) continue;
 
                     var pawnAddress = GameState.swed.ReadPointer(listEntry + 0x70 * (i & 0x1FF));
@@ -110,7 +169,7 @@ namespace Titled_Gui.Data.Entity
                     if (string.IsNullOrWhiteSpace(type))
                         continue;
 
-                    WorldEntity? worldEntity = PopulateEntity(pawnAddress, type, itemNode);
+                    WorldEntity? worldEntity = PopulateEntity(pawnAddress, type, itemNode, viewMatrix);
 
                     if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99) ||
                         worldEntity.Position.X == 0 || worldEntity.Position.Y == 0 || worldEntity.PawnAddress == 0x0)
@@ -119,7 +178,7 @@ namespace Titled_Gui.Data.Entity
                     worldEntities.Add(worldEntity);
                 }
 
-                return worldEntities != null ? worldEntities : new List<WorldEntity?>();
+                return worldEntities;
             }
             catch (Exception ex)
             {
@@ -129,10 +188,8 @@ namespace Titled_Gui.Data.Entity
             return new List<WorldEntity?>();
         }
 
-        public WorldEntity? PopulateEntity(nint pawnAddress, string type, IntPtr itemNode)
+        public WorldEntity? PopulateEntity(nint pawnAddress, string type, IntPtr itemNode, float[] viewMatrix)
         {
-            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
-
             Vector3 itemOrigin = GameState.swed.ReadVec((nint)itemNode + Offsets.m_vecOrigin);
             IntPtr collisionBase = pawnAddress + Offsets.m_Collision;
 
@@ -176,9 +233,14 @@ namespace Titled_Gui.Data.Entity
         }
 
         private readonly List<WorldEntity?> _lastSnapshot = new();
-
+        private static readonly Stopwatch FrameTimer = Stopwatch.StartNew();
+        private const double TargetFrameMs = 0.5;
         protected override void FrameAction()
         {
+            if (FrameTimer.Elapsed.TotalMilliseconds < TargetFrameMs)
+                return;
+
+            FrameTimer.Restart();
             List<WorldEntity?> newSnapshot = GetWorldEntities();
 
             lock (_lastSnapshot)
@@ -188,7 +250,6 @@ namespace Titled_Gui.Data.Entity
                 GameState.worldEntities = _lastSnapshot.ToList();
             }
 
-            Thread.SpinWait(20);
         }
     }
 }

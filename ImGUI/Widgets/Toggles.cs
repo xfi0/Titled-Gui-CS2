@@ -3,7 +3,6 @@ using System.Numerics;
 using ValveResourceFormat.ResourceTypes;
 using static Titled_Gui.ImGUI.Widgets.ColorPickers;
 using static Titled_Gui.ImGUI.Widgets.Misc;
-using static ValveResourceFormat.Blocks.ResourceIntrospectionManifest.ResourceDiskEnum;
 
 namespace Titled_Gui.ImGUI.Widgets
 {

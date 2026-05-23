@@ -23,11 +23,11 @@ namespace Titled_Gui.Modules.Visual
         public static int CurrentEndPos = 0;
         private static Vector2 StartPos = new();
         private static Vector2 EndPos = new();
-        private static float headOffset = 50f;
+        private const float HeadOffset = 50f;
         public static float RGBSpeed = 0.5f;
         public static void DrawTracers(Entity? entity, Renderer renderer)
         {
-            if (!EnableTracers || entity == null || entity.PawnAddress == LocalPlayer.PawnAddress || (TeamCheck && entity.Team == LocalPlayer.Team) || (BoxESP.FlashCheck && LocalPlayer.IsFlashed) || entity?.Bones2D?.Count <= 0 || entity?.Position2D == new Vector2(-99, -99) || entity?.Bones2D == null) return;
+            if (!EnableTracers || entity == null || entity.PawnAddress == LocalPlayer.PawnAddress || (TeamCheck && entity.Team == LocalPlayer.Team) || (BoxESP.FlashCheck && LocalPlayer.IsFlashed) || entity?.Bones?.Count <= 0 || entity?.Position2D == new Vector2(-99, -99) || entity?.Bones == null) return;
 
             switch (CurrentStartPos)
             {
@@ -44,7 +44,7 @@ namespace Titled_Gui.Modules.Visual
             switch (CurrentEndPos)
             {
                 case 0: EndPos = entity.Position2D; break;
-                case 1: EndPos = new(entity.Bones2D[2].X, entity.Bones2D[2].Y + headOffset); break;
+                case 1: EndPos = new(entity.Bones[(int)BoneESP.BoneIds.Head].Position2D.X, entity.Bones[(int)BoneESP.BoneIds.Head].Position2D.Y + HeadOffset); break;
             }
 
             Vector4 lineColor = RGB ? Colors.Rgb() : (LocalPlayer.Team == entity.Team ? TeamColor : EnemyColor);

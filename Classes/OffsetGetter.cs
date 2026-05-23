@@ -23,13 +23,13 @@ namespace Titled_Gui.Classes
             }
         }
         // urls to pull the dumper outputs from
-        private const string OffsetsUrl = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.cs";
+        private const string OffsetsUrl = "https://raw.githubusercontent.com/xfi0/cs2-dumper/main/output/offsets.cs";
         private const string SecondaryOffsetsUrl = "https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/refs/heads/main/offsets.cs";
-        private const string ClientDllUrl = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/client_dll.cs";
+        private const string ClientDllUrl = "https://raw.githubusercontent.com/xfi0/cs2-dumper/main/output/client_dll.cs";
         private const string SecondaryClientDllUrl = "https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/refs/heads/main/client_dll.cs";
-        private const string ButtonsUrl = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/buttons.cs";
+        private const string ButtonsUrl = "https://raw.githubusercontent.com/xfi0/cs2-dumper/main/output/buttons.cs";
         private const string SecondaryButtonsUrl = "https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/refs/heads/main/buttons.cs";
-        private const string Engine2Url = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/engine2_dll.cs";
+        private const string Engine2Url = "https://raw.githubusercontent.com/xfi0/cs2-dumper/main/output/engine2_dll.cs";
         private const string SecondaryEngine2Url = "https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/refs/heads/main/engine2_dll.cs";
 
         private static string OffsetsContent = string.Empty;
@@ -77,11 +77,8 @@ namespace Titled_Gui.Classes
             { "m_flC4Blow", new() { new Offset("m_flC4Blow"), new Offset("m_flDetonateTime") } },
             { "current_time", new() { new Offset("current_time"), new Offset("m_flCurrentTime") } },
             { "m_bBombPlanted", new() { new Offset("m_bBombPlanted"), new Offset("m_bBombTicking") } },
-            { "m_iszPlayerName", new() { new Offset("m_iszPlayerName") } },
             { "m_pClippingWeapon", new() { new Offset("m_pClippingWeapon") } },
-            { "m_Item", new() { new Offset("m_Item"), new Offset("m_hActiveWeapon") } },
             { "m_iItemDefinitionIndex", new() { new Offset("m_iItemDefinitionIndex") } },
-            { "m_AttributeManager", new() { new Offset("m_AttributeManager") } },
             { "m_bSpottedByMask", new() { new Offset("m_bSpottedByMask") } },
             { "m_pWeaponServices", new() { new Offset("m_pWeaponServices") } },
             { "m_hActiveWeapon", new() { new Offset("m_hActiveWeapon") } },
@@ -126,6 +123,10 @@ namespace Titled_Gui.Classes
             { "m_nBombSite", new() { new Offset("m_nBombSite") } },
             { "m_bBeingDefused", new() { new Offset("m_bBeingDefused") } },
             { "m_bC4Activated", new() { new Offset("m_bC4Activated") } },
+            { "m_pObserverServices", new() { new Offset("m_pObserverServices") } },
+            { "m_hObserverTarget", new() { new Offset("m_hObserverTarget") } },
+            { "m_hPawn", new() { new Offset("m_hPawn") } },
+            { "m_szCustomName", new() { new Offset("m_szCustomName") } },
 
 
             // EXPLICIT CLASS THING
@@ -137,7 +138,17 @@ namespace Titled_Gui.Classes
             { "m_entitySpottedState", new() { new Offset("m_entitySpottedState", "C_CSPlayerPawn") } },
             { "m_vecOrigin", new() { new Offset("m_vecOrigin", "CGameSceneNode") } },
             { "m_angRotation", new() { new Offset("m_angRotation", "CGameSceneNode") } },
-            { "m_vSmokeColor", new() { new Offset("m_vSmokeColor", "C_SmokeGrenadeProjectile ") } },
+            { "m_vSmokeColor", new() { new Offset("m_vSmokeColor", "C_SmokeGrenadeProjectile") } },
+            { "m_vSmokeDetonationPos", new() { new Offset("m_vSmokeDetonationPos", "C_SmokeGrenadeProjectile") } },
+            { "m_VoxelFrameData", new() { new Offset("m_VoxelFrameData", "C_SmokeGrenadeProjectile") } },
+            { "m_nVoxelFrameDataSize", new() { new Offset("m_nVoxelFrameDataSize", "C_SmokeGrenadeProjectile") } },
+            { "m_nRandomSeed", new() { new Offset("m_nRandomSeed", "C_SmokeGrenadeProjectile") } },
+            { "m_bDidSmokeEffect", new() { new Offset("m_bDidSmokeEffect", "C_SmokeGrenadeProjectile") } },
+            { "m_nInButtonsWhichAreToggles", new() { new Offset("m_nInButtonsWhichAreToggles", "C_SmokeGrenadeProjectile") } },
+            { "m_CommandContext", new() { new Offset("m_CommandContext", "C_SmokeGrenadeProjectile") } },
+            { "m_iszPlayerName", new() { new Offset("m_iszPlayerName", "CBasePlayerController") } },
+            { "m_AttributeManager", new() { new Offset("m_AttributeManager", "C_EconEntity") } },
+            { "m_Item", new() { new Offset("m_Item", "C_AttributeContainer") } },
             //{ "m_bBombPlanted", new() { new Offset("m_bBombPlanted", "C_CSGameRules") } },
 
         };

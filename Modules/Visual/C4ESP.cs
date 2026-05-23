@@ -24,7 +24,6 @@ namespace Titled_Gui.Modules.Visual
                 return;
             float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
             Vector3[] corners3D = Get3DCorners(c4);
-            Console.WriteLine(corners3D.Length);
             Vector2[] corners2D = new Vector2[corners3D.Length];
 
             for (int i = 0; i < corners3D.Length; i++)

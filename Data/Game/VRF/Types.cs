@@ -10,18 +10,14 @@ namespace Titled_Gui.Data.Game.VRF
         {
             public Vector3 Min, Max;
 
-            public bool Intersect(Vector3 origin, Vector3 end)
+            public bool Intersect(Vector3 origin, Vector3 end, Vector3 invDir)
             {
-                Vector3 dir = end - origin;
-
-                float invX = dir.X == 0f ? float.MaxValue : 1f / dir.X, invY = dir.Y == 0f ? float.MaxValue : 1f / dir.Y, invZ = dir.Z == 0f ? float.MaxValue : 1f / dir.Z;
-
-                float t1 = (Min.X - origin.X) * invX;
-                float t2 = (Max.X - origin.X) * invX;
-                float t3 = (Min.Y - origin.Y) * invY;
-                float t4 = (Max.Y - origin.Y) * invY;
-                float t5 = (Min.Z - origin.Z) * invZ;
-                float t6 = (Max.Z - origin.Z) * invZ;
+                float t1 = (Min.X - origin.X) * invDir.X;
+                float t2 = (Max.X - origin.X) * invDir.X;
+                float t3 = (Min.Y - origin.Y) * invDir.Y;
+                float t4 = (Max.Y - origin.Y) * invDir.Y;
+                float t5 = (Min.Z - origin.Z) * invDir.Z;
+                float t6 = (Max.Z - origin.Z) * invDir.Z;
 
                 float tmin = Math.Max(Math.Max(Math.Min(t1, t2), Math.Min(t3, t4)), Math.Min(t5, t6));
                 float tmax = Math.Min(Math.Min(Math.Max(t1, t2), Math.Max(t3, t4)), Math.Max(t5, t6));

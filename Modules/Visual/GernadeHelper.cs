@@ -18,20 +18,24 @@ namespace Titled_Gui.Modules.Visual
         public static void DrawAllLineups()
         {
             string mapName = GlobalVar.GetCurrentMapName();
-            if (string.IsNullOrEmpty(mapName)) return;
+            if (string.IsNullOrEmpty(mapName)) 
+                return;
 
-            string dir = Path.Combine(AppContext.BaseDirectory, "lineups", mapName.Replace(".vpk", ""));
-            if (!Directory.Exists(dir)) return;
+            string directory = Path.Combine(AppContext.BaseDirectory, "lineups", mapName.Replace(".vpk", ""));
+            if (!Directory.Exists(directory))
+                return;
 
             float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
-            foreach (string file in Directory.GetFiles(dir, "*.json"))
+            foreach (string file in Directory.GetFiles(directory, "*.json"))
             {
                 var lineup = JsonConvert.DeserializeObject<Types.GernadeHelperType>(File.ReadAllText(file));
-                if (lineup == null) continue;
+                if (lineup == null) 
+                    continue;
 
-                float dist = Vector3.Distance(GameState.LocalPlayer.Position, lineup.Position);
-                if (dist > 300f) continue;
+                float distance = Vector3.Distance(GameState.LocalPlayer.Position, lineup.Position);
+                if (distance > 300f) 
+                    continue;
 
                 Draw3DCircle(viewMatrix, lineup.Position, 30f,
                     ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 1f, 0f, 1f)));
@@ -44,11 +48,11 @@ namespace Titled_Gui.Modules.Visual
                 );
 
 
-                Vector2 screenPos = Calculate.WorldToScreen(viewMatrix, lineup.Position);
-                if (screenPos != new Vector2(-99, -99))
+                Vector2 position2D = Calculate.WorldToScreen(viewMatrix, lineup.Position);
+                if (position2D != new Vector2(-99, -99))
                 {
                     GameState.renderer.drawList.AddText(
-                        new System.Numerics.Vector2(screenPos.X - 20f, screenPos.Y - 20f),
+                        new System.Numerics.Vector2(position2D.X - 20f, position2D.Y - 20f),
                         ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)),
                         lineup.Name
                     );
@@ -58,7 +62,7 @@ namespace Titled_Gui.Modules.Visual
 
         private static void Draw3DCircle(float[] viewMatrix, Vector3 center, float radius, uint color, int segments = 32)
         {
-            List<Vector2> screenPoints = new();
+            List<Vector2> positions2D = new();
 
             for (int i = 0; i < segments; i++)
             {
@@ -70,20 +74,20 @@ namespace Titled_Gui.Modules.Visual
                     center.Z
                 );
 
-                Vector2 screenPoint = Calculate.WorldToScreen(viewMatrix, worldPoint);
-                if (screenPoint == new Vector2(-99, -99))
+                Vector2 position2D = Calculate.WorldToScreen(viewMatrix, worldPoint);
+                if (position2D == new Vector2(-99, -99))
                 {
-                    screenPoints.Clear();
+                    positions2D.Clear();
                     continue;
                 }
 
-                screenPoints.Add(screenPoint);
+                positions2D.Add(position2D);
             }
 
-            for (int i = 0; i < screenPoints.Count; i++)
+            for (int i = 0; i < positions2D.Count; i++)
             {
-                Vector2 a = screenPoints[i];
-                Vector2 b = screenPoints[(i + 1) % screenPoints.Count];
+                Vector2 a = positions2D[i];
+                Vector2 b = positions2D[(i + 1) % positions2D.Count];
                 GameState.renderer.drawList.AddLine(a, b, color, 2f);
             }
         }

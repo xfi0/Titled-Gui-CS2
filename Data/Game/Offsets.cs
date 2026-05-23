@@ -2,6 +2,24 @@
 {
     public class Offsets
     {
+        public static int dwCSGOInput = 0x2353190;
+        public static int dwEntityList = 0x24E44E0;
+        public static int dwGameEntitySystem = 0x24E44E0;
+        public static int dwGameEntitySystem_highestEntityIndex = 0x2090;
+        public static int dwGameRules = 0x233E258;
+        public static int dwGlobalVars = 0x205E6D0;
+        public static int dwGlowManager = 0x233B050;
+        public static int dwLocalPlayerController = 0x231D830;
+        public static int dwLocalPlayerPawn = 0x2069800;
+        public static int dwPlantedC4 = 0x234CF08;
+        public static int dwPrediction = 0x2069710;
+        public static int dwSensitivity = 0x233BB68;
+        public static int dwSensitivity_sensitivity = 0x58;
+        public static int dwViewAngles = 0x2353818;
+        public static int dwViewMatrix = 0x2343AB0;
+        public static int dwViewRender = 0x2343E58;
+        public static int dwWeaponC4 = 0x22BBE30;
+
         public static int m_pCameraServices = 0x11E0;
         public static int m_iFOV = 0x210;
         public static int m_bIsScoped = 0x23E8;
@@ -10,28 +28,17 @@
         public static int m_bSpotted = 0x8;
         public static int m_iIDEntIndex = 0x1458;
         public static int m_pSceneNode = 0x8;
-        public static int dwViewMatrix = 0x1A6D260;
         public static int m_vecViewOffset = 0xCB0;
-        public static int dwViewAngles = 0x1A774D0;
         public static int m_lifeState = 0x348;
         public static int m_vOldOrigin = 0x1324;
         public static int m_iTeamNum = 0x3E3;
         public static int m_hPlayerPawn = 0x824;
-        public static int dwLocalPlayerPawn = 0x18580D0;
-        public static int dwEntityList = 0x1A044C0;
         public static int m_flFlashBangTime = 0x13F8;
         public static int m_modelState = 0x170;
         public static int m_pGameSceneNode = 0x328;
-        public static int dwCSGOInput = 0x1A75250;
         public static int current_time = 0x5C0;
-        public static int dwGlobalVars = 0x1849EB0;
-        public static int dwPlantedC4 = 0x1A702F8;
         public static int m_bBombPlanted = 0x1B7B;
-        public static int dwGameRules = 0x9A5;
-        public static int dwSensitivity_sensitivity = 0x40;
-        public static int dwSensitivity = 0x1A67858;
         public static int m_iszPlayerName = 0x660;
-        public static int m_pClippingWeapon = 0x13A0;
         public static int m_Item = 0x50;
         public static int m_iItemDefinitionIndex = 0x1BA;
         public static int m_AttributeManager = 0x1148;
@@ -65,7 +72,6 @@
         public static int m_iSpectatorSlotCount = 0x0;
         public static int m_iPing = 0x0;
         public static int m_bIsWalking = 0x0;
-        public static int dwLocalPlayerController = 0x0;
         public static int m_bIsDefusing = 0x0;
         public static int m_bInBombZone = 0x0;
         public static int m_vecAbsOrigin = 0x0;
@@ -81,19 +87,6 @@
         public static int m_bDormant = 0x0;
         public static int m_CommandContext = 0x600;
         public static int m_nInButtonsWhichAreToggles = 0x6A8;
-        //public static int m_nTickBase = 0x6B0;
-        //public static int m_hPawn = 0x6B4;
-        //public static int m_bKnownTeamMismatch = 0x6B8;
-        //public static int m_hPredictedPawn = 0x6BC;
-        //public static int m_nSplitScreenSlot = 0x6C0;
-        //public static int m_hSplitOwner = 0x6C4;
-        //public static int m_hSplitScreenPlayers = 0x6C8;
-        //public static int m_bIsHLTV = 0x6E0;
-        //public static int m_iConnected = 0x6E4;
-        //public static int m_steamID = 0x770;
-        //public static int m_bIsLocalPlayerController = 0x778; 
-        //public static int m_bNoClipEnabled = 0x779;
-        //public static int m_iDesiredFOV = 0x77C;
         public static int m_nSmokeEffectTickBegin = 0x1468;
         public static int m_bDidSmokeEffect = 0x146C;
         public static int m_nRandomSeed = 0x1470;
@@ -112,5 +105,21 @@
         public static int m_nBombSite = 0x0;
         public static int m_bBeingDefused = 0x0;
         public static int m_bC4Activated = 0x0;
+        public static int m_name = 0x0;
+        public static int m_sSurfaceProperty = 0x8;
+        public static int m_sBoneName = 0x10;
+        public static int m_vMinBounds = 0x18;
+        public static int m_vMaxBounds = 0x24;
+        public static int m_flShapeRadius = 0x30;
+        public static int m_nBoneNameHash = 0x34;
+        public static int m_nGroupId = 0x38;
+        public static int m_nShapeType = 0x3C;
+        public static int m_bTranslationOnly = 0x3D;
+        public static int m_CRC = 0x40;
+        public static int m_cRenderColor = 0x44;
+        public static int m_pObserverServices = 0x48;
+        public static int m_hObserverTarget = 0x48;
+        public static int m_hPawn = 0x48;
+        public static int m_szCustomName = 0x48;
     }
 }

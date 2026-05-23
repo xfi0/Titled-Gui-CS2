@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using System.Numerics;
+using System.Xml.Linq;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
@@ -15,20 +16,22 @@ namespace Titled_Gui.Modules.Visual
         {
             if (!Enabled || e == null || e.Position2D == new Vector2(-99, -99) ||
                 e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.Health <= 0 ||
-                BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed || e?.Bones2D == null || e?.Bones2D?.Count < 2 ||
-                e?.Bones2D?[2] == new Vector2(-99, -99))
+                BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed || e?.Bones == null || e?.Bones?.Count < 2 ||
+                e?.Bones?[(int)BoneESP.BoneIds.Head].Position2D == new Vector2(-99, -99))
                 return;
 
-            var rect = BoxESP.GetBoxRect(e ?? GameState.LocalPlayer);
+            var rect = BoxESP.GetBoxRect(e);
 
             if (rect == null)
                 return;
 
             var (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle) = rect.Value;
-
-            Vector2 textPos = new(topRight.X + 12, topRight.Y);
-
+            float offsetY = 20f;
             string name = (e?.Name ?? "").Split('\0')[0].Replace("?", "").Replace("\0", "");
+
+            Vector2 textSize = ImGui.CalcTextSize(name);
+            Vector2 textPos = new(bottomMiddle.X - textSize.X, topRight.Y - offsetY);
+
             renderer.drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(NameTextColor), name);
 
         }

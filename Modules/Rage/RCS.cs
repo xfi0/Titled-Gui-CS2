@@ -19,6 +19,7 @@ namespace Titled_Gui.Modules.Rage
             {
                 Vector3 aimPunch = GameState.LocalPlayer.AimPunchAngle * (Strength / 100f);
                 Vector3 newAngles;
+
                 aimPunch.X = Calculate.NormalizeAngle(aimPunch.X);
                 aimPunch.Y = Calculate.NormalizeAngle(aimPunch.Y);
 

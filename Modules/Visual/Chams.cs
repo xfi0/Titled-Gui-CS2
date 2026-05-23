@@ -1,22 +1,47 @@
-﻿using Titled_Gui.Data.Entity;
+﻿using System.Numerics;
+using ImGuiNET;
+using Titled_Gui.Classes;
+using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
 {
     internal class Chams
     {
+        public static bool Enabled = false;
+        public static bool VisibilityCheck = true;
+        public static bool TeamCheck = true;
         public static float BoneThickness = 10f;
-        public static bool DrawOnSelf = false;
-        public static bool EnableChams = true;
+        public static Vector4 EnemyColor = new(1, 0, 0, 1f);
+        public static Vector4 TeamColor = new(1, 0, 0, 1f);
+        public static Vector4 EnemyColorOccluded = new(1, 0, 0, 1f);
+        public static Vector4 TeamColorOccluded = new(1, 0, 0, 1f);
 
         public static void Draw(Entity? entity)
         {
-            if (entity == null || entity.Bones2D == null ||
-                (DrawOnSelf && entity == GameState.LocalPlayer) ||
-                BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed ||
-                entity.Bones2D.Count <= 0 || !EnableChams)
+            if (entity == null || BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed ||
+                !Enabled || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || TeamCheck && entity.Team == GameState.LocalPlayer.Team)
                 return;
-                
+
+            foreach (Types.Hitbox? hitbox in entity.HitBoxes)
+            {
+                if (hitbox == null || hitbox.BonePosition2D == new Vector2(-99, -99))
+                    continue;
+
+                uint preConvertedColor = (VisibilityCheck && !hitbox.Bone.IsVisible)
+                    ? (entity.IsEnemy
+                        ? ImGui.ColorConvertFloat4ToU32(EnemyColorOccluded)
+                        : ImGui.ColorConvertFloat4ToU32(TeamColorOccluded))
+                    : (entity.IsEnemy
+                        ? ImGui.ColorConvertFloat4ToU32(EnemyColor)
+                        : ImGui.ColorConvertFloat4ToU32(TeamColor));
+
+
+                float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+
+                DrawHelpers.DrawCapsule3D(hitbox.MinBounds, hitbox.MaxBounds, hitbox.ShapeRadius, hitbox.BoneRotation,
+                    hitbox.BonePosition, viewMatrix, preConvertedColor);
+            }
         }
     }
 }

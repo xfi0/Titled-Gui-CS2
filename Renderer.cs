@@ -11,6 +11,7 @@ using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Game.VRF;
+using Titled_Gui.ImGUI.Widgets;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
@@ -21,7 +22,7 @@ using static Titled_Gui.Data.Game.MapParser.MapLoader;
 using static Titled_Gui.ImGUI.Widgets.ColorPickers;
 using static Titled_Gui.ImGUI.Widgets.Combos;
 using static Titled_Gui.ImGUI.Widgets.Sliders;
-using static Titled_Gui.ImGUI.Widgets.Toggles;
+using static Titled_Gui.ImGUI.Widgets.Toggles; 
 using Colors = Titled_Gui.Classes.Colors;
 
 namespace Titled_Gui
@@ -335,6 +336,8 @@ namespace Titled_Gui
                 ImGui.SetWindowSize(new(850, 650));
 
                 Vector2 tabPos = ImGui.GetCursorScreenPos();
+               
+
                 tabSize = new(100, ImGui.GetContentRegionAvail().Y);
                 drawList.AddRectFilled(tabPos, tabPos + tabSize, ImGui.ColorConvertFloat4ToU32(SidebarColor), 12.0f,
                     ImDrawFlags.RoundCornersLeft);
@@ -358,7 +361,9 @@ namespace Titled_Gui
                     RenderTabButton("C", 2);
                     RenderTabButton("\uEB54", 3);
 
-                    var availableHeight = ImGui.GetContentRegionAvail().Y;
+                    var availableSpace = ImGui.GetContentRegionAvail();
+                    var availableHeight = availableSpace.Y;
+                    var availableWidth = availableSpace.X;
                     const float cogButtonHeight = 35f;
                     var spacingHeight = availableHeight - cogButtonHeight - 5f;
 
@@ -407,7 +412,7 @@ namespace Titled_Gui
                     ImGui.PopStyleVar();
                     ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(16, 16));
                     ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 12.0f);
-                    RenderTitle("Titled");
+                    //RenderTitle("Titled");
                     switch (selectedTab)
                     {
                         case 0: // legit
@@ -454,7 +459,7 @@ namespace Titled_Gui
                                 RenderIntSlider("FOV Size", ref Modules.Rage.Aimbot.FovSize, 10, 1000, "%d");
                                 RenderColorSetting("FOV Color", ref Modules.Rage.Aimbot.FovColor);
                                 RenderBoolSetting("Visibility Check", ref Aimbot.VisibilityCheck);
-                                RenderBoolSetting("Target Line", ref Aimbot.targetLine);
+                                RenderBoolSetting("Target Line", ref Aimbot.TargetLine);
                             });
 
                             RenderBoolSetting("RCS", ref RCS.Enabled);
@@ -505,7 +510,7 @@ namespace Titled_Gui
                             RenderBoolSetting("Flash Check", ref BoxESP.FlashCheck);
                             RenderBoolSetting("Enable Health Bar", ref Modules.Visual.HealthBar.EnableHealthBar);
                             RenderBoolSetting("Enable Armor Bar", ref ArmorBar.EnableArmorhBar);
-                            RenderBoolSetting("Show Distance Text", ref BoxESP.EnableDistanceTracker);
+                            RenderBoolSetting("Show Distance Text", ref DistanceText.Enabled);
 
                             RenderBoolSetting("Enable Tracers", ref Tracers.EnableTracers);
                             RenderIntCombo("Tracer Start Position", ref Tracers.CurrentStartPos,
@@ -515,13 +520,11 @@ namespace Titled_Gui
                             RenderFloatSlider("Tracer Thickness", ref Tracers.LineThickness, 0.05f, 5f);
 
                             RenderBoolSetting("Show Name", ref NameDisplay.Enabled);
-
-                            RenderBoolSetting("Enable Bone ESP", ref Modules.Visual.BoneESP.EnableBoneESP);
+                            RenderBoolSettingWith2ColorPickers("Enable Bone ESP", ref Modules.Visual.BoneESP.EnableBoneESP, ref BoneESP.VisibleBoneColor, ref BoneESP.OccludedBoneColor);
                             RenderIntCombo("Bone ESP Type", ref BoneESP.CurrentType, BoneESP.Types.ToList(),
                                 BoneESP.Types.Length);
                             RenderBoolSetting("Team Check", ref BoneESP.TeamCheck);
                             //RenderFloatSlider("Bone Thickness", ref BoneESP.BoneThickness, 1f, 10f, "%.1f");
-                            RenderColorSetting("Bone Color", ref BoneESP.BoneColor);
                             RenderBoolSetting("Enable RGB", ref Colors.RGB);
                             RenderFloatSlider("Bone Glow", ref BoneESP.GlowAmount, 0, 1f);
                             //RenderBoolSetting("Enable Chams", ref Modules.Visual.Chams.EnableChams);
@@ -542,6 +545,8 @@ namespace Titled_Gui
                                 ref SoundESP.TeamColor, ref SoundESP.EnemyColor);
                             RenderBoolSettingWith1ColorPicker("Ping Display", ref PingDisplay.Enabled,
                                 ref PingDisplay.PingTextColor);
+                            RenderBoolSettingWith2ColorPickers("Chams", ref Chams.Enabled,
+                                ref Chams.TeamColor, ref Chams.EnemyColor);
                             ImGui.EndChild();
 
                             ImGui.NextColumn();
@@ -568,7 +573,7 @@ namespace Titled_Gui
                                 ref Modules.Visual.BombTimerOverlay.EnableTimeOverlay);
                             RenderBoolSettingWithWarning("Anti Flash", ref Modules.Visual.NoFlash.NoFlashEnable);
                             RenderBoolSettingWithWarning("FOV Changer", ref FovChanger.Enabled);
-                            RenderBoolSettingWithWarning("Third Person", ref ThirdPerson.enabled);
+                            RenderBoolSettingWithWarning("Third Person", ref ThirdPerson.Enabled);
                             RenderIntSlider("Desired FOV", ref FovChanger.FOV, 60, 160);
 
                             RenderBoolSettingWith2ColorPickers("Radar", ref Radar.IsEnabled, ref Radar.EnemyPointColor,
@@ -738,7 +743,7 @@ namespace Titled_Gui
             {
                 WorldESP.EntityESP();
 
-                if (Aimbot.targetLine)
+                if (Aimbot.TargetLine)
                     Aimbot.RenderTargetLine();
                 HitStuff.CreateHitText();
 
@@ -775,9 +780,12 @@ namespace Titled_Gui
                     }
                 }
 
-                C4ESP.DrawESP();
+                if (C4ESP.BoxEnabled || C4ESP.TextEnabled)
+                {
+                    C4ESP.DrawESP();
+                }
 
-                if (Chams.EnableChams)
+                if (Chams.Enabled)
                 {
                     foreach (Entity? entity in entities)
                     {
@@ -804,7 +812,7 @@ namespace Titled_Gui
                     }
                 }
 
-                if (BoxESP.EnableDistanceTracker)
+                if (DistanceText.Enabled)
                 {
                     foreach (var entity in entities)
                     {
@@ -812,22 +820,16 @@ namespace Titled_Gui
                     }
                 }
 
+
                 if (Tracers.EnableTracers)
                 {
                     foreach (var entity in GameState.Entities)
                     {
-                        if (!Modules.Visual.BoxESP.TeamCheck || (Modules.Visual.BoxESP.TeamCheck &&
-                                                                 entity.Team != GameState.LocalPlayer.Team))
-                        {
-                            Tracers.DrawTracers(entity, this);
-                        }
+                        Tracers.DrawTracers(entity, this);
                     }
                 }
 
-                foreach (var entity in GameState.Entities)
-                {
-                    SoundESP.DrawSoundESP(entity);
-                }
+                SoundESP.Draw();
 
                 foreach (var entity in GameState.Entities)
                 {
@@ -850,20 +852,13 @@ namespace Titled_Gui
                 {
                     foreach (var entity in GameState.Entities)
                     {
-                        if (entity != null)
-                        {
-                            var rect = BoxESP.GetBoxRect(entity);
-                            if (rect != null)
-                            {
-                                var (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle) = rect.Value;
-                                Vector2 barTopRight = new(topRight.X - HealthBar.HealthBarWidth + 8, topRight.Y);
-                                float height = bottomRight.Y - topLeft.Y;
+                        if (entity == null)
+                            continue;
 
-                                ArmorBar.DrawArmorBar(entity, this, entity.Armor, 100, barTopRight, height);
-                            }
-                        }
+                        ArmorBar.DrawArmorBar(entity, this, entity.Armor, 100);
                     }
                 }
+
                 //GernadeHelper.DrawAllLineups();
 
             }

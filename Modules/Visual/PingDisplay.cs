@@ -14,8 +14,8 @@ namespace Titled_Gui.Modules.Visual
         {
             if (!Enabled || e == null || e.Position2D == new Vector2(-99, -99) ||
                 e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.Health <= 0 ||
-                (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || e?.Bones2D == null || e?.Bones2D?.Count < 2 ||
-                e?.Bones2D?[2] == new Vector2(-99, -99))
+                (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || e?.Bones == null || e.Bones.Count < 2 ||
+                e.Bones[(int)BoneESP.BoneIds.Head].Position2D == new Vector2(-99, -99))
                 return;
 
             var rect = BoxESP.GetBoxRect(e ?? GameState.LocalPlayer);

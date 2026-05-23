@@ -4,7 +4,7 @@ namespace Titled_Gui.Modules.Visual
 {
     internal class ThirdPerson : Classes.ThreadService // THIS WILL GET YOU BANNED USE AT YOUR OWN RISK https://www.unknowncheats.me/forum/counter-strike-2-a/710298-third-person-external.html
     {
-        public static bool enabled = false;
+        public static bool Enabled = false;
         private static bool patchApplied;
         private static IntPtr cachedlp;
         static IntPtr jnePatch = 0x7E3697;
@@ -17,12 +17,12 @@ namespace Titled_Gui.Modules.Visual
                 cachedlp = currentPawn;
             }
 
-            if (enabled)
+            if (Enabled)
             {
                 ApplyPatch();
                 SetThirdPersonState(true);
             }
-            else if (!enabled)
+            else if (!Enabled)
             {
                 SetThirdPersonState(false);
                 RemovePatch();
@@ -49,7 +49,7 @@ namespace Titled_Gui.Modules.Visual
 
         private static void SetThirdPersonState(bool enabled)
         {
-            GameState.swed.WriteBool(GameState.client + Offsets.dwCSGOInput + 0x251, enabled);
+            GameState.swed.WriteInt(GameState.client + Offsets.dwCSGOInput + 0x251, enabled ? 256 : 0);
         }
 
         private static bool NeedsReapply(IntPtr currentPawn)
@@ -59,7 +59,7 @@ namespace Titled_Gui.Modules.Visual
 
         protected override void FrameAction()
         {
-            if (!enabled) return;
+            if (!Enabled) return;
 
             ThirdPerson.Run(GameState.LocalPlayerPawn);
         }

@@ -18,7 +18,6 @@ namespace Titled_Gui.Modules.Visual
             ["2D Box", "3D Box", "Edges", "Pyramid", "Star", "Hexagon", "Rhombus", "Pentagram", "Pentagon"];
 
         public static int CurrentShape = 0;
-        public static bool EnableDistanceTracker = false;
         public static bool InnerOutline = false;
         public static bool OuterOutline = true;
         public static Vector2 InnerOutlineThickness = new(1f, 1f);
@@ -47,8 +46,8 @@ namespace Titled_Gui.Modules.Visual
         {
             if (!EnableESP || entity == null || (TeamCheck && entity.Team == GameState.LocalPlayer.Team) ||
                 entity.PawnAddress == GameState.LocalPlayer.PawnAddress ||
-                (FlashCheck && GameState.LocalPlayer.IsFlashed) || entity?.Bones2D?.Count < 0 ||
-                entity?.Bones2D == null || entity.Position2D == new Vector2(-99, -99)) return;
+                (FlashCheck && GameState.LocalPlayer.IsFlashed) || entity?.Bones?.Count < 0 ||
+                entity?.Bones == null || entity.Position2D == new Vector2(-99, -99)) return;
 
             try
             {
@@ -56,7 +55,7 @@ namespace Titled_Gui.Modules.Visual
                 Vector4 boxColor = GetBoxColor(entity);
                 Vector4 outlineColor = isTeam ? OutlineTeamColor : OutlineEnemyColor;
                 float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
-                Vector4 fillColor = entity.Visible ? (isTeam ? TeamFill : EnemyFill) : (isTeam ? OccludedTeam : OccludedEnemy);
+                Vector4 fillColor = (BoneESP.visibilityCheck && !entity.Visible) ? (isTeam ? OccludedTeam : OccludedEnemy) : (isTeam ? TeamFill : EnemyFill);
                 fillColor.W = BoxFillOpacity;
 
 
@@ -466,7 +465,7 @@ namespace Titled_Gui.Modules.Visual
             if (EnableESP)
                 DrawBoxPreview(center);
 
-            if (EnableDistanceTracker)
+            if (DistanceText.Enabled)
                 DrawDistancePreview(center);
 
             if (BoneESP.EnableBoneESP)
@@ -479,7 +478,7 @@ namespace Titled_Gui.Modules.Visual
                 ArmorBar.DrawArmorBarPreview(center + new Vector2(70, -100));
 
             if (NameDisplay.Enabled)
-                NameDisplay.DrawNamePreview(center + new Vector2(70, -100));
+                NameDisplay.DrawNamePreview(center + new Vector2(0, -120));
 
             if (Tracers.EnableTracers)
                 Tracers.DrawTracerPreview(center);
@@ -650,13 +649,24 @@ namespace Titled_Gui.Modules.Visual
             if (entity == null || entity.Position2D == Vector2.Zero || entity.ViewPosition2D == Vector2.Zero)
                 return null;
 
+            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
             float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
             float halfWidth = entityHeight / 3f;
             float centerX = (entity.ViewPosition2D.X + entity.Position2D.X) / 2f;
-            float topY = entity.Bones2D != null && entity.Bones2D.Count > 2
-                ? entity.Bones2D[2].Y
-                : entity.ViewPosition2D.Y;
-            float bottomY = entity.Position2D.Y;
+            Vector3 hitboxTop = entity.Position + new Vector3(0, 0, entity.VecMax.Z);
+            Vector3 hitboxBottom = entity.Position + new Vector3(0, 0, entity.VecMin.Z);
+
+            Vector2 top2D = Calculate.WorldToScreen(viewMatrix, hitboxTop);
+            Vector2 bottom2D = Calculate.WorldToScreen(viewMatrix, hitboxBottom);
+
+            if (top2D == new Vector2(-99, -99) || bottom2D == new Vector2(-99, -99))
+                return null;
+
+            float topY = top2D.Y;
+            float bottomY = bottom2D.Y;
+            float centerY = (topY + bottomY) / 2f;
+            Vector2 rectTop = new(centerX - halfWidth, topY);
+            Vector2 rectBottom = new(centerX + halfWidth, bottomY);
 
             Vector2 topLeft = new(centerX - halfWidth, topY);
             Vector2 topRight = new(centerX + halfWidth, topY);

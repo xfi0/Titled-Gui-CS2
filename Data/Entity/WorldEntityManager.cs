@@ -9,65 +9,66 @@ namespace Titled_Gui.Data.Entity
     public class WorldEntityManager : ThreadService
     {
         private static readonly Dictionary<string, string> EntityType = new() {
-            {"chicken", "Chicken"},
-            {"hostage_entity", "Hostage"}
-        };
+    {"C_Chicken", "Chicken"},
+    {"C_Hostage", "Hostage"}
+};
 
         private static readonly Dictionary<string, string> ProjectilesType = new() {
-            {"smokegrenade_projectile", "Smoke Grenade"},
-            {"flashbang_projectile", "Flashbang"},
-            {"hegrenade_projectile", "HE Grenade"},
-            {"molotov_projectile", "Molotov"},
-            {"incendiarygrenade_projectile", "Incendiary Grenade"},
-            {"decoy_projectile", "Decoy Grenade"}
-        };
+    {"C_SmokeGrenadeProjectile", "Smoke Grenade"},
+    {"C_FlashbangProjectile", "Flashbang"},
+    {"C_HEGrenadeProjectile", "HE Grenade"},
+    {"C_MolotovProjectile", "Molotov"},
+    {"C_Inferno", "Molotov Fire"},
+    {"C_IncendiaryGrenadeProjectile", "Incendiary Grenade"},
+    {"C_DecoyProjectile", "Decoy Grenade"}
+};
 
-        private static readonly Dictionary<string, string> WeaponsType = new(){
-            {"weapon_ak47", "AK-47"},
-            {"weapon_m4a1", "M4A1"},
-            {"weapon_awp", "AWP"},
-            {"weapon_elite", "Elite"},
-            {"weapon_famas", "Famas"},
-            {"weapon_flashbang", "Flashbang"},
-            {"weapon_g3sg1", "G3SG1"},
-            {"weapon_galilar", "Galil AR"},
-            {"weapon_healthshot", "Health Shot"},
-            {"weapon_hegrenade", "HE Grenade"},
-            {"weapon_incgrenade", "Incendiary Grenade"},
-            {"weapon_m249", "M249"},
-            {"weapon_m4a1_silencer", "M4A1-S"},
-            {"weapon_mac10", "MAC-10"},
-            {"weapon_mag7", "MAG-7"},
-            {"weapon_molotov", "Molotov"},
-            {"weapon_mp5sd", "MP5-SD"},
-            {"weapon_mp7", "MP7"},
-            {"weapon_mp9", "MP9"},
-            {"weapon_negev", "Negev"},
-            {"weapon_nova", "Nova"},
-            {"weapon_p90", "P90"},
-            {"weapon_sawedoff", "Sawed-Off"},
-            {"weapon_scar20", "SCAR-20"},
-            {"weapon_sg556", "SG 553"},
-            {"weapon_smokegrenade", "Smoke Grenade"},
-            {"weapon_ssg08", "SSG 08"},
-            {"weapon_tagrenade", "TA Grenade"},
-            {"weapon_taser", "Taser"},
-            {"weapon_ump45", "UMP-45"},
-            {"weapon_xm1014", "XM1014"},
-            {"weapon_aug", "AUG"},
-            {"weapon_bizon", "PP-Bizon"},
-            {"weapon_decoy", "Decoy Grenade"},
-            {"weapon_fiveseven", "Five-Seven"},
-            {"weapon_hkp2000", "P2000"},
-            {"weapon_usp_silencer", "USP-S"},
-            {"weapon_p250", "P250"},
-            {"weapon_tec9", "Tec-9"},
-            {"weapon_cz75a", "CZ75-Auto"},
-            {"weapon_deagle", "Desert Eagle"},
-            {"weapon_revolver", "R8 Revolver"},
-            {"weapon_glock", "Glock-18"},
-            {"weapon_c4", "C4"}
-        };
+        private static readonly Dictionary<string, string> WeaponsType = new() {
+    {"C_AK47", "AK-47"},
+    {"C_WeaponM4A1", "M4A1"},
+    {"C_WeaponAWP", "AWP"},
+    {"C_WeaponElite", "Elite"},
+    {"C_WeaponFamas", "Famas"},
+    {"C_Flashbang", "Flashbang"},
+    {"C_WeaponG3SG1", "G3SG1"},
+    {"C_WeaponGalilAR", "Galil AR"},
+    {"C_Item_Healthshot", "Health Shot"},
+    {"C_HEGrenade", "HE Grenade"},
+    {"C_IncendiaryGrenade", "Incendiary Grenade"},
+    {"C_WeaponM249", "M249"},
+    {"C_WeaponM4A1Silencer", "M4A1-S"},
+    {"C_WeaponMAC10", "MAC-10"},
+    {"C_WeaponMag7", "MAG-7"},
+    {"C_MolotovGrenade", "Molotov"},
+    {"C_WeaponMP5SD", "MP5-SD"},
+    {"C_WeaponMP7", "MP7"},
+    {"C_WeaponMP9", "MP9"},
+    {"C_WeaponNegev", "Negev"},
+    {"C_WeaponNOVA", "Nova"},
+    {"C_WeaponP90", "P90"},
+    {"C_WeaponSawedoff", "Sawed-Off"},
+    {"C_WeaponSCAR20", "SCAR-20"},
+    {"C_WeaponSG556", "SG 553"},
+    {"C_SmokeGrenade", "Smoke Grenade"},
+    {"C_WeaponSSG08", "SSG 08"},
+    {"C_WeaponTaser", "Taser"},
+    {"C_WeaponUMP45", "UMP-45"},
+    {"C_WeaponXM1014", "XM1014"},
+    {"C_WeaponAug", "AUG"},
+    {"C_WeaponBizon", "PP-Bizon"},
+    {"C_DecoyGrenade", "Decoy Grenade"},
+    {"C_WeaponFiveSeven", "Five-Seven"},
+    {"C_WeaponHKP2000", "P2000"},
+    {"C_WeaponUSPSilencer", "USP-S"},
+    {"C_WeaponP250", "P250"},
+    {"C_WeaponTec9", "Tec-9"},
+    {"C_WeaponCZ75a", "CZ75-Auto"},
+    {"C_DEagle", "Desert Eagle"},
+    {"C_WeaponRevolver", "R8 Revolver"},
+    {"C_WeaponGlock", "Glock-18"},
+    {"C_C4", "C4"},
+    {"C_Knife", "Knife"}
+};
         public static readonly Dictionary<int, string> WeaponNameMap = new(){
             { 1, "deagle"},
             { 2, "elite"},
@@ -153,19 +154,24 @@ namespace Titled_Gui.Data.Entity
                     IntPtr itemNode = GameState.swed.ReadPointer(pawnAddress + Offsets.m_pGameSceneNode);
                     if (itemNode == 0) continue;
 
-                    IntPtr itemInfo = GameState.swed.ReadPointer((pawnAddress + 0x10));
+                    IntPtr itemInfo = GameState.swed.ReadPointer(pawnAddress + 0x10);
                     if (itemInfo == 0) continue;
 
-                    IntPtr itemTypePtr = GameState.swed.ReadPointer((itemInfo + 0x20));
-                    if (itemTypePtr == 0) continue;
+                    IntPtr classInfo = GameState.swed.ReadPointer(itemInfo + 0x8);
+                    if (classInfo == 0) continue;
 
-                    byte[] buffer = GameState.swed.ReadBytes(itemTypePtr, 128);
+                    IntPtr nameContainer = GameState.swed.ReadPointer(classInfo + 0x8);
+                    if (nameContainer == 0) continue;
+
+                    IntPtr namePtr = GameState.swed.ReadPointer(nameContainer + 0x8);
+                    if (namePtr == 0) continue;
+
+                    byte[] buffer = GameState.swed.ReadBytes(namePtr, 64);
+
                     int len = Array.IndexOf<byte>(buffer, 0);
                     if (len < 0) len = buffer.Length;
 
-                    string type =
-                        Encoding.UTF8.GetString(buffer, 0, len >= 0 ? len : buffer.Length).Trim().Split('\0')[0]
-                            .Replace("?", "").Replace("\0", "");
+                    string type = Encoding.UTF8.GetString(buffer, 0, len >= 0 ? len : buffer.Length).Trim().Split('\0')[0].Replace("?", "").Replace("\0", "");
                     if (string.IsNullOrWhiteSpace(type))
                         continue;
 
@@ -218,7 +224,7 @@ namespace Titled_Gui.Data.Entity
                 newWorldEntity.Type = EntityKind.Projectile;
                 newWorldEntity.DisplayName = projectileName;
             }
-            else if (type.Contains("chicken"))
+            else if (type.Contains("C_Chicken"))
             {
                 newWorldEntity.Type = EntityKind.Chicken;
                 newWorldEntity.DisplayName = "Chicken";

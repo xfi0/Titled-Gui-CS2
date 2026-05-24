@@ -121,5 +121,12 @@
         public static int m_pAimPunchServices = 0x0;
         public static int m_predictableBaseAngle = 0x0;
         public static int m_predictableBaseAngleVel = 0x0;
+        public static int m_hInfernoPointsSnapshot = 0xFF0; // CStrongHandle<InfoForResourceTypeIParticleSnapshot>
+        public static int m_hInfernoFillerPointsSnapshot = 0xFF8; // CStrongHandle<InfoForResourceTypeIParticleSnapshot>
+        public static int m_hInfernoOutlinePointsSnapshot = 0x1000; // CStrongHandle<InfoForResourceTypeIParticleSnapshot>
+        public static int m_hInfernoClimbingOutlinePointsSnapshot = 0x1008; // CStrongHandle<InfoForResourceTypeIParticleSnapshot>
+        public static int m_hInfernoDecalsSnapshot = 0x1010; // CStrongHandle<InfoForResourceTypeIParticleSnapshot>
+        public static int m_firePositions = 0x1010; // CStrongHandle<InfoForResourceTypeIParticleSnapshot>
+        public static int m_fireCount = 0x1010; // CStrongHandle<InfoForResourceTypeIParticleSnapshot>
     }
 }

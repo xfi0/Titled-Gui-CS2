@@ -592,6 +592,7 @@ namespace Titled_Gui
                                 ref WorldESP.ChickenTextColor);
                             RenderBoolSettingWith1ColorPicker("Projectile ESP", ref WorldESP.ProjectileESP,
                                 ref WorldESP.ProjectileTextColor);
+                            RenderBoolSettingWith2ColorPickers("Molotov ESP", ref WorldESP.MolotovBoundsESP, ref WorldESP.molotovFillColor, ref WorldESP.molotovOutlineColor);
                             RenderBoolSettingWith1ColorPicker("World ESP Boxes", ref WorldESP.DrawBoxes,
                                 ref WorldESP.BoxColor);
                             RenderBoolSetting("World ESP Text", ref WorldESP.DrawText);
@@ -741,8 +742,6 @@ namespace Titled_Gui
         {
             try
             {
-                WorldESP.EntityESP();
-
                 if (Aimbot.TargetLine)
                     Aimbot.RenderTargetLine();
                 HitStuff.CreateHitText();
@@ -750,91 +749,20 @@ namespace Titled_Gui
                 if (EyeRay.Enabled)
                     EyeRay.DrawEyeRay();
 
-                if (NameDisplay.Enabled)
-                {
-                    foreach (var e in entities)
-                    {
-                        NameDisplay.DrawName(e, this);
-                    }
-                }
 
-                if (Aimbot.DrawFov && Aimbot.AimbotEnable && Aimbot.UseFOV)
-                    Aimbot.DrawCircle(Aimbot.FovSize, Aimbot.FovColor);
-
-                if (Modules.Visual.BoneESP.EnableBoneESP)
-                {
-                    foreach (Data.Entity.Entity entity in entities)
-                    {
-                        if ((!BoneESP.TeamCheck || entity.Team == localPlayer.Team) && entity != localPlayer)
-                        {
-                            Modules.Visual.BoneESP.DrawBoneLines(entity, this);
-                        }
-                    }
-                }
-
-                if (PingDisplay.Enabled)
-                {
-                    foreach (Entity? entity in GameState.Entities)
-                    {
-                        PingDisplay.DrawPing(entity, this);
-                    }
-                }
-
-                if (C4ESP.BoxEnabled || C4ESP.TextEnabled)
-                {
-                    C4ESP.DrawESP();
-                }
-
-                if (Chams.Enabled)
-                {
-                    foreach (Entity? entity in entities)
-                    {
-                        Chams.Draw(entity);
-                    }
-                }
-
-                if (GunDisplay.Enabled)
-                {
-                    foreach (var e in GameState.Entities)
-                    {
-                        GunDisplay.Draw(e);
-                    }
-                }
-
-                WorldESP.EntityESP();
-                Radar.DrawRadar();
-
-                if (Modules.Visual.BoxESP.EnableESP)
-                {
-                    foreach (Entity? entity in entities)
-                    {
-                        BoxESP.DrawBoxESP(entity, this);
-                    }
-                }
-
-                if (DistanceText.Enabled)
-                {
-                    foreach (var entity in entities)
-                    {
-                        Titled_Gui.Modules.Visual.DistanceText.DrawDistance(entity);
-                    }
-                }
-
-
-                if (Tracers.EnableTracers)
-                {
-                    foreach (var entity in GameState.Entities)
-                    {
-                        Tracers.DrawTracers(entity, this);
-                    }
-                }
-
-                SoundESP.Draw();
-
-                foreach (var entity in GameState.Entities)
+                foreach (var entity in entities)
                 {
                     if (entity == null)
                         continue;
+
+                    Modules.Visual.BoneESP.DrawBoneLines(entity, this);
+                    NameDisplay.DrawName(entity, this);
+                    PingDisplay.DrawPing(entity, this);
+                    Chams.Draw(entity);
+                    GunDisplay.Draw(entity);
+                    BoxESP.DrawBoxESP(entity, this);
+                    Titled_Gui.Modules.Visual.DistanceText.DrawDistance(entity);
+                    Tracers.DrawTracers(entity, this);
 
                     var rect = BoxESP.GetBoxRect(entity);
                     if (rect == null)
@@ -845,20 +773,22 @@ namespace Titled_Gui
                     float height = bottomRight.Y - topLeft.Y;
 
                     HealthBar.DrawHealthBar(entity, entity.Health, 100, barTopLeft, height);
+                    ArmorBar.DrawArmorBar(entity, this, entity.Armor, 100);
                 }
 
 
-                if (ArmorBar.EnableArmorhBar)
+                if (Aimbot.DrawFov && Aimbot.AimbotEnable && Aimbot.UseFOV)
+                    Aimbot.DrawCircle(Aimbot.FovSize, Aimbot.FovColor);
+
+                if (C4ESP.BoxEnabled || C4ESP.TextEnabled)
                 {
-                    foreach (var entity in GameState.Entities)
-                    {
-                        if (entity == null)
-                            continue;
-
-                        ArmorBar.DrawArmorBar(entity, this, entity.Armor, 100);
-                    }
+                    C4ESP.DrawESP();
                 }
 
+                WorldESP.EntityESP();
+                Radar.DrawRadar();
+
+                SoundESP.Draw();
                 //GernadeHelper.DrawAllLineups();
 
             }

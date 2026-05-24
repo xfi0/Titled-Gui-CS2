@@ -53,7 +53,7 @@
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
 		<PackageReference Include="swed64" Version="1.0.5" />
 		<PackageReference Include="ValvePak" Version="4.0.0.142" />
-		<PackageReference Include="ValveResourceFormat" Version="16.0.5103" />
+		<PackageReference Include="ValveResourceFormat" Version="19.1.6199" />
 	</ItemGroup>
 
 	<ItemGroup>

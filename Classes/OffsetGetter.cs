@@ -127,6 +127,9 @@ namespace Titled_Gui.Classes
             { "m_hObserverTarget", new() { new Offset("m_hObserverTarget") } },
             { "m_hPawn", new() { new Offset("m_hPawn") } },
             { "m_szCustomName", new() { new Offset("m_szCustomName") } },
+            { "m_pAimPunchServices", new() { new Offset("m_pAimPunchServices") } },
+            { "m_predictableBaseAngle", new() { new Offset("m_predictableBaseAngle") } },
+            { "m_predictableBaseAngleVel", new() { new Offset("m_predictableBaseAngleVel") } },
 
 
             // EXPLICIT CLASS THING

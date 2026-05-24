@@ -106,7 +106,8 @@ namespace Titled_Gui.Data.Entity
             IntPtr weaponData = GameState.swed.ReadPointer(clippingWeapon + 0x10);
             IntPtr weaponNameAddress = GameState.swed.ReadPointer(weaponData + 0x20);
             IntPtr collisionBase = localPlayerPawn + Offsets.m_Collision;
-            List<Types.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
+            IntPtr aimPunchServices = swed.ReadPointer(localPlayerPawn + Offsets.m_pAimPunchServices);
+            List <Types.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
 
             string weaponName = "Invalid Weapon Name";
             if (weaponNameAddress != 0)
@@ -129,8 +130,7 @@ namespace Titled_Gui.Data.Entity
                 PawnAddress = localPlayerPawn,
                 Origin = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
                 View = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset),
-                AimPunchAngle = GameState.swed.ReadVec(localPlayerPawn + Offsets.m_aimPunchAngle),
-                AimPunchAngleVel = GameState.swed.ReadVec(localPlayerPawn + Offsets.m_aimPunchCache),
+                AimPunchAngle = GameState.swed.ReadVec(aimPunchServices + Offsets.m_predictableBaseAngle),
                 Position = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
                 IsFlashed = GameState.swed.ReadFloat(localPlayerPawn, Offsets.m_flFlashBangTime) > 1.5,
                 Ping = GameState.swed.ReadInt(localPlayerPawn, Offsets.m_iPing),
@@ -236,8 +236,6 @@ namespace Titled_Gui.Data.Entity
                     Name = GameState.swed.ReadString(controller, Offsets.m_iszPlayerName, 32),
                     Velocity = GameState.swed.ReadVec(pawnAddress, Offsets.m_vecAbsVelocity),
                     ViewAngles = GameState.swed.ReadVec(client, Offsets.dwViewAngles),
-                    AimPunchAngle = GameState.swed.ReadVec(pawnAddress + Offsets.m_aimPunchAngle),
-                    AimPunchAngleVel = GameState.swed.ReadVec(pawnAddress + Offsets.m_aimPunchCache),
                     Armor = GameState.swed.ReadInt(pawnAddress, Offsets.m_ArmorValue),
                     IsScoped = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsScoped),
                     IsBuyMenuOpen = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsBuyMenuOpen),

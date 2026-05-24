@@ -22,10 +22,11 @@ namespace Titled_Gui.Modules.Rage
 
                 aimPunch.X = Calculate.NormalizeAngle(aimPunch.X);
                 aimPunch.Y = Calculate.NormalizeAngle(aimPunch.Y);
+                var sensitivity = GameState.LocalPlayer.Sensitivity;
 
-                newAngles.X = (aimPunch.Y - OldPunch.Y) * 2.0f / (0.022f * GameState.LocalPlayer.Sensitivity) / 1;
-                newAngles.Y = -(aimPunch.X - OldPunch.X) * 2.0f / (0.022f * GameState.LocalPlayer.Sensitivity) / 1;
-                User32.mouse_event(User32.MOUSEEVENTF_MOVE, (uint)newAngles.X, (uint)newAngles.Y, 0, 0);
+                newAngles.X = (aimPunch.Y - OldPunch.Y) * 2.0f / (0.022f * sensitivity) / 1;
+                newAngles.Y = -(aimPunch.X - OldPunch.X) * 2.0f / (0.022f * sensitivity) / 1;
+                User32.mouse_event(User32.MOUSEEVENTF_MOVE, (uint)(int)newAngles.X, (uint)(int)newAngles.Y, 0, 0);
                 OldPunch = aimPunch;
             }
             else

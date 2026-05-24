@@ -127,6 +127,14 @@ namespace Titled_Gui.Classes
             { "m_hObserverTarget", new() { new Offset("m_hObserverTarget") } },
             { "m_hPawn", new() { new Offset("m_hPawn") } },
             { "m_szCustomName", new() { new Offset("m_szCustomName") } },
+            { "m_pAimPunchServices", new() { new Offset("m_pAimPunchServices") } },
+            { "m_predictableBaseAngle", new() { new Offset("m_predictableBaseAngle") } },
+            { "m_predictableBaseAngleVel", new() { new Offset("m_predictableBaseAngleVel") } },
+            { "m_hInfernoPointsSnapshot", new() { new Offset("m_hInfernoPointsSnapshot") } },
+            { "m_hInfernoFillerPointsSnapshot", new() { new Offset("m_hInfernoFillerPointsSnapshot") } },
+            { "m_hInfernoDecalsSnapshot", new() { new Offset("m_hInfernoDecalsSnapshot") } },
+            { "m_firePositions", new() { new Offset("m_firePositions") } },
+            { "m_fireCount", new() { new Offset("m_fireCount") } },
 
 
             // EXPLICIT CLASS THING

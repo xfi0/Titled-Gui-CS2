@@ -271,6 +271,49 @@ namespace Titled_Gui.Classes
 
         private static float Cross(Vector2 o, Vector2 a, Vector2 b) => (a.X - o.X) * (b.Y - o.Y) - (a.Y - o.Y) * (b.X - o.X);
 
+        public static void DrawConvexHull(List<Vector2> points, uint fill, uint outline, float thickness = 2f)
+        {
+            points.Sort((a, b) => a.X != b.X ? a.X.CompareTo(b.X) : a.Y.CompareTo(b.Y));
+
+            List<Vector2> lower = new();
+            List<Vector2> upper = new();
+
+            foreach (var p in points)
+            {
+                while (lower.Count >= 2)
+                {
+                    var p1 = lower[^2]; var p2 = lower[^1];
+                    if ((p2.X - p1.X) * (p.Y - p1.Y) - (p2.Y - p1.Y) * (p.X - p1.X) > 0f)
+                        break;
+                    lower.RemoveAt(lower.Count - 1);
+                }
+                lower.Add(p);
+            }
+
+            for (int i = points.Count - 1; i >= 0; i--)
+            {
+                var p = points[i];
+                while (upper.Count >= 2)
+                {
+                    var p1 = upper[^2]; var p2 = upper[^1];
+                    if ((p2.X - p1.X) * (p.Y - p1.Y) - (p2.Y - p1.Y) * (p.X - p1.X) > 0f)
+                        break;
+                    upper.RemoveAt(upper.Count - 1);
+                }
+                upper.Add(p);
+            }
+
+            lower.RemoveAt(lower.Count - 1);
+            upper.RemoveAt(upper.Count - 1);
+            lower.AddRange(upper);
+
+            if (lower.Count < 3) return;
+
+            var hullArray = lower.ToArray();
+            GameState.renderer.drawList.AddConvexPolyFilled(ref hullArray[0], hullArray.Length, fill);
+            GameState.renderer.drawList.AddPolyline(ref hullArray[0], hullArray.Length, outline, ImDrawFlags.Closed, thickness);
+        }
+
         private static void CreateCircle(Vector3 point, Vector3 center, float radius, List<Vector3> vec,
             int segments = 12)
         {

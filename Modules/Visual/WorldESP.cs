@@ -14,6 +14,7 @@ namespace Titled_Gui.Modules.Visual
         public static bool DroppedWeaponESP = false;
         public static bool ProjectileESP = false;
         public static bool HostageESP = false;
+        public static bool MolotovBoundsESP = false;
         public static bool DrawBoxes = true;
         public static bool DrawText = true;
         #endregion
@@ -23,89 +24,13 @@ namespace Titled_Gui.Modules.Visual
         public static Vector4 ProjectileTextColor = new(1, 1, 1, 1);
         public static Vector4 ChickenTextColor = new(1, 1, 1, 1);
         public static Vector4 HostageTextColor = new(1, 1, 1, 1);
+        public static Vector4 molotovFillColor = new(1f, 0.4f, 0f, 0.196f);
+        public static Vector4 molotovOutlineColor = new(1f, 0.4f, 0f, 0.588f);
         public static Vector4 BoxColor = new(1, 1, 1, 1);
         #endregion Colors
 
-        private static readonly Dictionary<string, string> EntityType = new() {
-            {"chicken", "Chicken"},
-            {"hostage_entity", "Hostage"}
-        };
-
-        private static readonly Dictionary<string, string> ProjectilesType = new() {
-            {"smokegrenade_projectile", "Smoke Grenade"},
-            {"flashbang_projectile", "Flashbang"},
-            {"hegrenade_projectile", "HE Grenade"},
-            {"molotov_projectile", "Molotov"},
-            {"incendiarygrenade_projectile", "Incendiary Grenade"},
-            {"decoy_projectile", "Decoy Grenade"}
-        };
-
-        private static readonly Dictionary<string, string> WeaponsType = new(){
-            {"weapon_ak47", "AK-47"},
-            {"weapon_m4a1", "M4A1"},
-            {"weapon_awp", "AWP"},
-            {"weapon_elite", "Elite"},
-            {"weapon_famas", "Famas"},
-            {"weapon_flashbang", "Flashbang"},
-            {"weapon_g3sg1", "G3SG1"},
-            {"weapon_galilar", "Galil AR"},
-            {"weapon_healthshot", "Health Shot"},
-            {"weapon_hegrenade", "HE Grenade"},
-            {"weapon_incgrenade", "Incendiary Grenade"},
-            {"weapon_m249", "M249"},
-            {"weapon_m4a1_silencer", "M4A1-S"},
-            {"weapon_mac10", "MAC-10"},
-            {"weapon_mag7", "MAG-7"},
-            {"weapon_molotov", "Molotov"},
-            {"weapon_mp5sd", "MP5-SD"},
-            {"weapon_mp7", "MP7"},
-            {"weapon_mp9", "MP9"},
-            {"weapon_negev", "Negev"},
-            {"weapon_nova", "Nova"},
-            {"weapon_p90", "P90"},
-            {"weapon_sawedoff", "Sawed-Off"},
-            {"weapon_scar20", "SCAR-20"},
-            {"weapon_sg556", "SG 553"},
-            {"weapon_smokegrenade", "Smoke Grenade"},
-            {"weapon_ssg08", "SSG 08"},
-            {"weapon_tagrenade", "TA Grenade"},
-            {"weapon_taser", "Taser"},
-            {"weapon_ump45", "UMP-45"},
-            {"weapon_xm1014", "XM1014"},
-            {"weapon_aug", "AUG"},
-            {"weapon_bizon", "PP-Bizon"},
-            {"weapon_decoy", "Decoy Grenade"},
-            {"weapon_fiveseven", "Five-Seven"},
-            {"weapon_hkp2000", "P2000"},
-            {"weapon_usp_silencer", "USP-S"},
-            {"weapon_p250", "P250"},
-            {"weapon_tec9", "Tec-9"},
-            {"weapon_cz75a", "CZ75-Auto"},
-            {"weapon_deagle", "Desert Eagle"},
-            {"weapon_revolver", "R8 Revolver"},
-            {"weapon_glock", "Glock-18"}
-        };
-
-
-        private static string GetWeaponType(string itemIdentifier)
-        {
-            return WeaponsType.TryGetValue(itemIdentifier, out var value) ? value : "Unknown Weapon Type";
-        }
-
-        private static string GetProjectileType(string itemIdentifier)
-        {
-            return ProjectilesType.TryGetValue(itemIdentifier, out var value) ? value : "Unknown Projectile Type";
-        }
-
-        private static string GetEntityType(string itemIdentifier)
-        {
-            return EntityType.TryGetValue(itemIdentifier, out var value) ? value : "Unknown Entity Type";
-        }
-
         public static void EntityESP()
         {
-            if (!ChickenESP && !DroppedWeaponESP && !ProjectileESP && !HostageESP) return;
-
             foreach (WorldEntity? worldEntity in GameState.worldEntities)
             {
                 if (worldEntity == null)
@@ -117,12 +42,14 @@ namespace Titled_Gui.Modules.Visual
                 if (DroppedWeaponESP && worldEntity.Type == WorldEntityManager.EntityKind.Weapon)
                     DrawWeaponESP(worldEntity);
 
-                if (ProjectileESP && worldEntity.Type == WorldEntityManager.EntityKind.Projectile)
+                if (ProjectileESP && worldEntity.Type == WorldEntityManager.EntityKind.Projectile && worldEntity.DisplayName != "Molotov Fire")
                     DrawProjectileESP(worldEntity);
-
 
                 if (HostageESP && worldEntity.Type == WorldEntityManager.EntityKind.Hostage)
                     DrawHostageESP(worldEntity);
+
+                if (MolotovBoundsESP && worldEntity.Type == WorldEntityManager.EntityKind.Projectile)
+                    DrawMolotovBounds(worldEntity);
             }
         }
 
@@ -226,6 +153,45 @@ namespace Titled_Gui.Modules.Visual
                 GameState.renderer.drawList.AddText(worldEntity.Position2D,
                     ImGui.ColorConvertFloat4ToU32(ChickenTextColor),
                     "Chicken");
+        }
+
+        public static void DrawMolotovBounds(WorldEntity? worldEntity)
+        {
+            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+
+            const float fireRadius = 60.0f;
+            const int pointsPerFire = 12;
+
+            int firePointCount = GameState.swed.ReadInt(worldEntity.PawnAddress + Offsets.m_fireCount);
+            if (firePointCount <= 0) 
+                return;
+
+            List<Vector2> points = new();
+
+            for (int i = 0; i < firePointCount; i++)
+            {
+                unsafe
+                {
+                    Vector3 firePoint = GameState.swed.ReadVec(worldEntity.PawnAddress + Offsets.m_firePositions + i * sizeof(Vector3));
+
+                    for (int j = 0; j < pointsPerFire; j++)
+                    {
+                        float angle = (float)j / pointsPerFire * MathF.PI * 2.0f;
+                        Vector3 world = firePoint + new Vector3(MathF.Cos(angle) * fireRadius, MathF.Sin(angle) * fireRadius, 0f);
+                        Vector2 projected = Calculate.WorldToScreen(viewMatrix, world);
+
+                        if (projected != new Vector2(-99, -99))
+                            points.Add(projected);
+                    }
+                }
+            }
+
+            if (points.Count < 3)
+                return;
+
+            uint fill = ImGui.ColorConvertFloat4ToU32(molotovFillColor);
+            uint outline = ImGui.ColorConvertFloat4ToU32(molotovOutlineColor);
+            DrawHelpers.DrawConvexHull(points, fill, outline);
         }
 
         public static void Draw3DBoxESP(Vector2[] corners2D, uint preConvertedColor, bool filled, float rounding, uint preConvertedFilledColor = 0)

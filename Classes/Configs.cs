@@ -277,6 +277,7 @@ namespace Titled_Gui.Classes
                     ["Hostage ESP Enabled"] = WorldESP.HostageESP,
                     ["Dropped Weapon ESP Enabled"] = WorldESP.DroppedWeaponESP,
                     ["Thrown Projectile ESP Enabled"] = WorldESP.ProjectileESP,
+                    ["Molotov ESP Enabled"] = WorldESP.MolotovBoundsESP,
                     ["Chicken Text Color"] = new JObject
                     {
                         ["X"] = WorldESP.ChickenTextColor.X,
@@ -304,7 +305,21 @@ namespace Titled_Gui.Classes
                         ["Y"] = WorldESP.BoxColor.Y,
                         ["Z"] = WorldESP.BoxColor.Z,
                         ["W"] = WorldESP.BoxColor.W
-                    }
+                    },
+                    ["Molotov Bounds Filled Color"] = new JObject
+                    {
+                        ["X"] = WorldESP.molotovFillColor.X,
+                        ["Y"] = WorldESP.molotovFillColor.Y,
+                        ["Z"] = WorldESP.molotovFillColor.Z,
+                        ["W"] = WorldESP.molotovFillColor.W
+                    },
+                    ["Molotov Bounds Outline Color"] = new JObject
+                    {
+                        ["X"] = WorldESP.molotovOutlineColor.X,
+                        ["Y"] = WorldESP.molotovOutlineColor.Y,
+                        ["Z"] = WorldESP.molotovOutlineColor.Z,
+                        ["W"] = WorldESP.molotovOutlineColor.W
+                    },
                 }
             };
 
@@ -579,6 +594,7 @@ namespace Titled_Gui.Classes
                 WorldESP.HostageESP = configData["World ESP"]?["Hostage ESP Enabled"]?.ToObject<bool>() ?? WorldESP.HostageESP;
                 WorldESP.DroppedWeaponESP = configData["World ESP"]?["Dropped Weapon ESP Enabled"]?.ToObject<bool>() ?? WorldESP.DroppedWeaponESP;
                 WorldESP.ProjectileESP = configData["World ESP"]?["Thrown Projectile ESP Enabled"]?.ToObject<bool>() ?? WorldESP.ProjectileESP;
+                WorldESP.ProjectileESP = configData["World ESP"]?["Molotov ESP Enabled"]?.ToObject<bool>() ?? WorldESP.MolotovBoundsESP;
                 WorldESP.ChickenTextColor = new Vector4(
                     configData["World ESP"]?["Chicken Text Color"]?["X"]?.ToObject<float>() ?? WorldESP.ChickenTextColor.X,
                     configData["World ESP"]?["Chicken Text Color"]?["Y"]?.ToObject<float>() ?? WorldESP.ChickenTextColor.Y,
@@ -596,11 +612,24 @@ namespace Titled_Gui.Classes
                     configData["World ESP"]?["Dropped Weapon Text Color"]?["Y"]?.ToObject<float>() ?? WorldESP.WeaponTextColor.Y,
                     configData["World ESP"]?["Dropped Weapon Text Color"]?["Z"]?.ToObject<float>() ?? WorldESP.WeaponTextColor.Z,
                     configData["World ESP"]?["Dropped Weapon Text Color"]?["W"]?.ToObject<float>() ?? WorldESP.WeaponTextColor.W
-                );    WorldESP.BoxColor = new Vector4(
+                );   
+                WorldESP.BoxColor = new Vector4(
                     configData["World ESP"]?["Box Color"]?["X"]?.ToObject<float>() ?? WorldESP.BoxColor.X,
                     configData["World ESP"]?["Box Color"]?["Y"]?.ToObject<float>() ?? WorldESP.BoxColor.Y,
                     configData["World ESP"]?["Box Color"]?["Z"]?.ToObject<float>() ?? WorldESP.BoxColor.Z,
                     configData["World ESP"]?["Box Color"]?["W"]?.ToObject<float>() ?? WorldESP.BoxColor.W
+                );
+                WorldESP.molotovFillColor = new Vector4(
+                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["X"]?.ToObject<float>() ?? WorldESP.BoxColor.X,
+                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["Y"]?.ToObject<float>() ?? WorldESP.BoxColor.Y,
+                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["Z"]?.ToObject<float>() ?? WorldESP.BoxColor.Z,
+                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["W"]?.ToObject<float>() ?? WorldESP.BoxColor.W
+                );
+                WorldESP.molotovOutlineColor = new Vector4(
+                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["X"]?.ToObject<float>() ?? WorldESP.BoxColor.X,
+                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["Y"]?.ToObject<float>() ?? WorldESP.BoxColor.Y,
+                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["Z"]?.ToObject<float>() ?? WorldESP.BoxColor.Z,
+                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["W"]?.ToObject<float>() ?? WorldESP.BoxColor.W
                 );
                 #endregion
             }

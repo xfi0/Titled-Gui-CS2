@@ -337,5 +337,21 @@ namespace Titled_Gui.Classes
         {
             return from + Vector3.Normalize(to - from) * distance;
         }
+        public static void DrawGradientText(string text, Vector4 startColor, Vector4 endColor)
+        {
+            var drawList = ImGui.GetWindowDrawList();
+            Vector2 pos = ImGui.GetCursorScreenPos();
+            float step = 1f / (text.Length - 1);
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                float t = i * step;
+                Vector4 color = startColor + t * (endColor - startColor);
+                drawList.AddText(pos, ImGui.ColorConvertFloat4ToU32(color), text[i].ToString());
+                pos.X += ImGui.CalcTextSize(text[i].ToString()).X;
+            }
+
+            ImGui.Dummy(new Vector2(ImGui.CalcTextSize(text).X, 0));
+        }
     }
 }

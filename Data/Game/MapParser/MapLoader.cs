@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using static Titled_Gui.Data.Game.VRF.Types;
 using Vector3 = System.Numerics.Vector3;
@@ -133,42 +134,45 @@ namespace Titled_Gui.Data.Game.MapParser
 
         public bool LoadMap(string mapName)
         {
-            string filePath = Path.Combine(cs2BaseFolder, _mapsFolder, mapName + ".vpk");
-            string triFilePath = Path.Combine(_pathToTris, mapName + ".tri");
-            if (!File.Exists(filePath) || !File.Exists(triFilePath))
+            var asm = Assembly.GetExecutingAssembly();
+            var names = asm.GetManifestResourceNames();
+          
+            var stream = asm.GetManifestResourceStream("Titled_Gui.Data.Game.MapParser.PreExtractedMapData.tri." + mapName + ".tri");
+            if (stream == null)
             {
-                Console.WriteLine("Failed To Find Current Map And Or The Tri File. filePath: " + filePath + " " + "triFilePath: " + triFilePath);
+                Console.WriteLine("Failed To Find Current Map And Or The Tri File. filePath: " + "Titled_Gui.Game.MapParser.PreExtractedMapData.tri." + mapName + ".tri");
                 return false;
             }
 
-            if (!LoadTri(triFilePath))
+            var triData = new byte[stream.Length];
+            stream.ReadExactly(triData);
+
+            if (!LoadTri(triData, mapName))
             {
-                Console.WriteLine("Failed to load .tri: " + triFilePath);
+                Console.WriteLine("Failed to load .tri: " + "Titled_Gui.Game.MapParser.PreExtractedMapData.tri." + mapName + ".tri");
                 return false;
             }
             PreviousMapName = mapName;
             return true;
         }
         private KDNode? KDTreeRoot;
-        public bool LoadTri(string filePath)
+        public bool LoadTri(byte[] triData, string mapName)
         {
-            if (!File.Exists(filePath))
-                return false;
+            //if (!File.Exists(filePath))
+            //    return false;
 
             try
             {
                 var sw = Stopwatch.StartNew();
 
-                byte[] buffer = File.ReadAllBytes(filePath);
-
                 int triSize = Marshal.SizeOf<Triangle>();
-                int numElements = buffer.Length / triSize;
+                int numElements = triData.Length / triSize;
 
                 Triangles = new List<Triangle>(numElements);
 
                 unsafe
                 {
-                    fixed (byte* p = buffer)
+                    fixed (byte* p = triData)
                     {
                         Triangle* pTri = (Triangle*)p;
 
@@ -183,7 +187,7 @@ namespace Titled_Gui.Data.Game.MapParser
                 Triangles.TrimExcess();
 
                 sw.Stop();
-                Console.WriteLine($"Loaded {filePath} in {sw.ElapsedMilliseconds}ms");
+                Console.WriteLine($"Loaded {mapName} in {sw.ElapsedMilliseconds}ms");
 
                 return true;
             }

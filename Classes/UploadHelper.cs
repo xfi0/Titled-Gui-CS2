@@ -1,12 +1,13 @@
-﻿using System.Text.Json.Nodes;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Titled_Gui.Classes
 {
     internal class UploadHelper
     {
-        public static async Task SaveUpload(string fileName, string newPath)
+        public static void SaveUpload(string fileName, string newPath)
         {
-            string folder = Path.Combine(AppContext.BaseDirectory, "Uploads");
+            string folder = Path.Combine(Configs.titledDocumentsFolder, "Uploads");
 
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
@@ -17,8 +18,9 @@ namespace Titled_Gui.Classes
 
             if (File.Exists(fullPath))
             {
-                string existing = await File.ReadAllTextAsync(fullPath);
-                array = JsonNode.Parse(existing)?.AsArray() ?? new();
+                string existing = File.ReadAllText(fullPath);
+
+                array = string.IsNullOrWhiteSpace(existing) ? new JsonArray() : JsonNode.Parse(existing)?.AsArray() ?? new();
             }
             else
             {
@@ -26,8 +28,9 @@ namespace Titled_Gui.Classes
             }
 
             array.Add(newPath);
+            Console.WriteLine(array.Count);
 
-            await File.WriteAllTextAsync(fullPath, array.ToString());
+            File.WriteAllText(fullPath, array.ToString());
         }
 
         private static readonly Dictionary<string, bool> hasLoaded = new();
@@ -38,31 +41,33 @@ namespace Titled_Gui.Classes
                 if (hasLoaded.ContainsKey(fileName))
                     return;
 
-                string folder = Path.Combine(AppContext.BaseDirectory, "Uploads");
                 string fileNameWithJson = fileName.Contains(".json") ? fileName : fileName + ".json";
-
+                
+                string folder = Path.Combine(Configs.titledDocumentsFolder, "Uploads");
                 string filePath = Path.Combine(folder, fileNameWithJson);
 
                 if (!Directory.Exists(folder))
+                {
+                    Console.WriteLine("Uploads Directory not found, creating.");
                     Directory.CreateDirectory(folder);
+                }
 
                 if (!File.Exists(filePath))
                 {
                     Console.WriteLine("File not found: " + filePath);
+                    File.WriteAllText(filePath, "[]");
                     return;
                 }
 
-                HashSet<string> stuff = new();
-
-                foreach (string line in File.ReadAllLines(filePath))
+                var saved = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(filePath));
+                if (saved != null)
                 {
-                    if (line == "[" || line == "]"||string.IsNullOrWhiteSpace(line))
-                        continue;
-                    if (stuff.Add(line.Replace(",", "").Replace(@"""", "")))
-                    {
-                        items.Add(line.Replace(",", "").Replace(@"""", "")); // only add the unique lines
-                    }
+                    var existing = items.ToHashSet();
+                    foreach (var s in saved)
+                        if (existing.Add(s))
+                            items.Add(s);
                 }
+
                 hasLoaded.Add(fileName, true);
             }
             catch (Exception ex)

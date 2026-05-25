@@ -38,7 +38,7 @@ internal class Sections
         RenderBoolSettingWithWarning("Auto Bunny Hop", ref Bhop.BhopEnable);
         RenderBoolSetting("Hit Sound", ref HitStuff.Enabled);
         RenderFloatSlider("Hit Sound Volume", ref HitStuff.Volume, 0, 1);
-        RenderIntCombo("Current Hit Sound", ref HitStuff.CurrentHitSound, HitStuff.HitSounds, HitStuff.HitSounds.Count, true);
+        RenderIntCombo("Current Hit Sound", ref HitStuff.CurrentHitSound, HitStuff.HitSoundDisplays, HitStuff.HitSounds.Count, true);
         RenderBoolSettingWith1ColorPicker("Headshot Text", ref HitStuff.EnableHeadshotText, ref HitStuff.TextColor);
     }),
 

@@ -6,11 +6,13 @@ namespace Titled_Gui.Modules.Legit
 {
     internal class HitStuff : Classes.ThreadService // could use some settings
     {
-        public static List<string> HitSounds = new()
+        public static Dictionary<int, (string Display, string File)> HitSounds = new()
         {
-            "Never Lose", 
-            "Skeet"
+            { 0, ("Never Lose", "NeverLose.wav") },
+            { 1, ("Skeet",      "Skeet.wav")     },
         };
+        public static List<string> HitSoundDisplays = HitSounds.Values.Select(s => s.Display).ToList();
+
         public static int CurrentHitSound = 0;
         public static bool Enabled = false;
         public static bool EnableHeadshotText = false;
@@ -41,9 +43,14 @@ namespace Titled_Gui.Modules.Legit
             GameState.RoundHeadshots = GameState.swed.ReadInt(GameState.ActionTrackingServices + Offsets.m_iNumRoundKillsHeadshots);
             GameState.RoundDamage = GameState.swed.ReadInt(GameState.ActionTrackingServices + Offsets.m_flTotalRoundDamageDealt);
 
+            for (int i = HitSounds.Count; i < HitSoundDisplays.Count; i++)
+                HitSounds[i] = (HitSoundDisplays[i], HitSoundDisplays[i]);
+
             if (GameState.RoundDamage > PreviousDamage)
             {
-                PlaySound(HitSounds[CurrentHitSound]);
+                if (HitSounds.TryGetValue(CurrentHitSound, out var sound))
+                    PlaySound(sound.File);
+
                 PreviousDamage = GameState.RoundDamage;
                 //Console.Write("Hit");
             }
@@ -61,7 +68,13 @@ namespace Titled_Gui.Modules.Legit
             }
         }
 
-        private static void PlaySound(string soundName) => Classes.PlaySound.PlaySoundWithCheck(soundName, Volume);
+        private static void PlaySound(string soundName)
+        {
+            if (!File.Exists(soundName)) // if its embedded
+                Classes.PlaySound.PlaySoundFileEmbedded(soundName, "hitsounds.", Volume);
+            else // if its not embedded
+                Classes.PlaySound.PlaySoundWithCheck(soundName, Volume);  
+        }
         
         public static void CreateHitText()
         {

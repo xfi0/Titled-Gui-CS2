@@ -37,6 +37,8 @@ namespace Titled_Gui.Classes
         private static string ButtonsContent = string.Empty;
         private static string Engine2Content = string.Empty;
 
+        public static bool Updated = false;
+
         private class Offset(string name, string? className = null)
         {
             public string Name { get; } = name;
@@ -181,31 +183,64 @@ namespace Titled_Gui.Classes
 
                 Console.WriteLine($"[OFFSET FINDER] Found: {offsets.Count}");
                 UpdateOffsetsClass();
-                if (GameState.swed.ReadPointer(GameState.client, Offsets.dwViewMatrix) == IntPtr.Zero || GameState.swed.ReadPointer(GameState.client, Offsets.dwEntityList) == IntPtr.Zero)
-                {
-                    Console.WriteLine("[OFFSET FINDER] ERROR: a2x didnt NOT update correctly, trying secondary source");
-                    offsets.Clear();
-                    //Console.WriteLine("[Offset FINDER] DEBUGGING: " + Offsets.dwViewMatrix);
 
-                    OffsetsContent = await DownloadFile(SecondaryOffsetsUrl);
-                    ClientDllContent = await DownloadFile(SecondaryClientDllUrl);
-                    ButtonsContent = await DownloadFile(SecondaryButtonsUrl);
-                    Engine2Content = await DownloadFile(SecondaryEngine2Url);
-
-                    ParseOffsetsFile(OffsetsContent);
-                    ParseClientDllFile(ClientDllContent);
-                    ParseButtonsFile(ButtonsContent);
-                    ParseEngine2File(Engine2Content);
-                    UpdateOffsetsClass();
-                    //Console.WriteLine("[Offset FINDER] DEBUGGING: " + Offsets.dwViewMatrix);
-                    return;
-                }
                 Console.WriteLine("[OFFSET FINDER] Offsets Updated Successfully!");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[OFFSETS FINDER] ERROR: {ex.Message}");
             }
+        }
+
+        public static async Task CheckIfOffsetsAreValid()
+        {
+            if (GameState.swed == null)
+                return;
+
+            if (GameState.swed.ReadPointer(GameState.client, Offsets.dwViewMatrix) == IntPtr.Zero || GameState.swed.ReadPointer(GameState.client, Offsets.dwEntityList) == IntPtr.Zero)
+            {
+                Console.WriteLine("[OFFSET FINDER] ERROR: a2x didnt NOT update correctly, trying secondary source");
+                offsets.Clear();
+                await FetchSecondarySource();
+
+                ParseOffsetsFile(OffsetsContent);
+                ParseClientDllFile(ClientDllContent);
+                ParseButtonsFile(ButtonsContent);
+                ParseEngine2File(Engine2Content);
+                UpdateOffsetsClass();
+                if (GameState.swed.ReadPointer(GameState.client, Offsets.dwViewMatrix) == IntPtr.Zero || GameState.swed.ReadPointer(GameState.client, Offsets.dwEntityList) == IntPtr.Zero)
+                {
+                    Updated = false;
+                    return;
+                }
+
+                Updated = true;
+                return;
+            }
+            else
+            {
+                Updated = true;
+            }
+        }
+
+        public static void ApplySecondarySources()
+        {
+            if (Updated)
+                return;
+
+            ParseOffsetsFile(OffsetsContent);
+            ParseClientDllFile(ClientDllContent);
+            ParseButtonsFile(ButtonsContent);
+            ParseEngine2File(Engine2Content);
+            UpdateOffsetsClass();
+        }
+
+        public static async Task FetchSecondarySource()
+        {
+            OffsetsContent = await DownloadFile(SecondaryOffsetsUrl);
+            ClientDllContent = await DownloadFile(SecondaryClientDllUrl);
+            ButtonsContent = await DownloadFile(SecondaryButtonsUrl);
+            Engine2Content = await DownloadFile(SecondaryEngine2Url);
         }
 
         private static async Task<string> DownloadFile(string url)

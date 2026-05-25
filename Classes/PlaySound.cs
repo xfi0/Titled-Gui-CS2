@@ -1,4 +1,6 @@
 ﻿using NAudio.Wave;
+using System.Reflection;
+using Vortice.Win32;
 
 namespace Titled_Gui.Classes
 {
@@ -19,22 +21,67 @@ namespace Titled_Gui.Classes
                 if (!File.Exists(path))
                     Console.WriteLine($"File not found: {path}");
 
-                AudioFileReader file = new(path.Trim());
-                WaveOutEvent player = new();
-                player.Init(file);
-                player.Volume = volume;
-                player.Play();
-
-                player.PlaybackStopped += (s, e) =>
-                {
-                    file.Dispose();
-                    player.Dispose();
-                };
+                PlaySoundInternal(volume, name);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Play Sound File Exception: " + ex);
             }
+        }
+
+        /// <summary>
+        /// plays a sound from resources, provide file extension. file name cannot contain spaces, add traliing "." to the folder.
+        /// </summary>
+        public static void PlaySoundFileEmbedded(string name, string folder, float volume)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(folder))
+                    return;
+
+                name = name.Trim();
+                name = name.Trim('"');
+                name = name.TrimEnd(',');
+                name = name.Replace(@"\\", @"\");
+                name = name.Replace(" ", "");
+
+                Assembly asm = Assembly.GetExecutingAssembly();
+
+                Stream stream = asm.GetManifestResourceStream("Titled_Gui.Resources.sounds." + folder + name) ?? throw new Exception("Sound was not found: " + name);
+
+                byte[] sound = new byte[stream.Length];
+                stream.Read(sound, 0, sound.Length);
+
+                string cachePath = Path.Combine(Configs.titledDocumentsFolder, "Cache", "Sounds");
+                string filePath = Path.Combine(Configs.titledDocumentsFolder, "Cache", "Sounds", name);
+
+                if (!Directory.Exists(cachePath))
+                    Directory.CreateDirectory(cachePath);
+
+                if (!File.Exists(filePath))
+                    File.WriteAllBytes(filePath, sound);
+
+                PlaySoundInternal(volume, filePath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Play Sound File Exception: " + ex);
+            }
+        }
+
+        private static void PlaySoundInternal(float volume, string filePath)
+        {
+            AudioFileReader file = new(filePath.Trim());
+            WaveOutEvent player = new();
+            player.Init(file);
+            player.Volume = volume;
+            player.Play();
+
+            player.PlaybackStopped += (s, e) =>
+            {
+                file.Dispose();
+                player.Dispose();
+            };
         }
 
         /// <summary>
@@ -52,17 +99,7 @@ namespace Titled_Gui.Classes
                 return;
             }
 
-            AudioFileReader file = new(name.Trim());
-            WaveOutEvent player = new();
-            player.Init(file);
-            player.Volume = volume;
-            player.Play();
-
-            player.PlaybackStopped += (s, e) =>
-            {
-                file.Dispose();
-                player.Dispose();
-            };
+            PlaySoundInternal(volume, name);
         }
 
         public static void PlaySoundWithCheck(string name, float volume)
@@ -87,17 +124,7 @@ namespace Titled_Gui.Classes
                     return;
                 }
 
-                AudioFileReader file = new(path);
-                WaveOutEvent player = new();
-                player.Init(file);
-                player.Volume = volume;
-                player.Play();
-
-                player.PlaybackStopped += (s, e) =>
-                {
-                    file.Dispose();
-                    player.Dispose();
-                };
+                PlaySoundInternal(volume, name);
             }
             catch (Exception ex)
             {

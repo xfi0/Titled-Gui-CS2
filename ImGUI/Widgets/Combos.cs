@@ -32,10 +32,7 @@ namespace Titled_Gui.ImGUI.Widgets
                     Console.WriteLine($"Saving: '{pendingUpload}'");
                     string temPendingUpload = pendingUpload;
 
-                    Task.Run(async () =>
-                    {
-                        await SaveUpload(label + "Uploads", temPendingUpload);
-                    });
+                    SaveUpload(label + "Uploads", temPendingUpload);
                     items.Add(pendingUpload);
                     temp = items.Count - 1;
                     pendingUpload = null;

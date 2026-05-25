@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Swed64;
 using System.Diagnostics;
 using Titled_Gui;
 using Titled_Gui.Classes;
@@ -9,43 +10,62 @@ using Types = Titled_Gui.Data.Menu.Types;
 
 try
 {
-    if (GameState.swed == null) return;
     // initialization
     await OffsetGetter.UpdateOffsetsAsync();
 
     EntityManager entityManager = new();
+    GameState.renderer = new();
     ImGui.CreateContext();
     Renderer.LoadFonts();
-    Thread renderThread = new(() => GameState.renderer.Start().Wait())
-    {
-        IsBackground = true,
-    };
-    renderThread.Start();
+    await GameState.renderer.Start();
+
+    //foreach (string name in names) // liusts all embeddded resources
+    //{
+    //Console.WriteLine(name);
+    //}
+
     // entities
     List<Entity>? entities = [];
-    Thread entityUpdateThread = new(() =>
+    if (Process.GetProcessesByName("cs2").Length == 0)
     {
-        while (true)
-        {
-            try
-            {
-                if (entityManager != null)
-                {
-                    entities = EntityManager.GetEntities();
-                }
-                if (entities != null)
-                {
-                    GameState.renderer.UpdateEntities(entities);
-                    GameState.Entities = [.. entities];
-                }
-                Thread.Sleep(1);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception At Entity Update Thread" + e.StackTrace);
-            }
-        }
-    })
+        Console.WriteLine("CS2 Not Found...");
+        Thread.Sleep(1000);
+    }
+
+    GameState.swed = new("cs2");
+    GameState.client = GameState.swed.GetModuleBase("client.dll");
+
+    while (GameState.swed != null && !OffsetGetter.Updated)
+    {
+        await OffsetGetter.CheckIfOffsetsAreValid();
+        Thread.Sleep(10);
+        continue;
+    }
+
+    OffsetGetter.ApplySecondarySources();
+    Thread entityUpdateThread = new(() =>
+     {
+         while (true)
+         {
+             try
+             {
+                 if (entityManager != null)
+                 {
+                     entities = EntityManager.GetEntities();
+                 }
+                 if (entities != null)
+                 {
+                     GameState.renderer.UpdateEntities(entities);
+                     GameState.Entities = [.. entities];
+                 }
+                 Thread.Sleep(1);
+             }
+             catch (Exception e)
+             {
+                 Console.WriteLine("Exception At Entity Update Thread" + e.StackTrace);
+             }
+         }
+     })
     {
         IsBackground = true,
         Priority = ThreadPriority.Highest

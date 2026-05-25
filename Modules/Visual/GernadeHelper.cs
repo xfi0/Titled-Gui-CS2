@@ -103,7 +103,7 @@ namespace Titled_Gui.Modules.Visual
                 Angle = new Vector2(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2)
             };
 
-            string dir = Path.Combine(AppContext.BaseDirectory, "lineups", lineup.MapName.Replace(".vpk", ""));
+            string dir = Path.Combine(Configs.titledDocumentsFolder, "lineups", lineup.MapName.Replace(".vpk", ""));
             Directory.CreateDirectory(dir);
             string path = Path.Combine(dir, $"{lineup.Name}.json");
 

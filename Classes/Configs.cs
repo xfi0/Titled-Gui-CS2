@@ -14,12 +14,13 @@ namespace Titled_Gui.Classes
         public static string Version = "1.8";
         public static string Author = "https://github.com/xfi0";
         public static string Link = "https://github.com/xfi0/Titled-Gui-CS2";
+        public static string titledDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Titled", "CS2", "External");
 
         public static string ConfigName = "";
         public static ConcurrentDictionary<string, bool> SavedConfigs = new();
         public static string SelectedConfig = "";
 
-        public static readonly string ConfigDirPath = Path.Combine(AppContext.BaseDirectory, "Configs");
+        public static readonly string ConfigDirPath = Path.Combine(titledDocumentsFolder, "Configs");
         public static string JsonString = "";
 
         public static void SaveConfig(string fileName)
@@ -223,7 +224,6 @@ namespace Titled_Gui.Classes
                 ["Armor Bar"] = new JObject
                 {
                     ["Armor Bar Enabled"] = ArmorBar.EnableArmorhBar,
-                    ["Armor Bar Rounding"] = ArmorBar.Rounding,
                     ["Armor Bar Draw On Self"] = ArmorBar.DrawOnSelf,
                     ["Armor Bar Width"] = ArmorBar.ArmorBarWidth,
                 },
@@ -543,7 +543,6 @@ namespace Titled_Gui.Classes
 
                 #region Armor Bar
                 ArmorBar.EnableArmorhBar = configData["Armor Bar"]?["Armor Bar Enabled"]?.ToObject<bool>() ?? ArmorBar.EnableArmorhBar;
-                ArmorBar.Rounding = configData["Armor Bar"]?["Armor Bar Rounding"]?.ToObject<float>() ?? ArmorBar.Rounding;
                 ArmorBar.DrawOnSelf = configData["Armor Bar"]?["Armor Bar Draw On Self"]?.ToObject<bool>() ?? ArmorBar.DrawOnSelf;
                 ArmorBar.ArmorBarWidth = configData["Armor Bar"]?["Armor Bar Width"]?.ToObject<float>() ?? ArmorBar.ArmorBarWidth;
                 #endregion

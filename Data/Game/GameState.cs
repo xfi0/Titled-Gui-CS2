@@ -6,9 +6,9 @@ namespace Titled_Gui.Data.Game
 {
     public static class GameState
     {
-        public static Swed swed = new("cs2"); // public swed instance to use all arround
-        public static Renderer renderer = new();
-        public static IntPtr client = swed.GetModuleBase("client.dll"); // public client
+        public static Swed swed; // public swed instance to use all arround
+        public static Renderer renderer;
+        public static IntPtr client; // public client
         public static IntPtr LocalPlayerPawn { get; set; } // local player pawn pointer
         public static IntPtr EntityList { get; set; } // entity list pointer
         public static IntPtr CameraServices { get; set; } // camera services pointer

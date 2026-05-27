@@ -61,6 +61,7 @@ internal class Sections
     new("RCS", 1, () =>
     {
         RenderBoolSetting("RCS", ref RCS.Enabled);
+        RenderFloatSlider("Strength", ref RCS.Strength, 0f, 1f, "%.2f");
     }),
     new("Triggerbot", 1, () =>
     {

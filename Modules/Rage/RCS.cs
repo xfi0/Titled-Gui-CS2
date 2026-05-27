@@ -7,7 +7,7 @@ namespace Titled_Gui.Modules.Rage
     public class RCS : Classes.ThreadService
     {
         public static bool Enabled = false;
-        public static float Strength = 100f; // in precents so 1 == 100%, 0.5 == 50% etc
+        public static float Strength = 1.0f;
         public static Vector3 OldPunch = new(0, 0, 0);
         private static int StartBullet = 1;
         public static void RunRCS()
@@ -17,15 +17,16 @@ namespace Titled_Gui.Modules.Rage
 
             if (GameState.LocalPlayer.ShotsFired > StartBullet)
             {
-                Vector3 aimPunch = GameState.LocalPlayer.AimPunchAngle * (Strength / 100f);
+                Vector3 aimPunch = GameState.LocalPlayer.AimPunchAngle * Strength;
+
                 Vector3 newAngles;
 
                 aimPunch.X = Calculate.NormalizeAngle(aimPunch.X);
                 aimPunch.Y = Calculate.NormalizeAngle(aimPunch.Y);
                 var sensitivity = GameState.LocalPlayer.Sensitivity;
 
-                newAngles.X = (aimPunch.Y - OldPunch.Y) * 2.0f / (0.022f * sensitivity) / 1;
-                newAngles.Y = -(aimPunch.X - OldPunch.X) * 2.0f / (0.022f * sensitivity) / 1;
+                newAngles.X = (aimPunch.Y - OldPunch.Y) * 2.0f / (0.022f * sensitivity);
+                newAngles.Y = -(aimPunch.X - OldPunch.X) * 2.0f / (0.022f * sensitivity);
                 User32.mouse_event(User32.MOUSEEVENTF_MOVE, (uint)(int)newAngles.X, (uint)(int)newAngles.Y, 0, 0);
                 OldPunch = aimPunch;
             }

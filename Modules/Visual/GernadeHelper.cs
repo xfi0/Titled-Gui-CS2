@@ -104,7 +104,9 @@ namespace Titled_Gui.Modules.Visual
             };
 
             string dir = Path.Combine(Configs.titledDocumentsFolder, "lineups", lineup.MapName.Replace(".vpk", ""));
-            Directory.CreateDirectory(dir);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
             string path = Path.Combine(dir, $"{lineup.Name}.json");
 
             File.WriteAllText(path, JsonConvert.SerializeObject(lineup, Formatting.Indented));

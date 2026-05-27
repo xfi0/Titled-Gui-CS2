@@ -1,10 +1,9 @@
 # Important
-Fix trigger bot
+right click menu, like primordial i think where it shows keybind, toggle, always, etc.
 
 # Middle Ground
 Menu useable in game
 
 # Least Important
 Bhop Using Keyboard Input,
-Fix Color picker GUI Bugs,
 Improve color pickers,

@@ -389,7 +389,7 @@ namespace Titled_Gui
                     RenderTabButton("\uF35A", "Configs", 3);
 
                     const float cogButtonHeight = 35f;
-                    var spacingHeight = availableHeight - cogButtonHeight - 5f;
+                    var spacingHeight = ImGui.GetContentRegionAvail().Y - cogButtonHeight - 5f;
 
                     if (spacingHeight > 0)
                         ImGui.Dummy(new(0, spacingHeight));
@@ -443,29 +443,44 @@ namespace Titled_Gui
                         case 1:
                         case 2:
                         case 4:
-                            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 4f);
+                            ImGui.Dummy(new Vector2(0, 4));
+                            ImGui.SetCursorPosY(ImGui.GetCursorPosY());
                             float availW = ImGui.GetContentRegionAvail().X;
-                            float sectionW = (availW - ImGui.GetStyle().ItemSpacing.X) / 2f - 6f;
-                            int col = 0;
-                            foreach (var s in Sections.sections)
+                            float sectionW = (availW - ImGui.GetStyle().ItemSpacing.X) / 2f - 4f;
+                            float leftX = ImGui.GetCursorPosX() + 4f;
+                            float rightX = leftX + sectionW + ImGui.GetStyle().ItemSpacing.X;
+                            float startY = ImGui.GetCursorPosY();
+
+                            var tabSections = Sections.sections.Where(s => s.tab == selectedTab).ToList();
+                            var leftSections = tabSections.Where((_, i) => i % 2 == 0).ToList();
+                            var rightSections = tabSections.Where((_, i) => i % 2 != 0).ToList();
+
+                            float curY = startY;
+                            foreach (var s in leftSections)
                             {
-                                if (s.tab != selectedTab) 
-                                    continue;
-
-                                if (col % 2 != 0)
-                                    ImGui.SameLine();
-
-                                else ImGui.Dummy(new Vector2(0, 4));
+                                ImGui.SetCursorPos(new Vector2(leftX, curY));
                                 Sections.BeginSection(s.label, s.content, new Vector2(sectionW, 0));
-                                col++;
+                                curY = ImGui.GetCursorPosY() + 4f;
                             }
+                            float leftColBottom = curY;
+
+                            curY = startY;
+                            foreach (var s in rightSections)
+                            {
+                                ImGui.SetCursorPos(new Vector2(rightX, curY));
+                                Sections.BeginSection(s.label, s.content, new Vector2(sectionW, 0));
+                                curY = ImGui.GetCursorPosY() + 4f;
+                            }
+                            float rightColBottom = curY;
+
+                            ImGui.SetCursorPosY(Math.Max(leftColBottom, rightColBottom));
                             break;
 
                         case 3: // config
                             float availWidth = ImGui.GetContentRegionAvail().X;
                             float wiodthy = (availWidth - ImGui.GetStyle().ItemSpacing.X) / 2f - 6f;
-                            ImGui.Dummy(new Vector2(4, 4));
-                            ImGui.Text("Available Configs:");
+                            ImGui.Dummy(new Vector2(0, 4));
+                            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 4f);
 
                             Sections.BeginSection("ConfigList", () => {
                                 foreach (var config in Configs.SavedConfigs.Keys)

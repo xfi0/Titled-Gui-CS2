@@ -172,7 +172,7 @@ internal class Sections
     {
         ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, ChildRounding);
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.125f, 0.125f, 0.125f, 1.0f));
-        ImGui.BeginChild(label, new Vector2(size.X, 0), ImGuiChildFlags.Border | ImGuiChildFlags.AutoResizeY);
+        ImGui.BeginChild(label, size, ImGuiChildFlags.Border | ImGuiChildFlags.AutoResizeY);
         ImGui.Text(label);
         ImGui.Separator();
         content();

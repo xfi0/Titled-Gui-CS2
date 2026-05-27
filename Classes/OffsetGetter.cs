@@ -197,7 +197,7 @@ namespace Titled_Gui.Classes
             if (GameState.swed == null)
                 return;
 
-            if (GameState.swed.ReadPointer(GameState.client, Offsets.dwViewMatrix) == IntPtr.Zero || GameState.swed.ReadPointer(GameState.client, Offsets.dwEntityList) == IntPtr.Zero)
+            if (GameState.CS2Open() && (GameState.swed.ReadPointer(GameState.client, Offsets.dwViewMatrix) == IntPtr.Zero || GameState.swed.ReadPointer(GameState.client, Offsets.dwEntityList) == IntPtr.Zero))
             {
                 Console.WriteLine("[OFFSET FINDER] ERROR: a2x didnt NOT update correctly, trying secondary source");
                 offsets.Clear();
@@ -208,9 +208,11 @@ namespace Titled_Gui.Classes
                 ParseButtonsFile(ButtonsContent);
                 ParseEngine2File(Engine2Content);
                 UpdateOffsetsClass();
+
                 if (GameState.swed.ReadPointer(GameState.client, Offsets.dwViewMatrix) == IntPtr.Zero || GameState.swed.ReadPointer(GameState.client, Offsets.dwEntityList) == IntPtr.Zero)
                 {
-                    Updated = false;
+                    Console.WriteLine("Both are invalid, maybe try dumping yourself?");
+                    Updated = true;
                     return;
                 }
 

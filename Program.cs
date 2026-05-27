@@ -10,9 +10,6 @@ using Types = Titled_Gui.Data.Menu.Types;
 
 try
 {
-    // initialization
-    await OffsetGetter.UpdateOffsetsAsync();
-
     EntityManager entityManager = new();
     GameState.renderer = new();
     ImGui.CreateContext();
@@ -26,7 +23,7 @@ try
 
     // entities
     List<Entity>? entities = [];
-    if (Process.GetProcessesByName("cs2").Length == 0)
+    while (!GameState.CS2Open())
     {
         Console.WriteLine("CS2 Not Found...");
         Thread.Sleep(1000);
@@ -34,12 +31,15 @@ try
 
     GameState.swed = new("cs2");
     GameState.client = GameState.swed.GetModuleBase("client.dll");
+    await OffsetGetter.UpdateOffsetsAsync();
 
     while (GameState.swed != null && !OffsetGetter.Updated)
     {
-        await OffsetGetter.CheckIfOffsetsAreValid();
-        Thread.Sleep(10);
-        continue;
+        if (GameState.CS2Open())
+        {
+            await OffsetGetter.CheckIfOffsetsAreValid();
+        }
+        await Task.Delay(500);
     }
 
     OffsetGetter.ApplySecondarySources();

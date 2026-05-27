@@ -19,6 +19,9 @@ namespace Titled_Gui.Data.Game
 
         public static void Update()
         {
+            if (GameState.swed == null)
+                return;
+
             address = GameState.swed.ReadULong((nint)(GameState.client + Offsets.dwGlobalVars));
         }
 

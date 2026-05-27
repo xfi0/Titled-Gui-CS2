@@ -1,5 +1,6 @@
 using ImGuiNET;
 using Swed64;
+using System.Diagnostics;
 using Titled_Gui.Data.Entity;
 
 namespace Titled_Gui.Data.Game
@@ -37,5 +38,12 @@ namespace Titled_Gui.Data.Game
         public static int RoundDamage { get; set; }
         public static IntPtr bulletServices { get; set; }
         public static List<WorldEntity?> worldEntities { get; set; } = [];
+        public static bool waitedAfterGameLoaded = false;
+
+        public static bool CS2Open() // i didnt know where to put this
+        {
+            return !(Process.GetProcessesByName("cs2").Length == 0);
+        }
+
     }
 }

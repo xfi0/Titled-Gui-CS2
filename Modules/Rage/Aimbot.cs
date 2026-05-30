@@ -31,7 +31,7 @@ namespace Titled_Gui.Modules.Rage
         public static bool VisibilityCheck = true;
         public static bool TargetLine = true;
         private static Entity? target = null;
-        private static float remainderX = 0f;
+        private static Vector2 remainder = Vector2.Zero;
         private static float remainderY = 0f;
         private static Entity? previousTarget = null;
         public static void EnableAimbot() // TODO: return to old pos setting #7
@@ -113,8 +113,7 @@ namespace Titled_Gui.Modules.Rage
                 }
                 else
                 {
-                    remainderX = 0f;
-                    remainderY = 0f;
+                    remainder = Vector2.Zero;
                     target = null;
                 }
             }
@@ -129,14 +128,14 @@ namespace Titled_Gui.Modules.Rage
         }
         private static void MoveMousePos(float dx, float dy)
         {
-            dx = (SmoothingX > 0 ? dx / SmoothingX : dx) + remainderX;
-            dy = (SmoothingY > 0 ? dy / SmoothingY : dy) + remainderY;
+            dx = (SmoothingX > 0 ? dx / SmoothingX : dx) + remainder.X;
+            dy = (SmoothingY > 0 ? dy / SmoothingY : dy) + remainder.Y;
 
             int ix = (int)dx;
             int iy = (int)dy;
 
-            remainderX = dx - ix;
-            remainderY = dy - iy;
+            remainder.X = dx - ix;
+            remainder.Y = dy - iy;
 
             MoveMouse.MouseMove(ix, iy);
         }

@@ -44,6 +44,9 @@ namespace Titled_Gui.Data.Game
         {
             return !(Process.GetProcessesByName("cs2").Length == 0);
         }
-
+        public static Process[] GetCS2Process()
+        {
+            return Process.GetProcessesByName("cs2");
+        }
     }
 }

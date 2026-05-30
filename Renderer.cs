@@ -97,7 +97,8 @@ namespace Titled_Gui
         public static float menuSoundsVolume = 0.8f;
         public static bool enableVsync = true;
         public static Vector2 MainWindowSize = new(860, 550);
-
+        public static int OverlayProcessId = 0;
+        public static int CS2ProcessId = 0;
 
         public void UpdateEntities(IEnumerable<Entity> newEntities) => entities = newEntities.ToList();
 
@@ -526,7 +527,11 @@ namespace Titled_Gui
                 ImGui.End();
             }
 
-            RunAllModules();
+            bool cs2Focused = User32.IsWindowFocused(CS2ProcessId);
+            bool overlayFocused = OverlayProcessId != 0 && User32.IsWindowFocused(OverlayProcessId);
+
+            if (cs2Focused || overlayFocused)
+                RunAllModules();
         }
 
         public void DrawParticles(int num)
@@ -574,6 +579,7 @@ namespace Titled_Gui
             {
                 if (Aimbot.TargetLine)
                     Aimbot.RenderTargetLine();
+
                 HitStuff.CreateHitText();
 
                 if (EyeRay.Enabled)
@@ -606,6 +612,8 @@ namespace Titled_Gui
                     ArmorBar.DrawArmorBar(entity, this, entity.Armor, 100);
                 }
 
+                if (GernadeLineup.Enabled)
+                    GernadeLineup.DrawAllLineups();
 
                 if (Aimbot.DrawFov && Aimbot.AimbotEnable && Aimbot.UseFOV)
                     Aimbot.DrawCircle(Aimbot.FovSize, Aimbot.FovColor);

@@ -199,7 +199,7 @@ namespace Titled_Gui.Data.Entity
                 IntPtr collisionBase = pawnAddress + Offsets.m_Collision;
                 List<Types.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
                 WorldEntityManager.WeaponNameMap.TryGetValue(weaponDefIndex, out string? weaponName);
-
+                var viewPos = Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset));
                 //if (weaponNameAddress != 0)
                 //{
                 //    byte[] Buffer = GameState.swed.ReadBytes(weaponNameAddress, 32);
@@ -225,12 +225,12 @@ namespace Titled_Gui.Data.Entity
                     Position = GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin),
                     View = GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset),
                     Position2D = Calculate.WorldToScreen(viewMatrix, GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
-                    ViewPosition2D = Calculate.WorldToScreen(viewMatrix, Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset))),
+                    ViewPosition2D = Calculate.WorldToScreen(viewMatrix, viewPos),
                     //Visible = Visible(entity),
                     Visible = swed.ReadBool(pawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted),
                     SpottedByState = swed.ReadPointer(pawnAddress + 0x2718),
-                    Head = Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset)),
-                    Head2D = Calculate.WorldToScreen(viewMatrix, Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset))),
+                    Head = viewPos,
+                    Head2D = Calculate.WorldToScreen(viewMatrix, viewPos),
                     Distance = Vector3.Distance(GameState.swed.ReadVec(GameState.LocalPlayerPawn, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
                     Bones = bones,
                     Name = GameState.swed.ReadString(controller, Offsets.m_iszPlayerName, 32),

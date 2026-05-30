@@ -15,6 +15,7 @@ try
     ImGui.CreateContext();
     Renderer.LoadFonts();
     await GameState.renderer.Start();
+    GernadeLineup.Initialize();
 
     //foreach (string name in names) // liusts all embeddded resources
     //{
@@ -37,6 +38,11 @@ try
     {
         if (GameState.CS2Open())
         {
+            Process[] cs2 = GameState.GetCS2Process();
+            Renderer.CS2ProcessId = cs2.FirstOrDefault()?.Id ?? 0;
+            Process[] overlay = Process.GetProcessesByName("Titled GUI");
+            Renderer.OverlayProcessId = overlay.FirstOrDefault()?.Id ?? 0;
+
             await OffsetGetter.CheckIfOffsetsAreValid();
         }
         await Task.Delay(500);
@@ -85,6 +91,6 @@ catch (IndexOutOfRangeException)
 }
 catch (Exception e)
 {
-    Console.WriteLine("Exception: " + e.Message);
+    Console.WriteLine("Main function Exception: " + e.Message);
 }
 

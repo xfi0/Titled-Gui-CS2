@@ -18,7 +18,7 @@ namespace Titled_Gui.Modules.Visual
 
             try
             {
-                Types.C4? c4 = C4Info.C4;
+                C4? c4 = C4Info.C4;
                 if (c4 == null)
                     return;
                 // overlay

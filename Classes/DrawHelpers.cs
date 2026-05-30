@@ -353,5 +353,41 @@ namespace Titled_Gui.Classes
 
             ImGui.Dummy(new Vector2(ImGui.CalcTextSize(text).X, 0));
         }
+        public static void Draw3DCircle(float[] viewMatrix, Vector3 center, float radius, Vector3 normal, uint color, int segments = 32)
+        {
+            Vector3 up = MathF.Abs(normal.Z) < 0.999f ? Vector3.UnitZ : Vector3.UnitX;
+            Vector3 right = Vector3.Normalize(Vector3.Cross(up, normal));
+            Vector3 forward = Vector3.Normalize(Vector3.Cross(normal, right));
+
+            List<Vector2> positions2D = new();
+
+            for (int i = 0; i < segments; i++)
+            {
+                float angle = i * MathF.PI * 2f / segments;
+                Vector3 worldPoint = center + right * MathF.Cos(angle) * radius + forward * MathF.Sin(angle) * radius;
+
+                Vector2 screen = Calculate.WorldToScreen(viewMatrix, worldPoint);
+                if (screen == new Vector2(-99, -99)) 
+                {
+                    positions2D.Clear(); 
+                    continue; 
+                }
+
+                positions2D.Add(screen);
+            }
+
+            for (int i = 0; i < positions2D.Count; i++)
+            {
+                Vector2 a = positions2D[i];
+                Vector2 b = positions2D[(i + 1) % positions2D.Count];
+                GameState.renderer.drawList.AddLine(a, b, color, 2f);
+            }
+        }
+        public static void Draw3DSphere(float[] viewMatrix, Vector3 center, float radius, uint color, int segments = 32)
+        {
+            Draw3DCircle(viewMatrix, center, radius, Vector3.UnitX, color, segments);
+            Draw3DCircle(viewMatrix, center, radius, Vector3.UnitY, color, segments);
+            Draw3DCircle(viewMatrix, center, radius, Vector3.UnitZ, color, segments);
+        }
     }
 }

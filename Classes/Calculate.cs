@@ -36,19 +36,12 @@ namespace Titled_Gui.Classes
             return new(X, Y);
         }
 
-        public static Vector2 CalculateAngles(Vector3 from, Vector3 to)
+        public static Vector3 AngleToForward(Vector3 angles)
         {
-            Vector3 delta = new(to.X - from.X, to.Y - from.Y, to.Z - from.Z);
+            float pitch = angles.X * (MathF.PI / 180f);
+            float yaw = angles.Y * (MathF.PI / 180f);
 
-            float Distance = (float)Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
-
-            float pitch = (float)(-Math.Atan2(delta.Z, Distance) * 180 / Math.PI);
-            float yaw = (float)(Math.Atan2(delta.Y, delta.X) * 180 / Math.PI);
-
-            pitch = NormalizeAngle(pitch);
-            yaw = NormalizeAngle(yaw);
-
-            return new(pitch, yaw);
+            return new Vector3(MathF.Cos(pitch) * MathF.Cos(yaw), MathF.Cos(pitch) * MathF.Sin(yaw), -MathF.Sin(pitch));
         }
 
         public static float NormalizeAngle(float angle)

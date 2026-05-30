@@ -53,6 +53,7 @@ namespace Titled_Gui.Classes
             }
             if (mapLoaderInstance.PreviousMapName != map)
             {
+                Events.GameEvents.BroadcastMapChanged(map);
                 if (!mapLoaderInstance.LoadMap(map))
                 {
                     Console.WriteLine("Failed to load map: " + map);

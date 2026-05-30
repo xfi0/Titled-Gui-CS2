@@ -92,7 +92,19 @@ namespace Titled_Gui.Classes
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
+        [DllImport("user32.dll")]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+        public static bool GetKeyHeld(Keys key)
+        {
+            return ((ushort)GetAsyncKeyState((int)key) & 0x8000) != 0;
+        }
 
+        public static bool IsWindowFocused(int processId)
+        {
+            IntPtr hwnd = GetForegroundWindow();
+            GetWindowThreadProcessId(hwnd, out uint focusedPid);
+            return focusedPid == (uint)processId;
+        }
         public static void Click()
         {
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);

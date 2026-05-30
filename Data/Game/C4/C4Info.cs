@@ -10,7 +10,7 @@ namespace Titled_Gui.Data.Game.C4
 {
     internal class C4Info : ThreadService
     {
-        public static Types.C4? C4 = null;
+        public static C4? C4 = null;
         /// <summary>
         /// pointer to a C_PlantedC4, if available.
         /// </summary>
@@ -58,7 +58,7 @@ namespace Titled_Gui.Data.Game.C4
             if (c4 == IntPtr.Zero || node == IntPtr.Zero || position == new Vector3(0, 0, 0)) 
                 return;
             
-            C4 = new Types.C4()
+            C4 = new C4()
             {
                 Address = c4,
                 ExplosionTime = GameState.swed.ReadFloat(c4 + Offsets.m_flC4Blow) - GlobalVar.GetCurrentTime(),

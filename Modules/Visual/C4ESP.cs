@@ -18,10 +18,11 @@ namespace Titled_Gui.Modules.Visual
         {
             if (!BoxEnabled && !TextEnabled) return;
 
-            Types.C4? c4 = C4Info.C4;
+            C4? c4 = C4Info.C4;
 
             if (c4 == null || !c4.Planted || c4.Position == new Vector3(0, 0, 0) || c4.Position2D == new Vector2(-99, -99))
                 return;
+
             float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
             Vector3[] corners3D = Get3DCorners(c4);
             Vector2[] corners2D = new Vector2[corners3D.Length];
@@ -42,7 +43,7 @@ namespace Titled_Gui.Modules.Visual
             }
         }
 
-        private static Vector3[] Get3DCorners(Types.C4? c4)
+        private static Vector3[] Get3DCorners(C4? c4)
         {
             if (c4 == null)
                 return Array.Empty<Vector3>();

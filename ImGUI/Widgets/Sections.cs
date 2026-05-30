@@ -13,6 +13,7 @@ using static Titled_Gui.ImGUI.Widgets.Misc;
 using static Titled_Gui.ImGUI.Widgets.Sliders;
 using static Titled_Gui.ImGUI.Widgets.Toggles;
 using Titled_Gui.Modules;
+using Titled_Gui.ImGUI.Widgets;
 
 internal class Sections
 {
@@ -41,6 +42,17 @@ internal class Sections
         RenderIntCombo("Current Hit Sound", ref HitStuff.CurrentHitSound, HitStuff.HitSoundDisplays, HitStuff.HitSounds.Count, true);
         RenderBoolSettingWith1ColorPicker("Headshot Text", ref HitStuff.EnableHeadshotText, ref HitStuff.TextColor);
     }),
+    new("Gernade Helper", 0, () =>
+    {
+        RenderBoolSetting("Enable Gernade Helper", ref GernadeLineup.Enabled);
+        RenderBoolSetting("Always Show", ref GernadeLineup.AlwaysShow);
+        Render2ColorPickers("Position Circle Color", ref GernadeLineup.PositionColorInside, ref GernadeLineup.PositionColorOutside);
+        ImGui.InputText("Lineup Name", ref GernadeLineup.LineupName, 128);
+        RenderIntCombo("Linup Type", ref GernadeLineup.SelectedType, GernadeLineup.TypesList, GernadeLineup.TypesList.Count, false);
+        Titled_Gui.ImGUI.Widgets.Button.RenderButton("Save Lineup", () => {
+            GernadeLineup.SaveLineup(GernadeLineup.LineupName, (Titled_Gui.Data.Menu.Types.GernadeLaunchType)GernadeLineup.SelectedType); 
+        });
+    }),
 
     new("Aimbot", 1, () =>
     {
@@ -54,7 +66,7 @@ internal class Sections
         RenderBoolSetting("Use FOV", ref Aimbot.UseFOV);
         RenderBoolSetting("Scoped Check", ref Aimbot.ScopedOnly);
         RenderIntSlider("FOV Size", ref Aimbot.FovSize, 10, 1000, "%d");
-        RenderColorSetting("FOV Color", ref Aimbot.FovColor);
+        RenderColorPicker("FOV Color", ref Aimbot.FovColor);
         RenderBoolSetting("Visibility Check", ref Aimbot.VisibilityCheck);
         RenderBoolSetting("Target Line", ref Aimbot.TargetLine);
     }),
@@ -85,8 +97,8 @@ internal class Sections
         RenderBoolSettingWith1ColorPicker("Inner Outline", ref BoxESP.InnerOutline, ref BoxESP.InnerOutlineColor);
         RenderFloatSlider("ESP Rounding", ref BoxESP.Rounding, 1f, 5f);
         RenderFloatSlider("ESP Glow", ref BoxESP.GlowAmount, 0f, 5f);
-        RenderColorSetting("Team Color", ref Colors.TeamColor);
-        RenderColorSetting("Enemy Color", ref Colors.EnemyColor);
+        RenderColorPicker("Team Color", ref Colors.TeamColor);
+        RenderColorPicker("Enemy Color", ref Colors.EnemyColor);
         RenderBoolSettingWith2ColorPickers("Outer Outline", ref BoxESP.OuterOutline, ref BoxESP.OutlineEnemyColor, ref BoxESP.OutlineTeamColor);
         RenderBoolSettingWith2ColorPickers("Visibility Check", ref BoneESP.visibilityCheck, ref BoxESP.OccludedEnemy, ref BoxESP.OccludedTeam);
         RenderBoolSetting("Flash Check", ref BoxESP.FlashCheck);
@@ -146,11 +158,11 @@ internal class Sections
     new("GUI", 4, () =>
     {
         RenderFloatSlider("Window Alpha", ref Renderer.windowAlpha, 0.1f, 1.0f, "%.2f");
-        RenderColorSetting("Accent Color", ref Renderer.accentColor);
+        RenderColorPicker("Accent Color", ref Renderer.accentColor);
         RenderFloatSlider("Animation Speed", ref Renderer.animationSpeed, 0.01f, 1.0f, "%.2f");
         RenderFloatSlider("Particle Speed", ref Renderer.ParticleSpeed, 0, 10);
-        RenderColorSetting("Particle Color", ref Renderer.ParticleColor);
-        RenderColorSetting("Line Color", ref Renderer.LineColor);
+        RenderColorPicker("Particle Color", ref Renderer.ParticleColor);
+        RenderColorPicker("Line Color", ref Renderer.LineColor);
         Renderer.RenderKeybindChooser("Open Keybind", ref Renderer.OpenKey);
         RenderBoolSetting("Menu Sounds", ref Renderer.menuSounds);
         RenderFloatSlider("Menu Sounds Volume", ref Renderer.menuSoundsVolume, 0, 1);
@@ -168,6 +180,7 @@ internal class Sections
         ImGui.TextWrapped("If you paid for this you have been scammed.\nThis never was, and will never be paid.\nPlease report any paid versions of this to my github or discord.");
     }),
 };
+
     public static void BeginSection(string label, Action content, Vector2 size)
     {
         ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, ChildRounding);

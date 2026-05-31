@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Xml.Linq;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using static Titled_Gui.Modules.Legit.HitStuff;
 
 namespace Titled_Gui.Modules.Visual
 {
@@ -20,5 +21,15 @@ namespace Titled_Gui.Modules.Visual
             Vector2 textPos = new(e.Position2D.X + 2 - (textSize.X / 2), e.Position2D.Y);
             GameState.renderer.DrawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new(1f, 1f, 1f, 1f)), distText);
         }
+        public static void DrawDistancePreview(Vector2 position, float entityHeight)
+        {
+            string distText = "15m";
+
+            Vector2 textSize = ImGui.CalcTextSize(distText);
+
+            ImGui.GetWindowDrawList().AddText(position + new Vector2(0 - (textSize.X / 2), entityHeight / 2),
+                ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)), "15m");
+        }
+
     }
 }

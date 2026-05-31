@@ -511,7 +511,7 @@ namespace Titled_Gui.Modules.Visual
                 DrawBoxPreview(center + windowPos, entityHeight);
 
             if (DistanceText.Enabled)
-                DrawDistancePreview(center + windowPos, entityHeight);
+                DistanceText.DrawDistancePreview(center + windowPos, entityHeight);
 
             if (BoneESP.EnableBoneESP)
                 BoneESP.DrawBonePreview(center + windowPos, entityHeight);
@@ -527,12 +527,6 @@ namespace Titled_Gui.Modules.Visual
 
             if (Tracers.EnableTracers)
                 Tracers.DrawTracerPreview(center + windowPos, entityHeight);
-        }
-
-        public static void DrawDistancePreview(Vector2 position, float entityHeight)
-        {
-            ImGui.GetWindowDrawList().AddText(position + new Vector2(entityHeight / 3 - 10, entityHeight / 2),
-                ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)), "15m");
         }
 
         public static void DrawBoxPreview(Vector2 position, float entityHeight)

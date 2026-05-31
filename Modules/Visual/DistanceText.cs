@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using System.Numerics;
+using System.Xml.Linq;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
@@ -14,7 +15,9 @@ namespace Titled_Gui.Modules.Visual
                 return;
 
             string distText = $"{(int)e.Distance / 100}m";
-            Vector2 textPos = new(e.Position2D.X + 2, e.Position2D.Y);
+            Vector2 textSize = ImGui.CalcTextSize(distText);
+
+            Vector2 textPos = new(e.Position2D.X + 2 - (textSize.X / 2), e.Position2D.Y);
             GameState.renderer.DrawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new(1f, 1f, 1f, 1f)), distText);
         }
     }

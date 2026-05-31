@@ -54,7 +54,7 @@ namespace Titled_Gui.Modules.Visual
             renderer.DrawList.AddLine(StartPos, EndPos, ImGui.ColorConvertFloat4ToU32(lineColor), LineThickness); // add line for non rgb just liek Team color
         }
 
-        public static void DrawTracerPreview(Vector2 position)
+        public static void DrawTracerPreview(Vector2 position, float entityHeight)
         {
             Vector2 bottom = new(position.X, position.Y + 200);
             ImGui.GetWindowDrawList().AddLine(bottom, position, ImGui.ColorConvertFloat4ToU32(EnemyColor));

@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Microsoft.VisualBasic.Logging;
 using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Classes.Rendering;
@@ -51,19 +52,19 @@ namespace Titled_Gui.Modules.Visual
             }
 
 
-            GameState.renderer.DrawList.AddRectFilled(filledTop, filledTop + new Vector2(HealthBarWidth, filledHeight), ImGui.ColorConvertFloat4ToU32(HealthColor), Rounding);
+            GameState.renderer.DrawList.AddRectFilled(filledTop, filledTop + new Vector2(HealthBarWidth, filledHeight), ImGui.ColorConvertFloat4ToU32(HealthColor));
         }
-        public static void DrawHealthBarPreview(Vector2 position)
+        public static void DrawHealthBarPreview(Vector2 position, float entityHeight)
         {
-            float BarHeight = 200f;
-            float BarWidth = 6f;
-            float HealthPercent = 0.75f;
-            TextRenderer.AnimateFloat(ref HealthPercent, out float HealthPercent1);
+            float barWidth = 5f;
+            float healthPercent = TextRenderer.AnimateFloat("HealthBar"); 
+            float offset = 4;
 
-            Vector2 bottom = position + new Vector2(0, BarHeight);
+            Vector2 top = position + new Vector2(-entityHeight / 3f - barWidth - offset, -entityHeight / 2);
+            Vector2 bottom = position + new Vector2(-entityHeight / 3f - offset, entityHeight / 2);
 
-            ImGui.GetWindowDrawList().AddRectFilled(position, bottom + new Vector2(BarWidth, 0), ImGui.ColorConvertFloat4ToU32(HealthBarBackGround), Rounding);
-            ImGui.GetWindowDrawList().AddRectFilled(position + new Vector2(0, BarHeight * (1 - HealthPercent1)), position + new Vector2(BarWidth, BarHeight), ImGui.ColorConvertFloat4ToU32(HealthColor), Rounding);
+            ImGui.GetWindowDrawList().AddRectFilled(top, bottom, ImGui.ColorConvertFloat4ToU32(HealthBarBackGround));
+            ImGui.GetWindowDrawList().AddRectFilled(top + new Vector2(0, entityHeight * (1 - healthPercent)), bottom, ImGui.ColorConvertFloat4ToU32(HealthColor));
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
@@ -13,7 +14,7 @@ namespace Titled_Gui.Modules.Visual
         public static float ArmorBarWidth = 5f;
         public static float Rounding = 2.3f;
         public static Vector4 ArmorColor = new(0.1f, 0f, 1f, 1f);
-
+        private static Vector4 _backgroundColor = new(0.2f, 0.2f, 0.2f, 1f);
         public static void DrawArmorBar(Entity? e, Renderer renderer, float armor, float maxArmor)
         {
             if (!EnableArmorhBar || e == null || e.PawnAddress == GameState.LocalPlayer.PawnAddress ||
@@ -34,7 +35,7 @@ namespace Titled_Gui.Modules.Visual
             float filledHeight = height * healthPercentage;
 
             renderer.DrawList.AddRectFilled(topRight, topRight + new Vector2(ArmorBarWidth, height),
-                ImGui.ColorConvertFloat4ToU32(new(0.2f, 0.2f, 0.2f, 1f)), Rounding);
+                ImGui.ColorConvertFloat4ToU32(_backgroundColor), Rounding);
 
             Vector2 filledTop = topRight + new Vector2(0, height - filledHeight);
             ArmorColor = Colors.RGB ? Colors.Rgb() : new(0.1f, 0f, 1f, 1f);
@@ -43,15 +44,18 @@ namespace Titled_Gui.Modules.Visual
                 ImGui.ColorConvertFloat4ToU32(ArmorColor), Rounding);
         }
 
-        public static void DrawArmorBarPreview(Vector2 position)
+        public static void DrawArmorBarPreview(Vector2 position, float entityHeight)
         {
-            float BarHeight = 200f;
-            float BarWidth = 6f;
-            float HealthPercentage = 0.5f; // TODO maybe make moving
+            float barWidth = 5f;
+            float armorPercent = Titled_Gui.Classes.Rendering.TextRenderer.AnimateFloat("healthBar");
+            float offset = 4;
+            
 
-            Vector2 bottom = position + new Vector2(0, BarHeight);
-            ImGui.GetWindowDrawList().AddRectFilled(position, bottom + new Vector2(BarWidth, 0), ImGui.ColorConvertFloat4ToU32(ArmorColor));
-            ImGui.GetWindowDrawList().AddRectFilled(position, position + new Vector2(BarWidth, BarHeight * HealthPercentage), ImGui.ColorConvertFloat4ToU32(new(0.2f, 0.2f, 0.2f, 1f)));
+            Vector2 top = position + new Vector2(entityHeight / 3f + offset, -entityHeight / 2);
+            Vector2 bottom = position + new Vector2(entityHeight / 3f + barWidth + offset, entityHeight / 2);
+
+            ImGui.GetWindowDrawList().AddRectFilled(top, bottom, ImGui.ColorConvertFloat4ToU32(_backgroundColor));
+            ImGui.GetWindowDrawList().AddRectFilled(top + new Vector2(0, entityHeight * (1 - armorPercent)), bottom, ImGui.ColorConvertFloat4ToU32(ArmorColor));
         }
     }
 }

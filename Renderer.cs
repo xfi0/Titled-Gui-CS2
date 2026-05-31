@@ -353,6 +353,7 @@ namespace Titled_Gui
             BgDrawList = ImGui.GetBackgroundDrawList();
             if (DrawWindow)
             {
+                ImGUI.Widgets.Preview.DrawWindow();
                 BgDrawList.AddRectFilled(Vector2.Zero, ScreenSize, ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.5f))); // ts the dimmed background TODO: make a opacity changer
                 DrawParticles(NumberOfParticles);
                 ImGui.SetNextWindowPos(new Vector2((ScreenSize.X - 800) / 2f, (ScreenSize.Y - 600) / 2f),

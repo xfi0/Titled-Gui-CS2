@@ -504,40 +504,39 @@ namespace Titled_Gui.Modules.Visual
         public static void RenderESPPreview(Vector2 center)
         {
             if (!EnableESPPreview) return;
+            float entityHeight = 225f;
+            Vector2 windowPos = ImGui.GetWindowPos();
 
             if (EnableESP)
-                DrawBoxPreview(center);
+                DrawBoxPreview(center + windowPos, entityHeight);
 
             if (DistanceText.Enabled)
-                DrawDistancePreview(center);
+                DrawDistancePreview(center + windowPos, entityHeight);
 
             if (BoneESP.EnableBoneESP)
-                BoneESP.DrawBonePreview(center);
+                BoneESP.DrawBonePreview(center + windowPos, entityHeight);
 
             if (HealthBar.EnableHealthBar)
-                HealthBar.DrawHealthBarPreview(center + new Vector2(-70, -100));
+                HealthBar.DrawHealthBarPreview(center + windowPos, entityHeight);
 
             if (ArmorBar.EnableArmorhBar)
-                ArmorBar.DrawArmorBarPreview(center + new Vector2(70, -100));
+                ArmorBar.DrawArmorBarPreview(center + windowPos, entityHeight);
 
             if (NameDisplay.Enabled)
-                NameDisplay.DrawNamePreview(center + new Vector2(0, -120));
+                NameDisplay.DrawNamePreview(center + windowPos, entityHeight);
 
             if (Tracers.EnableTracers)
-                Tracers.DrawTracerPreview(center);
+                Tracers.DrawTracerPreview(center + windowPos, entityHeight);
         }
 
-        public static void DrawDistancePreview(Vector2 position)
+        public static void DrawDistancePreview(Vector2 position, float entityHeight)
         {
-            ImGui.GetWindowDrawList().AddText(position + new Vector2(0, 60),
+            ImGui.GetWindowDrawList().AddText(position + new Vector2(entityHeight / 3 - 10, entityHeight / 2),
                 ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1)), "15m");
         }
 
-        public static void DrawBoxPreview(Vector2 position)
+        public static void DrawBoxPreview(Vector2 position, float entityHeight)
         {
-            if (!EnableESPPreview) return;
-
-            float entityHeight = 200f;
             float halfWidth = entityHeight / 3f;
             float centerX = position.X;
 

@@ -9,7 +9,7 @@ namespace Titled_Gui.Classes.Rendering
     internal class TextRenderer
     {
         public static float Now = (float)ImGui.GetTime();
-        public static List<float> animatedFloats = new List<float>();
+        private static Dictionary<string, (float value, float dir)> _animStates = new();
         public static void DrawGradientText(string text, Vector4 startColor, Vector4 endColor)
         {
             var drawList = ImGui.GetWindowDrawList();
@@ -26,12 +26,26 @@ namespace Titled_Gui.Classes.Rendering
 
             ImGui.Dummy(new Vector2(ImGui.CalcTextSize(text).X, 0));
         }
-        public static void AnimateFloat(ref float value, out float outValue)
+
+        public static float AnimateFloat(string key, float speed = 1f)
         {
-            value += 0.1f;
-            value = global::System.Math.Clamp(value, 0.0f, 1.0f);
-            outValue = value;
-            return;
+            if (!_animStates.ContainsKey(key))
+                _animStates[key] = (0f, 1f);
+
+            var (value, dir) = _animStates[key];
+            value += dir * speed * ImGui.GetIO().DeltaTime;
+
+            if (value >= 1f) 
+            { 
+                value = 1f; dir = -1f; 
+            }
+            else if (value <= 0f) 
+            {
+                value = 0f; dir = 1f; 
+            }
+
+            _animStates[key] = (value, dir);
+            return value;
         }
     }
 }

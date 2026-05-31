@@ -283,14 +283,13 @@ namespace Titled_Gui.Modules.Visual
         {
             return !float.IsNaN(pt.X) && !float.IsNaN(pt.Y) && !float.IsNaN(pt.Z) && !float.IsInfinity(pt.X) && !float.IsInfinity(pt.Y) && !float.IsInfinity(pt.Z) && pt.X > 0 && pt.Y > 0 && pt.Z > 0;
         }
-        public static void DrawBonePreview(Vector2 Center)
+        public static void DrawBonePreview(Vector2 Center, float entityHeight)
         {
-            float EntityHeight = 150f;
             Vector4 Color = VisibleBoneColor;
             uint UColor = ImGui.GetColorU32(Color);
             var DrawList = ImGui.GetWindowDrawList();
 
-            Vector2 Neck = Center + new Vector2(0, -EntityHeight / 3);
+            Vector2 Neck = Center + new Vector2(0, -entityHeight / 3);
             Vector2 Spine = Center + new Vector2(10, 0);
             Vector2 Pelvis = Center + new Vector2(12, 20);
             Vector2 LegLeftUp = Pelvis + new Vector2(3, 5);
@@ -304,7 +303,7 @@ namespace Titled_Gui.Modules.Visual
             Vector2 ScapulaRight = Neck + new Vector2(-10, 5);
             Vector2 ArmRightUp = ScapulaRight + new Vector2(-13, 23);
             Vector2 ArmRightDown = ArmRightUp + new Vector2(-7, -8);
-            Vector2 Head = Neck + new Vector2(0, -40);
+            Vector2 Head = Neck - new Vector2(0, 8);
 
             (Vector2, Vector2)[] Segments =
             [
@@ -335,7 +334,7 @@ namespace Titled_Gui.Modules.Visual
             if (GlowAmount > 0)
                 GlowRenderer.DrawGlowCircle(DrawList, Head, 10f, VisibleBoneColor, GlowAmount);
 
-            DrawList.AddCircle(Head, 10f, UColor, 12, 0.7f);
+            DrawList.AddCircleFilled(Head, 5f, UColor, 12);
         }
     }
 }

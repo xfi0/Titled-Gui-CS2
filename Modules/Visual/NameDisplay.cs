@@ -36,9 +36,9 @@ namespace Titled_Gui.Modules.Visual
 
         }
 
-        public static void DrawNamePreview(Vector2 position)
+        public static void DrawNamePreview(Vector2 position, float entityHeight)
         {
-            ImGui.GetWindowDrawList().AddText(position, ImGui.ColorConvertFloat4ToU32(NameTextColor), "John Doe");
+            ImGui.GetWindowDrawList().AddText(position - new Vector2(0, entityHeight / 2 + 25), ImGui.ColorConvertFloat4ToU32(NameTextColor), "John Doe");
         }
     }
 }

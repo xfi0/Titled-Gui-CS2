@@ -1,6 +1,7 @@
-﻿using System.Numerics;
-using ImGuiNET;
+﻿using ImGuiNET;
+using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
@@ -25,7 +26,7 @@ namespace Titled_Gui.Modules.Visual
 
             foreach (Types.Hitbox? hitbox in entity.HitBoxes)
             {
-                if (hitbox == null || hitbox.BonePosition2D == new Vector2(-99, -99))
+                if (hitbox == null || hitbox.Bone == null || hitbox.BonePosition2D == new Vector2(-99, -99))
                     continue;
 
                 uint preConvertedColor = (VisibilityCheck && !hitbox.Bone.IsVisible)
@@ -39,7 +40,7 @@ namespace Titled_Gui.Modules.Visual
 
                 float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
-                DrawHelpers.DrawCapsule3D(hitbox.MinBounds, hitbox.MaxBounds, hitbox.ShapeRadius, hitbox.BoneRotation,
+                ShapeRenderer.DrawCapsule3D(hitbox.MinBounds, hitbox.MaxBounds, hitbox.ShapeRadius, hitbox.BoneRotation,
                     hitbox.BonePosition, viewMatrix, preConvertedColor);
             }
         }

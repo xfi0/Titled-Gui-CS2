@@ -38,6 +38,9 @@ namespace PhysExtractor.src
 
                 foreach (var part in parts)
                 {
+                    if (part == null || part.Key == null)
+                        continue;
+
                     if (part.IsArray)
                     {
                         if (current is Dictionary<string, object> dict && dict.TryGetValue(part.Key, out object? arrayValue))
@@ -315,6 +318,9 @@ namespace PhysExtractor.src
 
                 // Parse value
                 var (value, newIndex) = ParseValue(tokens, index);
+                if (value == null)
+                    continue;
+
                 obj[key] = value;
                 index = newIndex;
             }
@@ -343,6 +349,9 @@ namespace PhysExtractor.src
                 }
 
                 var (value, newIndex) = ParseValue(tokens, index);
+                if (value == null)
+                    continue;
+
                 array.Add(value);
                 index = newIndex;
             }
@@ -353,7 +362,7 @@ namespace PhysExtractor.src
             return (array, index);
         }
 
-        private (object, int) ParseValue(List<string> tokens, int index)
+        private (object?, int) ParseValue(List<string> tokens, int index)
         {
             if (index >= tokens.Count)
                 return (null, index);

@@ -1,8 +1,10 @@
 ﻿using ImGuiNET;
 using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using TextRenderer = Titled_Gui.Classes.Rendering.TextRenderer;
 
 namespace Titled_Gui.Modules.Visual
 {
@@ -56,7 +58,7 @@ namespace Titled_Gui.Modules.Visual
             float BarHeight = 200f;
             float BarWidth = 6f;
             float HealthPercent = 0.75f;
-            DrawHelpers.AnimateFloat(ref HealthPercent, out float HealthPercent1);
+            TextRenderer.AnimateFloat(ref HealthPercent, out float HealthPercent1);
 
             Vector2 bottom = position + new Vector2(0, BarHeight);
 

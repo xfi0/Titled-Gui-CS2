@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Math;
+using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Menu;
 using static Titled_Gui.Data.Game.Events;
@@ -88,10 +90,10 @@ namespace Titled_Gui.Modules.Visual
                     uint circle3DColor = insideCircle ? ImGui.ColorConvertFloat4ToU32(PositionColorInside) : ImGui.ColorConvertFloat4ToU32(PositionColorOutside);
                     uint circle2DColor = ImGui.ColorConvertFloat4ToU32(AngleColor);
 
-                    DrawHelpers.Draw3DCircle(viewMatrix, lineup.Position, circleRadius, Vector3.UnitZ, circle3DColor);
-                    DrawHelpers.Draw3DCircle(viewMatrix, lineup.Angle, circleRadius, lineup.CircleDirection, circle2DColor);
+                    ShapeRenderer.Draw3DCircle(viewMatrix, lineup.Position, circleRadius, Vector3.UnitZ, circle3DColor);
+                    ShapeRenderer.Draw3DCircle(viewMatrix, lineup.Angle, circleRadius, lineup.CircleDirection, circle2DColor);
 
-                    Vector2 circleScreen = Calculate.WorldToScreen(viewMatrix, lineup.Angle);
+                    Vector2 circleScreen = MathUtils.WorldToScreen(viewMatrix, lineup.Angle);
                     if (circleScreen == new Vector2(-99, -99))
                         continue;
 
@@ -107,7 +109,7 @@ namespace Titled_Gui.Modules.Visual
 
                     GameState.renderer.DrawList.AddText(new(circleScreen.X - 50f, circleScreen.Y - 50f), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), TypesList[(int)lineup.LaunchType]);
 
-                    Vector2 position2D = Calculate.WorldToScreen(viewMatrix, lineup.Position);
+                    Vector2 position2D = MathUtils.WorldToScreen(viewMatrix, lineup.Position);
                     if (position2D == new Vector2(-99, -99))
                         continue;
 
@@ -147,7 +149,7 @@ namespace Titled_Gui.Modules.Visual
         public static void SaveLineup(string name, Types.GernadeLaunchType launchType)
         {
             Vector3 eyeOrigin = GameState.LocalPlayer.EyePosition;
-            Vector3 forward = Calculate.AngleToForward(GameState.LocalPlayer.EyeDirection);
+            Vector3 forward = MathUtils.AngleToForward(GameState.LocalPlayer.EyeDirection);
             Vector3 circlePos = eyeOrigin + forward * 100f;
 
             Types.GernadeLineupType lineup = new()

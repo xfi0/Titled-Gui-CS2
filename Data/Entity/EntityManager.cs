@@ -2,6 +2,7 @@ using ImGuiNET;
 using System.Diagnostics;
 using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Game.MapParser;
 using Titled_Gui.Data.Game.VRF;
@@ -137,11 +138,11 @@ namespace Titled_Gui.Data.Entity
                 Health = memory.ReadInt(localPlayerPawn, Offsets.m_iHealth),
                 Team = memory.ReadInt(localPlayerPawn + Offsets.m_iTeamNum),
                 LifeState = memory.ReadInt(localPlayerPawn, Offsets.m_lifeState),
-                Position2D = Calculate.WorldToScreen(viewMatrix, memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin)),
-                ViewPosition2D = Calculate.WorldToScreen(viewMatrix, Vector3.Add(memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset))),
+                Position2D = MathUtils.WorldToScreen(viewMatrix, memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin)),
+                ViewPosition2D = MathUtils.WorldToScreen(viewMatrix, Vector3.Add(memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset))),
                 //Visible => ,
                 Head = Vector3.Add(memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset)),
-                Head2D = Calculate.WorldToScreen(viewMatrix, Vector3.Add(memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset))),
+                Head2D = MathUtils.WorldToScreen(viewMatrix, Vector3.Add(memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset))),
                 Distance = Vector3.Distance(memory.ReadVec(LocalPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin)),
                 Bones = bones,
                 Name = memory.ReadString(controller + Offsets.m_iszPlayerName),
@@ -224,13 +225,13 @@ namespace Titled_Gui.Data.Entity
                     LifeState = memory.ReadInt(pawnAddress, Offsets.m_lifeState),
                     Position = memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin),
                     View = memory.ReadVec(pawnAddress, Offsets.m_vecViewOffset),
-                    Position2D = Calculate.WorldToScreen(viewMatrix, memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
-                    ViewPosition2D = Calculate.WorldToScreen(viewMatrix, viewPos),
+                    Position2D = MathUtils.WorldToScreen(viewMatrix, memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
+                    ViewPosition2D = MathUtils.WorldToScreen(viewMatrix, viewPos),
                     //Visible = Visible(entity),
                     Visible = memory.ReadBool(pawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted),
                     SpottedByState = memory.ReadPointer(pawnAddress + 0x2718),
                     Head = viewPos,
-                    Head2D = Calculate.WorldToScreen(viewMatrix, viewPos),
+                    Head2D = MathUtils.WorldToScreen(viewMatrix, viewPos),
                     Distance = Vector3.Distance(memory.ReadVec(LocalPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
                     Bones = bones,
                     Name = memory.ReadString(controller + Offsets.m_iszPlayerName),

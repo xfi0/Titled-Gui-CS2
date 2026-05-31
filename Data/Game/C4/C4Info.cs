@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Entity;
 using static Titled_Gui.Data.Entity.Types;
 
@@ -63,7 +64,7 @@ namespace Titled_Gui.Data.Game.C4
                 Address = c4,
                 ExplosionTime = GameState.memory.ReadFloat(c4 + Offsets.m_flC4Blow) - GlobalVar.GetCurrentTime(),
                 Position = position,
-                Position2D = Calculate.WorldToScreen(viewMatrix, position),
+                Position2D = MathUtils.WorldToScreen(viewMatrix, position),
                 PlantedSite = (BombSite)GameState.memory.ReadInt(c4, Offsets.m_nBombSite),
                 BeingDefused = GameState.memory.ReadBool(c4 + Offsets.m_bBeingDefused),
                 Planted = GameState.memory.ReadBool(c4 + Offsets.m_bC4Activated),

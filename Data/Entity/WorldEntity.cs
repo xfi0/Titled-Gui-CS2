@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Game;
 using ValveResourceFormat.ResourceTypes.ModelAnimation.SegmentDecoders;
 using static Titled_Gui.Data.Entity.WorldEntityManager;
@@ -12,15 +13,12 @@ namespace Titled_Gui.Data.Entity
         public Vector2 Position2D { get; set; }
         public IntPtr ItemNode { get; set; }
         public EntityKind Type {get; set; }
-        public string RawType {get; set; }
+        public string RawType { get; set; } = "Unknown";
         public string DisplayName { get; set; } = "Unknown";
         public Vector3 VecMin { get; set; }
         public Vector3 VecMax { get; set; }
-        /// <summary>
-        /// 4x4 Matrix
-        /// </summary>
-        public float[] Matrix { get; set; }
-        public float[] Rotation { get; set; }
+        public required float[] Matrix { get; set; }
+        public required float[] Rotation { get; set; }
         public Vector3[] Get3DCorners(WorldEntity? worldEntity)
         {
             if (worldEntity == null || float.IsNaN(worldEntity.VecMin.X) ||float.IsNaN(worldEntity.VecMin.Y) ||float.IsNaN(worldEntity.VecMin.Z))
@@ -52,24 +50,10 @@ namespace Titled_Gui.Data.Entity
 
 
             Vector3[] worldCorners = localCorners
-                .Select(c => RotateByQuaternion(qX, qY, qZ, qW, c) + worldEntity.Position)
+                .Select(c => MathUtils.RotateByQuaternion(qX, qY, qZ, qW, c) + worldEntity.Position)
                 .ToArray();
 
             return worldCorners;
-        }
-        public static Vector3 RotateByQuaternion(float qX, float qY, float qZ, float qW, Vector3 v)
-        {
-            Vector3 u = new(qX, qY, qZ);
-            float s = qW;
-
-            return 2f * Vector3.Dot(u, v) * u
-                   + (s * s - Vector3.Dot(u, u)) * v
-                   + 2f * s * Vector3.Cross(u, v);
-        }
-        public static Vector3 RotateCorner(Vector3 origin, float x, float y, float z,
-            Vector3 right, Vector3 forward, Vector3 up)
-        {
-            return origin + right * x + forward * +up * z;
         }
 
         public string GetSchemaName()

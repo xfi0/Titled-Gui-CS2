@@ -1,6 +1,8 @@
 ﻿using ImGuiNET;
 using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Math;
+using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using static ValveResourceFormat.ResourceTypes.EntityLump;
@@ -53,9 +55,9 @@ namespace Titled_Gui.Modules.Visual
             }
         }
 
-        private static void DrawHostageESP(WorldEntity? worldEntity)
+        private static void DrawHostageESP(WorldEntity worldEntity)
         {
-            if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
+            if (worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
@@ -67,7 +69,7 @@ namespace Titled_Gui.Modules.Visual
             var corners2D = new Vector2[8];
             for (int i = 0; i < corners2D.Length; i++)
             {
-                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                corners2D[i] = MathUtils.WorldToScreen(viewMatrix, corners3D[i]);
                 if (corners2D[i] == new Vector2(-99, -99)) return;
             }
             if (DrawBoxes)
@@ -77,9 +79,9 @@ namespace Titled_Gui.Modules.Visual
                 GameState.renderer.DrawList.AddText(worldEntity.Position2D, ImGui.ColorConvertFloat4ToU32(HostageTextColor), "Hostage");
         }
 
-        private static void DrawProjectileESP(WorldEntity? worldEntity)
+        private static void DrawProjectileESP(WorldEntity worldEntity)
         {
-            if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
+            if (worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
@@ -91,7 +93,7 @@ namespace Titled_Gui.Modules.Visual
             var corners2D = new Vector2[8];
             for (int i = 0; i < corners2D.Length; i++)
             {
-                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                corners2D[i] = MathUtils.WorldToScreen(viewMatrix, corners3D[i]);
                 if (corners2D[i] == new Vector2(-99, -99)) return;
             }
 
@@ -103,9 +105,9 @@ namespace Titled_Gui.Modules.Visual
                     ImGui.ColorConvertFloat4ToU32(ProjectileTextColor), worldEntity.DisplayName);
         }
 
-        private static void DrawWeaponESP(WorldEntity? worldEntity)
+        private static void DrawWeaponESP(WorldEntity worldEntity)
         {
-            if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
+            if (worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
@@ -117,7 +119,7 @@ namespace Titled_Gui.Modules.Visual
             var corners2D = new Vector2[8];
             for (int i = 0; i < corners2D.Length; i++)
             {
-                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                corners2D[i] = MathUtils.WorldToScreen(viewMatrix, corners3D[i]);
                 if (corners2D[i] == new Vector2(-99, -99)) return;
             }
 
@@ -128,7 +130,7 @@ namespace Titled_Gui.Modules.Visual
                     ImGui.ColorConvertFloat4ToU32(WeaponTextColor), worldEntity.DisplayName);
         }
 
-        private static void DrawChickenESP(WorldEntity? worldEntity)
+        private static void DrawChickenESP(WorldEntity worldEntity)
         {
             if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
@@ -142,7 +144,7 @@ namespace Titled_Gui.Modules.Visual
 
             for (int i = 0; i < corners2D.Length; i++)
             {
-                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                corners2D[i] = MathUtils.WorldToScreen(viewMatrix, corners3D[i]);
                 if (corners2D[i] == new Vector2(-99, -99)) return;
             }
 
@@ -155,8 +157,11 @@ namespace Titled_Gui.Modules.Visual
                     "Chicken");
         }
 
-        public static void DrawMolotovBounds(WorldEntity? worldEntity)
+        public static void DrawMolotovBounds(WorldEntity worldEntity)
         {
+            if (worldEntity.Position2D == new Vector2(-99, -99))
+                return;
+
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
             const float fireRadius = 60.0f;
@@ -178,7 +183,7 @@ namespace Titled_Gui.Modules.Visual
                     {
                         float angle = (float)j / pointsPerFire * MathF.PI * 2.0f;
                         Vector3 world = firePoint + new Vector3(MathF.Cos(angle) * fireRadius, MathF.Sin(angle) * fireRadius, 0f);
-                        Vector2 projected = Calculate.WorldToScreen(viewMatrix, world);
+                        Vector2 projected = MathUtils.WorldToScreen(viewMatrix, world);
 
                         if (projected != new Vector2(-99, -99))
                             points.Add(projected);
@@ -191,7 +196,7 @@ namespace Titled_Gui.Modules.Visual
 
             uint fill = ImGui.ColorConvertFloat4ToU32(molotovFillColor);
             uint outline = ImGui.ColorConvertFloat4ToU32(molotovOutlineColor);
-            DrawHelpers.DrawConvexHull(points, fill, outline);
+            ShapeRenderer.DrawConvexHull(points, fill, outline);
         }
 
         public static void Draw3DBoxESP(Vector2[] corners2D, uint preConvertedColor, bool filled, float rounding, uint preConvertedFilledColor = 0)

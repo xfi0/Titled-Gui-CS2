@@ -16,28 +16,19 @@ namespace Titled_Gui.Data.Game
         public static IntPtr currentPawn { get; set; } // get current pawn pointer
         public static List<Entity.Entity?> Entities { get; set; } = [];
         public static Entity.Entity LocalPlayer { get; set; } = new Entity.Entity(); // local player entity
-        public static IntPtr BoneMatrix { get; set; } // bone matrix pointer
-        public static IntPtr GameSceneNode { get; set; } // scene node pointer
-        public static IntPtr GameRules { get; set; } // game rules pointer
-        public static IntPtr ForceAttack { get; set; } // sensitivity pointer
-        public static IntPtr ForceJump { get; set; } // sensitivity pointer
         public static int crosshairEnt {  get; set; }
         public static uint Fflag  { get; set; }
         public static uint Standing = 65665;
         public static uint Crouching = 655667; // crouching state
-        public static bool BombPlanted { get; set; }
         public static IntPtr MoneyServices { get; set; }
         public static uint WeaponServices { get; set; }
         public static IntPtr ActionTrackingServices { get; set; }
-        public static IntPtr BulletServices { get; set; }
         public static bool IsScoped { get; set; }
         public static IntPtr LocalController { get; set; }
         public static int RoundHeadshots {  get; set; }
         public static int roundKills { get; set; }
         public static int RoundDamage { get; set; }
-        public static IntPtr bulletServices { get; set; }
         public static List<WorldEntity?> worldEntities { get; set; } = [];
-        public static bool waitedAfterGameLoaded = false;
 
         public static bool CS2Open() // i didnt know where to put this
         {

@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Text;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Data.Entity
@@ -204,7 +205,7 @@ namespace Titled_Gui.Data.Entity
                 PawnAddress = pawnAddress,
                 ItemNode = itemNode,
                 Position = itemOrigin,
-                Position2D = Calculate.WorldToScreen(viewMatrix, itemOrigin),
+                Position2D = MathUtils.WorldToScreen(viewMatrix, itemOrigin),
                 DisplayName = "",
                 Type = EntityKind.Unknown,
                 RawType = type,

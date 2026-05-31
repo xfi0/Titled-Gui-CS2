@@ -2,6 +2,7 @@
 using System.Net.NetworkInformation;
 using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
@@ -72,6 +73,7 @@ namespace Titled_Gui.Modules.Visual
                 lock (Lock)
                 {
                     ActiveRings.RemoveAll(r => now - r.StartTime > MaxLifetime);
+
                     foreach (var ring in ActiveRings)
                     {
                         float elapsed = now - ring.StartTime;
@@ -87,9 +89,8 @@ namespace Titled_Gui.Modules.Visual
 
                         for (float lat = 0f; lat < MathF.PI * 2f; lat += step)
                         {
-                            Vector3 position = ring.Position +
-                                               new Vector3(MathF.Cos(lat) * radius, MathF.Sin(lat) * radius, 0f);
-                            Vector2 position2D = Calculate.WorldToScreen(viewMatrix, position);
+                            Vector3 position = ring.Position + new Vector3(MathF.Cos(lat) * radius, MathF.Sin(lat) * radius, 0f);
+                            Vector2 position2D = MathUtils.WorldToScreen(viewMatrix, position);
                             if (position2D == new Vector2(-99, -99))
                                 continue;
 

@@ -32,7 +32,6 @@ namespace Titled_Gui.Modules.Rage
         public static bool TargetLine = true;
         private static Entity? target = null;
         private static Vector2 remainder = Vector2.Zero;
-        private static float remainderY = 0f;
         private static Entity? previousTarget = null;
         public static void EnableAimbot() // TODO: return to old pos setting #7
         {

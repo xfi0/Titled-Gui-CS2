@@ -1,6 +1,8 @@
 ﻿using ImGuiNET;
 using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Math;
+using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using static ValveResourceFormat.ResourceTypes.EntityLump;
@@ -63,16 +65,16 @@ namespace Titled_Gui.Modules.Visual
                 var preConvertedFillColor = ImGui.ColorConvertFloat4ToU32(fillColor);
                 var preConvertedOutlineColor =
                     ImGui.ColorConvertFloat4ToU32(isTeam ? OutlineTeamColor : OutlineEnemyColor);
-                //var min2D = Calculate.WorldToScreen(viewMatrix, entity.vecMin);
-                //var max2D = Calculate.WorldToScreen(viewMatrix, entity.vecMax);
+                //var min2D = MathUtils.WorldToScreen(viewMatrix, entity.vecMin);
+                //var max2D = MathUtils.WorldToScreen(viewMatrix, entity.vecMax);
 
                 float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
                 float halfWidth = entityHeight / 3f;
                 float centerX = (entity.ViewPosition2D.X + entity.Position2D.X) / 2f;
                 Vector3 hitboxTop = entity.Position + new Vector3(0, 0, entity.VecMax.Z);
                 Vector3 hitboxBottom = entity.Position + new Vector3(0, 0, entity.VecMin.Z);
-                Vector2 top2D = Calculate.WorldToScreen(viewMatrix, hitboxTop);
-                Vector2 bottom2D = Calculate.WorldToScreen(viewMatrix, hitboxBottom);
+                Vector2 top2D = MathUtils.WorldToScreen(viewMatrix, hitboxTop);
+                Vector2 bottom2D = MathUtils.WorldToScreen(viewMatrix, hitboxBottom);
 
                 if (top2D == new Vector2(-99, -99)) return;
                 if (bottom2D == new Vector2(-99, -99)) return;
@@ -167,7 +169,7 @@ namespace Titled_Gui.Modules.Visual
                 Vector2 next = points[(i + 1) % 6];
 
                 if (GlowAmount > 0f)
-                    DrawHelpers.DrawGlowLine(imDrawListPtr, current, next, outlineColor,
+                    GlowRenderer.DrawGlowLine(imDrawListPtr, current, next, outlineColor,
                         GlowAmount);
 
 
@@ -198,7 +200,7 @@ namespace Titled_Gui.Modules.Visual
 
                 if (GlowAmount > 0f)
                 {
-                    DrawHelpers.DrawGlowLine(imDrawListPtr, current, next, outlineColor,
+                    GlowRenderer.DrawGlowLine(imDrawListPtr, current, next, outlineColor,
                         GlowAmount);
                 }
 
@@ -221,17 +223,17 @@ namespace Titled_Gui.Modules.Visual
 
             if (GlowAmount > 0f)
             {
-                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle1Top, triangle1BottomLeft, boxColor,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, triangle1Top, triangle1BottomLeft, boxColor,
                     GlowAmount);
-                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle1BottomLeft, triangle1BottomRight,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, triangle1BottomLeft, triangle1BottomRight,
                     boxColor, GlowAmount);
-                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle1BottomRight, triangle1Top, boxColor,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, triangle1BottomRight, triangle1Top, boxColor,
                     GlowAmount);
-                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle2Bottom, triangle2TopLeft, boxColor,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, triangle2Bottom, triangle2TopLeft, boxColor,
                     GlowAmount);
-                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle2TopLeft, triangle2TopRight, boxColor,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, triangle2TopLeft, triangle2TopRight, boxColor,
                     GlowAmount);
-                DrawHelpers.DrawGlowLine(imDrawListPtr, triangle2TopRight, triangle2Bottom, boxColor,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, triangle2TopRight, triangle2Bottom, boxColor,
                     GlowAmount);
             }
 
@@ -272,7 +274,7 @@ namespace Titled_Gui.Modules.Visual
             var corners2D = new Vector2[5];
             for (int i = 0; i < 5; i++)
             {
-                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                corners2D[i] = MathUtils.WorldToScreen(viewMatrix, corners3D[i]);
                 if (corners2D[i] == new Vector2(-99, -99)) return true;
             }
 
@@ -320,24 +322,24 @@ namespace Titled_Gui.Modules.Visual
 
             if (GlowAmount > 0f)
             {
-                DrawHelpers.DrawGlowLine(imDrawListPtr, rectTopLeft,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, rectTopLeft,
                     new(rectTopLeft.X + edgeWidth, rectTopLeft.Y), boxColor, GlowAmount);
-                DrawHelpers.DrawGlowLine(imDrawListPtr, rectTopLeft,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, rectTopLeft,
                     new(rectTopLeft.X, rectTopLeft.Y + edgeHeight), boxColor, GlowAmount);
 
-                DrawHelpers.DrawGlowLine(imDrawListPtr, rectTopRight,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, rectTopRight,
                     new(rectTopRight.X - edgeWidth, rectTopRight.Y), boxColor, GlowAmount);
-                DrawHelpers.DrawGlowLine(imDrawListPtr, rectTopRight,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, rectTopRight,
                     new(rectTopRight.X, rectTopRight.Y + edgeHeight), boxColor, GlowAmount);
 
-                DrawHelpers.DrawGlowLine(imDrawListPtr, rectBottomLeft,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, rectBottomLeft,
                     new(rectBottomLeft.X + edgeWidth, rectBottomLeft.Y), boxColor, GlowAmount);
-                DrawHelpers.DrawGlowLine(imDrawListPtr, rectBottomLeft,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, rectBottomLeft,
                     new(rectBottomLeft.X, rectBottomLeft.Y - edgeHeight), boxColor, GlowAmount);
 
-                DrawHelpers.DrawGlowLine(imDrawListPtr, rectBottomRight,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, rectBottomRight,
                     new(rectBottomRight.X - edgeWidth, rectBottomRight.Y), boxColor, GlowAmount);
-                DrawHelpers.DrawGlowLine(imDrawListPtr, rectBottomRight,
+                GlowRenderer.DrawGlowLine(imDrawListPtr, rectBottomRight,
                     new(rectBottomRight.X, rectBottomRight.Y - edgeHeight), boxColor, GlowAmount);
             }
 
@@ -389,7 +391,7 @@ namespace Titled_Gui.Modules.Visual
             var corners2D = new Vector2[8];
             for (int i = 0; i < corners2D.Length; i++)
             {
-                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                corners2D[i] = MathUtils.WorldToScreen(viewMatrix, corners3D[i]);
                 if (corners2D[i] == new Vector2(-99, -99)) return true;
             }
 
@@ -443,7 +445,7 @@ namespace Titled_Gui.Modules.Visual
         {
 
             if (GlowAmount > 0f)
-                DrawHelpers.DrawGlowRect(imDrawListPtr, rectTop, rectBottom, outlineColor, Rounding, GlowAmount);
+                GlowRenderer.DrawGlowRect(imDrawListPtr, rectTop, rectBottom, outlineColor, Rounding, GlowAmount);
 
 
             if (InnerOutline)
@@ -452,7 +454,7 @@ namespace Titled_Gui.Modules.Visual
                     Rounding);
 
             if (BoxFillGradient)
-                DrawHelpers.DrawGradientRect(imDrawListPtr, rectTop, rectBottom,
+                ShapeRenderer.DrawGradientRect(imDrawListPtr, rectTop, rectBottom,
                     new(BoxFillGradientColorTop.X, BoxFillGradientColorTop.Y, BoxFillGradientColorTop.Z,
                         BoxFillOpacity),
                     new Vector4(BoxFillGradientBottom.X, BoxFillGradientBottom.Y, BoxFillGradientBottom.Z,
@@ -697,8 +699,8 @@ namespace Titled_Gui.Modules.Visual
             Vector3 hitboxTop = entity.Position + new Vector3(0, 0, entity.VecMax.Z);
             Vector3 hitboxBottom = entity.Position + new Vector3(0, 0, entity.VecMin.Z);
 
-            Vector2 top2D = Calculate.WorldToScreen(viewMatrix, hitboxTop);
-            Vector2 bottom2D = Calculate.WorldToScreen(viewMatrix, hitboxBottom);
+            Vector2 top2D = MathUtils.WorldToScreen(viewMatrix, hitboxTop);
+            Vector2 bottom2D = MathUtils.WorldToScreen(viewMatrix, hitboxBottom);
 
             if (top2D == new Vector2(-99, -99) || bottom2D == new Vector2(-99, -99))
                 return null;

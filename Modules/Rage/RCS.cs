@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Rage
@@ -21,8 +22,8 @@ namespace Titled_Gui.Modules.Rage
 
                 Vector3 newAngles;
 
-                aimPunch.X = Calculate.NormalizeAngle(aimPunch.X);
-                aimPunch.Y = Calculate.NormalizeAngle(aimPunch.Y);
+                aimPunch.X = MathUtils.NormalizeAngle(aimPunch.X);
+                aimPunch.Y = MathUtils.NormalizeAngle(aimPunch.Y);
                 var sensitivity = GameState.LocalPlayer.Sensitivity;
 
                 newAngles.X = (aimPunch.Y - OldPunch.Y) * 2.0f / (0.022f * sensitivity);

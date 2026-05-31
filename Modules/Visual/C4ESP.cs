@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Game.C4;
@@ -29,7 +30,7 @@ namespace Titled_Gui.Modules.Visual
 
             for (int i = 0; i < corners3D.Length; i++)
             {
-                corners2D[i] = Calculate.WorldToScreen(viewMatrix, corners3D[i]);
+                corners2D[i] = MathUtils.WorldToScreen(viewMatrix, corners3D[i]);
                 if (corners2D[i] == new Vector2(-99, -99))
                     return;
             }

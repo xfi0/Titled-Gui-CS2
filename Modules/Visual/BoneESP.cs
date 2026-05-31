@@ -1,6 +1,7 @@
 using ImGuiNET;
 using System.Numerics;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
@@ -162,7 +163,7 @@ namespace Titled_Gui.Modules.Visual
                 Math.Clamp(BoneThickness / (entity.Distance * 0.1f), 0.5f,
                     1f); // calculate thickness based on Distance, minimum 0.5f and maximum 2f stops it from being massive
 
-            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb() : VisibleBoneColor); //get color
+            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb() : VisibleBoneColor);
 
             uint GetBoneColor(Types.Bone bone) =>
                 (!visibilityCheck || bone.IsVisible)
@@ -191,15 +192,15 @@ namespace Titled_Gui.Modules.Visual
                         switch (CurrentType)
                         {
                             case 0:
-                                DrawHelpers.DrawGlowLine(renderer.DrawList, boneAPosition2D, boneBPosition2D,
+                                GlowRenderer.DrawGlowLine(renderer.DrawList, boneAPosition2D, boneBPosition2D,
                                     ImGui.ColorConvertU32ToFloat4(boneColor), GlowAmount,
                                     thickness: thickness);
-                                DrawHelpers.DrawGlowCircle(renderer.DrawList, boneAPosition2D, thickness * 2,
+                                GlowRenderer.DrawGlowCircle(renderer.DrawList, boneAPosition2D, thickness * 2,
                                     ImGui.ColorConvertU32ToFloat4(boneColor),
                                     GlowAmount);
                                 break;
                             case 1:
-                                DrawHelpers.DrawGlowBezier(renderer.DrawList, boneBPosition2D,
+                                GlowRenderer.DrawGlowBezier(renderer.DrawList, boneBPosition2D,
                                     (boneBPosition2D + boneAPosition2D) * 0.5f +
                                     Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y,
                                         (boneAPosition2D - boneBPosition2D).X)) * curve,
@@ -249,7 +250,7 @@ namespace Titled_Gui.Modules.Visual
             float radius = Math.Clamp(10f / (entity.Distance * 0.05f), 3f, 10f);
 
             if (GlowAmount > 0)
-                DrawHelpers.DrawGlowCircle(renderer.DrawList, headPos, radius,
+                GlowRenderer.DrawGlowCircle(renderer.DrawList, headPos, radius,
                     head.IsVisible ? ImGui.ColorConvertU32ToFloat4(boneColor) : OccludedBoneColor, GlowAmount);
             renderer.DrawList.AddCircleFilled(headPos, radius,
                 head.IsVisible
@@ -325,14 +326,14 @@ namespace Titled_Gui.Modules.Visual
             foreach (var (A, B) in Segments)
             {
                 if (GlowAmount > 0)
-                    DrawHelpers.DrawGlowLine(DrawList, A, B, VisibleBoneColor, GlowAmount * 0.5f);
+                    GlowRenderer.DrawGlowLine(DrawList, A, B, VisibleBoneColor, GlowAmount * 0.5f);
 
                 DrawList.AddLine(A, B, UColor, BoneThickness * 0.5f);
                 DrawList.AddCircleFilled(A, BoneThickness * 0.5f, UColor);
             }
 
             if (GlowAmount > 0)
-                DrawHelpers.DrawGlowCircle(DrawList, Head, 10f, VisibleBoneColor, GlowAmount);
+                GlowRenderer.DrawGlowCircle(DrawList, Head, 10f, VisibleBoneColor, GlowAmount);
 
             DrawList.AddCircle(Head, 10f, UColor, 12, 0.7f);
         }

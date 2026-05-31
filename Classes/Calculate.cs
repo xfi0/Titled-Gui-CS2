@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Modules.Visual.BoneESP;
@@ -9,48 +10,7 @@ namespace Titled_Gui.Classes
 {
     public static class Calculate
     {
-        public static Vector2 WorldToScreen(float[] matrix, Vector3 pos) // this seemed slightly better or same idk
-        {
-            // calculate depth
-            float view = matrix[12] * pos.X + matrix[13] * pos.Y + matrix[14] * pos.Z + matrix[15];
-
-            // if entity is not visible
-            if (view <= 0.01f)
-                return new(-99, -99); // if entity is not visible
-
-
-            // calculate screen x and y
-            float screenX = matrix[0] * pos.X + matrix[1] * pos.Y + matrix[2] * pos.Z + matrix[3];
-            float screenY = matrix[4] * pos.X + matrix[5] * pos.Y + matrix[6] * pos.Z + matrix[7];
-
-            // perspective division 
-            float halfW = GameState.renderer.ScreenSize.X * 0.5f;
-            float halfH = GameState.renderer.ScreenSize.Y * 0.5f;
-
-            float X = halfW + (screenX / view) * halfW;
-            float Y = halfH - (screenY / view) * halfH;
-
-            if (X < -halfW || X > halfW * 3 || Y < -halfH || Y > halfH * 3)
-                return new(-99, -99);
-
-            return new(X, Y);
-        }
-
-        public static Vector3 AngleToForward(Vector3 angles)
-        {
-            float pitch = angles.X * (MathF.PI / 180f);
-            float yaw = angles.Y * (MathF.PI / 180f);
-
-            return new Vector3(MathF.Cos(pitch) * MathF.Cos(yaw), MathF.Cos(pitch) * MathF.Sin(yaw), -MathF.Sin(pitch));
-        }
-
-        public static float NormalizeAngle(float angle)
-        {
-            while (angle > 180) angle -= 360;
-            while (angle < -180) angle += 360;
-            return angle;
-        }
-
+      
         private static readonly HashSet<int> BonesToCheck = Enum.GetValues<BoneIds>()
             .Select(b => (int)b)
             .ToHashSet();
@@ -85,7 +45,7 @@ namespace Titled_Gui.Classes
                 if (BonesToCheck.Contains(id))
                     bone.IsVisible = VisibilityCheck.Visible(GameState.LocalPlayer.EyePosition, bone.Position);
 
-                bone.Position2D = WorldToScreen(viewMatrix, bone.Position);
+                bone.Position2D = MathUtils.WorldToScreen(viewMatrix, bone.Position);
 
                 bones[id] = bone;
             }
@@ -137,7 +97,8 @@ namespace Titled_Gui.Classes
                     continue;
 
                 int boneID = Titled_Gui.Data.Entity.Types.Hitbox.HitboxToBone(i);
-                if (boneID < 0 || entity.Bones == null || boneID >= entity.Bones.Count) continue;
+                if (boneID < 0 || entity.Bones == null || boneID >= entity.Bones.Count)
+                    continue;
 
                 Vector3 position = entity.Bones[boneID].Position;
                 Vector2 position2D = entity.Bones[boneID].Position2D;
@@ -146,10 +107,11 @@ namespace Titled_Gui.Classes
                 Vector3 worldMin = position + min;
                 Vector3 worldMax = position + max;
 
-                Vector2 min2D = Calculate.WorldToScreen(viewMatrix, worldMin);
-                Vector2 max2D = Calculate.WorldToScreen(viewMatrix, worldMax);
+                Vector2 min2D = MathUtils.WorldToScreen(viewMatrix, worldMin);
+                Vector2 max2D = MathUtils.WorldToScreen(viewMatrix, worldMax);
 
-                if (min2D == new Vector2(-99, -99) || max2D == new Vector2(-99, -99)) continue;
+                if (min2D == new Vector2(-99, -99) || max2D == new Vector2(-99, -99))
+                    continue;
 
                 Types.Hitbox hitbox = new Types.Hitbox
                 {

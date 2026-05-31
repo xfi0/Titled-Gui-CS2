@@ -50,7 +50,7 @@ namespace Titled_Gui.Classes
                 Stream stream = asm.GetManifestResourceStream("Titled_Gui.Resources.sounds." + folder + name) ?? throw new Exception("Sound was not found: " + name);
 
                 byte[] sound = new byte[stream.Length];
-                stream.Read(sound, 0, sound.Length);
+                stream.ReadExactly(sound);
 
                 string cachePath = Path.Combine(Configs.titledDocumentsFolder, "Cache", "Sounds");
                 string filePath = Path.Combine(Configs.titledDocumentsFolder, "Cache", "Sounds", name);

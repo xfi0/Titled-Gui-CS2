@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.Pkcs;
 using System.Text.Json.Nodes;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Game.VRF;
@@ -156,7 +157,7 @@ namespace Titled_Gui
                 throw new Exception("Font was not found");
 
             byte[] fontData = new byte[stream.Length];
-            stream.Read(fontData, 0, fontData.Length);
+            stream.ReadExactly(fontData);
 
             return fontData;
         }
@@ -515,7 +516,10 @@ namespace Titled_Gui
                                     }
                                     else
                                     {
-                                        Console.WriteLine("Config Already Exists.");
+                                        Console.WriteLine("Config already exsists, overwriting.");
+                                        Configs.SavedConfigs.Remove(Configs.SelectedConfig, out bool value);
+                                        Configs.SaveConfig(Configs.SelectedConfig);
+                                        Configs.SavedConfigs.TryAdd(Configs.SelectedConfig, false);
                                     }
                                 }
 
@@ -561,7 +565,7 @@ namespace Titled_Gui
                         (float)(Random.NextDouble() * 2 - 1));
                 }
 
-                DrawHelpers.DrawGlowCircleFilled(DrawList, Positions[i], ParticleRadius, ParticleColor, 1.1f);
+                GlowRenderer.DrawGlowCircleFilled(DrawList, Positions[i], ParticleRadius, ParticleColor, 1.1f);
             }
 
             for (int i = 0; i < num; i++) // lines

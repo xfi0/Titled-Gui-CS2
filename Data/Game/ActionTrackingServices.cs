@@ -6,12 +6,12 @@ namespace Titled_Gui.Data.Game
     {
         public static void Update()
         {
-            GameState.LocalController = GameState.swed.ReadPointer(GameState.client + Offsets.dwLocalPlayerController);
-            GameState.ActionTrackingServices = GameState.swed.ReadPointer(LocalController, Offsets.m_pActionTrackingServices);
+            GameState.LocalController = GameState.memory.ReadPointer(GameState.client + Offsets.dwLocalPlayerController);
+            GameState.ActionTrackingServices = GameState.memory.ReadPointer(LocalController, Offsets.m_pActionTrackingServices);
 
             if (GameState.ActionTrackingServices == IntPtr.Zero) return;
 
-            //Console.WriteLine(GameState.swed.ReadFloat(GameState.ActionTrackingServices + Offsets.m_iNumRoundKillsHeadshots));
+            //Console.WriteLine(GameState.memory.ReadFloat(GameState.ActionTrackingServices + Offsets.m_iNumRoundKillsHeadshots));
         }
         //protected override void FrameAction()
         //{

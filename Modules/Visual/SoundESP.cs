@@ -66,7 +66,7 @@ namespace Titled_Gui.Modules.Visual
                 return;
             try
             {
-                float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+                float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
                 float now = Now;
 
                 lock (Lock)

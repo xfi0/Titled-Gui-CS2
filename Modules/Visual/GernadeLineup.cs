@@ -75,7 +75,7 @@ namespace Titled_Gui.Modules.Visual
                     return;
                 }
 
-                float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+                float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
                 foreach (var lineup in lineupCache.Values)
                 {

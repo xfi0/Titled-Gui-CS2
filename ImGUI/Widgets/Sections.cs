@@ -152,6 +152,7 @@ internal class Sections
         RenderBoolSettingWith1ColorPicker("Chicken ESP", ref WorldESP.ChickenESP, ref WorldESP.ChickenTextColor);
         RenderBoolSettingWith1ColorPicker("Projectile ESP", ref WorldESP.ProjectileESP, ref WorldESP.ProjectileTextColor);
         RenderBoolSettingWith1ColorPicker("World ESP Boxes", ref WorldESP.DrawBoxes, ref WorldESP.BoxColor);
+        RenderBoolSettingWith2ColorPickers("Molotov Bounds", ref WorldESP.MolotovBoundsESP, ref WorldESP.molotovFillColor, ref WorldESP.molotovOutlineColor);
         RenderBoolSetting("World ESP Text", ref WorldESP.DrawText);
     }),
 
@@ -176,7 +177,7 @@ internal class Sections
     {
         ImGui.Text($"Titled GUI V{Configs.Version}");
         ImGui.Text("External Cheat Made By xfi0 / domok.");
-        ImGui.Text("More Info On" + Configs.Link);
+        ImGui.Text("More Info On: " + Configs.Link);
         ImGui.TextWrapped("If you paid for this you have been scammed.\nThis never was, and will never be paid.\nPlease report any paid versions of this to my github or discord.");
     }),
 };

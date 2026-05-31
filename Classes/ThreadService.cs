@@ -56,11 +56,7 @@ namespace Titled_Gui.Classes
             {
                 if (Activator.CreateInstance(type) is ThreadService service)
                 {
-                    Thread serviceThread = new(service.Start)
-                    {
-                        IsBackground = true
-                    };
-                    serviceThread.Start();
+                    service.Start();
                 }
                 else
                 {

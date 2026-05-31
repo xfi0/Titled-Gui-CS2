@@ -74,9 +74,9 @@ namespace Titled_Gui.Data.Entity
 
         public string GetSchemaName()
         {
-            var identity = GameState.swed.ReadPointer(this.PawnAddress + Offsets.m_pEntity);
+            var identity = GameState.memory.ReadPointer(this.PawnAddress + Offsets.m_pEntity);
 
-            return GameState.swed.ReadString(identity + Offsets.m_designerName, 32);
+            return GameState.memory.ReadString(identity + Offsets.m_designerName);
         }
 
     }

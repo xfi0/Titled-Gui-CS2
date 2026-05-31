@@ -14,12 +14,12 @@ namespace Titled_Gui.Modules.Legit
             if (!Enabled || GameState.LocalPlayer.Health == 0) return;
 
            DesiredFov = (uint)FOV; // set desired fov to the current fov
-           GameState.CurrentFov = GameState.swed.ReadUInt(GameState.CameraServices + Offsets.m_iFOV); // read current fov
-           GameState.IsScoped = GameState.swed.ReadBool(GameState.LocalPlayerPawn, Offsets.m_bIsScoped); // get scoped status
-           GameState.CameraServices = GameState.swed.ReadPointer(GameState.LocalPlayerPawn, Offsets.m_pCameraServices);
+           GameState.CurrentFov = GameState.memory.ReadUInt(GameState.CameraServices + Offsets.m_iFOV); // read current fov
+           GameState.IsScoped = GameState.memory.ReadBool(GameState.LocalPlayerPawn, Offsets.m_bIsScoped); // get scoped status
+           GameState.CameraServices = GameState.memory.ReadPointer(GameState.LocalPlayerPawn, Offsets.m_pCameraServices);
 
             if (!GameState.IsScoped && GameState.CurrentFov != DesiredFov)
-                GameState.swed.WriteUInt(GameState.CameraServices + Offsets.m_iFOV, DesiredFov); // set fov if not scoped & not equal to desired fov
+                GameState.memory.WriteUInt(GameState.CameraServices + Offsets.m_iFOV, DesiredFov); // set fov if not scoped & not equal to desired fov
             
         }
         protected override void FrameAction()

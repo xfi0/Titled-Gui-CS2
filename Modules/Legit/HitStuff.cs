@@ -38,10 +38,10 @@ namespace Titled_Gui.Modules.Legit
 
         public static void Update()
         {
-            GameState.LocalController = GameState.swed.ReadPointer(GameState.client + Offsets.dwLocalPlayerController);
-            GameState.ActionTrackingServices = GameState.swed.ReadPointer(GameState.LocalController, Offsets.m_pActionTrackingServices);
-            GameState.RoundHeadshots = GameState.swed.ReadInt(GameState.ActionTrackingServices + Offsets.m_iNumRoundKillsHeadshots);
-            GameState.RoundDamage = GameState.swed.ReadInt(GameState.ActionTrackingServices + Offsets.m_flTotalRoundDamageDealt);
+            GameState.LocalController = GameState.memory.ReadPointer(GameState.client + Offsets.dwLocalPlayerController);
+            GameState.ActionTrackingServices = GameState.memory.ReadPointer(GameState.LocalController, Offsets.m_pActionTrackingServices);
+            GameState.RoundHeadshots = GameState.memory.ReadInt(GameState.ActionTrackingServices + Offsets.m_iNumRoundKillsHeadshots);
+            GameState.RoundDamage = GameState.memory.ReadInt(GameState.ActionTrackingServices + Offsets.m_flTotalRoundDamageDealt);
 
             for (int i = HitSounds.Count; i < HitSoundDisplays.Count; i++)
                 HitSounds[i] = (HitSoundDisplays[i], HitSoundDisplays[i]);

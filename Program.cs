@@ -1,12 +1,10 @@
 ﻿using ImGuiNET;
-using Swed64;
 using System.Diagnostics;
 using Titled_Gui;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Modules.Visual;
-using Types = Titled_Gui.Data.Menu.Types;
 
 try
 {
@@ -29,12 +27,11 @@ try
         Console.WriteLine("CS2 Not Found...");
         Thread.Sleep(1000);
     }
-
-    GameState.swed = new("cs2");
-    GameState.client = GameState.swed.GetModuleBase("client.dll");
+    GameState.memory = new("cs2");
+    GameState.client = GameState.memory.GetModuleBase("client.dll");
     await OffsetGetter.UpdateOffsetsAsync();
 
-    while (GameState.swed != null && !OffsetGetter.Updated)
+    while (GameState.memory != null && !OffsetGetter.Updated)
     {
         if (GameState.CS2Open())
         {

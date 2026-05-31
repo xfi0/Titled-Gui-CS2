@@ -99,7 +99,7 @@ namespace Titled_Gui
         public static Vector2 MainWindowSize = new(860, 550);
         public static int OverlayProcessId = 0;
         public static int CS2ProcessId = 0;
-
+        private static bool logoLoaded = false;
         public void UpdateEntities(IEnumerable<Entity> newEntities) => entities = newEntities.ToList();
 
         public static void LoadFonts()
@@ -168,18 +168,22 @@ namespace Titled_Gui
             }
         }
 
+        protected override Task PostInitialized()
+        {
+            var io = ImGui.GetIO();
+            io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard;
+            io.ConfigFlags |= ImGuiConfigFlags.NavEnableGamepad;
+            io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
+            io.ConfigViewportsNoAutoMerge = true;
+            io.ConfigViewportsNoTaskBarIcon = true;
+            return Task.CompletedTask;
+        }
+
         protected override void Render()
         {
             try
             {
-                var io = ImGui.GetIO();
-                io.ConfigFlags |= ImGuiConfigFlags.NavEnableKeyboard; // keyboard nav
-                io.ConfigFlags |= ImGuiConfigFlags.NavEnableGamepad; // gamepad nav
-                io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
-                io.Framerate = 0;
                 this.VSync = enableVsync;
-                io.ConfigViewportsNoAutoMerge = true;
-                io.ConfigViewportsNoTaskBarIcon = true;
 
                 ApplyStyles();
                 RenderESPOverlay();
@@ -373,10 +377,14 @@ namespace Titled_Gui
                     const float logoWidth = 120f;
                     float offset = (ImGui.GetContentRegionAvail().X - logoWidth) * 0.5f;
                     ImGui.SetCursorPosX(ImGui.GetCursorPosX() + offset);
-                    byte[] LogoBytes = Convert.FromBase64String(menuImage);
-                    Image<Rgba32> LogoImage = Image.Load<Rgba32>(LogoBytes);
 
-                    AddOrGetImagePointer("MenuLogo", LogoImage, true, out _menuLogoTexture);
+                    if (!logoLoaded)
+                    {
+                        byte[] LogoBytes = Convert.FromBase64String(menuImage);
+                        Image<Rgba32> LogoImage = Image.Load<Rgba32>(LogoBytes);
+                        AddOrGetImagePointer("MenuLogo", LogoImage, true, out _menuLogoTexture);
+                        logoLoaded = true;
+                    }
 
                     ImGui.Image(_menuLogoTexture, new(120, 120));
                     ImGui.Spacing();
@@ -577,7 +585,7 @@ namespace Titled_Gui
         {
             try
             {
-                if (Aimbot.TargetLine)
+                if (Aimbot.AimbotEnable && Aimbot.TargetLine)
                     Aimbot.RenderTargetLine();
 
                 HitStuff.CreateHitText();
@@ -585,8 +593,11 @@ namespace Titled_Gui
                 if (EyeRay.Enabled)
                     EyeRay.DrawEyeRay();
 
+                List<Entity> snapshot;
+                lock (entityLock)
+                    snapshot = entities.ToList();
 
-                foreach (var entity in entities)
+                foreach (var entity in snapshot)
                 {
                     if (entity == null)
                         continue;

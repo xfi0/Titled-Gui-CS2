@@ -17,11 +17,11 @@ namespace Titled_Gui.Data.Game.C4
         /// <returns>A pointer to a C_PlantedC4. otherwise, <see cref="IntPtr.Zero"/></returns>
         public IntPtr GetC4()
         {
-            IntPtr plantedPointer = GameState.swed.ReadPointer(GameState.client + Offsets.dwPlantedC4);
+            IntPtr plantedPointer = GameState.memory.ReadPointer(GameState.client + Offsets.dwPlantedC4);
             if (plantedPointer == IntPtr.Zero)
                 return plantedPointer == IntPtr.Zero ? IntPtr.Zero : plantedPointer;
 
-            IntPtr plantedPointerDeref = GameState.swed.ReadPointer(plantedPointer);
+            IntPtr plantedPointerDeref = GameState.memory.ReadPointer(plantedPointer);
 
             return plantedPointerDeref;
         }
@@ -35,7 +35,7 @@ namespace Titled_Gui.Data.Game.C4
             if (planted == IntPtr.Zero)
                 return IntPtr.Zero;
 
-            return GameState.swed.ReadPointer(planted + Offsets.m_pGameSceneNode);
+            return GameState.memory.ReadPointer(planted + Offsets.m_pGameSceneNode);
         }
 
         private Vector3 GetPos()
@@ -45,7 +45,7 @@ namespace Titled_Gui.Data.Game.C4
             if (node == IntPtr.Zero)
                 return new Vector3(0, 0, 0);
 
-            return GameState.swed.ReadVec(node + Offsets.m_vecOrigin);
+            return GameState.memory.ReadVec(node + Offsets.m_vecOrigin);
         }
 
         protected override void FrameAction()
@@ -53,7 +53,7 @@ namespace Titled_Gui.Data.Game.C4
             IntPtr c4 = GetC4();
             IntPtr node = GetNode();
             Vector3 position = GetPos();
-            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
             if (c4 == IntPtr.Zero || node == IntPtr.Zero || position == new Vector3(0, 0, 0)) 
                 return;
@@ -61,13 +61,13 @@ namespace Titled_Gui.Data.Game.C4
             C4 = new C4()
             {
                 Address = c4,
-                ExplosionTime = GameState.swed.ReadFloat(c4 + Offsets.m_flC4Blow) - GlobalVar.GetCurrentTime(),
+                ExplosionTime = GameState.memory.ReadFloat(c4 + Offsets.m_flC4Blow) - GlobalVar.GetCurrentTime(),
                 Position = position,
                 Position2D = Calculate.WorldToScreen(viewMatrix, position),
-                PlantedSite = (BombSite)GameState.swed.ReadInt(c4, Offsets.m_nBombSite),
-                BeingDefused = GameState.swed.ReadBool(c4 + Offsets.m_bBeingDefused),
-                Planted = GameState.swed.ReadBool(c4 + Offsets.m_bC4Activated),
-                Matrix = GameState.swed.ReadMatrix(node + Offsets.m_nodeToWorld)
+                PlantedSite = (BombSite)GameState.memory.ReadInt(c4, Offsets.m_nBombSite),
+                BeingDefused = GameState.memory.ReadBool(c4 + Offsets.m_bBeingDefused),
+                Planted = GameState.memory.ReadBool(c4 + Offsets.m_bC4Activated),
+                Matrix = GameState.memory.ReadMatrix(node + Offsets.m_nodeToWorld)
             };
 
             Thread.SpinWait(20);

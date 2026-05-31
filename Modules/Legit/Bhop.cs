@@ -32,12 +32,12 @@ namespace Titled_Gui.Modules.Legit
             if (Fflag == 65665 || Fflag == 65667)
             {
                 //Console.WriteLine(Fflag);
-                GameState.swed.WriteInt(GameState.client + Offsets.jump, 65537); // write the value to ForceJump to make the player jump
+                GameState.memory.WriteInt(GameState.client + Offsets.jump, 65537); // write the value to ForceJump to make the player jump
                 Thread.Sleep(2); // sleep 
             }
             else
             {
-                GameState.swed.WriteInt(GameState.client + Offsets.jump, 256); // unfoprce the jump
+                GameState.memory.WriteInt(GameState.client + Offsets.jump, 256); // unfoprce the jump
                 Thread.Sleep(2); //sleep
             }
             //lastJumped = now;
@@ -57,7 +57,7 @@ namespace Titled_Gui.Modules.Legit
         protected override void FrameAction()
         {
             if (!BhopEnable) return;
-            GameState.Fflag = GameState.swed.ReadUInt(GameState.LocalPlayerPawn, Offsets.m_fFlags);
+            GameState.Fflag = GameState.memory.ReadUInt(GameState.LocalPlayerPawn, Offsets.m_fFlags);
             AutoBhop();
         }
     }

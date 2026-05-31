@@ -1,13 +1,12 @@
-using ImGuiNET;
-using Swed64;
 using System.Diagnostics;
+using Titled_Gui.Classes.Memory;
 using Titled_Gui.Data.Entity;
 
 namespace Titled_Gui.Data.Game
 {
     public static class GameState
     {
-        public static Swed swed; // public swed instance to use all arround
+        public static Memory memory; // public swed instance to use all arround
         public static Renderer renderer;
         public static IntPtr client; // public client
         public static IntPtr LocalPlayerPawn { get; set; } // local player pawn pointer

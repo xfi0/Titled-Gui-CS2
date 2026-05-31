@@ -16,50 +16,50 @@ namespace Titled_Gui.Data.Entity
         {
             try
             {
-                float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+                float[] viewMatrix = memory.ReadMatrix(client + Offsets.dwViewMatrix);
 
                 List<Entity> entities = [];
-                EntityList = GameState.swed.ReadPointer(GameState.client + Offsets.dwEntityList);
+                EntityList = memory.ReadPointer(client + Offsets.dwEntityList);
                 IntPtr listEntry = IntPtr.Zero;
 
                 if (EntityList != IntPtr.Zero)
-                    listEntry = GameState.swed.ReadPointer(GameState.EntityList + 0x10);
+                    listEntry = memory.ReadPointer(EntityList + 0x10);
                 else
                     Console.WriteLine("Entity List Was Null");
 
                 if (listEntry == IntPtr.Zero)
                     return [];
                 
-                IntPtr localPlayerPawnAddress = GameState.swed.ReadPointer(GameState.client + Offsets.dwLocalPlayerPawn);
+                IntPtr localPlayerPawnAddress = memory.ReadPointer(client + Offsets.dwLocalPlayerPawn);
 
                 for (int i = 0; i < 64; i++) // loop through all entities
                 {
-                    var controller = swed.ReadPointer(listEntry + 0x70 * (i & 0x1FF));
+                    var controller = memory.ReadPointer(listEntry + 0x70 * (i & 0x1FF));
                     if (controller == IntPtr.Zero) continue;
 
-                    int pawnHandle = GameState.swed.ReadInt(controller, Offsets.m_hPlayerPawn);
+                    int pawnHandle = memory.ReadInt(controller, Offsets.m_hPlayerPawn);
                     if (pawnHandle == 0) continue;
 
-                    int pawn = GameState.swed.ReadInt(controller, Offsets.m_hPawn);
+                    int pawn = memory.ReadInt(controller, Offsets.m_hPawn);
                     if (pawn == 0) continue;
 
-                    GameState.currentPawn = GetPlayerPawn(GameState.EntityList, pawnHandle);
-                    if (GameState.currentPawn == IntPtr.Zero) continue;
+                    currentPawn = GetPlayerPawn(EntityList, pawnHandle);
+                    if (currentPawn == IntPtr.Zero) continue;
 
 
-                    if (GameState.currentPawn == localPlayerPawnAddress)
+                    if (currentPawn == localPlayerPawnAddress)
                     {
                         Entity localPlayer = EntityManager.GetLocalPlayer(controller);
 
-                        GameState.LocalPlayer = localPlayer;
+                        LocalPlayer = localPlayer;
 
-                        GameState.renderer.UpdateLocalPlayer(localPlayer);
+                        renderer.UpdateLocalPlayer(localPlayer);
                     }
 
-                    int lifeState = GameState.swed.ReadInt(GameState.currentPawn, Offsets.m_lifeState);
+                    int lifeState = memory.ReadInt(currentPawn, Offsets.m_lifeState);
                     if (lifeState != 256) continue;
 
-                    Entity? entity = PopulateEntity(GameState.currentPawn, viewMatrix, pawn, pawnHandle, controller);
+                    Entity? entity = PopulateEntity(currentPawn, viewMatrix, pawn, pawnHandle, controller);
 
                     if (entity != null && entity.Position.X != 0 && entity.Position.Y != 0)
                         entities?.Add(entity);
@@ -76,14 +76,14 @@ namespace Titled_Gui.Data.Entity
 
         public static IntPtr GetPlayerPawn(IntPtr entitylist, IntPtr pawn)
         {
-            IntPtr listEntry2 = GameState.swed.ReadPointer(entitylist + (0x8 * ((pawn & 0x7FFF) >> 9)) + 0x10);
+            IntPtr listEntry2 = memory.ReadPointer(entitylist + (0x8 * ((pawn & 0x7FFF) >> 9)) + 0x10);
             if (listEntry2 == IntPtr.Zero)
             {
                 Console.WriteLine("List Entry 2 Failed to Read.");
                 return IntPtr.Zero;
             }
 
-            IntPtr pPawn = GameState.swed.ReadPointer(listEntry2 + 0x70 * (pawn & 0x1FF));
+            IntPtr pPawn = memory.ReadPointer(listEntry2 + 0x70 * (pawn & 0x1FF));
             if (pPawn == IntPtr.Zero)
             {
                 Console.WriteLine("List Entry 2 Failed to Read.");
@@ -94,25 +94,25 @@ namespace Titled_Gui.Data.Entity
 
         public static Entity GetLocalPlayer(IntPtr controller)
         {
-            IntPtr localPlayerPawn = GameState.swed.ReadPointer(GameState.client + Offsets.dwLocalPlayerPawn);
-            GameState.LocalPlayerPawn = localPlayerPawn;
-            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
-            IntPtr gameSceneNode = GameState.swed.ReadPointer(LocalPlayerPawn, Offsets.m_pGameSceneNode);
-            IntPtr boneMatrix = GameState.swed.ReadPointer(gameSceneNode, Offsets.m_modelState + 0x80);
-            IntPtr dwSensitivity = GameState.swed.ReadPointer(GameState.client + Offsets.dwSensitivity);
-            float sensitivity = GameState.swed.ReadFloat(dwSensitivity + Offsets.dwSensitivity_sensitivity);
-            IntPtr clippingWeapon = GameState.swed.ReadPointer(localPlayerPawn + Offsets.m_hActiveWeapon
+            IntPtr localPlayerPawn = memory.ReadPointer(client + Offsets.dwLocalPlayerPawn);
+            LocalPlayerPawn = localPlayerPawn;
+            float[] viewMatrix = memory.ReadMatrix(client + Offsets.dwViewMatrix);
+            IntPtr gameSceneNode = memory.ReadPointer(LocalPlayerPawn, Offsets.m_pGameSceneNode);
+            IntPtr boneMatrix = memory.ReadPointer(gameSceneNode, Offsets.m_modelState + 0x80);
+            IntPtr dwSensitivity = memory.ReadPointer(client + Offsets.dwSensitivity);
+            float sensitivity = memory.ReadFloat(dwSensitivity + Offsets.dwSensitivity_sensitivity);
+            IntPtr clippingWeapon = memory.ReadPointer(localPlayerPawn + Offsets.m_hActiveWeapon
                 );
-            IntPtr weaponData = GameState.swed.ReadPointer(clippingWeapon + 0x10);
-            IntPtr weaponNameAddress = GameState.swed.ReadPointer(weaponData + 0x20);
+            IntPtr weaponData = memory.ReadPointer(clippingWeapon + 0x10);
+            IntPtr weaponNameAddress = memory.ReadPointer(weaponData + 0x20);
             IntPtr collisionBase = localPlayerPawn + Offsets.m_Collision;
-            IntPtr aimPunchServices = swed.ReadPointer(localPlayerPawn + Offsets.m_pAimPunchServices);
+            IntPtr aimPunchServices = memory.ReadPointer(localPlayerPawn + Offsets.m_pAimPunchServices);
             List <Types.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
 
             string weaponName = "Invalid Weapon Name";
             if (weaponNameAddress != 0)
             {
-                byte[] buffer = GameState.swed.ReadBytes(weaponNameAddress, 32);
+                byte[] buffer = memory.ReadBytes(weaponNameAddress, 32);
                 int len = Array.IndexOf<byte>(buffer, 0);
                 if (len < 0)
                     len = buffer.Length;
@@ -128,47 +128,47 @@ namespace Titled_Gui.Data.Entity
             Entity localPlayer = new()
             {
                 PawnAddress = localPlayerPawn,
-                Origin = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
-                View = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset),
-                AimPunchAngle = GameState.swed.ReadVec(aimPunchServices + Offsets.m_predictableBaseAngle),
-                Position = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
-                IsFlashed = GameState.swed.ReadFloat(localPlayerPawn, Offsets.m_flFlashBangTime) > 1.5,
-                Ping = GameState.swed.ReadInt(localPlayerPawn, Offsets.m_iPing),
-                Health = GameState.swed.ReadInt(localPlayerPawn, Offsets.m_iHealth),
-                Team = GameState.swed.ReadInt(localPlayerPawn + Offsets.m_iTeamNum),
-                LifeState = GameState.swed.ReadInt(localPlayerPawn, Offsets.m_lifeState),
-                Position2D = Calculate.WorldToScreen(viewMatrix, GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin)),
-                ViewPosition2D = Calculate.WorldToScreen(viewMatrix, Vector3.Add(GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset))),
+                Origin = memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
+                View = memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset),
+                AimPunchAngle = memory.ReadVec(aimPunchServices + Offsets.m_predictableBaseAngle),
+                Position = memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
+                IsFlashed = memory.ReadFloat(localPlayerPawn, Offsets.m_flFlashBangTime) > 1.5,
+                Ping = memory.ReadInt(localPlayerPawn, Offsets.m_iPing),
+                Health = memory.ReadInt(localPlayerPawn, Offsets.m_iHealth),
+                Team = memory.ReadInt(localPlayerPawn + Offsets.m_iTeamNum),
+                LifeState = memory.ReadInt(localPlayerPawn, Offsets.m_lifeState),
+                Position2D = Calculate.WorldToScreen(viewMatrix, memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin)),
+                ViewPosition2D = Calculate.WorldToScreen(viewMatrix, Vector3.Add(memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset))),
                 //Visible => ,
-                Head = Vector3.Add(GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset)),
-                Head2D = Calculate.WorldToScreen(viewMatrix, Vector3.Add(GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset))),
-                Distance = Vector3.Distance(GameState.swed.ReadVec(GameState.LocalPlayerPawn, Offsets.m_vOldOrigin), GameState.swed.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin)),
+                Head = Vector3.Add(memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset)),
+                Head2D = Calculate.WorldToScreen(viewMatrix, Vector3.Add(memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset))),
+                Distance = Vector3.Distance(memory.ReadVec(LocalPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin)),
                 Bones = bones,
-                Name = GameState.swed.ReadString(controller, Offsets.m_iszPlayerName, 32),
-                Velocity = GameState.swed.ReadVec(GameState.LocalPlayerPawn, Offsets.m_vecAbsVelocity),
-                ViewAngles = GameState.swed.ReadVec(client, Offsets.dwViewAngles),
-                Armor = GameState.swed.ReadInt(localPlayerPawn, Offsets.m_ArmorValue),
-                IsScoped = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bIsScoped),
-                IsBuyMenuOpen = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bIsBuyMenuOpen),
+                Name = memory.ReadString(controller + Offsets.m_iszPlayerName),
+                Velocity = memory.ReadVec(LocalPlayerPawn, Offsets.m_vecAbsVelocity),
+                ViewAngles = memory.ReadVec(client, Offsets.dwViewAngles),
+                Armor = memory.ReadInt(localPlayerPawn, Offsets.m_ArmorValue),
+                IsScoped = memory.ReadBool(localPlayerPawn, Offsets.m_bIsScoped),
+                IsBuyMenuOpen = memory.ReadBool(localPlayerPawn, Offsets.m_bIsBuyMenuOpen),
                 CurrentWeaponName = weaponName,
-                Account = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iAccount),
-                CashSpent = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iCashSpentThisRound),
-                CashSpentTotal = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iTotalCashSpent),
-                ShotsFired = swed.ReadInt(localPlayerPawn, Offsets.m_iShotsFired),
-                IsAttacking = GameState.swed.ReadBool(GameState.client, Offsets.attack),
-                Ammo = GameState.swed.ReadInt(client, Offsets.m_iAmmo),
-                EyeDirection = GameState.swed.ReadVec(localPlayerPawn, Offsets.m_angEyeAngles),
-                IsWalking = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bIsWalking),
-                //HasBomb = GameState.swed.ReadBool(localPlayer, Offsets.)
-                IsDefusing = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bIsDefusing),
-                InBombZone = GameState.swed.ReadBool(localPlayerPawn, Offsets.m_bInBombZone),
+                Account = memory.ReadInt(GameState.MoneyServices, Offsets.m_iAccount),
+                CashSpent = memory.ReadInt(GameState.MoneyServices, Offsets.m_iCashSpentThisRound),
+                CashSpentTotal = memory.ReadInt(GameState.MoneyServices, Offsets.m_iTotalCashSpent),
+                ShotsFired = memory.ReadInt(localPlayerPawn, Offsets.m_iShotsFired),
+                IsAttacking = memory.ReadBool(client, Offsets.attack),
+                Ammo = memory.ReadInt(client, Offsets.m_iAmmo),
+                EyeDirection = memory.ReadVec(localPlayerPawn, Offsets.m_angEyeAngles),
+                IsWalking = memory.ReadBool(localPlayerPawn, Offsets.m_bIsWalking),
+                //HasBomb = memory.ReadBool(localPlayer, Offsets.)
+                IsDefusing = memory.ReadBool(localPlayerPawn, Offsets.m_bIsDefusing),
+                InBombZone = memory.ReadBool(localPlayerPawn, Offsets.m_bInBombZone),
                 Sensitivity = sensitivity,
-                GameSceneNode = GameState.swed.ReadPointer(localPlayerPawn, Offsets.m_pGameSceneNode),
-                Pawn = GameState.swed.ReadPointer(controller, Offsets.m_hPawn),
+                GameSceneNode = memory.ReadPointer(localPlayerPawn, Offsets.m_pGameSceneNode),
+                Pawn = memory.ReadPointer(controller, Offsets.m_hPawn),
 
             };
             //localPlayer.Visible = Visible(localPlayer);
-            localPlayer.ObserverServices = GameState.swed.ReadPointer(localPlayer.Pawn + Offsets.m_pObserverServices);
+            localPlayer.ObserverServices = memory.ReadPointer(localPlayer.Pawn + Offsets.m_pObserverServices);
 
             localPlayer.EyePosition = GetEyePosition(localPlayer);
             return localPlayer;
@@ -176,8 +176,8 @@ namespace Titled_Gui.Data.Entity
 
         public static Vector3 GetEyePosition(Entity e)
         {
-            Vector3 origin = swed.ReadVec(e.GameSceneNode + Offsets.m_vecOrigin);
-            Vector3 view = swed.ReadVec(e.PawnAddress + Offsets.m_vecViewOffset);
+            Vector3 origin = memory.ReadVec(e.GameSceneNode + Offsets.m_vecOrigin);
+            Vector3 view = memory.ReadVec(e.PawnAddress + Offsets.m_vecViewOffset);
             return origin + view;
         }
 
@@ -185,24 +185,24 @@ namespace Titled_Gui.Data.Entity
         {
             try
             {
-                IntPtr gameSceneNode = GameState.swed.ReadPointer(pawnAddress, Offsets.m_pGameSceneNode);
-                IntPtr boneMatrix = GameState.swed.ReadPointer(gameSceneNode, Offsets.m_modelState + 0x80);
-                IntPtr dwSensitivity = GameState.swed.ReadPointer(GameState.client + Offsets.dwSensitivity);
-                float sensitivity = GameState.swed.ReadFloat(dwSensitivity + Offsets.dwSensitivity_sensitivity);
+                IntPtr gameSceneNode = memory.Read<IntPtr>(pawnAddress + Offsets.m_pGameSceneNode);
+                IntPtr boneMatrix = memory.ReadPointer(gameSceneNode, Offsets.m_modelState + 0x80);
+                IntPtr dwSensitivity = memory.ReadPointer(client + Offsets.dwSensitivity);
+                float sensitivity = memory.ReadFloat(dwSensitivity + Offsets.dwSensitivity_sensitivity);
 
 
-                IntPtr weaponServices = GameState.swed.ReadPointer(pawnAddress + Offsets.m_pWeaponServices);
-                uint hActiveWeapon = GameState.swed.ReadUInt(weaponServices + Offsets.m_hActiveWeapon);
-                IntPtr weaponData = GetPlayerPawn(GameState.EntityList, (nint)hActiveWeapon);
+                IntPtr weaponServices = memory.ReadPointer(pawnAddress + Offsets.m_pWeaponServices);
+                uint hActiveWeapon = memory.ReadUInt(weaponServices + Offsets.m_hActiveWeapon);
+                IntPtr weaponData = GetPlayerPawn(EntityList, (nint)hActiveWeapon);
 
-                short weaponDefIndex = GameState.swed.ReadShort(weaponData + Offsets.m_AttributeManager + Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
+                short weaponDefIndex = memory.ReadShort(weaponData + Offsets.m_AttributeManager + Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
                 IntPtr collisionBase = pawnAddress + Offsets.m_Collision;
                 List<Types.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
                 WorldEntityManager.WeaponNameMap.TryGetValue(weaponDefIndex, out string? weaponName);
-                var viewPos = Vector3.Add(GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset));
+                var viewPos = Vector3.Add(memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin), memory.ReadVec(pawnAddress, Offsets.m_vecViewOffset));
                 //if (weaponNameAddress != 0)
                 //{
-                //    byte[] Buffer = GameState.swed.ReadBytes(weaponNameAddress, 32);
+                //    byte[] Buffer = memory.ReadBytes(weaponNameAddress, 32);
                 //    int len = Array.IndexOf<byte>(Buffer, 0);
                 //    if (len < 0)
                 //        len = Buffer.Length;
@@ -218,47 +218,47 @@ namespace Titled_Gui.Data.Entity
 
                 Entity entity = new()
                 {
-                    Team = GameState.swed.ReadInt(pawnAddress + Offsets.m_iTeamNum),
+                    Team = memory.ReadInt(pawnAddress + Offsets.m_iTeamNum),
                     PawnAddress = pawnAddress,
-                    Health = (int)GameState.swed.ReadUInt(pawnAddress, Offsets.m_iHealth),
-                    LifeState = GameState.swed.ReadInt(pawnAddress, Offsets.m_lifeState),
-                    Position = GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin),
-                    View = GameState.swed.ReadVec(pawnAddress, Offsets.m_vecViewOffset),
-                    Position2D = Calculate.WorldToScreen(viewMatrix, GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
+                    Health = (int)memory.ReadUInt(pawnAddress, Offsets.m_iHealth),
+                    LifeState = memory.ReadInt(pawnAddress, Offsets.m_lifeState),
+                    Position = memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin),
+                    View = memory.ReadVec(pawnAddress, Offsets.m_vecViewOffset),
+                    Position2D = Calculate.WorldToScreen(viewMatrix, memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
                     ViewPosition2D = Calculate.WorldToScreen(viewMatrix, viewPos),
                     //Visible = Visible(entity),
-                    Visible = swed.ReadBool(pawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted),
-                    SpottedByState = swed.ReadPointer(pawnAddress + 0x2718),
+                    Visible = memory.ReadBool(pawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted),
+                    SpottedByState = memory.ReadPointer(pawnAddress + 0x2718),
                     Head = viewPos,
                     Head2D = Calculate.WorldToScreen(viewMatrix, viewPos),
-                    Distance = Vector3.Distance(GameState.swed.ReadVec(GameState.LocalPlayerPawn, Offsets.m_vOldOrigin), GameState.swed.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
+                    Distance = Vector3.Distance(memory.ReadVec(LocalPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
                     Bones = bones,
-                    Name = GameState.swed.ReadString(controller, Offsets.m_iszPlayerName, 32),
-                    Velocity = GameState.swed.ReadVec(pawnAddress, Offsets.m_vecAbsVelocity),
-                    ViewAngles = GameState.swed.ReadVec(client, Offsets.dwViewAngles),
-                    Armor = GameState.swed.ReadInt(pawnAddress, Offsets.m_ArmorValue),
-                    IsScoped = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsScoped),
-                    IsBuyMenuOpen = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsBuyMenuOpen),
+                    Name = memory.ReadString(controller + Offsets.m_iszPlayerName),
+                    Velocity = memory.ReadVec(pawnAddress, Offsets.m_vecAbsVelocity),
+                    ViewAngles = memory.ReadVec(client, Offsets.dwViewAngles),
+                    Armor = memory.ReadInt(pawnAddress, Offsets.m_ArmorValue),
+                    IsScoped = memory.ReadBool(pawnAddress, Offsets.m_bIsScoped),
+                    IsBuyMenuOpen = memory.ReadBool(pawnAddress, Offsets.m_bIsBuyMenuOpen),
                     CurrentWeaponName = weaponName,
-                    Account = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iAccount),
-                    CashSpent = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iCashSpentThisRound),
-                    CashSpentTotal = GameState.swed.ReadInt(GameState.MoneyServices, Offsets.m_iTotalCashSpent),
-                    ShotsFired = swed.ReadInt(pawnAddress, Offsets.m_iShotsFired),
-                    IsAttacking = GameState.swed.ReadBool(GameState.client, Offsets.attack),
-                    IsFlashed = GameState.swed.ReadFloat(pawnAddress, Offsets.m_flFlashBangTime) > 1.5,
-                    Ammo = GameState.swed.ReadInt(pawnAddress, Offsets.m_iAmmo),
-                    EyeDirection = GameState.swed.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
-                    Ping = (int)GameState.swed.ReadUInt(controller, Offsets.m_iPing),
-                    IsWalking = GameState.swed.ReadBool(pawnAddress, Offsets.m_bIsWalking),
-                    AngEyeAngles = GameState.swed.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
+                    Account = memory.ReadInt(GameState.MoneyServices, Offsets.m_iAccount),
+                    CashSpent = memory.ReadInt(GameState.MoneyServices, Offsets.m_iCashSpentThisRound),
+                    CashSpentTotal = memory.ReadInt(GameState.MoneyServices, Offsets.m_iTotalCashSpent),
+                    ShotsFired = memory.ReadInt(pawnAddress, Offsets.m_iShotsFired),
+                    IsAttacking = memory.ReadBool(client, Offsets.attack),
+                    IsFlashed = memory.ReadFloat(pawnAddress, Offsets.m_flFlashBangTime) > 1.5,
+                    Ammo = memory.ReadInt(pawnAddress, Offsets.m_iAmmo),
+                    EyeDirection = memory.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
+                    Ping = (int)memory.ReadUInt(controller, Offsets.m_iPing),
+                    IsWalking = memory.ReadBool(pawnAddress, Offsets.m_bIsWalking),
+                    AngEyeAngles = memory.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
                     GameSceneNode = gameSceneNode,
                     Sensitivity = sensitivity,
-                    EmitSoundTime = GameState.swed.ReadFloat(pawnAddress, Offsets.m_flEmitSoundTime),
+                    EmitSoundTime = memory.ReadFloat(pawnAddress, Offsets.m_flEmitSoundTime),
                     EyePosition = new(0, 0, 0),
-                    VecMax = swed.ReadVec(collisionBase + Offsets.m_vecMaxs),
-                    VecMin = swed.ReadVec(collisionBase + Offsets.m_vecMins),
-                    HitboxComponent = swed.ReadPointer(pawnAddress, Offsets.m_CHitboxComponent),
-                    IsDormant = GameState.swed.ReadBool(gameSceneNode, Offsets.m_bDormant),
+                    VecMax = memory.ReadVec(collisionBase + Offsets.m_vecMaxs),
+                    VecMin = memory.ReadVec(collisionBase + Offsets.m_vecMins),
+                    HitboxComponent = memory.ReadPointer(pawnAddress, Offsets.m_CHitboxComponent),
+                    IsDormant = memory.ReadBool(gameSceneNode, Offsets.m_bDormant),
                     Pawn = pawn,
                     PlayerPawn = playerPawn,
                     Controller = controller,
@@ -271,10 +271,10 @@ namespace Titled_Gui.Data.Entity
 
                 if (UseOldVisibilityCheck)
                 {
-                    entity.Visible = swed.ReadBool(currentPawn, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
+                    entity.Visible = memory.ReadBool(currentPawn, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
                 }
 
-                entity.IsEnemy = entity.Team != GameState.LocalPlayer.Team;
+                entity.IsEnemy = entity.Team != LocalPlayer.Team;
 
                 return entity;
             }

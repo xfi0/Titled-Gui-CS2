@@ -23,7 +23,7 @@ namespace Titled_Gui.Modules.Visual
             if (c4 == null || !c4.Planted || c4.Position == new Vector3(0, 0, 0) || c4.Position2D == new Vector2(-99, -99))
                 return;
 
-            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
             Vector3[] corners3D = Get3DCorners(c4);
             Vector2[] corners2D = new Vector2[corners3D.Length];
 

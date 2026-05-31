@@ -9,10 +9,10 @@ namespace Titled_Gui.Modules.Visual
         {
             if (!NoFlashEnable) return;
 
-            float flashBangDuration = GameState.swed.ReadFloat(GameState.client, Offsets.m_flFlashBangTime);
+            float flashBangDuration = GameState.memory.ReadFloat(GameState.client, Offsets.m_flFlashBangTime);
 
             if (flashBangDuration > 0)
-                GameState.swed.WriteInt(GameState.LocalPlayerPawn, Offsets.m_flFlashBangTime, 0);
+                GameState.memory.WriteInt(GameState.LocalPlayerPawn, Offsets.m_flFlashBangTime, 0);
             
         }
         protected override void FrameAction()

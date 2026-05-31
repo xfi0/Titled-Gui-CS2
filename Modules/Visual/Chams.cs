@@ -37,7 +37,7 @@ namespace Titled_Gui.Modules.Visual
                         : ImGui.ColorConvertFloat4ToU32(TeamColor));
 
 
-                float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+                float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
                 DrawHelpers.DrawCapsule3D(hitbox.MinBounds, hitbox.MaxBounds, hitbox.ShapeRadius, hitbox.BoneRotation,
                     hitbox.BonePosition, viewMatrix, preConvertedColor);

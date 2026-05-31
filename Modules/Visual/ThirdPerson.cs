@@ -34,7 +34,7 @@ namespace Titled_Gui.Modules.Visual
             if (patchApplied)
                 return;
 
-            GameState.swed.WriteBytes(GameState.client + jnePatch, patchedJNE);
+            GameState.memory.WriteBytes(GameState.client + jnePatch, patchedJNE);
             patchApplied = true;
         }
 
@@ -43,13 +43,13 @@ namespace Titled_Gui.Modules.Visual
             if (!patchApplied)
                 return;
 
-            GameState.swed.WriteBytes(GameState.client + jnePatch, originalJNE);
+            GameState.memory.WriteBytes(GameState.client + jnePatch, originalJNE);
             patchApplied = false;
         }
 
         private static void SetThirdPersonState(bool enabled)
         {
-            GameState.swed.WriteInt(GameState.client + Offsets.dwCSGOInput + 0x251, enabled ? 256 : 0);
+            GameState.memory.WriteInt(GameState.client + Offsets.dwCSGOInput + 0x251, enabled ? 256 : 0);
         }
 
         private static bool NeedsReapply(IntPtr currentPawn)

@@ -59,7 +59,7 @@ namespace Titled_Gui.Classes
         {
 
             int maxBoneId = 102;
-            byte[] boneBytes = GameState.swed.ReadBytes(boneAddress, maxBoneId * 32);
+            byte[] boneBytes = GameState.memory.ReadBytes(boneAddress, maxBoneId * 32);
             List<Bone> bones = new(new Bone[maxBoneId]);
 
             for (int i = 0; i < 102; i++)
@@ -97,40 +97,40 @@ namespace Titled_Gui.Classes
         {
             List<Types.Hitbox> hitboxes = new();
 
-            IntPtr pCModel = GameState.swed.ReadPointer(entity.GameSceneNode + Offsets.m_modelState + 0xC0);
+            IntPtr pCModel = GameState.memory.ReadPointer(entity.GameSceneNode + Offsets.m_modelState + 0xC0);
             if (pCModel == IntPtr.Zero)
                 return hitboxes;
 
-            IntPtr CModel = GameState.swed.ReadPointer(pCModel);
+            IntPtr CModel = GameState.memory.ReadPointer(pCModel);
             if (CModel == IntPtr.Zero)
                 return hitboxes;
 
-            IntPtr pCRenderMeshs = GameState.swed.ReadPointer(CModel + 0x78);
+            IntPtr pCRenderMeshs = GameState.memory.ReadPointer(CModel + 0x78);
             if (pCRenderMeshs == IntPtr.Zero)
                 return hitboxes;
 
-            IntPtr CRenderMeshs = GameState.swed.ReadPointer(pCRenderMeshs);
+            IntPtr CRenderMeshs = GameState.memory.ReadPointer(pCRenderMeshs);
             if (CRenderMeshs == IntPtr.Zero)
                 return hitboxes;
 
-            IntPtr hitboxSets = GameState.swed.ReadPointer(CRenderMeshs + 0x150);
+            IntPtr hitboxSets = GameState.memory.ReadPointer(CRenderMeshs + 0x150);
             if (hitboxSets == IntPtr.Zero)
                 return hitboxes;
 
-            int hitboxCount = GameState.swed.ReadInt(hitboxSets + 0x28);
-            IntPtr pCHitbox = GameState.swed.ReadPointer(hitboxSets + 0x30);
+            int hitboxCount = GameState.memory.ReadInt(hitboxSets + 0x28);
+            IntPtr pCHitbox = GameState.memory.ReadPointer(hitboxSets + 0x30);
 
             int hitboxStride = 0x70;
 
             for (int i = 0; i < hitboxCount; i++)
             {
                 IntPtr pCHitbox1 = pCHitbox + (i * hitboxStride);
-                IntPtr hb = GameState.swed.ReadPointer(pCHitbox1);
+                IntPtr hb = GameState.memory.ReadPointer(pCHitbox1);
 
-                Vector3 min = GameState.swed.ReadVec(pCHitbox1 + Offsets.m_vMinBounds);
-                Vector3 max = GameState.swed.ReadVec(pCHitbox1 + Offsets.m_vMaxBounds);
-                float radius = GameState.swed.ReadFloat(pCHitbox1 + Offsets.m_flShapeRadius);
-                string name = GameState.swed.ReadString(hb + Offsets.m_name, 24)
+                Vector3 min = GameState.memory.ReadVec(pCHitbox1 + Offsets.m_vMinBounds);
+                Vector3 max = GameState.memory.ReadVec(pCHitbox1 + Offsets.m_vMaxBounds);
+                float radius = GameState.memory.ReadFloat(pCHitbox1 + Offsets.m_flShapeRadius);
+                string name = GameState.memory.ReadString(hb + Offsets.m_name)
                     .Trim().Replace(" ", "").Replace("\0", "").Replace("playerfl", "");
 
                 if (name.Contains("neck") || name == "spine_3" || name == "spine_2")

@@ -58,7 +58,7 @@ namespace Titled_Gui.Modules.Visual
             if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
-            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
             float thickness = 2f;
 
             uint preConvertedColor = ImGui.ColorConvertFloat4ToU32(BoxColor);
@@ -82,7 +82,7 @@ namespace Titled_Gui.Modules.Visual
             if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
-            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
             float thickness = 2f;
 
             uint preConvertedColor = ImGui.ColorConvertFloat4ToU32(BoxColor);
@@ -108,7 +108,7 @@ namespace Titled_Gui.Modules.Visual
             if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
-            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
             float thickness = 2f;
 
             uint preConvertedColor = ImGui.ColorConvertFloat4ToU32(BoxColor);
@@ -133,7 +133,7 @@ namespace Titled_Gui.Modules.Visual
             if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
-            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
             float thickness = 2f;
 
             uint preConvertedColor = ImGui.ColorConvertFloat4ToU32(BoxColor);
@@ -157,12 +157,12 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawMolotovBounds(WorldEntity? worldEntity)
         {
-            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
             const float fireRadius = 60.0f;
             const int pointsPerFire = 12;
 
-            int firePointCount = GameState.swed.ReadInt(worldEntity.PawnAddress + Offsets.m_fireCount);
+            int firePointCount = GameState.memory.ReadInt(worldEntity.PawnAddress + Offsets.m_fireCount);
             if (firePointCount <= 0) 
                 return;
 
@@ -172,7 +172,7 @@ namespace Titled_Gui.Modules.Visual
             {
                 unsafe
                 {
-                    Vector3 firePoint = GameState.swed.ReadVec(worldEntity.PawnAddress + Offsets.m_firePositions + i * sizeof(Vector3));
+                    Vector3 firePoint = GameState.memory.ReadVec(worldEntity.PawnAddress + Offsets.m_firePositions + i * sizeof(Vector3));
 
                     for (int j = 0; j < pointsPerFire; j++)
                     {

@@ -19,10 +19,10 @@ namespace Titled_Gui.Data.Game
 
         public static void Update()
         {
-            if (GameState.swed == null)
+            if (GameState.memory == null)
                 return;
 
-            address = GameState.swed.ReadULong((nint)(GameState.client + Offsets.dwGlobalVars));
+            address = GameState.memory.ReadULong((nint)(GameState.client + Offsets.dwGlobalVars));
         }
 
 
@@ -31,7 +31,7 @@ namespace Titled_Gui.Data.Game
             Update();
             if (address == 0) return -1;
 
-            int tickCount = GameState.swed.ReadInt((nint)(address + TickCountOffset));
+            int tickCount = GameState.memory.ReadInt((nint)(address + TickCountOffset));
             return tickCount;
         }
 
@@ -40,7 +40,7 @@ namespace Titled_Gui.Data.Game
             Update();
             if (address == 0) return -1;
 
-            return GameState.swed.ReadFloat((nint)(address + RealTimeOffset));
+            return GameState.memory.ReadFloat((nint)(address + RealTimeOffset));
         }
 
         public static int GetFrameCount()
@@ -48,7 +48,7 @@ namespace Titled_Gui.Data.Game
             Update();
             if (address == 0) return -1;
 
-            return GameState.swed.ReadInt((nint)(address + FrameCountOffset));
+            return GameState.memory.ReadInt((nint)(address + FrameCountOffset));
         }
 
         public static int GetMaxClients()
@@ -56,7 +56,7 @@ namespace Titled_Gui.Data.Game
             Update();
             if (address == 0) return -1;
 
-            return GameState.swed.ReadInt((nint)(address + MaxClientsOffset));
+            return GameState.memory.ReadInt((nint)(address + MaxClientsOffset));
         }
 
         public static int GetIntervalPerTick()
@@ -64,7 +64,7 @@ namespace Titled_Gui.Data.Game
             Update();
             if (address == 0) return -1;
 
-            return GameState.swed.ReadInt((nint)(address + IntervalPerTickOffset));
+            return GameState.memory.ReadInt((nint)(address + IntervalPerTickOffset));
         }
 
         public static float GetIntervalPerTick2()
@@ -72,7 +72,7 @@ namespace Titled_Gui.Data.Game
             Update();
             if (address == 0) return -1;
 
-            return GameState.swed.ReadFloat((nint)(address + IntervalPerTick2Offset));
+            return GameState.memory.ReadFloat((nint)(address + IntervalPerTick2Offset));
         }
 
         public static float GetCurrentTime()
@@ -80,7 +80,7 @@ namespace Titled_Gui.Data.Game
             Update();
             if (address == 0) return -1;
 
-            return GameState.swed.ReadFloat((nint)(address + CurrentTimeOffset));
+            return GameState.memory.ReadFloat((nint)(address + CurrentTimeOffset));
         }
 
         public static float GetCurrentTime2()
@@ -88,7 +88,7 @@ namespace Titled_Gui.Data.Game
             Update();
             if (address == 0) return -1;
 
-            return GameState.swed.ReadFloat((nint)(address + CurrentTime2Offset));
+            return GameState.memory.ReadFloat((nint)(address + CurrentTime2Offset));
         }
 
         public static int GetCurrentMap()
@@ -96,7 +96,7 @@ namespace Titled_Gui.Data.Game
             Update();
             if (address == 0) return -1;
 
-            return GameState.swed.ReadChar((nint)(address + CurrentMapOffset));
+            return GameState.memory.ReadChar((nint)(address + CurrentMapOffset));
         }
 
         public static string GetCurrentMapName()
@@ -104,15 +104,14 @@ namespace Titled_Gui.Data.Game
             Update();
             if (address == 0) return "";
 
-            nint mapNamePtr = GameState.swed.ReadPointer((nint)(address + CurrentMapOffset));
+            nint mapNamePtr = GameState.memory.ReadPointer((nint)(address + CurrentMapOffset));
 
-            string raw = GameState.swed.ReadString(mapNamePtr, 64);
+            string raw = GameState.memory.ReadString(mapNamePtr);
             raw = raw.Trim('\0', ' ', '\r', '\n').Split('\0')[0].Replace("?", "").Replace("\0", "");
             if (raw.Length > 0 && raw[0] == '_')
                 raw = raw.Substring(1);
 
             return raw;
-            //return GameState.swed.ReadString((nint)(address + CurrentMapNameOffset), 64);
         }
     }
 }

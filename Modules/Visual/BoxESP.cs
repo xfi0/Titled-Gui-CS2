@@ -54,7 +54,7 @@ namespace Titled_Gui.Modules.Visual
                 bool isTeam = entity.Team == GameState.LocalPlayer.Team;
                 Vector4 boxColor = GetBoxColor(entity);
                 Vector4 outlineColor = isTeam ? OutlineTeamColor : OutlineEnemyColor;
-                float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+                float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
                 Vector4 fillColor = (BoneESP.visibilityCheck && !entity.Visible) ? (isTeam ? OccludedTeam : OccludedEnemy) : (isTeam ? TeamFill : EnemyFill);
                 fillColor.W = BoxFillOpacity;
 
@@ -649,7 +649,7 @@ namespace Titled_Gui.Modules.Visual
             if (entity == null || entity.Position2D == Vector2.Zero || entity.ViewPosition2D == Vector2.Zero)
                 return null;
 
-            float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+            float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
             float entityHeight = entity.Position2D.Y - entity.ViewPosition2D.Y;
             float halfWidth = entityHeight / 3f;
             float centerX = (entity.ViewPosition2D.X + entity.Position2D.X) / 2f;

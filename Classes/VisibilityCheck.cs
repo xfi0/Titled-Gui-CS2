@@ -1,8 +1,4 @@
-﻿using Swed64;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+﻿using System.Numerics;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Game.MapParser;
@@ -23,7 +19,7 @@ namespace Titled_Gui.Classes
             if (!EntityManager.UseOldVisibilityCheck)
                 return mapLoaderInstance.IsVisible(origin, target);
 
-            return GameState.swed.ReadBool(GameState.currentPawn, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
+            return GameState.memory.ReadBool(GameState.currentPawn, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
         }
 
         public static bool Visible(Vector3 origin, Vector3 target)

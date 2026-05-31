@@ -8,7 +8,7 @@ namespace Titled_Gui.Classes
     { // same here, wasnt used so removed for cpu usage sake
         public static void UpdateStuff()
         {
-            GameState.MoneyServices = GameState.swed.ReadPointer(GameState.LocalPlayer.Controller, Offsets.m_pInGameMoneyServices);
+            GameState.MoneyServices = GameState.memory.ReadPointer(GameState.LocalPlayer.Controller, Offsets.m_pInGameMoneyServices);
         }
         public static void MoneyTest()
         {

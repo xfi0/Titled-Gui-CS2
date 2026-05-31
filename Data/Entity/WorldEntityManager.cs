@@ -141,32 +141,32 @@ namespace Titled_Gui.Data.Entity
             try
             {
                 List<WorldEntity?> worldEntities = new List<WorldEntity?>();
-                float[] viewMatrix = GameState.swed.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
+                float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
                 for (int i = 65; i < 1024; i++)
                 {
-                    IntPtr listEntry = GameState.swed.ReadPointer(GameState.EntityList + 0x8 * ((i & 0x7FFF) >> 9) + 16);
+                    IntPtr listEntry = GameState.memory.ReadPointer(GameState.EntityList + 0x8 * ((i & 0x7FFF) >> 9) + 16);
                     if (listEntry == 0) continue;
 
-                    var pawnAddress = GameState.swed.ReadPointer(listEntry + 0x70 * (i & 0x1FF));
+                    var pawnAddress = GameState.memory.ReadPointer(listEntry + 0x70 * (i & 0x1FF));
                     if (pawnAddress == 0) continue;
 
-                    IntPtr itemNode = GameState.swed.ReadPointer(pawnAddress + Offsets.m_pGameSceneNode);
+                    IntPtr itemNode = GameState.memory.ReadPointer(pawnAddress + Offsets.m_pGameSceneNode);
                     if (itemNode == 0) continue;
 
-                    IntPtr itemInfo = GameState.swed.ReadPointer(pawnAddress + 0x10);
+                    IntPtr itemInfo = GameState.memory.ReadPointer(pawnAddress + 0x10);
                     if (itemInfo == 0) continue;
 
-                    IntPtr classInfo = GameState.swed.ReadPointer(itemInfo + 0x8);
+                    IntPtr classInfo = GameState.memory.ReadPointer(itemInfo + 0x8);
                     if (classInfo == 0) continue;
 
-                    IntPtr nameContainer = GameState.swed.ReadPointer(classInfo + 0x8);
+                    IntPtr nameContainer = GameState.memory.ReadPointer(classInfo + 0x8);
                     if (nameContainer == 0) continue;
 
-                    IntPtr namePtr = GameState.swed.ReadPointer(nameContainer + 0x8);
+                    IntPtr namePtr = GameState.memory.ReadPointer(nameContainer + 0x8);
                     if (namePtr == 0) continue;
 
-                    byte[] buffer = GameState.swed.ReadBytes(namePtr, 64);
+                    byte[] buffer = GameState.memory.ReadBytes(namePtr, 64);
 
                     int len = Array.IndexOf<byte>(buffer, 0);
                     if (len < 0) len = buffer.Length;
@@ -196,7 +196,7 @@ namespace Titled_Gui.Data.Entity
 
         public WorldEntity? PopulateEntity(nint pawnAddress, string type, IntPtr itemNode, float[] viewMatrix)
         {
-            Vector3 itemOrigin = GameState.swed.ReadVec((nint)itemNode + Offsets.m_vecOrigin);
+            Vector3 itemOrigin = GameState.memory.ReadVec((nint)itemNode + Offsets.m_vecOrigin);
             IntPtr collisionBase = pawnAddress + Offsets.m_Collision;
 
             WorldEntity newWorldEntity = new()
@@ -208,10 +208,10 @@ namespace Titled_Gui.Data.Entity
                 DisplayName = "",
                 Type = EntityKind.Unknown,
                 RawType = type,
-                VecMax = GameState.swed.ReadVec(collisionBase, Offsets.m_vecMaxs),
-                VecMin = GameState.swed.ReadVec(collisionBase, Offsets.m_vecMins),
-                Matrix = GameState.swed.ReadMatrix(itemNode + Offsets.m_nodeToWorld),
-                Rotation = GameState.swed.ReadMatrix(itemNode + Offsets.m_angRotation)
+                VecMax = GameState.memory.ReadVec(collisionBase, Offsets.m_vecMaxs),
+                VecMin = GameState.memory.ReadVec(collisionBase, Offsets.m_vecMins),
+                Matrix = GameState.memory.ReadMatrix(itemNode + Offsets.m_nodeToWorld),
+                Rotation = GameState.memory.ReadMatrix(itemNode + Offsets.m_angRotation)
             };
 
             if (WeaponsType.TryGetValue(type, out var weaponName))

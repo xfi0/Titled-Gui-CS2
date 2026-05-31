@@ -37,7 +37,7 @@ namespace Titled_Gui.Modules.Visual
                     if (end == new Vector2(-99, -99)) 
                         continue;
 
-                    GameState.renderer.drawList.AddLine(head, end, ImGui.ColorConvertFloat4ToU32(EyeRayColor));
+                    GameState.renderer.DrawList.AddLine(head, end, ImGui.ColorConvertFloat4ToU32(EyeRayColor));
                     //Console.WriteLine("DRAWING" + Head + " " + End);
                 }
             }

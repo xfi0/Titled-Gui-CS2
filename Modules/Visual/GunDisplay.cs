@@ -65,7 +65,7 @@ namespace Titled_Gui.Modules.Visual
             if (rect == null) return;
 
             if (!string.IsNullOrEmpty(icon))
-                GameState.renderer.drawList.AddText(Renderer.GunIconsFont, 24, new Vector2(rect.Value.TopRight.X, rect.Value.TopRight.Y - 10f), ImGui.ColorConvertFloat4ToU32(TextColor), icon);
+                GameState.renderer.DrawList.AddText(Renderer.GunIconsFont, 24, new Vector2(rect.Value.TopRight.X, rect.Value.TopRight.Y - 10f), ImGui.ColorConvertFloat4ToU32(TextColor), icon);
             
         }
         public static string GetIcon(string weapon)

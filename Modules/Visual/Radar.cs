@@ -87,8 +87,8 @@ namespace Titled_Gui.Modules.Visual
             switch (point.Type)
             {
                 case 0:
-                    GameState.renderer.drawList.AddCircleFilled(point.Position, 3, ImGui.ColorConvertFloat4ToU32(point.Color));
-                    GameState.renderer.drawList.AddCircle(point.Position, 3, ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 0.5f)));
+                    GameState.renderer.DrawList.AddCircleFilled(point.Position, 3, ImGui.ColorConvertFloat4ToU32(point.Color));
+                    GameState.renderer.DrawList.AddCircle(point.Position, 3, ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 0.5f)));
                     break;
                 case 1:
                     DrawArrow(point.Position, point.Color, point.Yaw);
@@ -109,13 +109,13 @@ namespace Titled_Gui.Modules.Visual
             b = RotatePoint(b, Position, Yaw);
             c = RotatePoint(c, Position, Yaw);
 
-            GameState.renderer.drawList.AddTriangleFilled(a, b, c, ImGui.ColorConvertFloat4ToU32(Color));
+            GameState.renderer.DrawList.AddTriangleFilled(a, b, c, ImGui.ColorConvertFloat4ToU32(Color));
         }
 
         private static void DrawArc(Vector2 position, Vector4 color)
         {
-            GameState.renderer.drawList.AddCircleFilled(position, 8f, ImGui.ColorConvertFloat4ToU32(color), 30);
-            GameState.renderer.drawList.AddCircle(position, 8f * 0.95f, ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 0.5f)), 0, 0.1f);
+            GameState.renderer.DrawList.AddCircleFilled(position, 8f, ImGui.ColorConvertFloat4ToU32(color), 30);
+            GameState.renderer.DrawList.AddCircle(position, 8f * 0.95f, ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 0.5f)), 0, 0.1f);
         }
 
         private static Vector2 RotatePoint(Vector2 point, Vector2 origin, float angle)
@@ -132,8 +132,8 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawCross()
         {
-            GameState.renderer.drawList.AddLine(new Vector2(crossPosition.X - 100, crossPosition.Y), new Vector2(crossPosition.X + 100, crossPosition.Y), ImGui.ColorConvertFloat4ToU32(Titled_Gui.Classes.Colors.EnemyColor), 1); // enemy color because uh i felt like it
-            GameState.renderer.drawList.AddLine(new Vector2(crossPosition.X, crossPosition.Y - 100), new Vector2(crossPosition.X, crossPosition.Y + 100), ImGui.ColorConvertFloat4ToU32(Titled_Gui.Classes.Colors.EnemyColor), 1);
+            GameState.renderer.DrawList.AddLine(new Vector2(crossPosition.X - 100, crossPosition.Y), new Vector2(crossPosition.X + 100, crossPosition.Y), ImGui.ColorConvertFloat4ToU32(EnemyPointColor), 1); // enemy color because uh i felt like it
+            GameState.renderer.DrawList.AddLine(new Vector2(crossPosition.X, crossPosition.Y - 100), new Vector2(crossPosition.X, crossPosition.Y + 100), ImGui.ColorConvertFloat4ToU32(EnemyPointColor), 1);
         }
     }
 }

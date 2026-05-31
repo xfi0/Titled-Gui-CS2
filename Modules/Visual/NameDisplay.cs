@@ -32,7 +32,7 @@ namespace Titled_Gui.Modules.Visual
             Vector2 textSize = ImGui.CalcTextSize(name);
             Vector2 textPos = new(bottomMiddle.X - textSize.X, topRight.Y - offsetY);
 
-            renderer.drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(NameTextColor), name);
+            renderer.DrawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(NameTextColor), name);
 
         }
 

@@ -15,7 +15,7 @@ namespace Titled_Gui.Modules.Visual
 
             string distText = $"{(int)e.Distance / 100}m";
             Vector2 textPos = new(e.Position2D.X + 2, e.Position2D.Y);
-            GameState.renderer.drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new(1f, 1f, 1f, 1f)), distText);
+            GameState.renderer.DrawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(new(1f, 1f, 1f, 1f)), distText);
         }
     }
 }

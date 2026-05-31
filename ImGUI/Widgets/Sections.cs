@@ -97,8 +97,6 @@ internal class Sections
         RenderBoolSettingWith1ColorPicker("Inner Outline", ref BoxESP.InnerOutline, ref BoxESP.InnerOutlineColor);
         RenderFloatSlider("ESP Rounding", ref BoxESP.Rounding, 1f, 5f);
         RenderFloatSlider("ESP Glow", ref BoxESP.GlowAmount, 0f, 5f);
-        RenderColorPicker("Team Color", ref Colors.TeamColor);
-        RenderColorPicker("Enemy Color", ref Colors.EnemyColor);
         RenderBoolSettingWith2ColorPickers("Outer Outline", ref BoxESP.OuterOutline, ref BoxESP.OutlineEnemyColor, ref BoxESP.OutlineTeamColor);
         RenderBoolSettingWith2ColorPickers("Visibility Check", ref BoneESP.visibilityCheck, ref BoxESP.OccludedEnemy, ref BoxESP.OccludedTeam);
         RenderBoolSetting("Flash Check", ref BoxESP.FlashCheck);
@@ -107,11 +105,14 @@ internal class Sections
     {
         RenderBoolSetting("Enable Health Bar", ref HealthBar.EnableHealthBar);
         RenderBoolSetting("Enable Armor Bar", ref ArmorBar.EnableArmorhBar);
+        RenderBoolSetting("Eye Ray", ref EyeRay.Enabled);
+    }),
+    new("Flags", 2, () =>
+    {
         RenderBoolSetting("Show Distance Text", ref DistanceText.Enabled);
         RenderBoolSetting("Show Name", ref NameDisplay.Enabled);
         RenderBoolSettingWith1ColorPicker("Gun Icon", ref GunDisplay.Enabled, ref GunDisplay.TextColor);
         RenderBoolSettingWith1ColorPicker("Ping Display", ref PingDisplay.Enabled, ref PingDisplay.PingTextColor);
-        RenderBoolSetting("Eye Ray", ref EyeRay.Enabled);
     }),
     new("Bone ESP", 2, () =>
     {
@@ -122,7 +123,7 @@ internal class Sections
     }),
     new("Tracers", 2, () =>
     {
-        RenderBoolSetting("Enable Tracers", ref Tracers.EnableTracers);
+        RenderBoolSettingWith2ColorPickers("Enable Tracers", ref Tracers.EnableTracers, ref Tracers.TeamColor, ref Tracers.EnemyColor);
         RenderIntCombo("Tracer Start Position", ref Tracers.CurrentStartPos, Tracers.StartPositions, Tracers.StartPositions.Count, false);
         RenderIntCombo("Tracer End Position", ref Tracers.CurrentEndPos, Tracers.EndPositions.ToList(), Tracers.EndPositions.Length);
         RenderFloatSlider("Tracer Thickness", ref Tracers.LineThickness, 0.05f, 5f);
@@ -158,20 +159,21 @@ internal class Sections
 
     new("GUI", 4, () =>
     {
-        RenderFloatSlider("Window Alpha", ref Renderer.windowAlpha, 0.1f, 1.0f, "%.2f");
-        RenderColorPicker("Accent Color", ref Renderer.accentColor);
-        RenderFloatSlider("Animation Speed", ref Renderer.animationSpeed, 0.01f, 1.0f, "%.2f");
+        RenderFloatSlider("Window Alpha", ref Renderer.WindowAlpha, 0.1f, 1.0f, "%.2f");
+        RenderColorPicker("Primary Color", ref Renderer.PrimaryColor);
+        RenderColorPicker("Accent Color", ref Renderer.AccentColor);
+        RenderFloatSlider("Animation Speed", ref Renderer.AnimationSpeed, 0.01f, 1.0f, "%.2f");
         RenderFloatSlider("Particle Speed", ref Renderer.ParticleSpeed, 0, 10);
         RenderColorPicker("Particle Color", ref Renderer.ParticleColor);
         RenderColorPicker("Line Color", ref Renderer.LineColor);
         Renderer.RenderKeybindChooser("Open Keybind", ref Renderer.OpenKey);
-        RenderBoolSetting("Menu Sounds", ref Renderer.menuSounds);
-        RenderFloatSlider("Menu Sounds Volume", ref Renderer.menuSoundsVolume, 0, 1);
+        RenderBoolSetting("Menu Sounds", ref Renderer.MenuSounds);
+        RenderFloatSlider("Menu Sounds Volume", ref Renderer.MenuSoundsVolume, 0, 1);
     }),
     new("Performance", 4, () =>
     {
         RenderBoolSetting("Use Old Visibility Check", ref EntityManager.UseOldVisibilityCheck);
-        RenderBoolSetting("VSync", ref Renderer.enableVsync);
+        RenderBoolSetting("VSync", ref Renderer.EnableVsync);
     }),
     new("About", 4, () =>
     {
@@ -185,7 +187,7 @@ internal class Sections
     public static void BeginSection(string label, Action content, Vector2 size)
     {
         ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, ChildRounding);
-        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.125f, 0.125f, 0.125f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, Renderer.AccentColor);
         ImGui.BeginChild(label, size, ImGuiChildFlags.Border | ImGuiChildFlags.AutoResizeY);
         ImGui.Text(label);
         ImGui.Separator();

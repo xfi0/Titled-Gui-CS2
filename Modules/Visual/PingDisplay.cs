@@ -28,7 +28,7 @@ namespace Titled_Gui.Modules.Visual
             Vector2 textPos = new(topLeft.X - 12, topLeft.Y);
 
             string name = (e?.Ping.ToString() ?? "Unknown").Split('\0')[0].Replace("?", "").Replace("\0", "");
-            renderer.drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(PingTextColor), name);
+            renderer.DrawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(PingTextColor), name);
 
         }
 

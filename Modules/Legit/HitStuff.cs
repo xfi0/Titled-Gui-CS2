@@ -99,7 +99,7 @@ namespace Titled_Gui.Modules.Legit
 
                 Vector4 TextColorAdjusted = new(TextColor.X, TextColor.Y, TextColor.Z, alpha);
 
-                GameState.renderer.drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(TextColorAdjusted), hitText.Text);
+                GameState.renderer.DrawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(TextColorAdjusted), hitText.Text);
             }
             ImGui.PopFont();
         }

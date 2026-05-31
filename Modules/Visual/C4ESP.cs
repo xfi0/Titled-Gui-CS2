@@ -35,7 +35,7 @@ namespace Titled_Gui.Modules.Visual
             }
 
             if (TextEnabled)
-                GameState.renderer.drawList.AddText(c4.Position2D, ImGui.ColorConvertFloat4ToU32(TextColor), "C4");
+                GameState.renderer.DrawList.AddText(c4.Position2D, ImGui.ColorConvertFloat4ToU32(TextColor), "C4");
 
             if (BoxEnabled)
             {

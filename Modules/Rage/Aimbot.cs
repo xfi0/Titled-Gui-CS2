@@ -142,7 +142,7 @@ namespace Titled_Gui.Modules.Rage
         public static void DrawCircle(int size, Vector4 circleColor)
         {
             float radius = size;
-            GameState.renderer.drawList.AddCircle(new Vector2(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2), radius, ImGui.ColorConvertFloat4ToU32(circleColor), 32, 1.0f); // draw circle  
+            GameState.renderer.DrawList.AddCircle(new Vector2(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2), radius, ImGui.ColorConvertFloat4ToU32(circleColor), 32, 1.0f); // draw circle  
         }
         public static Entity? GetTarget() // aimbot function was getting long
         {
@@ -187,7 +187,7 @@ namespace Titled_Gui.Modules.Rage
             if (target == null || target.Bones == null || target.Bones == null || target.Bones.Count <= CurrentBoneIndex) 
                 return;
 
-            GameState.renderer.drawList.AddLine(new(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2), target.Bones[CurrentBoneIndex].Position2D, ImGui.ColorConvertFloat4ToU32(FovColor));
+            GameState.renderer.DrawList.AddLine(new(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2), target.Bones[CurrentBoneIndex].Position2D, ImGui.ColorConvertFloat4ToU32(FovColor));
         }
 
         protected override void FrameAction()

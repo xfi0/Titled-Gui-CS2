@@ -103,7 +103,7 @@ namespace Titled_Gui.Modules.Visual
                         {
                             fixed (Vector2* ptr = pointsArray)
                             {
-                                GameState.renderer.drawList.AddPolyline(ref *ptr, pointsArray.Length, color,
+                                GameState.renderer.DrawList.AddPolyline(ref *ptr, pointsArray.Length, color,
                                     ImDrawFlags.Closed,
                                     2f);
                             }

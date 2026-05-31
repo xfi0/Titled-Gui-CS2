@@ -22,7 +22,7 @@ namespace Titled_Gui.Modules.Visual
             float healthPercentage = Math.Clamp(health / maxHealth, 0f, 1f); // percentage of the box that is currently filled
             float filledHeight = height * healthPercentage;
 
-            GameState.renderer.drawList.AddRectFilled(topLeft, topLeft + new Vector2(HealthBarWidth, height), ImGui.ColorConvertFloat4ToU32(HealthBarBackGround), Rounding);
+            GameState.renderer.DrawList.AddRectFilled(topLeft, topLeft + new Vector2(HealthBarWidth, height), ImGui.ColorConvertFloat4ToU32(HealthBarBackGround), Rounding);
 
             Vector2 filledTop = topLeft + new Vector2(0, height - filledHeight);
 
@@ -49,7 +49,7 @@ namespace Titled_Gui.Modules.Visual
             }
 
 
-            GameState.renderer.drawList.AddRectFilled(filledTop, filledTop + new Vector2(HealthBarWidth, filledHeight), ImGui.ColorConvertFloat4ToU32(HealthColor), Rounding);
+            GameState.renderer.DrawList.AddRectFilled(filledTop, filledTop + new Vector2(HealthBarWidth, filledHeight), ImGui.ColorConvertFloat4ToU32(HealthColor), Rounding);
         }
         public static void DrawHealthBarPreview(Vector2 position)
         {

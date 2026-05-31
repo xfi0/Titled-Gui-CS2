@@ -4,8 +4,6 @@ namespace Titled_Gui.Classes
 {
     public class Colors // this class is stupid
     {
-        public static Vector4 EnemyColor = new(1, 0, 0, 1);// red
-        public static Vector4 TeamColor = new(0, 1, 0, 1);// green 
         public static bool RGB = false; // toggle for RGB color
         public static Vector4 Rgb()
         {

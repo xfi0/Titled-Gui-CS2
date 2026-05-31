@@ -232,7 +232,7 @@ namespace Titled_Gui.Classes
             uint fillColor = color & 0x00FFFFFF | 0x55000000;
             uint outlineColor = color;
 
-            var drawList = GameState.renderer.drawList;
+            var drawList = GameState.renderer.DrawList;
             var hullArr = hull.ToArray();
 
             drawList.AddConvexPolyFilled(ref hullArr[0], hull.Count, fillColor);
@@ -310,8 +310,8 @@ namespace Titled_Gui.Classes
             if (lower.Count < 3) return;
 
             var hullArray = lower.ToArray();
-            GameState.renderer.drawList.AddConvexPolyFilled(ref hullArray[0], hullArray.Length, fill);
-            GameState.renderer.drawList.AddPolyline(ref hullArray[0], hullArray.Length, outline, ImDrawFlags.Closed, thickness);
+            GameState.renderer.DrawList.AddConvexPolyFilled(ref hullArray[0], hullArray.Length, fill);
+            GameState.renderer.DrawList.AddPolyline(ref hullArray[0], hullArray.Length, outline, ImDrawFlags.Closed, thickness);
         }
 
         private static void CreateCircle(Vector3 point, Vector3 center, float radius, List<Vector3> vec,
@@ -380,7 +380,7 @@ namespace Titled_Gui.Classes
             {
                 Vector2 a = positions2D[i];
                 Vector2 b = positions2D[(i + 1) % positions2D.Count];
-                GameState.renderer.drawList.AddLine(a, b, color, 2f);
+                GameState.renderer.DrawList.AddLine(a, b, color, 2f);
             }
         }
         public static void Draw3DSphere(float[] viewMatrix, Vector3 center, float radius, uint color, int segments = 32)

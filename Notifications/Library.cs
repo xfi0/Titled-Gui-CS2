@@ -89,13 +89,13 @@ namespace Titled_Gui.Notifications
 
         public static void DrawNotification(Notification notification, Vector2 position)
         {
-            GameState.renderer?.drawList.AddRectFilled(new Vector2(10f, 10f), new Vector2(position.X + 50f, position.Y + 50f),
+            GameState.renderer?.DrawList.AddRectFilled(new Vector2(10f, 10f), new Vector2(position.X + 50f, position.Y + 50f),
                 ImGui.ColorConvertFloat4ToU32(new(0.094f, 0.101f, 0.117f, 1.0f)), 3f);
 
-            GameState.renderer?.drawList.AddText(new Vector2(15f, position.Y + 5f),
+            GameState.renderer?.DrawList.AddText(new Vector2(15f, position.Y + 5f),
                 ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 255)), notification.NotificationTitle);
 
-            GameState.renderer?.drawList.AddText(new Vector2(15f, position.Y + 25f),
+            GameState.renderer?.DrawList.AddText(new Vector2(15f, position.Y + 25f),
                 ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 255)), notification.NotificationMessage);
         }
 

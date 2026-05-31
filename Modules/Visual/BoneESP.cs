@@ -191,15 +191,15 @@ namespace Titled_Gui.Modules.Visual
                         switch (CurrentType)
                         {
                             case 0:
-                                DrawHelpers.DrawGlowLine(renderer.drawList, boneAPosition2D, boneBPosition2D,
+                                DrawHelpers.DrawGlowLine(renderer.DrawList, boneAPosition2D, boneBPosition2D,
                                     ImGui.ColorConvertU32ToFloat4(boneColor), GlowAmount,
                                     thickness: thickness);
-                                DrawHelpers.DrawGlowCircle(renderer.drawList, boneAPosition2D, thickness * 2,
+                                DrawHelpers.DrawGlowCircle(renderer.DrawList, boneAPosition2D, thickness * 2,
                                     ImGui.ColorConvertU32ToFloat4(boneColor),
                                     GlowAmount);
                                 break;
                             case 1:
-                                DrawHelpers.DrawGlowBezier(renderer.drawList, boneBPosition2D,
+                                DrawHelpers.DrawGlowBezier(renderer.DrawList, boneBPosition2D,
                                     (boneBPosition2D + boneAPosition2D) * 0.5f +
                                     Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y,
                                         (boneAPosition2D - boneBPosition2D).X)) * curve,
@@ -208,6 +208,7 @@ namespace Titled_Gui.Modules.Visual
                                         (boneAPosition2D - boneBPosition2D).X)) *
                                     (curve * 0.5f), boneAPosition2D, ImGui.ColorConvertU32ToFloat4(boneColor),
                                     GlowAmount / 2, thickness);
+
                                 break;
                         }
                     }
@@ -216,17 +217,17 @@ namespace Titled_Gui.Modules.Visual
                     {
                         case 0:
                             //renderer.drawList.AddLine(boneAPosition2D, boneBPosition2D, boneColor, thickness);
-                            renderer.drawList.AddLine(boneAPosition2D, boneBPosition2D,
+                            renderer.DrawList.AddLine(boneAPosition2D, boneBPosition2D,
                                 boneA.IsVisible ? boneColor : ImGui.ColorConvertFloat4ToU32(OccludedBoneColor),
                                 thickness); //draw a line between the Bones
-                            renderer.drawList.AddCircleFilled(boneAPosition2D, thickness * 1.5f,
+                            renderer.DrawList.AddCircleFilled(boneAPosition2D, thickness * 1.5f,
                                 boneA.IsVisible
                                     ? boneColor
                                     : ImGui.ColorConvertFloat4ToU32(
                                         OccludedBoneColor)); //draw a circle at the start bone
                             break;
                         case 1:
-                            renderer.drawList.AddBezierCubic(boneBPosition2D,
+                            renderer.DrawList.AddBezierCubic(boneBPosition2D,
                                 (boneBPosition2D + boneAPosition2D) * 0.5f +
                                 Vector2.Normalize(new Vector2(-(boneAPosition2D - boneBPosition2D).Y,
                                     (boneAPosition2D - boneBPosition2D).X)) * curve,
@@ -248,9 +249,9 @@ namespace Titled_Gui.Modules.Visual
             float radius = Math.Clamp(10f / (entity.Distance * 0.05f), 3f, 10f);
 
             if (GlowAmount > 0)
-                DrawHelpers.DrawGlowCircle(renderer.drawList, headPos, radius,
+                DrawHelpers.DrawGlowCircle(renderer.DrawList, headPos, radius,
                     head.IsVisible ? ImGui.ColorConvertU32ToFloat4(boneColor) : OccludedBoneColor, GlowAmount);
-            renderer.drawList.AddCircleFilled(headPos, radius,
+            renderer.DrawList.AddCircleFilled(headPos, radius,
                 head.IsVisible
                     ? boneColor
                     : ImGui.ColorConvertFloat4ToU32(OccludedBoneColor)); // draw a circle at the Head bone extra big
@@ -269,7 +270,7 @@ namespace Titled_Gui.Modules.Visual
                 if (!IsValidScreenPoint(p)) 
                     continue;
 
-                renderer.drawList.AddText(p, 0xFFFFFFFF, i.ToString());
+                renderer.DrawList.AddText(p, 0xFFFFFFFF, i.ToString());
             }
         }
 
@@ -284,7 +285,7 @@ namespace Titled_Gui.Modules.Visual
         public static void DrawBonePreview(Vector2 Center)
         {
             float EntityHeight = 150f;
-            Vector4 Color = Colors.EnemyColor;
+            Vector4 Color = VisibleBoneColor;
             uint UColor = ImGui.GetColorU32(Color);
             var DrawList = ImGui.GetWindowDrawList();
 

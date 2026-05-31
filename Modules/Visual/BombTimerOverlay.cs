@@ -31,11 +31,11 @@ namespace Titled_Gui.Modules.Visual
                 style.Colors[(int)ImGuiCol.Border] = new Vector4(0.15f, 0.15f, 0.16f, 1);
                 style.Colors[(int)ImGuiCol.Button] = new Vector4(0.18f, 0.18f, 0.19f, 1);
                 style.Colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.22f, 0.22f, 0.23f, 1);
-                style.Colors[(int)ImGuiCol.ButtonActive] = accentColor;
-                style.Colors[(int)ImGuiCol.Header] = new Vector4(accentColor.X, accentColor.Y, accentColor.Z, 0.4f);
+                style.Colors[(int)ImGuiCol.ButtonActive] = AccentColor;
+                style.Colors[(int)ImGuiCol.Header] = new Vector4(AccentColor.X, AccentColor.Y, AccentColor.Z, 0.4f);
                 style.Colors[(int)ImGuiCol.HeaderHovered] =
-                    new Vector4(accentColor.X, accentColor.Y, accentColor.Z, 0.6f);
-                style.Colors[(int)ImGuiCol.HeaderActive] = accentColor;
+                    new Vector4(AccentColor.X, AccentColor.Y, AccentColor.Z, 0.6f);
+                style.Colors[(int)ImGuiCol.HeaderActive] = AccentColor;
                 Vector2 windowSize = new(240f, 100f);
                 ImGui.SetNextWindowSize(windowSize,
                     ImGuiCond.Once); // ensure that the like size doesn't reset to the default on resize

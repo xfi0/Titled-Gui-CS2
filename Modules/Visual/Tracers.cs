@@ -21,10 +21,13 @@ namespace Titled_Gui.Modules.Visual
         public static string[] EndPositions = ["Bottom", "Top"];
         public static int CurrentStartPos = 0;
         public static int CurrentEndPos = 0;
+        public static Vector4 TeamColor = new(0, 1, 0, 1);
+        public static Vector4 EnemyColor = new(1, 0, 0, 1);
+
+        private const float HeadOffset = 50f;
         private static Vector2 StartPos = new();
         private static Vector2 EndPos = new();
-        private const float HeadOffset = 50f;
-        public static float RGBSpeed = 0.5f;
+
         public static void DrawTracers(Entity? entity, Renderer renderer)
         {
             if (!EnableTracers || entity == null || entity.PawnAddress == LocalPlayer.PawnAddress || (TeamCheck && entity.Team == LocalPlayer.Team) || (BoxESP.FlashCheck && LocalPlayer.IsFlashed) || entity?.Bones?.Count <= 0 || entity?.Position2D == new Vector2(-99, -99) || entity?.Bones == null) return;
@@ -48,12 +51,13 @@ namespace Titled_Gui.Modules.Visual
             }
 
             Vector4 lineColor = RGB ? Colors.Rgb() : (LocalPlayer.Team == entity.Team ? TeamColor : EnemyColor);
-            renderer.drawList.AddLine(StartPos, EndPos, ImGui.ColorConvertFloat4ToU32(lineColor), LineThickness); // add line for non rgb just liek Team color
+            renderer.DrawList.AddLine(StartPos, EndPos, ImGui.ColorConvertFloat4ToU32(lineColor), LineThickness); // add line for non rgb just liek Team color
         }
+
         public static void DrawTracerPreview(Vector2 position)
         {
             Vector2 bottom = new(position.X, position.Y + 200);
-            ImGui.GetWindowDrawList().AddLine(bottom, position, ImGui.ColorConvertFloat4ToU32(Colors.EnemyColor));
+            ImGui.GetWindowDrawList().AddLine(bottom, position, ImGui.ColorConvertFloat4ToU32(EnemyColor));
         }
     }
 }

@@ -102,16 +102,16 @@ namespace Titled_Gui.Modules.Visual
 
                     CircleLock(insideCircle, circleScreen, screenCenter, screenDistance, sensitivity);
 
-                    GameState.renderer.drawList.AddLine(screenCenter, circleScreen, circle2DColor);
-                    GameState.renderer.drawList.AddCircleFilled(circleScreen, 6f, circle2DColor);
+                    GameState.renderer.DrawList.AddLine(screenCenter, circleScreen, circle2DColor);
+                    GameState.renderer.DrawList.AddCircleFilled(circleScreen, 6f, circle2DColor);
 
-                    GameState.renderer.drawList.AddText(new(circleScreen.X - 50f, circleScreen.Y - 50f), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), TypesList[(int)lineup.LaunchType]);
+                    GameState.renderer.DrawList.AddText(new(circleScreen.X - 50f, circleScreen.Y - 50f), ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)), TypesList[(int)lineup.LaunchType]);
 
                     Vector2 position2D = Calculate.WorldToScreen(viewMatrix, lineup.Position);
                     if (position2D == new Vector2(-99, -99))
                         continue;
 
-                    GameState.renderer.drawList.AddText(
+                    GameState.renderer.DrawList.AddText(
                         new(position2D.X - 20f, position2D.Y - 20f),
                         ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f)),
                         lineup.Name

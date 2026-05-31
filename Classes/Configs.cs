@@ -67,7 +67,6 @@ namespace Titled_Gui.Classes
                         ["W"] = BoxESP.BoxFillGradientBottom.W,
                     },
                     ["ESP Flash Check"] = BoxESP.FlashCheck,
-                    ["Enable Distance Tracker"] = DistanceText.Enabled,
                     ["Outer Outline"] = BoxESP.OuterOutline,
                     ["Inner Outline Color"] = new JObject
                     {
@@ -106,23 +105,26 @@ namespace Titled_Gui.Classes
                     },
 
                 },
-                ["Colors"] = new JObject
+                ["Flags"] = new JObject
                 {
-                    ["RGB Enabled"] = Classes.Colors.RGB,
-                    ["Team Color"] = new JObject
+                    ["Name Display Enabled"] = NameDisplay.Enabled,
+                    ["Enable Distance Tracker"] = DistanceText.Enabled,
+                    ["Gun Display Enabled"] = GunDisplay.Enabled,
+                    ["Gun Display Color"] = new JObject
                     {
-                        ["X"] = Classes.Colors.TeamColor.X,
-                        ["Y"] = Classes.Colors.TeamColor.Y,
-                        ["Z"] = Classes.Colors.TeamColor.Z,
-                        ["W"] = Classes.Colors.TeamColor.W,
+                        ["X"] = GunDisplay.TextColor.X,
+                        ["Y"] = GunDisplay.TextColor.Y,
+                        ["Z"] = GunDisplay.TextColor.Z,
+                        ["W"] = GunDisplay.TextColor.W,
                     },
-                    ["Enemy Color"] = new JObject
+                    ["Ping Display Enabled"] = PingDisplay.Enabled,
+                    ["Ping Display Color"] = new JObject
                     {
-                        ["X"] = Classes.Colors.EnemyColor.X,
-                        ["Y"] = Classes.Colors.EnemyColor.Y,
-                        ["Z"] = Classes.Colors.EnemyColor.Z,
-                        ["W"] = Classes.Colors.EnemyColor.W,
-                    }
+                        ["X"] = PingDisplay.PingTextColor.X,
+                        ["Y"] = PingDisplay.PingTextColor.Y,
+                        ["Z"] = PingDisplay.PingTextColor.Z,
+                        ["W"] = PingDisplay.PingTextColor.W,
+                    },
                 },
                 ["Tracers"] = new JObject
                 {
@@ -130,7 +132,21 @@ namespace Titled_Gui.Classes
                     ["Tracers Thickness"] = Tracers.LineThickness,
                     ["Tracers Team Check"] = Tracers.TeamCheck,
                     ["Tracers Current Start"] = Tracers.CurrentStartPos,
-                    ["Tracers Current End"] = Tracers.CurrentEndPos
+                    ["Tracers Current End"] = Tracers.CurrentEndPos,
+                    ["Tracers Team Color"] = new JObject
+                    {
+                        ["X"] = Tracers.TeamColor.X,
+                        ["Y"] = Tracers.TeamColor.Y,
+                        ["Z"] = Tracers.TeamColor.Z,
+                        ["W"] = Tracers.TeamColor.W,
+                    },
+                    ["Tracers Enemy Color"] = new JObject
+                    {
+                        ["X"] = Tracers.EnemyColor.X,
+                        ["Y"] = Tracers.EnemyColor.Y,
+                        ["Z"] = Tracers.EnemyColor.Z,
+                        ["W"] = Tracers.EnemyColor.W,
+                    }
                 },
                 ["Bone ESP"] = new JObject
                 {
@@ -216,10 +232,6 @@ namespace Titled_Gui.Classes
                 {
                     ["FOV Changer Enabled"] = FovChanger.Enabled,
                     ["FOV Changer FOV"] = FovChanger.FOV,
-                },
-                ["Name Display"] = new JObject
-                {
-                    ["Name Display Enabled"] = NameDisplay.Enabled,
                 },
                 ["Armor Bar"] = new JObject
                 {
@@ -396,7 +408,6 @@ namespace Titled_Gui.Classes
                     configData["ESP"]?["ESP Gradient Bottom"]?["W"]?.ToObject<float>() ?? BoxESP.BoxFillGradientBottom.W
                 );
                 BoxESP.FlashCheck = configData["ESP"]?["ESP Flash Check"]?.ToObject<bool>() ?? BoxESP.FlashCheck;
-                DistanceText.Enabled = configData["ESP"]?["Enable Distance Tracker"]?.ToObject<bool>() ?? DistanceText.Enabled;
                 BoxESP.OuterOutline = configData["ESP"]?["Outer Outline"]?.ToObject<bool>() ?? BoxESP.OuterOutline;
                 BoxESP.InnerOutlineColor = new Vector4(
                     configData["ESP"]?["Inner Outline Color"]?["X"]?.ToObject<float>() ?? BoxESP.InnerOutlineColor.X,
@@ -430,28 +441,20 @@ namespace Titled_Gui.Classes
                 );
                 #endregion
 
-                #region Colors
-                Classes.Colors.RGB = configData["Colors"]?["RGB Enabled"]?.ToObject<bool>() ?? Classes.Colors.RGB;
-                Classes.Colors.TeamColor = new Vector4(
-                    configData["Colors"]?["Team Color"]?["X"]?.ToObject<float>() ?? Classes.Colors.TeamColor.X,
-                    configData["Colors"]?["Team Color"]?["Y"]?.ToObject<float>() ?? Classes.Colors.TeamColor.Y,
-                    configData["Colors"]?["Team Color"]?["Z"]?.ToObject<float>() ?? Classes.Colors.TeamColor.Z,
-                    configData["Colors"]?["Team Color"]?["W"]?.ToObject<float>() ?? Classes.Colors.TeamColor.W
-                );
-                Classes.Colors.EnemyColor = new Vector4(
-                    configData["Colors"]?["Enemy Color"]?["X"]?.ToObject<float>() ?? Classes.Colors.EnemyColor.X,
-                    configData["Colors"]?["Enemy Color"]?["Y"]?.ToObject<float>() ?? Classes.Colors.EnemyColor.Y,
-                    configData["Colors"]?["Enemy Color"]?["Z"]?.ToObject<float>() ?? Classes.Colors.EnemyColor.Z,
-                    configData["Colors"]?["Enemy Color"]?["W"]?.ToObject<float>() ?? Classes.Colors.EnemyColor.W
-                );
-                #endregion
-
                 #region Tracers
                 Tracers.EnableTracers = configData["Tracers"]?["Tracers Enabled"]?.ToObject<bool>() ?? Tracers.EnableTracers;
                 Tracers.LineThickness = configData["Tracers"]?["Tracers Thickness"]?.ToObject<float>() ?? Tracers.LineThickness;
                 Tracers.TeamCheck = configData["Tracers"]?["Tracers Team Check"]?.ToObject<bool>() ?? Tracers.TeamCheck;
                 Tracers.CurrentStartPos = configData["Tracers"]?["Tracers Current Start"]?.ToObject<int>() ?? Tracers.CurrentStartPos;
                 Tracers.CurrentEndPos = configData["Tracers"]?["Tracers Current End"]?.ToObject<int>() ?? Tracers.CurrentEndPos;
+                Tracers.TeamColor.X = configData["Tracers"]?["Tracers Team Color"]?["X"]?.ToObject<float>() ?? Tracers.TeamColor.X;
+                Tracers.TeamColor.Y = configData["Tracers"]?["Tracers Team Color"]?["Y"]?.ToObject<float>() ?? Tracers.TeamColor.Y;
+                Tracers.TeamColor.Z = configData["Tracers"]?["Tracers Team Color"]?["Z"]?.ToObject<float>() ?? Tracers.TeamColor.Z;
+                Tracers.TeamColor.W = configData["Tracers"]?["Tracers Team Color"]?["W"]?.ToObject<float>() ?? Tracers.TeamColor.W;
+                Tracers.EnemyColor.X = configData["Tracers"]?["Tracers Enemy Color"]?["X"]?.ToObject<float>() ?? Tracers.EnemyColor.X;
+                Tracers.EnemyColor.Y = configData["Tracers"]?["Tracers Enemy Color"]?["Y"]?.ToObject<float>() ?? Tracers.EnemyColor.Y;
+                Tracers.EnemyColor.Z = configData["Tracers"]?["Tracers Enemy Color"]?["Z"]?.ToObject<float>() ?? Tracers.EnemyColor.Z;
+                Tracers.EnemyColor.W = configData["Tracers"]?["Tracers Enemy Color"]?["W"]?.ToObject<float>() ?? Tracers.EnemyColor.W;
                 #endregion
 
                 #region Bone ESP
@@ -537,10 +540,6 @@ namespace Titled_Gui.Classes
                 FovChanger.FOV = configData["FOV Changer"]?["FOV Changer FOV"]?.ToObject<int>() ?? FovChanger.FOV;
                 #endregion
 
-                #region Name Display
-                NameDisplay.Enabled = configData["Name Display"]?["Name Display Enabled"]?.ToObject<bool>() ?? NameDisplay.Enabled;
-                #endregion
-
                 #region Armor Bar
                 ArmorBar.EnableArmorhBar = configData["Armor Bar"]?["Armor Bar Enabled"]?.ToObject<bool>() ?? ArmorBar.EnableArmorhBar;
                 ArmorBar.DrawOnSelf = configData["Armor Bar"]?["Armor Bar Draw On Self"]?.ToObject<bool>() ?? ArmorBar.DrawOnSelf;
@@ -587,8 +586,9 @@ namespace Titled_Gui.Classes
 
                 #region WorldESP
 
-                WorldESP.DrawText = configData["World ESP"]?["Draw Text"]?.ToObject<bool>() ?? WorldESP.DrawText;
-                WorldESP.DrawBoxes = configData["World ESP"]?["Draw Boxes"]?.ToObject<bool>() ?? WorldESP.DrawText;
+                WorldESP.DrawBoxes = configData["World ESP"]?["Draw Boxes"]?.ToObject<bool>() ?? WorldESP.DrawBoxes;
+                WorldESP.ChickenESP = configData["World ESP"]?["Chicken ESP Enabled"]?.ToObject<bool>() ?? WorldESP.ChickenESP;
+                WorldESP.MolotovBoundsESP = configData["World ESP"]?["Molotov ESP Enabled"]?.ToObject<bool>() ?? WorldESP.MolotovBoundsESP;
                 WorldESP.ChickenESP = configData["World ESP"]?["Chicken ESP Enabled"]?.ToObject<bool>() ?? WorldESP.DrawText;
                 WorldESP.HostageESP = configData["World ESP"]?["Hostage ESP Enabled"]?.ToObject<bool>() ?? WorldESP.HostageESP;
                 WorldESP.DroppedWeaponESP = configData["World ESP"]?["Dropped Weapon ESP Enabled"]?.ToObject<bool>() ?? WorldESP.DroppedWeaponESP;
@@ -619,16 +619,43 @@ namespace Titled_Gui.Classes
                     configData["World ESP"]?["Box Color"]?["W"]?.ToObject<float>() ?? WorldESP.BoxColor.W
                 );
                 WorldESP.molotovFillColor = new Vector4(
-                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["X"]?.ToObject<float>() ?? WorldESP.BoxColor.X,
-                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["Y"]?.ToObject<float>() ?? WorldESP.BoxColor.Y,
-                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["Z"]?.ToObject<float>() ?? WorldESP.BoxColor.Z,
-                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["W"]?.ToObject<float>() ?? WorldESP.BoxColor.W
+                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["X"]?.ToObject<float>() ?? WorldESP.molotovFillColor.X,
+                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["Y"]?.ToObject<float>() ?? WorldESP.molotovFillColor.Y,
+                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["Z"]?.ToObject<float>() ?? WorldESP.molotovFillColor.Z,
+                    configData["World ESP"]?["Molotov Bounds Filled Color"]?["W"]?.ToObject<float>() ?? WorldESP.molotovFillColor.W
                 );
                 WorldESP.molotovOutlineColor = new Vector4(
-                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["X"]?.ToObject<float>() ?? WorldESP.BoxColor.X,
-                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["Y"]?.ToObject<float>() ?? WorldESP.BoxColor.Y,
-                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["Z"]?.ToObject<float>() ?? WorldESP.BoxColor.Z,
-                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["W"]?.ToObject<float>() ?? WorldESP.BoxColor.W
+                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["X"]?.ToObject<float>() ?? WorldESP.molotovOutlineColor.X,
+                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["Y"]?.ToObject<float>() ?? WorldESP.molotovOutlineColor.Y,
+                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["Z"]?.ToObject<float>() ?? WorldESP.molotovOutlineColor.Z,
+                    configData["World ESP"]?["Molotov Bounds Outline Color"]?["W"]?.ToObject<float>() ?? WorldESP.molotovOutlineColor.W
+                );
+                #endregion
+                #region Flags
+                DistanceText.Enabled = (configData["Flags"] != null
+                    ? configData["Flags"]?["Enable Distance Tracker"]?.ToObject<bool>()
+                    : configData["ESP"]?["Enable Distance Tracker"]?.ToObject<bool>())
+                    ?? DistanceText.Enabled;
+
+                NameDisplay.Enabled = (configData["Flags"] != null
+                    ? configData["Flags"]?["Name Display Enabled"]?.ToObject<bool>()
+                    : configData["Name Display"]?["Name Display Enabled"]?.ToObject<bool>())
+                    ?? NameDisplay.Enabled;
+
+                GunDisplay.Enabled = configData["Flags"]?["Gun Display Enabled"]?.ToObject<bool>() ?? GunDisplay.Enabled;
+                GunDisplay.TextColor = new Vector4(
+                    configData["Flags"]?["Gun Display Color"]?["X"]?.ToObject<float>() ?? GunDisplay.TextColor.X,
+                    configData["Flags"]?["Gun Display Color"]?["Y"]?.ToObject<float>() ?? GunDisplay.TextColor.Y,
+                    configData["Flags"]?["Gun Display Color"]?["Z"]?.ToObject<float>() ?? GunDisplay.TextColor.Z,
+                    configData["Flags"]?["Gun Display Color"]?["W"]?.ToObject<float>() ?? GunDisplay.TextColor.W
+                );
+
+                PingDisplay.Enabled = configData["Flags"]?["Ping Display Enabled"]?.ToObject<bool>() ?? PingDisplay.Enabled;
+                PingDisplay.PingTextColor = new Vector4(
+                    configData["Flags"]?["Ping Display Color"]?["X"]?.ToObject<float>() ?? PingDisplay.PingTextColor.X,
+                    configData["Flags"]?["Ping Display Color"]?["Y"]?.ToObject<float>() ?? PingDisplay.PingTextColor.Y,
+                    configData["Flags"]?["Ping Display Color"]?["Z"]?.ToObject<float>() ?? PingDisplay.PingTextColor.Z,
+                    configData["Flags"]?["Ping Display Color"]?["W"]?.ToObject<float>() ?? PingDisplay.PingTextColor.W
                 );
                 #endregion
             }

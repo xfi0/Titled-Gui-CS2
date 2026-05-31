@@ -179,24 +179,21 @@ namespace Titled_Gui
             try
             {
                 this.VSync = EnableVsync;
+
                 ApplyStyles();
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] before ESP");
                 RenderESPOverlay();
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] before main window");
                 RenderMainWindow();
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] before watermark");
                 RenderWaterMark();
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] before bomb timer");
                 BombTimerOverlay.TimeOverlay();
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] before toggles");
+                //Library.UpdateNotifications(io.DeltaTime);
                 Toggles.LoopAllActions();
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] render end");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
         }
+
 
         public void RenderWaterMark()
         {

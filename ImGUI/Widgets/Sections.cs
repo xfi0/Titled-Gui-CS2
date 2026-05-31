@@ -1,6 +1,5 @@
 ﻿using ImGuiNET;
 using System.Numerics;
-using System.Reflection;
 using Titled_Gui;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
@@ -9,11 +8,8 @@ using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
 using static Titled_Gui.ImGUI.Widgets.ColorPickers;
 using static Titled_Gui.ImGUI.Widgets.Combos;
-using static Titled_Gui.ImGUI.Widgets.Misc;
 using static Titled_Gui.ImGUI.Widgets.Sliders;
 using static Titled_Gui.ImGUI.Widgets.Toggles;
-using Titled_Gui.Modules;
-using Titled_Gui.ImGUI.Widgets;
 
 internal class Sections
 {

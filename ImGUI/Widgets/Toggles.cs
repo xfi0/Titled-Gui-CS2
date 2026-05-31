@@ -1,5 +1,8 @@
 ﻿using ImGuiNET;
 using System.Numerics;
+using System.Reflection.Emit;
+using System.Windows.Forms.VisualStyles;
+using Titled_Gui.Classes;
 using ValveResourceFormat.ResourceTypes;
 using static Titled_Gui.ImGUI.Widgets.ColorPickers;
 using static Titled_Gui.ImGUI.Widgets.Misc;
@@ -12,19 +15,37 @@ namespace Titled_Gui.ImGUI.Widgets
         private static Vector4 KnobOffColor = new(0.15f, 0.15f, 0.15f, 1f);
         private static Vector4 KnobOnColor = new(0.2745f, 0.3176f, 0.4510f, 1.0f);
 
-        private static Dictionary<string, bool> OpenPopups = [];
-        private static Dictionary<string, bool> PreviousValues = [];
+        private static Dictionary<string, bool> _openPopups = [];
+        private static HashSet<string> _warnedLabels = new();
+        private static Dictionary<string, (int, int)> _actions = []; // lable,  (action, keybind)
+        private static Dictionary<string, int> _openRightClickOption = new();
+        private static Dictionary<string, Func<bool>> _getters = new();
+        private static Dictionary<string, Action<bool>> _setters = new();
+        private static Dictionary<string, bool> _toggleStates = new();
+
+        private static List<string> _toggleLabels = new() { "Toggle", "Hold" };
+
+        public static void RegisterToggle(string label, Func<bool> getter, Action<bool> setter)
+        {
+            _getters[label] = getter;
+            _setters[label] = setter;
+        }
+
         public static void RenderBoolSettingWith1ColorPicker(string label, ref bool value, ref Vector4 color1)
         {
-            ImGui.PushID(label);
+            if (!_toggleStates.ContainsKey(label))
+                _toggleStates[label] = value;
 
-            bool tmpVal = value;
+            ImGui.PushID(label);
             Vector4 tmpColor = color1;
 
+            bool tmpVal = _toggleStates[label];
+            RegisterToggle(label, () => _toggleStates[label], v => _toggleStates[label] = v);
             RenderRowRightAligned(label, () =>
             {
                 Vector2 rowStart = ImGui.GetCursorScreenPos();
-                Vector2 knobPosition = CreateKnob(label, ref tmpVal);
+                var (knobPosition, clicked) = CreateKnob(label, ref tmpVal);
+                RenderRightClickMenu(label);
 
                 float height = ImGui.GetFrameHeight();
                 float gap = 6f;
@@ -35,25 +56,53 @@ namespace Titled_Gui.ImGUI.Widgets
 
             });
 
-            if (!tmpColor.Equals(color1)) color1 = tmpColor;
-            value = tmpVal;
+            if (!tmpColor.Equals(color1)) 
+                color1 = tmpColor;
+
+            _toggleStates[label] = tmpVal;
+            value = _toggleStates[label];
 
             ImGui.PopID();
+        }
+
+        public static void RenderRightClickMenu(string label)
+        {
+            if (!_actions.ContainsKey(label))
+                _actions[label] = (0, 0);
+
+            if (!_openRightClickOption.ContainsKey(label))
+                _openRightClickOption[label] = 0;
+
+            if (ImGui.BeginPopup("##rightclick_" + label))
+            {
+                var keybind = _actions[label].Item2;
+                Renderer.RenderKeybindChooser("Keybind", ref keybind);
+
+                var action = _actions[label].Item1;
+                Widgets.Combos.RenderIntCombo("Action", ref action, _toggleLabels, _toggleLabels.Count);
+                _actions[label] = (action, keybind);
+                ImGui.EndPopup();
+            }
         }
 
         public static void RenderBoolSettingWith2ColorPickers(string label, ref bool value, ref Vector4 color1,
             ref Vector4 color2)
         {
-            ImGui.PushID(label);
+            if (!_toggleStates.ContainsKey(label))
+                _toggleStates[label] = value;
 
+            ImGui.PushID(label);
             var tmpColor1 = color1;
             var tmpColor2 = color2;
-            var tmpVal = value;
+            bool tmpVal = _toggleStates[label];
+
+            RegisterToggle(label, () => _toggleStates[label], v => _toggleStates[label] = v);
 
             RenderRowRightAligned(label, () =>
             {
                 Vector2 rowStart = ImGui.GetCursorScreenPos();
-                Vector2 knobPosition = CreateKnob(label, ref tmpVal);
+                var (knobPosition, clicked) = CreateKnob(label, ref tmpVal);
+                RenderRightClickMenu(label);
 
                 float height = ImGui.GetFrameHeight();
                 float gap = 32f;
@@ -80,7 +129,8 @@ namespace Titled_Gui.ImGUI.Widgets
 
             if (tmpVal != value)
             {
-                value = tmpVal;
+                _toggleStates[label] = tmpVal;
+                value = _toggleStates[label];
             }
 
             ImGui.PopID();
@@ -88,76 +138,59 @@ namespace Titled_Gui.ImGUI.Widgets
         public static void RenderBoolSetting(string label, ref bool value, Action? onChanged = null,
     float widgetWidth = 0f)
         {
-            bool tmpVal = value;
+            if (!_toggleStates.ContainsKey(label))
+                _toggleStates[label] = value;
+
+            RegisterToggle(label, () => _toggleStates[label], v => _toggleStates[label] = v);
+
+            bool tmpVal = _toggleStates[label];
             RenderRowRightAligned(label, () =>
             {
-                Vector2 knobPosition = CreateKnob(label, ref tmpVal);
+                var (knobPosition, clicked) = CreateKnob(label, ref tmpVal);
+                RenderRightClickMenu(label);
 
             }, widgetWidth);
 
             if (tmpVal != value)
             {
-                value = tmpVal;
+                _toggleStates[label] = tmpVal;
+                value = _toggleStates[label]; 
                 onChanged?.Invoke();
             }
         }
 
+
         public static void RenderBoolSettingWithWarning(string label, ref bool value, Action? onChanged = null,
             float widgetWidth = 0f)
         {
-            if (!OpenPopups.ContainsKey(label))
-                OpenPopups[label] = false;
+            if (!_toggleStates.ContainsKey(label))
+                _toggleStates[label] = value;
 
-            if (!PreviousValues.ContainsKey(label))
-                PreviousValues[label] = value;
+            if (!_openPopups.ContainsKey(label))
+                _openPopups[label] = false;
 
-            bool temp = value;
+            RegisterToggle(label, () => _toggleStates[label], v => _toggleStates[label] = v);
+            bool tmpVal = _toggleStates[label];
+            bool wasEnabled = _toggleStates[label];
 
             RenderRowRightAligned(label, () =>
             {
-                float height = ImGui.GetFrameHeight();
-                float width = height * 1.7f;
-                float radius = height / 2f - 2f;
-                float colWidth = ImGui.GetColumnWidth();
-                float spacing = ImGui.GetStyle().ItemSpacing.X;
-                float posX = ImGui.GetCursorPosX() + colWidth - width - spacing;
+                var (knobPosition, clicked) = CreateKnob(label, ref tmpVal);
+                RenderRightClickMenu(label);
 
-                ImGui.SetCursorPosX(posX);
-
-                Vector2 p = ImGui.GetCursorScreenPos();
-                var drawList = ImGui.GetWindowDrawList();
-                string strId = "##" + label;
-                ImGui.InvisibleButton(strId, new Vector2(width, height));
-
-                if (ImGui.IsItemClicked())
+                if (clicked && !wasEnabled && tmpVal && !_warnedLabels.Contains(label))
                 {
-                    temp = !temp;
-                    if (!PreviousValues[label] && temp)
-                        OpenPopups[label] = true;
+                    _openPopups[label] = true;
+                    _warnedLabels.Add(label);
                 }
-
-                float t = temp ? 1f : 0f;
-
-                drawList.AddRectFilled(p, new Vector2(p.X + width, p.Y + height),
-                    ImGui.ColorConvertFloat4ToU32(trackColor), height);
-
-                float knobX = p.X + radius + t * (width - radius * 2f) + (t == 0f ? 2f : -2f);
-                float knobY = p.Y + radius + 2f;
-
-                Vector4 knobColor = temp ? KnobOnColor : KnobOffColor;
-
-                drawList.AddCircleFilled(new Vector2(knobX, knobY), radius,
-                    ImGui.ColorConvertFloat4ToU32(knobColor), 36);
-                drawList.AddCircle(new Vector2(knobX, knobY), radius,
-                    ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
-
             }, widgetWidth);
 
             string popupId = "warning##" + label;
-            if (OpenPopups[label])
+            if (_openPopups[label])
                 ImGui.OpenPopup(popupId);
 
-            bool tempref = OpenPopups[label];
+
+            bool tempref = _openPopups[label];
             //ImGui.SetNextWindowSize(new Vector2(200, 200));
 
             if (ImGui.BeginPopupModal(popupId, ref tempref, ImGuiWindowFlags.AlwaysAutoResize))
@@ -167,23 +200,24 @@ namespace Titled_Gui.ImGUI.Widgets
 
                 if (ImGui.Button("OK", new Vector2(120, 0)))
                 {
-                    OpenPopups[label] = false;
+                    _openPopups[label] = false;
                     ImGui.CloseCurrentPopup();
                 }
 
                 ImGui.EndPopup();
             }
 
-            PreviousValues[label] = temp;
-
-            if (temp != value)
+            if (tmpVal != value)
             {
-                value = temp;
+                _toggleStates[label] = tmpVal;
+                value = _toggleStates[label];
                 onChanged?.Invoke();
             }
         }
-        private static Vector2 CreateKnob(string label, ref bool value)
+
+        private static (Vector2 pos, bool clicked) CreateKnob(string label, ref bool value)
         {
+            bool clicked = false;
             Vector2 rowStart = ImGui.GetCursorScreenPos();
             float rowWidth = ImGui.GetColumnWidth();
             float paddingRight = 7f;
@@ -196,8 +230,14 @@ namespace Titled_Gui.ImGUI.Widgets
             ImGui.SetCursorScreenPos(knobPos);
 
             ImGui.InvisibleButton("##" + label + "_toggle", new Vector2(width, height));
-            if (ImGui.IsItemClicked())
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+            {
+                clicked = true;
                 value = !value;
+            }
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+                ImGui.OpenPopup("##rightclick_" + label);
+
 
             float t = value ? 1f : 0f;
             drawList.AddRectFilled(knobPos, new Vector2(knobPos.X + width, knobPos.Y + height),
@@ -209,7 +249,29 @@ namespace Titled_Gui.ImGUI.Widgets
             drawList.AddCircle(new Vector2(knobX, knobY), radius,
                 ImGui.ColorConvertFloat4ToU32(new Vector4(0.08f, 0.08f, 0.08f, 0.3f)), 36, 1f);
 
-            return knobPos;
+            return (knobPos, clicked);
+        }
+
+        public static void LoopAllActions()
+        {
+            foreach (var (label, (actionType, keybind)) in _actions)
+            {
+                if (keybind == 0)
+                    continue;
+
+                if (!_getters.ContainsKey(label) || !_setters.ContainsKey(label)) 
+                    continue;
+
+                if (actionType == 0) // toggle
+                {
+                    if (User32.GetKeyPressed(keybind))
+                        _setters[label](!_getters[label]());
+                }
+                else // hold
+                {
+                    _setters[label](User32.GetKeyHeld(keybind));
+                }
+            }
         }
     }
 }

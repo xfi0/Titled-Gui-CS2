@@ -2,33 +2,15 @@
 using ImGuiNET;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Media;
 using System.Numerics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.Pkcs;
-using System.Text.Json.Nodes;
 using Titled_Gui.Classes;
 using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
-using Titled_Gui.Data.Game;
-using Titled_Gui.Data.Game.VRF;
 using Titled_Gui.ImGUI.Widgets;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
-using Titled_Gui.Notifications;
-using Vortice.Mathematics;
-using ZstdSharp.Unsafe;
-using static System.Collections.Specialized.BitVector32;
-using static Titled_Gui.Data.Game.MapParser.MapLoader;
-using static Titled_Gui.ImGUI.Widgets.ColorPickers;
-using static Titled_Gui.ImGUI.Widgets.Combos;
-using static Titled_Gui.ImGUI.Widgets.Sliders;
-using static Titled_Gui.ImGUI.Widgets.Toggles;
-using Colors = Titled_Gui.Classes.Colors;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace Titled_Gui
@@ -178,6 +160,12 @@ namespace Titled_Gui
             io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
             io.ConfigViewportsNoAutoMerge = true;
             io.ConfigViewportsNoTaskBarIcon = true;
+            // this makes cpu useage about 2x but makes the overlay like 2ms lat
+            //int disabled = 1;
+            //DwmSetWindowAttribute(Process.GetCurrentProcess().Handle, 3, ref disabled, sizeof(int));
+            //timeBeginPeriod(1);
+            //Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+
             return Task.CompletedTask;
         }
 
@@ -186,13 +174,14 @@ namespace Titled_Gui
             try
             {
                 this.VSync = EnableVsync;
-
+               
                 ApplyStyles();
                 RenderESPOverlay();
                 RenderMainWindow();
                 RenderWaterMark();
                 BombTimerOverlay.TimeOverlay();
                 //Library.UpdateNotifications(io.DeltaTime);
+                Toggles.LoopAllActions();
             }
             catch (Exception ex)
             {
@@ -736,21 +725,22 @@ namespace Titled_Gui
             if (!KeyBind.ContainsKey(label)) KeyBind[label] = false;
 
             if (ImGui.Button(KeyBind[label] ? "Press Any Key..." : (key == (int)Keys.None ? "None" : Enum.GetName(typeof(Keys), key) ?? key.ToString()), new Vector2(100, 0))) KeyBind[label] = true;
+            ImGui.SameLine();
+
+            if (ImGui.Button("X"))
+                key = (int)Keys.None;
 
             if (KeyBind[label])
             {
                 foreach (Keys k in Enum.GetValues<Keys>())
                 {
-                    if (k == Keys.None || k == Keys.Escape) continue;
+                    if (k == Keys.None) continue;
 
                     short state = User32.GetAsyncKeyState((int)k);
                     bool pressed = (state & 0x8000) != 0;
 
                     if (!pressed) continue;
-
-                    if (k == Keys.Escape) key = (int)Keys.None;
-
-                    else key = (int)k;
+                        key = (int)k;
 
                     KeyBind[label] = false;
                     break;

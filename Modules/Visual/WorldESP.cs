@@ -1,11 +1,9 @@
 ﻿using ImGuiNET;
 using System.Numerics;
-using Titled_Gui.Classes;
 using Titled_Gui.Classes.Math;
 using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
-using static ValveResourceFormat.ResourceTypes.EntityLump;
 
 namespace Titled_Gui.Modules.Visual
 {

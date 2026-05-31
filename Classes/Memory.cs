@@ -31,10 +31,11 @@ namespace Titled_Gui.Classes.Memory
         /// <returns></returns>
         public Process GetProcess(string procname)
         {
-            process = Process.GetProcessesByName(procname)[0];
+            process = Renderer.CS2ProcessId != 0 ? Process.GetProcessById(Renderer.CS2ProcessId) : Process.GetProcessesByName(procname)[0];
             handle = process.Handle;
             return process;
         }
+
         public IntPtr GetModuleBase(string modulename)
         {
             if (string.IsNullOrEmpty(modulename))
@@ -69,6 +70,7 @@ namespace Titled_Gui.Classes.Memory
 
             return IntPtr.Zero;
         }
+
         public T Read<T>(IntPtr addr) where T : struct
         {
             int size = Marshal.SizeOf<T>();

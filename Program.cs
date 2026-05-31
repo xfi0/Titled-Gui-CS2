@@ -27,6 +27,7 @@ try
         Console.WriteLine("CS2 Not Found...");
         Thread.Sleep(1000);
     }
+
     GameState.memory = new("cs2");
     GameState.client = GameState.memory.GetModuleBase("client.dll");
     await OffsetGetter.UpdateOffsetsAsync();
@@ -61,7 +62,7 @@ try
                      GameState.renderer.UpdateEntities(entities);
                      GameState.Entities = [.. entities];
                  }
-                 Thread.Sleep(1);
+                 Thread.Sleep(5);
              }
              catch (Exception e)
              {

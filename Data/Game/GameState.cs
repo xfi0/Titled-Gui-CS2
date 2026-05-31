@@ -13,7 +13,6 @@ namespace Titled_Gui.Data.Game
         public static IntPtr EntityList { get; set; } // entity list pointer
         public static IntPtr CameraServices { get; set; } // camera services pointer
         public static uint CurrentFov { get; set; } = 60; // default FOV
-        public static IntPtr currentPawn { get; set; } // get current pawn pointer
         public static List<Entity.Entity?> Entities { get; set; } = [];
         public static Entity.Entity LocalPlayer { get; set; } = new Entity.Entity(); // local player entity
         public static int crosshairEnt {  get; set; }

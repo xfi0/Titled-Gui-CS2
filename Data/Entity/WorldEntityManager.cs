@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Text;
 using Titled_Gui.Classes;
 using Titled_Gui.Classes.Math;
+using Titled_Gui.Classes.Memory;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Data.Entity
@@ -141,6 +142,9 @@ namespace Titled_Gui.Data.Entity
         {
             try
             {
+                if (GameState.EntityList == IntPtr.Zero)
+                    GameState.EntityList = GameState.memory.ReadPointer(GameState.client + Offsets.dwEntityList);
+
                 List<WorldEntity?> worldEntities = new List<WorldEntity?>();
                 float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
@@ -256,7 +260,6 @@ namespace Titled_Gui.Data.Entity
                 _lastSnapshot.AddRange(newSnapshot);
                 GameState.worldEntities = _lastSnapshot.ToList();
             }
-
         }
     }
 }

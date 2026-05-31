@@ -19,7 +19,7 @@ namespace Titled_Gui.Classes
             if (!EntityManager.UseOldVisibilityCheck)
                 return mapLoaderInstance.IsVisible(origin, target);
 
-            return GameState.memory.ReadBool(GameState.currentPawn, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
+            return GameState.memory.ReadBool(e.PawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
         }
 
         public static bool Visible(Vector3 origin, Vector3 target)

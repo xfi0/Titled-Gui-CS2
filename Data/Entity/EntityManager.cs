@@ -1,11 +1,8 @@
-using ImGuiNET;
 using System.Diagnostics;
 using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Game;
-using Titled_Gui.Data.Game.MapParser;
-using Titled_Gui.Data.Game.VRF;
 using static Titled_Gui.Data.Game.GameState;
 
 namespace Titled_Gui.Data.Entity
@@ -17,6 +14,11 @@ namespace Titled_Gui.Data.Entity
         {
             try
             {
+                if (memory == null)
+                {
+                    Console.WriteLine("Memory Instance was null.");
+                    return [];
+                }
                 float[] viewMatrix = memory.ReadMatrix(client + Offsets.dwViewMatrix);
 
                 List<Entity> entities = [];
@@ -30,23 +32,27 @@ namespace Titled_Gui.Data.Entity
 
                 if (listEntry == IntPtr.Zero)
                     return [];
-                
+
                 IntPtr localPlayerPawnAddress = memory.ReadPointer(client + Offsets.dwLocalPlayerPawn);
 
                 for (int i = 0; i < 64; i++) // loop through all entities
                 {
                     var controller = memory.ReadPointer(listEntry + 0x70 * (i & 0x1FF));
-                    if (controller == IntPtr.Zero) continue;
+                    if (controller == IntPtr.Zero)
+                        continue;
 
                     int pawnHandle = memory.ReadInt(controller, Offsets.m_hPlayerPawn);
-                    if (pawnHandle == 0) continue;
+                    if (pawnHandle <= 0)
+                        continue;
 
                     int pawn = memory.ReadInt(controller, Offsets.m_hPawn);
-                    if (pawn == 0) continue;
+                    if (pawn == 0)
+                        continue;
 
-                    currentPawn = GetPlayerPawn(EntityList, pawnHandle);
-                    if (currentPawn == IntPtr.Zero) continue;
-
+                    var currentPawn = GetPlayerPawn(EntityList, pawnHandle);
+                    if (currentPawn == IntPtr.Zero)
+                        continue;
+                    
 
                     if (currentPawn == localPlayerPawnAddress)
                     {
@@ -58,9 +64,10 @@ namespace Titled_Gui.Data.Entity
                     }
 
                     int lifeState = memory.ReadInt(currentPawn, Offsets.m_lifeState);
-                    if (lifeState != 256) continue;
+                    if (lifeState != 256)
+                        continue;
 
-                    Entity? entity = PopulateEntity(currentPawn, viewMatrix, pawn, pawnHandle, controller);
+                    Entity? entity = PopulateEntity(currentPawn, viewMatrix, pawn, pawnHandle, controller, EntityList);
 
                     if (entity != null && entity.Position.X != 0 && entity.Position.Y != 0)
                         entities?.Add(entity);
@@ -79,17 +86,14 @@ namespace Titled_Gui.Data.Entity
         {
             IntPtr listEntry2 = memory.ReadPointer(entitylist + (0x8 * ((pawn & 0x7FFF) >> 9)) + 0x10);
             if (listEntry2 == IntPtr.Zero)
-            {
-                Console.WriteLine("List Entry 2 Failed to Read.");
                 return IntPtr.Zero;
-            }
+            
 
             IntPtr pPawn = memory.ReadPointer(listEntry2 + 0x70 * (pawn & 0x1FF));
             if (pPawn == IntPtr.Zero)
-            {
-                Console.WriteLine("List Entry 2 Failed to Read.");
                 return IntPtr.Zero; // wait this is useless no? because im returinging what would already be.
-            }
+            
+
             return pPawn;
         }
 
@@ -108,7 +112,7 @@ namespace Titled_Gui.Data.Entity
             IntPtr weaponNameAddress = memory.ReadPointer(weaponData + 0x20);
             IntPtr collisionBase = localPlayerPawn + Offsets.m_Collision;
             IntPtr aimPunchServices = memory.ReadPointer(localPlayerPawn + Offsets.m_pAimPunchServices);
-            List <Types.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
+            List<Types.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
 
             string weaponName = "Invalid Weapon Name";
             if (weaponNameAddress != 0)
@@ -182,7 +186,7 @@ namespace Titled_Gui.Data.Entity
             return origin + view;
         }
 
-        private static Entity? PopulateEntity(IntPtr pawnAddress, float[] viewMatrix, IntPtr pawn, IntPtr playerPawn, IntPtr controller)
+        private static Entity? PopulateEntity(IntPtr pawnAddress, float[] viewMatrix, IntPtr pawn, IntPtr playerPawn, IntPtr controller, IntPtr entityList)
         {
             try
             {
@@ -194,7 +198,7 @@ namespace Titled_Gui.Data.Entity
 
                 IntPtr weaponServices = memory.ReadPointer(pawnAddress + Offsets.m_pWeaponServices);
                 uint hActiveWeapon = memory.ReadUInt(weaponServices + Offsets.m_hActiveWeapon);
-                IntPtr weaponData = GetPlayerPawn(EntityList, (nint)hActiveWeapon);
+                IntPtr weaponData = GetPlayerPawn(entityList, (nint)hActiveWeapon);
 
                 short weaponDefIndex = memory.ReadShort(weaponData + Offsets.m_AttributeManager + Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
                 IntPtr collisionBase = pawnAddress + Offsets.m_Collision;
@@ -272,7 +276,7 @@ namespace Titled_Gui.Data.Entity
 
                 if (UseOldVisibilityCheck)
                 {
-                    entity.Visible = memory.ReadBool(currentPawn, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
+                    entity.Visible = memory.ReadBool(pawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
                 }
 
                 entity.IsEnemy = entity.Team != LocalPlayer.Team;

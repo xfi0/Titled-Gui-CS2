@@ -55,7 +55,7 @@ namespace Titled_Gui.Modules.Visual
 
         private static void DrawHostageESP(WorldEntity worldEntity)
         {
-            if (worldEntity.Position2D == new Vector2(-99, -99))
+            if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
@@ -79,7 +79,7 @@ namespace Titled_Gui.Modules.Visual
 
         private static void DrawProjectileESP(WorldEntity worldEntity)
         {
-            if (worldEntity.Position2D == new Vector2(-99, -99))
+            if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
@@ -105,7 +105,7 @@ namespace Titled_Gui.Modules.Visual
 
         private static void DrawWeaponESP(WorldEntity worldEntity)
         {
-            if (worldEntity.Position2D == new Vector2(-99, -99))
+            if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
@@ -157,7 +157,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawMolotovBounds(WorldEntity worldEntity)
         {
-            if (worldEntity.Position2D == new Vector2(-99, -99))
+            if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
                 return;
 
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
@@ -166,7 +166,7 @@ namespace Titled_Gui.Modules.Visual
             const int pointsPerFire = 12;
 
             int firePointCount = GameState.memory.ReadInt(worldEntity.PawnAddress + Offsets.m_fireCount);
-            if (firePointCount <= 0) 
+            if (firePointCount <= 0 || firePointCount >= 128) 
                 return;
 
             List<Vector2> points = new();
@@ -183,8 +183,10 @@ namespace Titled_Gui.Modules.Visual
                         Vector3 world = firePoint + new Vector3(MathF.Cos(angle) * fireRadius, MathF.Sin(angle) * fireRadius, 0f);
                         Vector2 projected = MathUtils.WorldToScreen(viewMatrix, world);
 
-                        if (projected != new Vector2(-99, -99))
-                            points.Add(projected);
+                        if (projected == new Vector2(-99, -99))
+                            return;
+
+                        points.Add(projected);
                     }
                 }
             }

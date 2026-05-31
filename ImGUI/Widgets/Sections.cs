@@ -166,7 +166,7 @@ internal class Sections
         RenderFloatSlider("Particle Speed", ref Renderer.ParticleSpeed, 0, 10);
         RenderColorPicker("Particle Color", ref Renderer.ParticleColor);
         RenderColorPicker("Line Color", ref Renderer.LineColor);
-        Renderer.RenderKeybindChooser("Open Keybind", ref Renderer.OpenKey);
+        Renderer.RenderKeybindChooser("Open Keybind", ref Renderer.OpenKeyInt);
         RenderBoolSetting("Menu Sounds", ref Renderer.MenuSounds);
         RenderFloatSlider("Menu Sounds Volume", ref Renderer.MenuSoundsVolume, 0, 1);
     }),

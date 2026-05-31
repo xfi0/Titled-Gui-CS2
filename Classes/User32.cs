@@ -5,6 +5,8 @@ namespace Titled_Gui.Classes
 {
     internal class User32 // what is SYSLIB1054 pls help
     {
+        private static HashSet<int> _heldKeys = new();
+
         [StructLayout(LayoutKind.Sequential)]
         public struct INPUT
         {
@@ -97,6 +99,18 @@ namespace Titled_Gui.Classes
         public static bool GetKeyHeld(Keys key)
         {
             return ((ushort)GetAsyncKeyState((int)key) & 0x8000) != 0;
+        }
+        public static bool GetKeyHeld(int key)
+        {
+            return ((ushort)GetAsyncKeyState(key) & 0x8000) != 0;
+        }
+
+        public static bool GetKeyPressed(int key)
+        {
+            bool held = ((ushort)GetAsyncKeyState(key) & 0x8000) != 0;
+            if (held && _heldKeys.Add(key)) return true;
+            if (!held) _heldKeys.Remove(key);
+            return false;
         }
 
         public static bool IsWindowFocused(int processId)

@@ -86,7 +86,7 @@ namespace Titled_Gui
         public static ImFontPtr IconFont;
         public static ImFontPtr GunIconsFont;
 
-        public static ImGuiKey OpenKey = ImGuiKey.Insert;
+        public static int OpenKeyInt = 0x2D;
 
         public static Random Random = new();
         public static List<Vector2> Positions = [];
@@ -347,7 +347,7 @@ namespace Titled_Gui
 
         private void RenderMainWindow()
         {
-            if (ImGui.IsKeyPressed(OpenKey, false))
+            if (User32.GetKeyPressed(OpenKeyInt))
                 DrawWindow = !DrawWindow;
 
             BgDrawList = ImGui.GetBackgroundDrawList();

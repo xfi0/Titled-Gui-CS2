@@ -165,6 +165,7 @@ internal class Sections
         Renderer.RenderKeybindChooser("Open Keybind", ref Renderer.OpenKeyInt);
         RenderBoolSetting("Menu Sounds", ref Renderer.MenuSounds);
         RenderFloatSlider("Menu Sounds Volume", ref Renderer.MenuSoundsVolume, 0, 1);
+        RenderBoolSetting("Watermark", ref Renderer.EnableWatermark);
     }),
     new("Performance", 4, () =>
     {

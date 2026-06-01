@@ -18,7 +18,7 @@ namespace Titled_Gui
     public class Renderer : Overlay
     {
         public static bool DrawWindow = false;
-        public static bool EnableWaterMark = true;
+        public static bool EnableWatermark = true;
         public static bool IsTextFontNormalLoaded => !TextFontNormal.Equals(default(ImFontPtr));
         public static bool IsTextFont48Loaded => !TextFont48.Equals(default(ImFontPtr));
         public static bool IsTextFont60Loaded => !TextFont60.Equals(default(ImFontPtr));
@@ -53,6 +53,7 @@ namespace Titled_Gui
         public static Vector2 TabSize;
         public static Vector2 BaseParticlePos = new();
         public static Vector2 MainWindowSize = new(860, 550);
+        public static Vector2 WatermarkSize = new(210, 40);
 
         public static Vector4 AccentColor = new(0.102f, 0.102f, 0.102f, 1);
         public static Vector4 PrimaryColor = new(0.125f, 0.125f, 0.125f, 1);
@@ -170,6 +171,7 @@ namespace Titled_Gui
             //DwmSetWindowAttribute(Process.GetCurrentProcess().Handle, 3, ref disabled, sizeof(int));
             //timeBeginPeriod(1);
             //Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+            ApplyStyles();
 
             return Task.CompletedTask;
         }
@@ -180,7 +182,6 @@ namespace Titled_Gui
             {
                 this.VSync = EnableVsync;
 
-                ApplyStyles();
                 RenderESPOverlay();
                 RenderMainWindow();
                 RenderWaterMark();
@@ -197,16 +198,15 @@ namespace Titled_Gui
 
         public void RenderWaterMark()
         {
-            if (!EnableWaterMark && !IsIconFontLoaded)
+            if (!EnableWatermark && !IsIconFontLoaded)
                 return;
 
-            ImGui.PushFont(IconFont); // icon is just the old textfont big
-            ImGui.SetNextWindowSize(new(200, 80));
-            ImGui.SetNextWindowPos(new(ScreenSize.X / 2, 0));
+            ImGui.PushFont(TextFontNormal);
+            ImGui.SetNextWindowSize(WatermarkSize);
+            ImGui.SetNextWindowPos(new(ScreenSize.X - WatermarkSize.X, 0));
             ImGui.Begin("wm", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar);
             var drawList = ImGui.GetWindowDrawList();
-            Vector2 textPosition = ImGui.GetWindowPos() + new Vector2(20, 20);
-            drawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 20), ImGui.ColorConvertFloat4ToU32(new(0,0,0,1)), "Titled");
+            Vector2 textPosition = ImGui.GetWindowPos() + new Vector2(10, 10);
             TimeSinceLastUpdate += ImGui.GetIO().DeltaTime;
 
             if (TimeSinceLastUpdate >= FpsUpdateInterval)
@@ -215,15 +215,11 @@ namespace Titled_Gui
                 TimeSinceLastUpdate = 0.0f;
             }
 
-            drawList.AddText(new(textPosition.X, textPosition.Y + 20f), ImGui.ColorConvertFloat4ToU32(TextCol),
-                $"FPS: {Math.Round(LastFPS)}");
-            drawList.AddText(ImGui.GetWindowPos() + new Vector2(20, 20), ImGui.ColorConvertFloat4ToU32(new(1, 1, 1, 1)),
-                "Titled");
+            drawList.AddText(new(textPosition.X, textPosition.Y), ImGui.ColorConvertFloat4ToU32(new(1, 1, 1, 1)), $"Titled | FPS: {Math.Round(LastFPS)} | V-{Configs.Version} | {DateTime.Now.ToLocalTime().ToShortTimeString()}");
             ImGui.PopFont();
             ImGui.End();
 
         }
-
         private void RenderESPOverlay()
         {
             ImGui.SetNextWindowSize(ScreenSize);

@@ -63,10 +63,6 @@ namespace Titled_Gui.Data.Entity
                         renderer.UpdateLocalPlayer(localPlayer);
                     }
 
-                    int lifeState = memory.ReadInt(currentPawn, Offsets.m_lifeState);
-                    if (lifeState != 256)
-                        continue;
-
                     Entity? entity = PopulateEntity(currentPawn, viewMatrix, pawn, pawnHandle, controller, EntityList);
 
                     if (entity != null && entity.Position.X != 0 && entity.Position.Y != 0)

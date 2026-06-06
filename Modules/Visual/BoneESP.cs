@@ -155,7 +155,7 @@ namespace Titled_Gui.Modules.Visual
         {
             if (!EnableBoneESP || entity == null || entity.Bones == null ||
                 (TeamCheck && entity.Team == GameState.LocalPlayer.Team) ||
-                entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Bones == null || entity.Health == 0 ||
+                entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Bones == null || entity.Health <= 0 ||
                 (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) ||
                 entity.Position2D == new Vector2(-99, -99)) return;
 

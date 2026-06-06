@@ -58,7 +58,7 @@ namespace Titled_Gui.Modules.Visual
         private static float _baseFontSize = 24f;
         public static void Draw(Entity? e)
         {
-            if (!Enabled || e == null || e.Health == 0 || e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.CurrentWeaponName == null || e.Position2D == new Vector2(-99, -99)) return;
+            if (!Enabled || e == null || e.Health <= 0 || e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.CurrentWeaponName == null || e.Position2D == new Vector2(-99, -99)) return;
 
             string icon = GetIcon(e.CurrentWeaponName);
             var rect = BoxESP.GetBoxRect(e);

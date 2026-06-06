@@ -17,7 +17,7 @@ namespace Titled_Gui.Modules.Visual
             {
                 foreach (Entity? e in GameState.Entities)
                 {
-                    if (e == null || e.Bones == null || (!DrawOnTeam && e.Team == GameState.LocalPlayer.Team) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed)) 
+                    if (e == null || e.Bones == null || e.Health <= 0 || (!DrawOnTeam && e.Team == GameState.LocalPlayer.Team) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed)) 
                         continue;
 
                     Vector2 head = e.Bones[(int)BoneESP.BoneIds.Head].Position2D;

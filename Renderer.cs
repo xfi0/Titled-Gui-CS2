@@ -171,7 +171,8 @@ namespace Titled_Gui
             //DwmSetWindowAttribute(Process.GetCurrentProcess().Handle, 3, ref disabled, sizeof(int));
             //timeBeginPeriod(1);
             //Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
-            ApplyStyles();
+            var style = ImGui.GetStyle();
+            ApplyStyles(style);
 
             return Task.CompletedTask;
         }
@@ -185,6 +186,7 @@ namespace Titled_Gui
                 RenderESPOverlay();
                 RenderMainWindow();
                 RenderWaterMark();
+                SpectatorList.DrawMenu();
                 BombTimerOverlay.TimeOverlay();
                 //Library.UpdateNotifications(io.DeltaTime);
                 Toggles.LoopAllActions();
@@ -245,9 +247,8 @@ namespace Titled_Gui
             ImGui.End();
         }
 
-        private void ApplyStyles()
+        public static void ApplyStyles(ImGuiStylePtr style)
         {
-            ImGuiStylePtr style = ImGui.GetStyle();
             style.Alpha = WindowAlpha;
             style.DisabledAlpha = 0.8f;
             style.WindowPadding = new Vector2(0.0f, 0.0f);
@@ -524,6 +525,7 @@ namespace Titled_Gui
 
                             break;
                     }
+                    ImGui.PopStyleVar(2);
                 }
                 ImGui.EndChild();
 

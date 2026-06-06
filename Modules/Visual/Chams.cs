@@ -20,7 +20,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void Draw(Entity? entity)
         {
-            if (entity == null || BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed ||
+            if (entity == null || BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed || entity.Health <= 0 ||
                 !Enabled || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || TeamCheck && entity.Team == GameState.LocalPlayer.Team)
                 return;
 

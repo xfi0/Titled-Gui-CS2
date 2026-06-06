@@ -133,7 +133,8 @@ internal class Sections
     }),
     new("Other Visuals", 2, () =>
     {
-        RenderBoolSetting("Enable Bomb Timer", ref BombTimerOverlay.EnableTimeOverlay);
+        RenderBoolSetting("Bomb Timer", ref BombTimerOverlay.EnableTimeOverlay);
+        RenderBoolSetting("Spectator List", ref SpectatorList.Enabled);
         RenderBoolSettingWithWarning("Anti Flash", ref NoFlash.NoFlashEnable);
         RenderBoolSettingWithWarning("FOV Changer", ref FovChanger.Enabled);
         RenderBoolSettingWithWarning("Third Person", ref ThirdPerson.Enabled);

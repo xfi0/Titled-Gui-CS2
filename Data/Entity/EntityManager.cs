@@ -112,7 +112,7 @@ namespace Titled_Gui.Data.Entity
             IntPtr weaponNameAddress = memory.ReadPointer(weaponData + 0x20);
             IntPtr collisionBase = localPlayerPawn + Offsets.m_Collision;
             IntPtr aimPunchServices = memory.ReadPointer(localPlayerPawn + Offsets.m_pAimPunchServices);
-            List<Types.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
+            List<EntityTypes.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
 
             string weaponName = "Invalid Weapon Name";
             if (weaponNameAddress != 0)
@@ -137,7 +137,7 @@ namespace Titled_Gui.Data.Entity
                 View = memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset),
                 AimPunchAngle = memory.ReadVec(aimPunchServices + Offsets.m_predictableBaseAngle),
                 Position = memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
-                IsFlashed = memory.ReadFloat(localPlayerPawn, Offsets.m_flFlashBangTime) > 1.5,
+                IsFlashed = memory.ReadFloat(localPlayerPawn, Offsets.m_flFlashScreenshotAlpha) > 1.5,
                 Ping = memory.ReadInt(localPlayerPawn, Offsets.m_iPing),
                 Health = memory.ReadInt(localPlayerPawn, Offsets.m_iHealth),
                 Team = memory.ReadInt(localPlayerPawn + Offsets.m_iTeamNum),
@@ -202,7 +202,7 @@ namespace Titled_Gui.Data.Entity
 
                 short weaponDefIndex = memory.ReadShort(weaponData + Offsets.m_AttributeManager + Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
                 IntPtr collisionBase = pawnAddress + Offsets.m_Collision;
-                List<Types.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
+                List<EntityTypes.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
                 WorldEntityManager.WeaponNameMap.TryGetValue(weaponDefIndex, out string? weaponName);
                 var viewPos = Vector3.Add(memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin), memory.ReadVec(pawnAddress, Offsets.m_vecViewOffset));
                 //if (weaponNameAddress != 0)
@@ -250,7 +250,7 @@ namespace Titled_Gui.Data.Entity
                     CashSpentTotal = memory.ReadInt(GameState.MoneyServices, Offsets.m_iTotalCashSpent),
                     ShotsFired = memory.ReadInt(pawnAddress, Offsets.m_iShotsFired),
                     IsAttacking = memory.ReadBool(client, Offsets.attack),
-                    IsFlashed = memory.ReadFloat(pawnAddress, Offsets.m_flFlashBangTime) > 1.5,
+                    FlashDuration = memory.ReadFloat(pawnAddress, Offsets.m_flFlashScreenshotAlpha),
                     Ammo = memory.ReadInt(pawnAddress, Offsets.m_iAmmo),
                     EyeDirection = memory.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
                     Ping = (int)memory.ReadUInt(controller, Offsets.m_iPing),
@@ -268,9 +268,10 @@ namespace Titled_Gui.Data.Entity
                     PlayerPawn = playerPawn,
                     Controller = controller,
                 };
+
+                entity.IsFlashed = entity.FlashDuration > 0.4f;
                 entity.EyePosition = GetEyePosition(entity);
                 entity.HitBoxes = Calculate.ReadHitboxes(entity, viewMatrix);
-
                 if (entity.Position2D != new Vector2(-99, -99) && !UseOldVisibilityCheck)
                     entity.Visible = VisibilityCheck.IsEntityVisible(entity);
 

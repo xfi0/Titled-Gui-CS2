@@ -19,13 +19,10 @@ namespace Titled_Gui.Modules.Visual
                 return;
 
             var rect = BoxESP.GetBoxRect(e ?? GameState.LocalPlayer);
-
             if (rect == null)
                 return;
 
-            var (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle) = rect.Value;
-
-            Vector2 textPos = new(topLeft.X - 12, topLeft.Y);
+            Vector2 textPos = new(rect.TopLeft.X - 12, rect.TopLeft.Y);
 
             string name = (e?.Ping.ToString() ?? "Unknown").Split('\0')[0].Replace("?", "").Replace("\0", "");
             renderer.DrawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(PingTextColor), name);

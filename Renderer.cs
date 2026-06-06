@@ -595,7 +595,7 @@ namespace Titled_Gui
                 foreach (var entity in snapshot)
                 {
                     if (entity == null)
-                    continue;
+                        continue;
 
                     Modules.Visual.BoneESP.DrawBoneLines(entity, this);
                     NameDisplay.DrawName(entity, this);
@@ -606,16 +606,16 @@ namespace Titled_Gui
                     Titled_Gui.Modules.Visual.DistanceText.DrawDistance(entity);
                     Tracers.DrawTracers(entity, this);
 
-                        var rect = BoxESP.GetBoxRect(entity);
-                        if (rect == null)
+                    var rect = BoxESP.GetBoxRect(entity);
+                    if (rect == null)
                         continue;
 
-                    var (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle) = rect.Value;
-                    Vector2 barTopLeft = new(topLeft.X - HealthBar.HealthBarWidth - 2, topLeft.Y);
-                    float height = bottomRight.Y - topLeft.Y;
+                    Vector2 barTopLeft = new(rect.TopLeft.X - HealthBar.HealthBarWidth - 2, rect.TopLeft.Y);
+                    float height = rect.BottomRight.Y - rect.TopLeft.Y;
 
                     HealthBar.DrawHealthBar(entity, entity.Health, 100, barTopLeft, height);
                     ArmorBar.DrawArmorBar(entity, this, entity.Armor, 100);
+                    Flags.DrawFlags(entity);
                 }
 
                 if (GernadeLineup.Enabled)
@@ -695,28 +695,20 @@ namespace Titled_Gui
             if (pressed)
             {
                 _selectedTab = tabIndex;
-                if (MenuSounds)
-                    Classes.PlaySound.PlaySoundFileEmbedded("Creamy.wav", "ClickSounds.", MenuSoundsVolume);
+                PlayTabClickSound();
             }
 
             ImGui.PopFont();
             ImGui.PopStyleVar(); // restore spacing
         }
 
-        //private static void RenderIntCombo(string label, ref int current, string[] items, int itemCount, float widgetWidth = 160f)
-        //{
-        //    int temp = current;
+        public static void PlayTabClickSound()
+        {
+            if (!MenuSounds)
+                return;
 
-        //    RenderRowRightAligned(label, () =>
-        //    {
-        //        ImGui.Combo("##" + label, ref temp, items, items.Length);
-        //    }, widgetWidth);
-
-        //    if (temp != current)
-        //    {
-        //        current = temp;
-        //    }
-        //}
+            Classes.PlaySound.PlaySoundFileEmbedded("Creamy.wav", "ClickSounds.", MenuSoundsVolume);
+        }
 
         public static void RenderKeybindChooser(string label, ref int key)
         {

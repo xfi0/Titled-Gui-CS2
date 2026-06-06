@@ -141,5 +141,18 @@ namespace Titled_Gui.Classes
 
             SendInput((uint)Inputs.Length, Inputs, Marshal.SizeOf(typeof(INPUT)));
         }
+
+        public static void MouseMove(int dx, int dy)
+        {
+            var inputs = new INPUT[1];
+            inputs[0].type = INPUT_MOUSE;
+            inputs[0].U.mi = new MOUSEINPUT
+            {
+                dx = dx,
+                dy = dy,
+                dwFlags = MOUSEEVENTF_MOVE
+            };
+            SendInput(1, inputs, Marshal.SizeOf(typeof(INPUT)));
+        }
     }
 }

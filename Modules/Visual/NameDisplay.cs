@@ -21,16 +21,14 @@ namespace Titled_Gui.Modules.Visual
                 return;
 
             var rect = BoxESP.GetBoxRect(e);
-
             if (rect == null)
                 return;
 
-            var (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle) = rect.Value;
             float offsetY = 20f;
             string name = (e?.Name ?? "").Split('\0')[0].Replace("?", "").Replace("\0", "");
 
             Vector2 textSize = ImGui.CalcTextSize(name);
-            Vector2 textPos = new(bottomMiddle.X - (textSize.X / 2), topRight.Y - offsetY);
+            Vector2 textPos = new(rect.BottomMiddle.X - (textSize.X / 2), rect.TopRight.Y - offsetY);
 
             renderer.DrawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(NameTextColor), name);
         }

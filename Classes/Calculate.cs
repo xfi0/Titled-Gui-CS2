@@ -3,7 +3,7 @@ using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Modules.Visual.BoneESP;
-using Bone = Titled_Gui.Data.Entity.Types.Bone;
+using Bone = Titled_Gui.Data.Entity.EntityTypes.Bone;
 using Entity = Titled_Gui.Data.Entity.Entity;
 
 namespace Titled_Gui.Classes
@@ -53,9 +53,9 @@ namespace Titled_Gui.Classes
             return bones;
         }
 
-        public static List<Types.Hitbox> ReadHitboxes(Entity entity, float[] viewMatrix)
+        public static List<EntityTypes.Hitbox> ReadHitboxes(Entity entity, float[] viewMatrix)
         {
-            List<Types.Hitbox> hitboxes = new();
+            List<EntityTypes.Hitbox> hitboxes = new();
 
             IntPtr pCModel = GameState.memory.ReadPointer(entity.GameSceneNode + Offsets.m_modelState + 0xC0);
             if (pCModel == IntPtr.Zero)
@@ -96,7 +96,7 @@ namespace Titled_Gui.Classes
                 if (name.Contains("neck") || name == "spine_3" || name == "spine_2")
                     continue;
 
-                int boneID = Titled_Gui.Data.Entity.Types.Hitbox.HitboxToBone(i);
+                int boneID = Titled_Gui.Data.Entity.EntityTypes.Hitbox.HitboxToBone(i);
                 if (boneID < 0 || entity.Bones == null || boneID >= entity.Bones.Count)
                     continue;
 
@@ -113,7 +113,7 @@ namespace Titled_Gui.Classes
                 if (min2D == new Vector2(-99, -99) || max2D == new Vector2(-99, -99))
                     continue;
 
-                Types.Hitbox hitbox = new Types.Hitbox
+                EntityTypes.Hitbox hitbox = new EntityTypes.Hitbox
                 {
                     Name = name,
                     MinBounds = min,

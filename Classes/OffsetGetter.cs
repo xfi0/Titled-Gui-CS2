@@ -73,6 +73,7 @@ namespace Titled_Gui.Classes
             { "m_vOldOrigin", new() { new Offset("m_vOldOrigin") } },
             { "m_iTeamNum", new() { new Offset("m_iTeamNum") } },
             { "m_hPlayerPawn", new() { new Offset("m_hPlayerPawn") } },
+            { "m_flFlashScreenshotAlpha", new() { new Offset("m_flFlashScreenshotAlpha"), new Offset("m_flFlashDuration") } },
             { "m_flFlashBangTime", new() { new Offset("m_flFlashBangTime"), new Offset("m_flFlashDuration") } },
             { "m_modelState", new() { new Offset("m_modelState") } },
             { "m_pGameSceneNode", new() { new Offset("m_pGameSceneNode") } },

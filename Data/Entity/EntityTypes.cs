@@ -3,7 +3,7 @@ using Titled_Gui.Modules.Visual;
 
 namespace Titled_Gui.Data.Entity
 {
-    public class Types
+    public class EntityTypes
     {
         public class Bone
         {

@@ -5,7 +5,7 @@ using System.Text;
 using Titled_Gui.Classes;
 using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Entity;
-using static Titled_Gui.Data.Entity.Types;
+using static Titled_Gui.Data.Entity.EntityTypes;
 
 namespace Titled_Gui.Data.Game.C4
 {

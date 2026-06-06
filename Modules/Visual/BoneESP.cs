@@ -165,7 +165,7 @@ namespace Titled_Gui.Modules.Visual
 
             uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb() : VisibleBoneColor);
 
-            uint GetBoneColor(Types.Bone bone) =>
+            uint GetBoneColor(EntityTypes.Bone bone) =>
                 (!visibilityCheck || bone.IsVisible)
                     ? boneColor
                     : ImGui.ColorConvertFloat4ToU32(OccludedBoneColor);
@@ -176,8 +176,8 @@ namespace Titled_Gui.Modules.Visual
                 if (a >= entity.Bones.Count || b >= entity.Bones.Count)
                     continue;
 
-                Types.Bone boneA = entity.Bones[a];
-                Types.Bone boneB = entity.Bones[b];
+                EntityTypes.Bone boneA = entity.Bones[a];
+                EntityTypes.Bone boneB = entity.Bones[b];
                 Vector2 boneAPosition2D = boneA.Position2D;
                 Vector2 boneBPosition2D = boneB.Position2D;
                 if (boneBPosition2D == new Vector2(-99, -99) || boneAPosition2D == new Vector2(-99, -99))

@@ -136,7 +136,7 @@ namespace Titled_Gui.Modules.Rage
             remainder.X = dx - ix;
             remainder.Y = dy - iy;
 
-            MoveMouse.MouseMove(ix, iy);
+            User32.MouseMove(ix, iy);
         }
         public static void DrawCircle(int size, Vector4 circleColor)
         {

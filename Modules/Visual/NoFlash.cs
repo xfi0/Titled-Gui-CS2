@@ -18,6 +18,7 @@ namespace Titled_Gui.Modules.Visual
         protected override void FrameAction()
         {
             RemoveFlash();
+            Thread.Sleep(25);
         }
     }
 }

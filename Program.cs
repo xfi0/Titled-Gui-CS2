@@ -62,7 +62,7 @@ try
                      GameState.renderer.UpdateEntities(entities);
                      GameState.Entities = [.. entities];
                  }
-                 Thread.Sleep(5);
+                 Thread.Sleep(1);
              }
              catch (Exception e)
              {

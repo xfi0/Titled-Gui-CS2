@@ -5,6 +5,7 @@ using Titled_Gui.Classes.Math;
 using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Menu;
 using static ValveResourceFormat.ResourceTypes.EntityLump;
 using Entity = Titled_Gui.Data.Entity.Entity;
 
@@ -679,8 +680,7 @@ namespace Titled_Gui.Modules.Visual
             );
         }
 
-        public static (Vector2 TopLeft, Vector2 BottomRight, Vector2 TopRight, Vector2 BottomLeft, Vector2 BottomMiddle)
-            ? GetBoxRect(Entity? entity)
+        public static Types.BoxRect? GetBoxRect(Entity? entity)
         {
             if (entity == null || entity.Position2D == Vector2.Zero || entity.ViewPosition2D == Vector2.Zero)
                 return null;
@@ -700,9 +700,6 @@ namespace Titled_Gui.Modules.Visual
 
             float topY = top2D.Y;
             float bottomY = bottom2D.Y;
-            float centerY = (topY + bottomY) / 2f;
-            Vector2 rectTop = new(centerX - halfWidth, topY);
-            Vector2 rectBottom = new(centerX + halfWidth, bottomY);
 
             Vector2 topLeft = new(centerX - halfWidth, topY);
             Vector2 topRight = new(centerX + halfWidth, topY);
@@ -710,7 +707,7 @@ namespace Titled_Gui.Modules.Visual
             Vector2 bottomRight = new(centerX + halfWidth, bottomY);
             Vector2 bottomMiddle = new(centerX, bottomY);
 
-            return (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle);
+            return new (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle);
         }
     }
 }

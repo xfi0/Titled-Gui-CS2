@@ -27,17 +27,16 @@ namespace Titled_Gui.Modules.Visual
             if (rect == null)
                 return;
 
-            var (topLeft, bottomRight, topRight, bottomLeft, bottomMiddle) = rect.Value;
-            Vector2 barTopRight = new(topRight.X - HealthBar.HealthBarWidth + 8, topRight.Y);
-            float height = bottomRight.Y - topLeft.Y;
+            Vector2 barTopRight = new(rect.TopRight.X - HealthBar.HealthBarWidth + 8, rect.TopRight.Y);
+            float height = rect.BottomRight.Y - rect.TopLeft.Y;
 
             float healthPercentage = Math.Clamp(armor / maxArmor, 0f, 1f); // like percentage of box to be filled
             float filledHeight = height * healthPercentage;
 
-            renderer.DrawList.AddRectFilled(topRight, topRight + new Vector2(ArmorBarWidth, height),
+            renderer.DrawList.AddRectFilled(rect.TopRight, rect.TopRight + new Vector2(ArmorBarWidth, height),
                 ImGui.ColorConvertFloat4ToU32(_backgroundColor), Rounding);
 
-            Vector2 filledTop = topRight + new Vector2(0, height - filledHeight);
+            Vector2 filledTop = rect.TopRight + new Vector2(0, height - filledHeight);
             ArmorColor = Colors.RGB ? Colors.Rgb() : new(0.1f, 0f, 1f, 1f);
 
             renderer.DrawList.AddRectFilled(filledTop, filledTop + new Vector2(ArmorBarWidth, filledHeight),

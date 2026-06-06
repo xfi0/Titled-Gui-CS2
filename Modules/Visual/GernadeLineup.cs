@@ -143,7 +143,7 @@ namespace Titled_Gui.Modules.Visual
             remainder.X = dx - ix;
             remainder.Y = dy - iy;
 
-            MoveMouse.MouseMove(ix, iy);
+            User32.MouseMove(ix, iy);
         }
 
         public static void SaveLineup(string name, Types.GernadeLaunchType launchType)

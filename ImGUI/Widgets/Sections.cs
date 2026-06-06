@@ -105,6 +105,8 @@ internal class Sections
     }),
     new("Flags", 2, () =>
     {
+        RenderBoolSetting("Scoped", ref Flags.ScopedEnabled);
+        RenderBoolSetting("Flashed", ref Flags.FlashEnabled);
         RenderBoolSetting("Show Distance Text", ref DistanceText.Enabled);
         RenderBoolSetting("Show Name", ref NameDisplay.Enabled);
         RenderBoolSettingWith1ColorPicker("Gun Icon", ref GunDisplay.Enabled, ref GunDisplay.TextColor);

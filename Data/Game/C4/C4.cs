@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
-using static Titled_Gui.Data.Entity.Types;
+using static Titled_Gui.Data.Entity.EntityTypes;
 
 namespace Titled_Gui.Data.Game.C4
 {

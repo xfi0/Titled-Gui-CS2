@@ -2,6 +2,7 @@
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Game.MapParser;
+using Titled_Gui.Modules.Visual;
 
 namespace Titled_Gui.Classes
 {
@@ -15,10 +16,10 @@ namespace Titled_Gui.Classes
                 return false;
 
             Vector3 origin = GameState.LocalPlayer.EyePosition;
-            Vector3 target = e.Bones[2].Position; // head
+            Vector3 target = e.Bones[(int)BoneESP.BoneIds.Head].Position; // head
             if (!EntityManager.UseOldVisibilityCheck)
                 return mapLoaderInstance.IsVisible(origin, target);
-
+            
             return GameState.memory.ReadBool(e.PawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
         }
 

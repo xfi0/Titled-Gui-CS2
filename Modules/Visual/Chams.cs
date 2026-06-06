@@ -24,7 +24,7 @@ namespace Titled_Gui.Modules.Visual
                 !Enabled || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || TeamCheck && entity.Team == GameState.LocalPlayer.Team)
                 return;
 
-            foreach (Types.Hitbox? hitbox in entity.HitBoxes)
+            foreach (EntityTypes.Hitbox? hitbox in entity.HitBoxes)
             {
                 if (hitbox == null || hitbox.Bone == null || hitbox.BonePosition2D == new Vector2(-99, -99))
                     continue;

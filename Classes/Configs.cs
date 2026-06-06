@@ -202,7 +202,6 @@ namespace Titled_Gui.Classes
                     ["Trigger Bot Max Delay"] = TriggerBot.MaxDelay,
                     ["Trigger Bot Min Delay"] = TriggerBot.MinDelay,
                     ["Trigger Bot Shoot At Team"] = TriggerBot.TeamCheck,
-                    ["Trigger Bot Require Keybind"] = TriggerBot.RequireKeybind,
                     ["Trigger Bot Key"] = TriggerBot.TriggerKey
                 },
                 ["Bhop"] = new JObject
@@ -501,7 +500,6 @@ namespace Titled_Gui.Classes
                 TriggerBot.MaxDelay = configData["Trigger Bot"]?["Trigger Bot Max Delay"]?.ToObject<int>() ?? TriggerBot.MaxDelay;
                 TriggerBot.MinDelay = configData["Trigger Bot"]?["Trigger Bot Min Delay"]?.ToObject<int>() ?? TriggerBot.MinDelay;
                 TriggerBot.TeamCheck = configData["Trigger Bot"]?["Trigger Bot Shoot At Team"]?.ToObject<bool>() ?? TriggerBot.TeamCheck;
-                TriggerBot.RequireKeybind = configData["Trigger Bot"]?["Trigger Bot Require Keybind"]?.ToObject<bool>() ?? TriggerBot.RequireKeybind;
                 TriggerBot.TriggerKey = configData["Trigger Bot"]?["Trigger Bot Key"]?.ToObject<int>() ?? TriggerBot.TriggerKey;
                 #endregion
 

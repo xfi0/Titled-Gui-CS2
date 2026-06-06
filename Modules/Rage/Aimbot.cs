@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using ClickableTransparentOverlay.Win32;
+using ImGuiNET;
 using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
@@ -38,8 +39,8 @@ namespace Titled_Gui.Modules.Rage
             try
             {
                 if (!AimbotEnable || Entities.Count == 0 || GameState.LocalPlayer.Health == 0 || (ScopedOnly && !GameState.LocalPlayer.IsScoped) || (FlashCheck && GameState.LocalPlayer.IsFlashed)) { RandomChosen = false; return; }
-                
-                if ((User32.GetAsyncKeyState(AimbotKey) & 0x8000) != 0)
+
+                if (AimbotKey == 0 || (User32.GetAsyncKeyState(AimbotKey) & 0x8000) != 0) // 0 == none
                 {
                     target = GetTarget();
 

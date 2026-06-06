@@ -48,7 +48,7 @@ namespace Titled_Gui.Modules.Visual
         public static void DrawBoxESP(Entity? entity)
         {
             if (!EnableESP || entity == null || (TeamCheck && entity.Team == GameState.LocalPlayer.Team) ||
-                entity.PawnAddress == GameState.LocalPlayer.PawnAddress ||
+                entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Health <= 0 ||
                 (FlashCheck && GameState.LocalPlayer.IsFlashed) || entity?.Bones?.Count < 0 ||
                 entity?.Bones == null || entity.Position2D == new Vector2(-99, -99)) return;
 

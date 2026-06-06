@@ -78,7 +78,6 @@ internal class Sections
         Renderer.RenderKeybindChooser("Trigger Bot Keybind", ref TriggerBot.TriggerKey);
         RenderIntSlider("Max Delay", ref TriggerBot.MaxDelay, 0, 1000, "%d");
         RenderIntSlider("Min Delay", ref TriggerBot.MinDelay, 0, 1000, "%d");
-        RenderBoolSetting("Require Keybind", ref TriggerBot.RequireKeybind);
     }),
 
     new("Box ESP", 2, () =>

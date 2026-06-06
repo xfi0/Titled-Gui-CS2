@@ -1,12 +1,11 @@
 ﻿using System.Numerics;
-using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Modules.Visual.BoneESP;
 using Bone = Titled_Gui.Data.Entity.EntityTypes.Bone;
 using Entity = Titled_Gui.Data.Entity.Entity;
 
-namespace Titled_Gui.Classes
+namespace Titled_Gui.Classes.Math
 {
     public static class Calculate
     {

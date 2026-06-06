@@ -11,7 +11,7 @@ namespace Titled_Gui.Classes
     internal class Configs : Classes.ThreadService
     {
         public static string MenuName = "Titled";
-        public static string Version = "2.1";
+        public static string Version = "2.2";
         public static string Author = "https://github.com/xfi0";
         public static string Link = "https://github.com/xfi0/Titled-Gui-CS2";
         public static string titledDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Titled", "CS2", "External");
@@ -110,6 +110,8 @@ namespace Titled_Gui.Classes
                     ["Name Display Enabled"] = NameDisplay.Enabled,
                     ["Enable Distance Tracker"] = DistanceText.Enabled,
                     ["Gun Display Enabled"] = GunDisplay.Enabled,
+                    ["Scoped Enabled"] = Flags.ScopedEnabled,
+                    ["Flash Enabled"] = Flags.FlashEnabled,
                     ["Gun Display Color"] = new JObject
                     {
                         ["X"] = GunDisplay.TextColor.X,
@@ -277,9 +279,9 @@ namespace Titled_Gui.Classes
                         ["W"] = Radar.TeamPointColor.W
                     }
                 },
-                ["Spectator Count Overlay"] = new JObject
+                ["Spectator List"] = new JObject
                 {
-                    //["Spectator Count Overlay Enabled"] = SpectatorCountOverlay.en
+                    ["Spectator List Enabled"] = SpectatorList.Enabled
                 },
                 ["World ESP"] = new JObject()
                 {
@@ -375,13 +377,6 @@ namespace Titled_Gui.Classes
                     Console.WriteLine($"Error loading config: {ex.Message}");
                     return;
                 }
-
-                #region MISC
-                MenuName = configData["0"]?["Name"]?.ToString() ?? MenuName;
-                Version = configData["0"]?["Version"]?.ToString() ?? Version;
-                Author = configData["0"]?["Author"]?.ToString() ?? Author;
-                Link = configData["0"]?["Link"]?.ToString() ?? Link;
-                #endregion
 
                 #region Shape ESP
                 BoxESP.EnableESP = configData["ESP"]?["ESP Enabled"]?.ToObject<bool>() ?? BoxESP.EnableESP;
@@ -580,8 +575,8 @@ namespace Titled_Gui.Classes
                 );
                 #endregion
 
-                #region Spectator Count Overlay
-                //SpectatorCountOverlay.Enabled = configData["Spectator Count Overlay"]?["Spectator Count Overlay Enabled"]?.ToObject<bool>() ?? SpectatorCountOverlay.Enabled;
+                #region Spectator List
+                SpectatorList.Enabled = configData["Spectator List"]?["Spectator List Enabled"]?.ToObject<bool>() ?? SpectatorList.Enabled;
                 #endregion
 
                 #region WorldESP
@@ -657,6 +652,9 @@ namespace Titled_Gui.Classes
                     configData["Flags"]?["Ping Display Color"]?["Z"]?.ToObject<float>() ?? PingDisplay.PingTextColor.Z,
                     configData["Flags"]?["Ping Display Color"]?["W"]?.ToObject<float>() ?? PingDisplay.PingTextColor.W
                 );
+                Flags.FlashEnabled = configData["Flags"]?["Flash Enabled"]?.ToObject<bool>() ?? Flags.FlashEnabled;
+                Flags.ScopedEnabled = configData["Flags"]?["Scoped Enabled"]?.ToObject<bool>() ?? Flags.ScopedEnabled;
+
                 #endregion
             }
             catch (Exception e)

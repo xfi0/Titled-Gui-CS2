@@ -14,7 +14,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void TimeOverlay() // TODO diplay more info
         {
-            if (!EnableTimeOverlay) return; // if false dont draw
+            if (!EnableTimeOverlay) return;
 
             try
             {
@@ -28,14 +28,14 @@ namespace Titled_Gui.Modules.Visual
                 style.Colors[(int)ImGuiCol.Border] = new Vector4(0.15f, 0.15f, 0.16f, 1);
                 style.Colors[(int)ImGuiCol.Button] = new Vector4(0.18f, 0.18f, 0.19f, 1);
                 style.Colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.22f, 0.22f, 0.23f, 1);
-                style.Colors[(int)ImGuiCol.ButtonActive] = AccentColor;
-                style.Colors[(int)ImGuiCol.Header] = new Vector4(AccentColor.X, AccentColor.Y, AccentColor.Z, 0.4f);
+                style.Colors[(int)ImGuiCol.ButtonActive] = Renderer.MenuColors.SecondaryColor;
+                style.Colors[(int)ImGuiCol.Header] = new Vector4(Renderer.MenuColors.SecondaryColor.X, Renderer.MenuColors.SecondaryColor.Y, Renderer.MenuColors.SecondaryColor.Z, 0.4f);
                 style.Colors[(int)ImGuiCol.HeaderHovered] =
-                    new Vector4(AccentColor.X, AccentColor.Y, AccentColor.Z, 0.6f);
-                style.Colors[(int)ImGuiCol.HeaderActive] = AccentColor;
+                    new Vector4(Renderer.MenuColors.SecondaryColor.X, Renderer.MenuColors.SecondaryColor.Y, Renderer.MenuColors.SecondaryColor.Z, 0.6f);
+                style.Colors[(int)ImGuiCol.HeaderActive] = Renderer.MenuColors.SecondaryColor;
                 Vector2 windowSize = new(240f, 100f);
                 ImGui.SetNextWindowSize(windowSize,
-                    ImGuiCond.Once); // ensure that the like size doesn't reset to the default on resize
+                    ImGuiCond.Once); // ensure that the size doesn't reset to the default on resize
                 ImGui.SetNextWindowPos(new Vector2((GameState.renderer.ScreenSize.X - windowSize.X - 300) / 2, 0), ImGuiCond.FirstUseEver);
                 ImGui.Begin("#c4 info",
                     ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar |

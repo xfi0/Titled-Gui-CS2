@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using System.Numerics;
+using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 
@@ -10,7 +11,6 @@ namespace Titled_Gui.Modules.Visual
         public static bool IsEnabled = false;
         public static bool DrawOnTeam = true;
         public static bool DrawCrossb = false;
-        public static Vector4 PointColor = new(1f, 1f, 1f, 1f);
         private static Vector2 crossPosition = new(200f, 200f);
         public static float RenderRange = 250f;
         public static float Proportion = 2600;
@@ -18,6 +18,7 @@ namespace Titled_Gui.Modules.Visual
         public static int PointType = 0; // 0 = circle, 1 = arrow, 2 = arc
         public static Vector4 EnemyPointColor = new(1, 0, 0, 1); 
         public static Vector4 TeamPointColor = new(0, 1, 0, 1);
+        public static Colors PointColors = new(TeamPointColor, EnemyPointColor);
 
         public class RadarPoint(Vector2 position, Vector4 color, int type, float yaw)
         {

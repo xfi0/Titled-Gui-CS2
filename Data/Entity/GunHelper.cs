@@ -1,11 +1,10 @@
-﻿using ImGuiNET;
-using System.Numerics;
-using Titled_Gui.Data.Entity;
-using Titled_Gui.Data.Game;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Titled_Gui.Modules.Visual
+namespace Titled_Gui.Data.Entity
 {
-    internal class GunDisplay
+    internal class GunHelper
     {
         private static readonly Dictionary<string, string> Guns = new() // thx sweeperxz
         {
@@ -53,25 +52,7 @@ namespace Titled_Gui.Modules.Visual
             ["incgrenade"] = "n",
             ["c4"] = "o"
         };
-        public static bool Enabled = false;
-        public static Vector4 TextColor = new(1, 1, 1, 1);
-        private static float _baseFontSize = 24f;
-        public static void Draw(Entity? e)
-        {
-            if (!Enabled || e == null || e.Health <= 0 || e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.CurrentWeaponName == null || e.Position2D == new Vector2(-99, -99)) return;
 
-            string icon = GetIcon(e.CurrentWeaponName);
-            var rect = BoxESP.GetBoxRect(e);
-
-            if (rect == null) return;
-
-            if (string.IsNullOrEmpty(icon))
-                return;
-
-            float fontSize = (float)Math.Clamp(18f - (e.Distance * 0.002f), 8f, 18f);
-
-            GameState.renderer.DrawList.AddText(Renderer.GunIconsFont, fontSize, new Vector2(rect.BottomMiddle.X, rect.BottomMiddle.Y + 10f), ImGui.ColorConvertFloat4ToU32(TextColor), icon);
-        }
         public static string GetIcon(string weapon)
         {
             return !string.IsNullOrEmpty(weapon) && Guns.TryGetValue(weapon, out string? icon) ? icon : string.Empty;

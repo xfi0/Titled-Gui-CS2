@@ -1,8 +1,10 @@
 using ImGuiNET;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Titled_Gui.Classes;
 using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
+using Titled_Gui.Data.Entity.Types;
 using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
@@ -12,12 +14,17 @@ namespace Titled_Gui.Modules.Visual
         public static float BoneThickness = 4.5f;
         public static bool EnableBoneESP = false;
         public static bool TeamCheck = false;
-        public static Vector4 VisibleBoneColor = new(1f, 1f, 1f, 1f);
-        public static Vector4 OccludedBoneColor = new(0f, 0f, 1f, 1f);
+        private static Vector4 _visibleBoneColorTeam = new(1f, 1f, 1f, 1f);
+        private static Vector4 _visibleBoneColorEnemy = new(1f, 1f, 1f, 1f);
+        private static Vector4 _occludedBoneColorTeam = new(0f, 0f, 1f, 1f);
+        private static Vector4 _occludedBoneColorEnemy = new(0f, 0f, 1f, 1f);
+        public static Colors VisibleColors = new(_visibleBoneColorTeam, _visibleBoneColorEnemy, null, null, false, false, false, false);
+        public static Colors OccludedColors = new(_occludedBoneColorTeam, _occludedBoneColorEnemy, null, null, false, false, false, false);
         public static float GlowAmount = 0f;
         public static string[] Types = ["Straight", "Bezier"];
         public static int CurrentType = 0;
         public static bool visibilityCheck = true;
+        public static bool RGB = false;
         public static (int, int)[] GetBoneConnections(int team)
         {
             var ids = team == 2 ? typeof(BoneIds_T) : typeof(BoneIds_CT);
@@ -151,6 +158,17 @@ namespace Titled_Gui.Modules.Visual
             RightFoot = 86,
         }
 
+        private static Vector4 GetBoneColor(Entity entity)
+        {
+            bool occluded = visibilityCheck && !entity.Visible;
+            bool isTeam = entity.Team == GameState.LocalPlayer.Team;
+            Colors c = occluded ? OccludedColors : VisibleColors;
+
+            Vector4 color = (isTeam ? c.TeamRGB : c.EnemyRGB) ? Colors.Rgb(isTeam ? c.TeamColor.W : c.EnemyColor.W) : (isTeam ? c.TeamColor : c.EnemyColor);
+
+            return color;
+        }
+
         public static void DrawBoneLines(Entity? entity, Renderer renderer)
         {
             if (!EnableBoneESP || entity == null || entity.Bones == null ||
@@ -163,12 +181,7 @@ namespace Titled_Gui.Modules.Visual
                 Math.Clamp(BoneThickness / (entity.Distance * 0.1f), 0.5f,
                     1f); // calculate thickness based on Distance, minimum 0.5f and maximum 2f stops it from being massive
 
-            uint boneColor = ImGui.GetColorU32(Colors.RGB ? Colors.Rgb() : VisibleBoneColor);
-
-            uint GetBoneColor(EntityTypes.Bone bone) =>
-                (!visibilityCheck || bone.IsVisible)
-                    ? boneColor
-                    : ImGui.ColorConvertFloat4ToU32(OccludedBoneColor);
+            uint boneColor = ImGui.GetColorU32(GetBoneColor(entity));
 
             var boneConnections = GetBoneConnections(entity.Team);
             foreach (var (a, b) in boneConnections)
@@ -176,8 +189,8 @@ namespace Titled_Gui.Modules.Visual
                 if (a >= entity.Bones.Count || b >= entity.Bones.Count)
                     continue;
 
-                EntityTypes.Bone boneA = entity.Bones[a];
-                EntityTypes.Bone boneB = entity.Bones[b];
+                Bone boneA = entity.Bones[a];
+                Bone boneB = entity.Bones[b];
                 Vector2 boneAPosition2D = boneA.Position2D;
                 Vector2 boneBPosition2D = boneB.Position2D;
                 if (boneBPosition2D == new Vector2(-99, -99) || boneAPosition2D == new Vector2(-99, -99))
@@ -219,13 +232,10 @@ namespace Titled_Gui.Modules.Visual
                         case 0:
                             //renderer.drawList.AddLine(boneAPosition2D, boneBPosition2D, boneColor, thickness);
                             renderer.DrawList.AddLine(boneAPosition2D, boneBPosition2D,
-                                boneA.IsVisible ? boneColor : ImGui.ColorConvertFloat4ToU32(OccludedBoneColor),
+                               boneColor,
                                 thickness); //draw a line between the Bones
                             renderer.DrawList.AddCircleFilled(boneAPosition2D, thickness * 1.5f,
-                                boneA.IsVisible
-                                    ? boneColor
-                                    : ImGui.ColorConvertFloat4ToU32(
-                                        OccludedBoneColor)); //draw a circle at the start bone
+                                boneColor); //draw a circle at the start bone
                             break;
                         case 1:
                             renderer.DrawList.AddBezierCubic(boneBPosition2D,
@@ -250,12 +260,9 @@ namespace Titled_Gui.Modules.Visual
             float radius = Math.Clamp(10f / (entity.Distance * 0.05f), 3f, 10f);
 
             if (GlowAmount > 0)
-                GlowRenderer.DrawGlowCircle(renderer.DrawList, headPos, radius,
-                    head.IsVisible ? ImGui.ColorConvertU32ToFloat4(boneColor) : OccludedBoneColor, GlowAmount);
-            renderer.DrawList.AddCircleFilled(headPos, radius,
-                head.IsVisible
-                    ? boneColor
-                    : ImGui.ColorConvertFloat4ToU32(OccludedBoneColor)); // draw a circle at the Head bone extra big
+                GlowRenderer.DrawGlowCircle(renderer.DrawList, headPos, radius, GetBoneColor(entity), GlowAmount);
+
+            renderer.DrawList.AddCircleFilled(headPos, radius, boneColor); // draw a circle at the Head bone extra big
             //DebugBones(entity, renderer);
         }
 
@@ -264,11 +271,11 @@ namespace Titled_Gui.Modules.Visual
             for (int i = 0; i < entity.Bones.Count; i++)
             {
                 var b = entity.Bones[i];
-                if (b.Position2D == new Vector2(-99, -99)) 
+                if (b.Position2D == new Vector2(-99, -99))
                     continue;
 
                 var p = b.Position2D;
-                if (!IsValidScreenPoint(p)) 
+                if (!IsValidScreenPoint(p))
                     continue;
 
                 renderer.DrawList.AddText(p, 0xFFFFFFFF, i.ToString());
@@ -285,7 +292,7 @@ namespace Titled_Gui.Modules.Visual
         }
         public static void DrawBonePreview(Vector2 Center, float entityHeight)
         {
-            Vector4 Color = VisibleBoneColor;
+            Vector4 Color = VisibleColors.EnemyRGB ? Colors.Rgb(VisibleColors.EnemyColor.W) : VisibleColors.EnemyColor;
             uint UColor = ImGui.GetColorU32(Color);
             var DrawList = ImGui.GetWindowDrawList();
 
@@ -325,14 +332,14 @@ namespace Titled_Gui.Modules.Visual
             foreach (var (A, B) in Segments)
             {
                 if (GlowAmount > 0)
-                    GlowRenderer.DrawGlowLine(DrawList, A, B, VisibleBoneColor, GlowAmount * 0.5f);
+                    GlowRenderer.DrawGlowLine(DrawList, A, B, Color, GlowAmount * 0.5f);
 
                 DrawList.AddLine(A, B, UColor, BoneThickness * 0.5f);
                 DrawList.AddCircleFilled(A, BoneThickness * 0.5f, UColor);
             }
 
             if (GlowAmount > 0)
-                GlowRenderer.DrawGlowCircle(DrawList, Head, 10f, VisibleBoneColor, GlowAmount);
+                GlowRenderer.DrawGlowCircle(DrawList, Head, 10f, Color, GlowAmount);
 
             DrawList.AddCircleFilled(Head, 5f, UColor, 12);
         }

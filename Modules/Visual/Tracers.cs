@@ -23,10 +23,18 @@ namespace Titled_Gui.Modules.Visual
         public static int CurrentEndPos = 0;
         public static Vector4 TeamColor = new(0, 1, 0, 1);
         public static Vector4 EnemyColor = new(1, 0, 0, 1);
-
+        public static Colors TracerColors = new(TeamColor, EnemyColor);
         private const float HeadOffset = 50f;
         private static Vector2 StartPos = new();
         private static Vector2 EndPos = new();
+
+        private static Vector4 GetTracerColor(Entity entity)
+        {
+            if (entity.IsTeammate)
+                return TracerColors.TeamRGB ? Colors.Rgb(TracerColors.TeamColor.W) : TracerColors.TeamColor;
+            else
+                return TracerColors.EnemyRGB ? Colors.Rgb(TracerColors.EnemyColor.W) : TracerColors.EnemyColor;
+        }
 
         public static void DrawTracers(Entity? entity, Renderer renderer)
         {
@@ -50,7 +58,7 @@ namespace Titled_Gui.Modules.Visual
                 case 1: EndPos = new(entity.Bones[(int)BoneESP.BoneIds.Head].Position2D.X, entity.Bones[(int)BoneESP.BoneIds.Head].Position2D.Y + HeadOffset); break;
             }
 
-            Vector4 lineColor = RGB ? Colors.Rgb() : (LocalPlayer.Team == entity.Team ? TeamColor : EnemyColor);
+            Vector4 lineColor = GetTracerColor(entity);
             renderer.DrawList.AddLine(StartPos, EndPos, ImGui.ColorConvertFloat4ToU32(lineColor), LineThickness); // add line for non rgb just liek Team color
         }
 

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
-using static Titled_Gui.Data.Entity.EntityTypes;
+﻿using System.Numerics;
+using Titled_Gui.Data.Game.Types;
 
 namespace Titled_Gui.Data.Game.C4
 {

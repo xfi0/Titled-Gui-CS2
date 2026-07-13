@@ -1,15 +1,16 @@
 ﻿using System.Numerics;
 using Titled_Gui.Data.Entity;
+using Titled_Gui.Data.Entity.Types;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Modules.Visual.BoneESP;
-using Bone = Titled_Gui.Data.Entity.EntityTypes.Bone;
+using Bone = Titled_Gui.Data.Entity.Types.Bone;
 using Entity = Titled_Gui.Data.Entity.Entity;
 
 namespace Titled_Gui.Classes.Math
 {
     public static class Calculate
     {
-      
+
         private static readonly HashSet<int> BonesToCheck = Enum.GetValues<BoneIds>()
             .Select(b => (int)b)
             .ToHashSet();
@@ -52,50 +53,98 @@ namespace Titled_Gui.Classes.Math
             return bones;
         }
 
-        public static List<EntityTypes.Hitbox> ReadHitboxes(Entity entity, float[] viewMatrix)
+        public static List<Hitbox> ReadHitboxes(Entity entity, float[] viewMatrix)
         {
-            List<EntityTypes.Hitbox> hitboxes = new();
+            List<Hitbox> hitboxes = new();
 
-            IntPtr pCModel = GameState.memory.ReadPointer(entity.GameSceneNode + Offsets.m_modelState + 0xC0);
-            if (pCModel == IntPtr.Zero)
+            // m_modelState = 0x40
+            // pCModel = 0x150
+            // pCRenderMeshs = 0x78
+            // hitboxSets = 0x168
+            // hitboxCount = 0x28
+            // hitboxArray = 0x30
+
+            IntPtr modelState = GameState.memory.ReadPointer(entity.GameSceneNode + 0x40);
+            if (modelState == IntPtr.Zero)
+            {
                 return hitboxes;
+            }
+
+            IntPtr pCModel = GameState.memory.ReadPointer(modelState + 0x150);
+            if (pCModel == IntPtr.Zero)
+            {
+                Console.WriteLine("[ReadHitboxes] pCModel is null for entity: " + entity.Name);
+                return hitboxes;
+            }
 
             IntPtr CModel = GameState.memory.ReadPointer(pCModel);
             if (CModel == IntPtr.Zero)
+            {
+                Console.WriteLine("[ReadHitboxes] CModel is null for entity: " + entity.Name);
                 return hitboxes;
+            }
 
             IntPtr pCRenderMeshs = GameState.memory.ReadPointer(CModel + 0x78);
             if (pCRenderMeshs == IntPtr.Zero)
+            {
+                Console.WriteLine("[ReadHitboxes] pCRenderMeshs is null for entity: " + entity.Name);
                 return hitboxes;
+            }
 
             IntPtr CRenderMeshs = GameState.memory.ReadPointer(pCRenderMeshs);
             if (CRenderMeshs == IntPtr.Zero)
+            {
+                Console.WriteLine("[ReadHitboxes] CRenderMeshs is null for entity: " + entity.Name);
                 return hitboxes;
+            }
 
-            IntPtr hitboxSets = GameState.memory.ReadPointer(CRenderMeshs + 0x150);
+            IntPtr hitboxSets = GameState.memory.ReadPointer(CRenderMeshs + 0x168);
             if (hitboxSets == IntPtr.Zero)
+            {
+                Console.WriteLine("[ReadHitboxes] hitboxSets is null for entity: " + entity.Name);
                 return hitboxes;
+            }
 
             int hitboxCount = GameState.memory.ReadInt(hitboxSets + 0x28);
-            IntPtr pCHitbox = GameState.memory.ReadPointer(hitboxSets + 0x30);
 
-            int hitboxStride = 0x70;
+            IntPtr pCHitbox = GameState.memory.ReadPointer(hitboxSets + 0x30);
+            if (pCHitbox == IntPtr.Zero)
+            {
+                Console.WriteLine("[ReadHitboxes] pCHitbox is null for entity: " + entity.Name);
+                return hitboxes;
+            }
+
+            int HitboxStride = 0x70;
+            int NameOffset = 0x00;
+            nint MinBoundsOffset = Offsets.m_vMinBounds;
+            nint MaxBoundsOffset = Offsets.m_vMaxBounds;
+            int RadiusOffset = Offsets.m_flShapeRadius;
 
             for (int i = 0; i < hitboxCount; i++)
             {
-                IntPtr pCHitbox1 = pCHitbox + (i * hitboxStride);
-                IntPtr hb = GameState.memory.ReadPointer(pCHitbox1);
+                IntPtr pCHitbox1 = pCHitbox + (i * HitboxStride);
+                if (pCHitbox1 == IntPtr.Zero)
+                {
+                    continue;
+                }
 
-                Vector3 min = GameState.memory.ReadVec(pCHitbox1 + Offsets.m_vMinBounds);
-                Vector3 max = GameState.memory.ReadVec(pCHitbox1 + Offsets.m_vMaxBounds);
-                float radius = GameState.memory.ReadFloat(pCHitbox1 + Offsets.m_flShapeRadius);
-                string name = GameState.memory.ReadString(hb + Offsets.m_name)
+                IntPtr pName = GameState.memory.ReadPointer(pCHitbox1 + NameOffset);
+                if (pName == IntPtr.Zero)
+                {
+                    continue;
+                }
+
+                string name = GameState.memory.ReadString(pName)
                     .Trim().Replace(" ", "").Replace("\0", "").Replace("playerfl", "");
 
-                if (name.Contains("neck") || name == "spine_3" || name == "spine_2")
+                if (name == "spine_3")
                     continue;
 
-                int boneID = Titled_Gui.Data.Entity.EntityTypes.Hitbox.HitboxToBone(i);
+                Vector3 min = GameState.memory.ReadVec(pCHitbox1 + MinBoundsOffset);
+                Vector3 max = GameState.memory.ReadVec(pCHitbox1 + MaxBoundsOffset);
+                float radius = GameState.memory.ReadFloat(pCHitbox1 + RadiusOffset);
+
+                int boneID = Hitbox.HitboxToBone(i);
                 if (boneID < 0 || entity.Bones == null || boneID >= entity.Bones.Count)
                     continue;
 
@@ -112,7 +161,7 @@ namespace Titled_Gui.Classes.Math
                 if (min2D == new Vector2(-99, -99) || max2D == new Vector2(-99, -99))
                     continue;
 
-                EntityTypes.Hitbox hitbox = new EntityTypes.Hitbox
+                Hitbox hitbox = new Hitbox
                 {
                     Name = name,
                     MinBounds = min,

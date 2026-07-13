@@ -1,8 +1,8 @@
 ﻿using System.Numerics;
+using Titled_Gui.Data.Entity.Types;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Menu;
 using Titled_Gui.Modules.Visual;
-using static ValveResourceFormat.ResourceTypes.EntityLump;
 
 namespace Titled_Gui.Data.Entity
 {
@@ -21,7 +21,7 @@ namespace Titled_Gui.Data.Entity
         public bool Visible { get; set; } // visibility of the entity
         public float Distance { get; set; } // Distance to the entity,from the local player
         public IntPtr PawnAddress { get; set; } // pointer to the entity's pawn address
-        public List<EntityTypes.Bone>? Bones { get; set; } // list of Bones for the entity
+        public List<Bone>? Bones { get; set; } // list of Bones for the entity
         public string? Name { get; set; }
         public int Ammo { get; set; }
         public int Account, CashSpent, CashSpentTotal;
@@ -62,7 +62,7 @@ namespace Titled_Gui.Data.Entity
         public Vector3 VecMax { get; set; }
         public IntPtr HitboxComponent { get; set; }
         public bool IsDormant { get; set; }
-        public List<EntityTypes.Hitbox>? HitBoxes { get; set; }
+        public List<Hitbox>? HitBoxes { get; set; }
         public IntPtr ObserverServices { get; set; }
         public IntPtr Pawn { get; set; }
         public IntPtr PlayerPawn { get; set; }
@@ -86,7 +86,18 @@ namespace Titled_Gui.Data.Entity
             return "";
         }
 
-        public Types.BoxRect? GetBoxRect()
+        public bool IsTeammate // forgot i had isenemy...
+        {
+            get
+            {
+                if (GameState.LocalPlayer == null || this.Health <= 0)
+                    return false;
+
+                return this.Team == GameState.LocalPlayer.Team;
+            }
+        }
+
+        public BoxRect? GetBoxRect()
         {
             var rect = BoxESP.GetBoxRect(this);
             if (rect == null)

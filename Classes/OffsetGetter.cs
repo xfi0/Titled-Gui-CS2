@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 using Titled_Gui.Data.Game;
 
@@ -10,14 +11,14 @@ namespace Titled_Gui.Classes
         private static readonly HttpClient httpClient = new();
         private static string _offsetRegex = @"public const nint ([\w\+]+) = (0x[0-9A-Fa-f]+);";
 
-        static OffsetGetter() 
+        static OffsetGetter()
         {
             try
             {
                 httpClient.Timeout = TimeSpan.FromSeconds(10);
                 httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine($"[OFFSETS FINDER] ERROR: {e.Message}");
             }
@@ -31,11 +32,14 @@ namespace Titled_Gui.Classes
         private const string SecondaryButtonsUrl = "https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/refs/heads/main/buttons.cs";
         private const string Engine2Url = "https://raw.githubusercontent.com/xfi0/cs2-dumper/main/output/engine2_dll.cs";
         private const string SecondaryEngine2Url = "https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/refs/heads/main/engine2_dll.cs";
+        private const string AnimationSystemUrl = "https://raw.githubusercontent.com/xfi0/cs2-dumper/main/output/animationsystem_dll.cs";
+        private const string SecondaryAnimationSystemUrl = "https://raw.githubusercontent.com/sezzyaep/CS2-OFFSETS/refs/heads/main/animationsystem_dll.cs";
 
         private static string OffsetsContent = string.Empty;
         private static string ClientDllContent = string.Empty;
         private static string ButtonsContent = string.Empty;
         private static string Engine2Content = string.Empty;
+        private static string AnimationSystemContent = string.Empty;
 
         public static bool Updated = false;
 
@@ -110,6 +114,13 @@ namespace Titled_Gui.Classes
             { "m_GunGameImmunityColor", new() { new Offset("m_GunGameImmunityColor") } },
             { "m_flEmitSoundTime", new() { new Offset("m_flEmitSoundTime") } },
             { "m_vecMins", new() { new Offset("m_vecMins") } },
+            { "m_vMinBounds", new() { new Offset("m_vMinBounds") } },
+            { "m_vMaxBounds", new() { new Offset("m_vMaxBounds") } },
+            { "m_flShapeRadius", new() { new Offset("m_flShapeRadius") } },
+            { "m_sBoneName", new() { new Offset("m_sBoneName") } },
+            { "m_name", new() { new Offset("m_name") } },
+            { "m_nShapeType", new() { new Offset("m_nShapeType") } },
+            { "m_sSurfaceProperty", new() { new Offset("m_sSurfaceProperty") } },
             { "m_vecMaxs", new() { new Offset("m_vecMaxs") } },
             { "v_angle", new() { new Offset("v_angle") } },
             { "m_Collision", new() { new Offset("m_Collision") } },
@@ -176,11 +187,13 @@ namespace Titled_Gui.Classes
                 ClientDllContent = await DownloadFile(ClientDllUrl);
                 ButtonsContent = await DownloadFile(ButtonsUrl);
                 Engine2Content = await DownloadFile(Engine2Url);
+                AnimationSystemContent = await DownloadFile(AnimationSystemUrl);
 
                 ParseOffsetsFile(OffsetsContent);
                 ParseClientDllFile(ClientDllContent);
                 ParseButtonsFile(ButtonsContent);
                 ParseEngine2File(Engine2Content);
+                ParseAnimationSystemFile(AnimationSystemContent);
 
                 Console.WriteLine($"[OFFSET FINDER] Found: {offsets.Count}");
                 UpdateOffsetsClass();
@@ -208,6 +221,7 @@ namespace Titled_Gui.Classes
                 ParseClientDllFile(ClientDllContent);
                 ParseButtonsFile(ButtonsContent);
                 ParseEngine2File(Engine2Content);
+                ParseAnimationSystemFile(AnimationSystemContent);
                 UpdateOffsetsClass();
 
                 if (GameState.memory.ReadPointer(GameState.client, Offsets.dwViewMatrix) == IntPtr.Zero || GameState.memory.ReadPointer(GameState.client, Offsets.dwEntityList) == IntPtr.Zero)
@@ -235,6 +249,7 @@ namespace Titled_Gui.Classes
             ParseClientDllFile(ClientDllContent);
             ParseButtonsFile(ButtonsContent);
             ParseEngine2File(Engine2Content);
+            ParseAnimationSystemFile(AnimationSystemContent);
             UpdateOffsetsClass();
         }
 
@@ -244,6 +259,7 @@ namespace Titled_Gui.Classes
             ClientDllContent = await DownloadFile(SecondaryClientDllUrl);
             ButtonsContent = await DownloadFile(SecondaryButtonsUrl);
             Engine2Content = await DownloadFile(SecondaryEngine2Url);
+            AnimationSystemContent = await DownloadFile(SecondaryAnimationSystemUrl);
         }
 
         private static async Task<string> DownloadFile(string url)
@@ -294,6 +310,20 @@ namespace Titled_Gui.Classes
                 {
                     offsets[name] = value;
                 }
+            }
+        }
+
+        private static void ParseAnimationSystemFile(string animationSystemContent)
+        {
+            // regex to match the offsets (global constants)
+            var matches = Regex.Matches(animationSystemContent, _offsetRegex);
+            Console.WriteLine($"[OFFSET FINDER] Found {matches.Count} Offsets In File offsets.cs");
+
+            foreach (Match match in matches)
+            {
+                string name = match.Groups[1].Value;
+                int value = Convert.ToInt32(match.Groups[2].Value, 16);
+                offsets[name] = value;
             }
         }
 

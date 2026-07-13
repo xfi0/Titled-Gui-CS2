@@ -1,9 +1,6 @@
 ﻿using ImGuiNET;
 using System.Numerics;
-using System.Reflection.Emit;
-using System.Windows.Forms.VisualStyles;
 using Titled_Gui.Classes;
-using ValveResourceFormat.ResourceTypes;
 using static Titled_Gui.ImGUI.Widgets.ColorPickers;
 using static Titled_Gui.ImGUI.Widgets.Misc;
 
@@ -31,7 +28,46 @@ namespace Titled_Gui.ImGUI.Widgets
             _setters[label] = setter;
         }
 
-        public static void RenderBoolSettingWith1ColorPicker(string label, ref bool value, ref Vector4 color1)
+        public static void RenderBoolSettingWith1ColorPicker(string label, ref bool value, ref bool rgb, ref Vector4 color1, Action? onChanged = null)
+        {
+            if (!_toggleStates.ContainsKey(label))
+                _toggleStates[label] = value;
+
+            ImGui.PushID(label);
+            Vector4 tmpColor = color1;
+            bool tempRGB = rgb;
+
+            bool tmpVal = _toggleStates[label];
+            RegisterToggle(label, () => _toggleStates[label], v => _toggleStates[label] = v);
+            RenderRowRightAligned(label, () =>
+            {
+                Vector2 rowStart = ImGui.GetCursorScreenPos();
+                var (knobPosition, clicked) = CreateKnob(label, ref tmpVal);
+                RenderRightClickMenu(label);
+
+                float height = ImGui.GetFrameHeight();
+                float gap = 6f;
+
+                ImGui.SetCursorScreenPos(new Vector2(knobPosition.X - height - gap, knobPosition.Y));
+                ColorEdit("##" + label + "_col1", ref tmpColor, ref tempRGB);
+
+            });
+
+            if (!tmpColor.Equals(color1))
+                color1 = tmpColor;
+
+            if (!tempRGB.Equals(rgb))
+            {
+                rgb = tempRGB;
+                onChanged?.Invoke();
+            }
+
+            _toggleStates[label] = tmpVal;
+            value = _toggleStates[label];
+
+            ImGui.PopID();
+        }
+        public static void RenderBoolSettingWith1ColorPicker(string label, ref bool value, ref Vector4 color1, Action? onChanged = null)
         {
             if (!_toggleStates.ContainsKey(label))
                 _toggleStates[label] = value;
@@ -50,13 +86,13 @@ namespace Titled_Gui.ImGUI.Widgets
                 float height = ImGui.GetFrameHeight();
                 float gap = 6f;
 
-                ImGui.SetCursorScreenPos(new Vector2(knobPosition.X - height - gap, knobPosition.Y)); 
-                ColorEdit("##" + label + "_col1", ref tmpColor,
-                    ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
+                ImGui.SetCursorScreenPos(new Vector2(knobPosition.X - height - gap, knobPosition.Y));
+                ColorPickerButton("##" + label + "_col1", ref tmpColor, height);
+                ColorEdit("##" + label + "_col1", ref tmpColor);
 
             });
 
-            if (!tmpColor.Equals(color1)) 
+            if (!tmpColor.Equals(color1))
                 color1 = tmpColor;
 
             _toggleStates[label] = tmpVal;
@@ -85,7 +121,7 @@ namespace Titled_Gui.ImGUI.Widgets
             }
         }
 
-        public static void RenderBoolSettingWith2ColorPickers(string label, ref bool value, ref Vector4 color1,
+        public static void RenderBoolSettingWith2ColorPickers(string label, ref bool value, ref bool teamRGB, ref bool enemyRGB, ref Vector4 color1,
             ref Vector4 color2)
         {
             if (!_toggleStates.ContainsKey(label))
@@ -95,6 +131,8 @@ namespace Titled_Gui.ImGUI.Widgets
             var tmpColor1 = color1;
             var tmpColor2 = color2;
             bool tmpVal = _toggleStates[label];
+            bool tempTeamRGB = teamRGB;
+            bool tempEnemyRGB = enemyRGB;
 
             RegisterToggle(label, () => _toggleStates[label], v => _toggleStates[label] = v);
 
@@ -109,11 +147,13 @@ namespace Titled_Gui.ImGUI.Widgets
 
                 ImGui.SetCursorScreenPos(new Vector2(knobPosition.X - height - gap, knobPosition.Y));
 
-                ColorEdit("##" + label + "_col1", ref tmpColor1,
-                    ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
-                ImGui.SameLine();
-                ColorEdit("##" + label + "_col2", ref tmpColor2,
-                    ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoLabel);
+                ColorPickerButton("##" + label + "_col1", ref tmpColor1, height);
+                ColorEdit("##" + label + "_col1", ref tmpColor1, ref tempTeamRGB);
+
+                ImGui.SameLine(0, 4f);
+
+                ColorPickerButton("##" + label + "_col2", ref tmpColor2, height);
+                ColorEdit("##" + label + "_col2", ref tmpColor2, ref tempEnemyRGB);
 
             });
 
@@ -127,11 +167,16 @@ namespace Titled_Gui.ImGUI.Widgets
                 color2 = tmpColor2;
             }
 
-            if (tmpVal != value)
+            if (!tmpVal.Equals(value))
             {
                 _toggleStates[label] = tmpVal;
                 value = _toggleStates[label];
             }
+            if (!tempTeamRGB.Equals(teamRGB))
+                teamRGB = tempTeamRGB;
+
+            if (!tempEnemyRGB.Equals(enemyRGB))
+                enemyRGB = tempEnemyRGB;
 
             ImGui.PopID();
         }
@@ -154,7 +199,7 @@ namespace Titled_Gui.ImGUI.Widgets
             if (tmpVal != value)
             {
                 _toggleStates[label] = tmpVal;
-                value = _toggleStates[label]; 
+                value = _toggleStates[label];
                 onChanged?.Invoke();
             }
         }
@@ -259,7 +304,7 @@ namespace Titled_Gui.ImGUI.Widgets
                 if (keybind == 0)
                     continue;
 
-                if (!_getters.ContainsKey(label) || !_setters.ContainsKey(label)) 
+                if (!_getters.ContainsKey(label) || !_setters.ContainsKey(label))
                     continue;
 
                 if (actionType == 0) // toggle

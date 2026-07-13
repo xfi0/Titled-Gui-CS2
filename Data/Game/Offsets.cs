@@ -110,12 +110,7 @@
         public static int m_vMinBounds = 0x18;
         public static int m_vMaxBounds = 0x24;
         public static int m_flShapeRadius = 0x30;
-        public static int m_nBoneNameHash = 0x34;
-        public static int m_nGroupId = 0x38;
         public static int m_nShapeType = 0x3C;
-        public static int m_bTranslationOnly = 0x3D;
-        public static int m_CRC = 0x40;
-        public static int m_cRenderColor = 0x44;
         public static int m_pObserverServices = 0x48;
         public static int m_hObserverTarget = 0x48;
         public static int m_hPawn = 0x48;

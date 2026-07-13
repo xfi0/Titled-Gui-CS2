@@ -13,27 +13,29 @@ namespace Titled_Gui.Modules.Rage
     {
         public static bool AimbotEnable = false;
         public static bool Team = false;
-        public static int FovSize = 100;
-        public static Vector4 FovColor = new(1f, 0f, 0f, 1f);
         public static bool DrawFov = true;
-        public static int AimbotKey = 0x04; // mmb
-        public static string[] Bones = ["Head", "Neck", "Right Shoulder", "Left Shoulder", "Waist", "Random"];
-        public static int CurrentBone = 0;
-        public static int CurrentBoneIndex = 2;
-        public static Vector2 CurrentBone2D = Vector2.Zero;
         public static bool RandomChosen = false;
-        public static int CurrentAimMethod = 0;
-        public static float SmoothingX = 5f;
-        public static float SmoothingY = 5f;
-        private static bool FlashCheck = false;
         public static bool ScopedOnly = false;
         public static bool UseFOV = true;
-        public static Random random = new();
         public static bool VisibilityCheck = true;
         public static bool TargetLine = true;
-        private static Entity? target = null;
+        public static bool RGB = false;
+        private static bool FlashCheck = false;
+        public static float SmoothingX = 5f;
+        public static float SmoothingY = 5f;
+        public static Vector4 FovColor = new(1f, 0f, 0f, 1f);
+        public static int FovSize = 100;
+        public static int AimbotKey = 0x04; // mmb
+        public static int CurrentBone = 0;
+        public static int CurrentBoneIndex = 2;
+        public static int CurrentAimMethod = 0;
+        public static string[] Bones = ["Head", "Neck", "Right Shoulder", "Left Shoulder", "Waist", "Random"];
+        public static Vector2 CurrentBone2D = Vector2.Zero;
         private static Vector2 remainder = Vector2.Zero;
+        public static Random random = new();
+        private static Entity? target = null;
         private static Entity? previousTarget = null;
+
         public static void EnableAimbot() // TODO: return to old pos setting #7
         {
             try

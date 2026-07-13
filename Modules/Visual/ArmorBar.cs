@@ -11,8 +11,9 @@ namespace Titled_Gui.Modules.Visual
     {
         public static bool EnableArmorhBar = false;
         public static bool DrawOnSelf = false;
+        public static bool RGB = false;
         public static float ArmorBarWidth = 5f;
-        public static float Rounding = 2.3f;
+        public static float Rounding = 0;
         public static Vector4 ArmorColor = new(0.1f, 0f, 1f, 1f);
         private static Vector4 _backgroundColor = new(0.2f, 0.2f, 0.2f, 1f);
         public static void DrawArmorBar(Entity? e, Renderer renderer, float armor, float maxArmor)
@@ -37,7 +38,7 @@ namespace Titled_Gui.Modules.Visual
                 ImGui.ColorConvertFloat4ToU32(_backgroundColor), Rounding);
 
             Vector2 filledTop = rect.TopRight + new Vector2(0, height - filledHeight);
-            ArmorColor = Colors.RGB ? Colors.Rgb() : new(0.1f, 0f, 1f, 1f);
+            ArmorColor = RGB ? Colors.Rgb(ArmorColor.W) : new(0.1f, 0f, 1f, 1f);
 
             renderer.DrawList.AddRectFilled(filledTop, filledTop + new Vector2(ArmorBarWidth, filledHeight),
                 ImGui.ColorConvertFloat4ToU32(ArmorColor), Rounding);
@@ -48,7 +49,7 @@ namespace Titled_Gui.Modules.Visual
             float barWidth = 5f;
             float armorPercent = Titled_Gui.Classes.Rendering.TextRenderer.AnimateFloat("healthBar");
             float offset = 4;
-            
+
 
             Vector2 top = position + new Vector2(entityHeight / 3f + offset, -entityHeight / 2);
             Vector2 bottom = position + new Vector2(entityHeight / 3f + barWidth + offset, entityHeight / 2);

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Numerics;
 using Titled_Gui.Classes;
 using Titled_Gui.Classes.Math;
+using Titled_Gui.Data.Entity.Types;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Data.Game.GameState;
 
@@ -52,7 +53,7 @@ namespace Titled_Gui.Data.Entity
                     var currentPawn = GetPlayerPawn(EntityList, pawnHandle);
                     if (currentPawn == IntPtr.Zero)
                         continue;
-                    
+
 
                     if (currentPawn == localPlayerPawnAddress)
                     {
@@ -83,12 +84,12 @@ namespace Titled_Gui.Data.Entity
             IntPtr listEntry2 = memory.ReadPointer(entitylist + (0x8 * ((pawn & 0x7FFF) >> 9)) + 0x10);
             if (listEntry2 == IntPtr.Zero)
                 return IntPtr.Zero;
-            
+
 
             IntPtr pPawn = memory.ReadPointer(listEntry2 + 0x70 * (pawn & 0x1FF));
             if (pPawn == IntPtr.Zero)
                 return IntPtr.Zero; // wait this is useless no? because im returinging what would already be.
-            
+
 
             return pPawn;
         }
@@ -108,7 +109,7 @@ namespace Titled_Gui.Data.Entity
             IntPtr weaponNameAddress = memory.ReadPointer(weaponData + 0x20);
             IntPtr collisionBase = localPlayerPawn + Offsets.m_Collision;
             IntPtr aimPunchServices = memory.ReadPointer(localPlayerPawn + Offsets.m_pAimPunchServices);
-            List<EntityTypes.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
+            List<Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
 
             string weaponName = "Invalid Weapon Name";
             if (weaponNameAddress != 0)
@@ -198,7 +199,7 @@ namespace Titled_Gui.Data.Entity
 
                 short weaponDefIndex = memory.ReadShort(weaponData + Offsets.m_AttributeManager + Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
                 IntPtr collisionBase = pawnAddress + Offsets.m_Collision;
-                List<EntityTypes.Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
+                List<Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
                 WorldEntityManager.WeaponNameMap.TryGetValue(weaponDefIndex, out string? weaponName);
                 var viewPos = Vector3.Add(memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin), memory.ReadVec(pawnAddress, Offsets.m_vecViewOffset));
                 //if (weaponNameAddress != 0)

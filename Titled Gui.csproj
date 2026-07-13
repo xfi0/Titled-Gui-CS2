@@ -17,111 +17,111 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Configs\**" />
-	  <EmbeddedResource Remove="Configs\**" />
-	  <None Remove="Configs\**" />
+		<Compile Remove="Configs\**" />
+		<EmbeddedResource Remove="Configs\**" />
+		<None Remove="Configs\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\ar_baggage.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\ar_shoots.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\ar_shoots_night.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\cs_agency.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\cs_italy.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\cs_office.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_ancient.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_ancient_night.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_anubis.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_dust2.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_golden.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_inferno.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_mirage.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_nuke.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_overpass.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_palacio.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_rooftop.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_train.tri" />
-	  <None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_vertigo.tri" />
-	  <None Remove="Resources\sounds\ClickSounds\Creamy.wav" />
-	  <None Remove="Resources\fonts\NotoSans-BoldIcons.ttf" />
-	  <None Remove="Resources\fonts\undefeated.ttf" />
-	  <None Remove="Resources\MenuLogo.png" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\ar_baggage.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\ar_shoots.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\ar_shoots_night.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\cs_agency.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\cs_italy.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\cs_office.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_ancient.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_ancient_night.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_anubis.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_dust2.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_golden.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_inferno.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_mirage.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_nuke.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_overpass.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_palacio.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_rooftop.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_train.tri" />
+		<None Remove="Data\Game\MapParser\PreExtractedMapData\tri\de_vertigo.tri" />
+		<None Remove="Resources\sounds\ClickSounds\Creamy.wav" />
+		<None Remove="Resources\fonts\NotoSans-BoldIcons.ttf" />
+		<None Remove="Resources\fonts\undefeated.ttf" />
+		<None Remove="Resources\MenuLogo.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="MenuLogo.ico" />
+		<Content Include="MenuLogo.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\ar_baggage.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\ar_shoots.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\ar_shoots_night.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\cs_agency.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\cs_italy.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\cs_office.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_ancient.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_ancient_night.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_anubis.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_dust2.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_golden.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_inferno.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_mirage.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_nuke.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_overpass.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_palacio.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_rooftop.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_train.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_vertigo.tri">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Resources\fonts\NotoSans-BoldIcons.ttf">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Resources\MenuLogo.png">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Resources\sounds\hitsounds\NeverLose.wav">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Resources\sounds\hitsounds\Skeet.wav">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\ar_baggage.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\ar_shoots.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\ar_shoots_night.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\cs_agency.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\cs_italy.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\cs_office.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_ancient.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_ancient_night.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_anubis.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_dust2.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_golden.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_inferno.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_mirage.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_nuke.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_overpass.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_palacio.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_rooftop.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_train.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Data\Game\MapParser\PreExtractedMapData\tri\de_vertigo.tri">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resources\fonts\NotoSans-BoldIcons.ttf">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resources\MenuLogo.png">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resources\sounds\hitsounds\NeverLose.wav">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resources\sounds\hitsounds\Skeet.wav">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -130,20 +130,18 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="SharpGLTF.Core" Version="1.0.6" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
-		<PackageReference Include="ValvePak" Version="4.0.0.142" />
-		<PackageReference Include="ValveResourceFormat" Version="19.1.6199" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Resources\fonts\undefeated.ttf">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
+		<EmbeddedResource Include="Resources\fonts\undefeated.ttf">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Resources\sounds\ClickSounds\Creamy.wav">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
+		<EmbeddedResource Include="Resources\sounds\ClickSounds\Creamy.wav">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
 	</ItemGroup>
 
 </Project>

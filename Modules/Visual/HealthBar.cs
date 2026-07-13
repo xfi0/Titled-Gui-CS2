@@ -17,6 +17,7 @@ namespace Titled_Gui.Modules.Visual
         public static float Rounding = 2.3f;
         public static Vector4 HealthBarBackGround = new(0.2f, 0.2f, 0.2f, 1f);
         public static Vector4 HealthColor = new(0, 1, 0, 1);
+        public static bool RGB = false;
 
         public static void DrawHealthBar(Entity? e,float health, float maxHealth, Vector2 topLeft, float height)
         {
@@ -29,8 +30,8 @@ namespace Titled_Gui.Modules.Visual
 
             Vector2 filledTop = topLeft + new Vector2(0, height - filledHeight);
 
-            if (Colors.RGB)
-                HealthColor = Colors.Rgb();
+            if (RGB)
+                HealthColor = Colors.Rgb(HealthColor.W);
             
             else
             {

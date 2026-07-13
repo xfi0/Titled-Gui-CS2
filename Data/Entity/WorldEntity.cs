@@ -1,18 +1,17 @@
 ﻿using System.Numerics;
 using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Game;
-using ValveResourceFormat.ResourceTypes.ModelAnimation.SegmentDecoders;
 using static Titled_Gui.Data.Entity.WorldEntityManager;
 
 namespace Titled_Gui.Data.Entity
 {
     public class WorldEntity
     {
-        public nint PawnAddress {  get; set; }
+        public nint PawnAddress { get; set; }
         public Vector3 Position { get; set; }
         public Vector2 Position2D { get; set; }
         public IntPtr ItemNode { get; set; }
-        public EntityKind Type {get; set; }
+        public EntityKind Type { get; set; }
         public string RawType { get; set; } = "Unknown";
         public string DisplayName { get; set; } = "Unknown";
         public Vector3 VecMin { get; set; }
@@ -21,7 +20,7 @@ namespace Titled_Gui.Data.Entity
         public required float[] Rotation { get; set; }
         public Vector3[] Get3DCorners(WorldEntity? worldEntity)
         {
-            if (worldEntity == null || float.IsNaN(worldEntity.VecMin.X) ||float.IsNaN(worldEntity.VecMin.Y) ||float.IsNaN(worldEntity.VecMin.Z))
+            if (worldEntity == null || float.IsNaN(worldEntity.VecMin.X) || float.IsNaN(worldEntity.VecMin.Y) || float.IsNaN(worldEntity.VecMin.Z))
                 return Array.Empty<Vector3>();
 
             Vector3[] localCorners =

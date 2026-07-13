@@ -15,11 +15,6 @@ try
     await GameState.renderer.Start();
     GernadeLineup.Initialize();
 
-    //foreach (string name in names) // liusts all embeddded resources
-    //{
-    //Console.WriteLine(name);
-    //}
-
     // entities
     List<Entity>? entities = [];
     while (!GameState.CS2Open())

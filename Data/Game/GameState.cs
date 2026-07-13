@@ -15,8 +15,8 @@ namespace Titled_Gui.Data.Game
         public static uint CurrentFov { get; set; } = 60; // default FOV
         public static List<Entity.Entity?> Entities { get; set; } = [];
         public static Entity.Entity LocalPlayer { get; set; } = new Entity.Entity(); // local player entity
-        public static int crosshairEnt {  get; set; }
-        public static uint Fflag  { get; set; }
+        public static int crosshairEnt { get; set; }
+        public static uint Fflag { get; set; }
         public static uint Standing = 65665;
         public static uint Crouching = 655667; // crouching state
         public static IntPtr MoneyServices { get; set; }
@@ -24,7 +24,7 @@ namespace Titled_Gui.Data.Game
         public static IntPtr ActionTrackingServices { get; set; }
         public static bool IsScoped { get; set; }
         public static IntPtr LocalController { get; set; }
-        public static int RoundHeadshots {  get; set; }
+        public static int RoundHeadshots { get; set; }
         public static int roundKills { get; set; }
         public static int RoundDamage { get; set; }
         public static List<WorldEntity?> worldEntities { get; set; } = [];
@@ -33,9 +33,13 @@ namespace Titled_Gui.Data.Game
         {
             return !(Process.GetProcessesByName("cs2").Length == 0);
         }
+        public static Process[] CS2Processes = [];
         public static Process[] GetCS2Process()
         {
-            return Process.GetProcessesByName("cs2");
+            if (CS2Processes.Length <= 0)
+                CS2Processes = Process.GetProcessesByName("cs2");
+
+            return CS2Processes;
         }
     }
 }

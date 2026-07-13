@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using System.Net.NetworkInformation;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using Titled_Gui.Classes;
 using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Entity;
@@ -11,8 +12,9 @@ namespace Titled_Gui.Modules.Visual
     internal class SoundESP : ThreadService
     {
         public static bool Enabled = false;
-        public static Vector4 TeamColor = new(0, 1, 0, 1);
-        public static Vector4 EnemyColor = new(1, 0, 0, 1);
+        private static Vector4 _teamColor = new(0, 1, 0, 1);
+        private static Vector4 _enemyColor = new(1, 0, 0, 1);
+        public static Colors VisibleColors = new(_teamColor, _enemyColor);
         public static float MaxLifetime = 1.5f;
         public static float MaxRadius = 20f;
         public static bool TeamCheck = false;
@@ -31,7 +33,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void Update(Entity? e)
         {
-            if (!Enabled || e == null || e.Health <= 0 || e.Position2D == new Vector2(-99, -99) || (TeamCheck && e.Team == GameState.LocalPlayer.Team)) 
+            if (!Enabled || e == null || e.Health <= 0 || e.Position2D == new Vector2(-99, -99) || (TeamCheck && e.Team == GameState.LocalPlayer.Team))
                 return;
 
             if (!EmitTimes.TryGetValue(e.PawnAddress, out float last))
@@ -63,7 +65,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void Draw()
         {
-            if (!Enabled) 
+            if (!Enabled)
                 return;
             try
             {
@@ -76,12 +78,14 @@ namespace Titled_Gui.Modules.Visual
 
                     foreach (var ring in ActiveRings)
                     {
+                        Vector4 teamColor = VisibleColors.TeamRGB ? Colors.Rgb(1f) : _teamColor;
+                        Vector4 enemyColor = VisibleColors.EnemyRGB ? Colors.Rgb(1f) : _enemyColor;
                         float elapsed = now - ring.StartTime;
                         float t = elapsed / MaxLifetime;
                         float radius = MaxRadius * t;
                         float alpha = 1f - t;
-                        Vector4 color1 = ring.IsTeam ? TeamColor : EnemyColor;
-                        uint color = ImGui.ColorConvertFloat4ToU32(new Vector4(color1.X, color1.Y, color1.Z, alpha));
+                        Vector4 color = ring.IsTeam ? teamColor : enemyColor;
+                        uint convertedColor = ImGui.ColorConvertFloat4ToU32(new Vector4(color.X, color.Y, color.Z, alpha));
 
                         const int segments = 32;
                         List<Vector2> points = [];
@@ -99,12 +103,12 @@ namespace Titled_Gui.Modules.Visual
 
                         if (points.Count < 2) continue;
 
-                        Vector2[] pointsArray = points.ToArray();
+                        Vector2[] pointsArray = [.. points];
                         unsafe
                         {
                             fixed (Vector2* ptr = pointsArray)
                             {
-                                GameState.renderer.DrawList.AddPolyline(ref *ptr, pointsArray.Length, color,
+                                GameState.renderer.DrawList.AddPolyline(ref *ptr, pointsArray.Length, convertedColor,
                                     ImDrawFlags.Closed,
                                     2f);
                             }
@@ -120,10 +124,10 @@ namespace Titled_Gui.Modules.Visual
 
         protected override void FrameAction()
         {
-            if (!Enabled)
+            if (!Enabled || GameState.Entities == null || GameState.Entities.Count <= 0)
                 return;
 
-            foreach (Entity e in GameState.Entities)
+            foreach (Entity? e in GameState.Entities)
             {
                 Update(e);
             }

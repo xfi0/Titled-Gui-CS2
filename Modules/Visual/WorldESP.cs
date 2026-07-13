@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using System.Numerics;
+using Titled_Gui.Classes;
 using Titled_Gui.Classes.Math;
 using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
@@ -24,8 +25,9 @@ namespace Titled_Gui.Modules.Visual
         public static Vector4 ProjectileTextColor = new(1, 1, 1, 1);
         public static Vector4 ChickenTextColor = new(1, 1, 1, 1);
         public static Vector4 HostageTextColor = new(1, 1, 1, 1);
-        public static Vector4 molotovFillColor = new(1f, 0.4f, 0f, 0.196f);
-        public static Vector4 molotovOutlineColor = new(1f, 0.4f, 0f, 0.588f);
+        private static Vector4 _molotovFillColor = new(1f, 0.4f, 0f, 0.196f);
+        private static Vector4 _molotovOutlineColor = new(1f, 0.4f, 0f, 0.588f);
+        public static Colors MolotovColors = new(primaryColor: _molotovFillColor, secondaryColor: _molotovOutlineColor);
         public static Vector4 BoxColor = new(1, 1, 1, 1);
         #endregion Colors
 
@@ -155,6 +157,18 @@ namespace Titled_Gui.Modules.Visual
                     "Chicken");
         }
 
+        private static Vector4 GetMolotovColor(bool fill)
+        {
+            if (fill && MolotovColors.TeamRGB)
+                return Colors.Rgb(alpha: MolotovColors.TeamColor.W);
+            else if (!fill && MolotovColors.EnemyRGB)
+                return Colors.Rgb(alpha: MolotovColors.EnemyColor.W);
+            else if (fill)
+                return MolotovColors.TeamColor;
+            else
+                return MolotovColors.EnemyColor;
+        }
+
         public static void DrawMolotovBounds(WorldEntity worldEntity)
         {
             if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99))
@@ -166,7 +180,7 @@ namespace Titled_Gui.Modules.Visual
             const int pointsPerFire = 12;
 
             int firePointCount = GameState.memory.ReadInt(worldEntity.PawnAddress + Offsets.m_fireCount);
-            if (firePointCount <= 0 || firePointCount >= 128) 
+            if (firePointCount <= 0 || firePointCount >= 128)
                 return;
 
             List<Vector2> points = new();
@@ -194,8 +208,8 @@ namespace Titled_Gui.Modules.Visual
             if (points.Count < 3)
                 return;
 
-            uint fill = ImGui.ColorConvertFloat4ToU32(molotovFillColor);
-            uint outline = ImGui.ColorConvertFloat4ToU32(molotovOutlineColor);
+            uint fill = ImGui.ColorConvertFloat4ToU32(GetMolotovColor(true));
+            uint outline = ImGui.ColorConvertFloat4ToU32(GetMolotovColor(false));
             ShapeRenderer.DrawConvexHull(points, fill, outline);
         }
 
@@ -238,7 +252,7 @@ namespace Titled_Gui.Modules.Visual
             {
                 Console.WriteLine("Index Out Of Bounds Of The Array Drawing 3D Boxes");
             }
-        }  
+        }
         public static void Draw3DBoxESPFromMatrix(Vector2[] corners2D, uint preConvertedColor, bool filled, float rounding, uint preConvertedFilledColor = 0)
         {
             try
@@ -276,7 +290,7 @@ namespace Titled_Gui.Modules.Visual
             }
             catch (IndexOutOfRangeException ex)
             {
-                Console.WriteLine("Index Out Of Bounds Of The Array Drawing 3D Boxes");
+                Console.WriteLine("Index Out Of Bounds Of The Array Drawing 3D Boxes: " + ex);
             }
         }
     }

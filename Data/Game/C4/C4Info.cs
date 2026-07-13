@@ -5,7 +5,7 @@ using System.Text;
 using Titled_Gui.Classes;
 using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Entity;
-using static Titled_Gui.Data.Entity.EntityTypes;
+using Titled_Gui.Data.Game.Types;
 
 namespace Titled_Gui.Data.Game.C4
 {
@@ -56,9 +56,9 @@ namespace Titled_Gui.Data.Game.C4
             Vector3 position = GetPos();
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
-            if (c4 == IntPtr.Zero || node == IntPtr.Zero || position == new Vector3(0, 0, 0)) 
+            if (c4 == IntPtr.Zero || node == IntPtr.Zero || position == new Vector3(0, 0, 0))
                 return;
-            
+
             C4 = new C4()
             {
                 Address = c4,

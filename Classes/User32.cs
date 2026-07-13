@@ -46,6 +46,15 @@ namespace Titled_Gui.Classes
             public IntPtr dwExtraInfo;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;        // x position of upper-left corner
+            public int Top;         // y position of upper-left corner
+            public int Right;       // x position of lower-right corner
+            public int Bottom;      // y position of lower-right corner
+        }
+
         public const int INPUT_KEYBOARD = 1;
         public const int INPUT_MOUSE = 0;
         public const uint MOUSEEVENTF_MOVE = 0x0001;
@@ -96,6 +105,12 @@ namespace Titled_Gui.Classes
         private static extern IntPtr GetModuleHandle(string lpModuleName);
         [DllImport("user32.dll")]
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool GetClientRect(IntPtr hWnd, ref RECT lpRect);
         public static bool GetKeyHeld(Keys key)
         {
             return ((ushort)GetAsyncKeyState((int)key) & 0x8000) != 0;

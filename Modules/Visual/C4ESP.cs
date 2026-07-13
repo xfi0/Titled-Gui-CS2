@@ -10,14 +10,14 @@ namespace Titled_Gui.Modules.Visual
 {
     internal class C4ESP
     {
-        public static bool BoxEnabled = false;
+        public static bool Enabled = false;
         public static bool TextEnabled = false;
-        public static Vector4 BoxColor = new(1, 1, 1, 1);
-        public static Vector4 TextColor = new(1, 1, 1, 1);
-
+        private static Vector4 _boxColor = new(1, 1, 1, 1);
+        private static Vector4 _textColor = new(1, 1, 1, 1);
+        public static Colors Colors = new Colors(primaryColor: _boxColor, secondaryColor: _textColor);
         public static void DrawESP()
         {
-            if (!BoxEnabled && !TextEnabled) return;
+            if (!Enabled) return;
 
             C4? c4 = C4Info.C4;
 
@@ -27,7 +27,9 @@ namespace Titled_Gui.Modules.Visual
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
             Vector3[] corners3D = Get3DCorners(c4);
             Vector2[] corners2D = new Vector2[corners3D.Length];
-
+            Vector4 textColor = Colors.SecondaryRGB ? Colors.Rgb(Colors.SecondaryColor.W) : Colors.SecondaryColor;
+            Vector4 boxColor = Colors.PrimaryRGB ? Colors.Rgb(Colors.PrimaryColor.W) : Colors.PrimaryColor
+                ;
             for (int i = 0; i < corners3D.Length; i++)
             {
                 corners2D[i] = MathUtils.WorldToScreen(viewMatrix, corners3D[i]);
@@ -35,20 +37,15 @@ namespace Titled_Gui.Modules.Visual
                     return;
             }
 
-            if (TextEnabled)
-                GameState.renderer.DrawList.AddText(c4.Position2D, ImGui.ColorConvertFloat4ToU32(TextColor), "C4");
-
-            if (BoxEnabled)
-            {
-                WorldESP.Draw3DBoxESPFromMatrix(corners2D, ImGui.ColorConvertFloat4ToU32(new Vector4(1,1,1,1)), false, 2);
-            }
+            GameState.renderer.DrawList.AddText(c4.Position2D, ImGui.ColorConvertFloat4ToU32(textColor), "C4");
+            WorldESP.Draw3DBoxESPFromMatrix(corners2D, ImGui.ColorConvertFloat4ToU32(boxColor), false, 2);
         }
 
         private static Vector3[] Get3DCorners(C4? c4)
         {
-            if (c4 == null)
+            if (c4 == null || c4.Matrix == null || c4.Matrix.Length < 6)
                 return Array.Empty<Vector3>();
-            
+
             float cos = c4.Matrix[6];
             float sin = c4.Matrix[7];
 

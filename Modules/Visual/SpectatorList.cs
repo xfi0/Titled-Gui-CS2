@@ -1,14 +1,7 @@
 ﻿using ImGuiNET;
-using System;
-using System.Collections.Generic;
-using System.Net.WebSockets;
 using System.Numerics;
-using System.Reflection.Metadata;
-using System.Text;
-using Titled_Gui.Classes.Memory;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
-using ValveResourceFormat.ResourceTypes.ModelAnimation.SegmentDecoders;
 
 namespace Titled_Gui.Modules.Visual
 {
@@ -39,7 +32,7 @@ namespace Titled_Gui.Modules.Visual
 
         private static void DrawAllPlayers()
         {
-            foreach (Entity entity in GameState.Entities)
+            foreach (Entity? entity in GameState.Entities)
             {
                 if (entity == null || entity.Name == null || entity.Name.Length <= 0 || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Health > 0)
                     continue;

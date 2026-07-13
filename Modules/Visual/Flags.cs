@@ -1,9 +1,8 @@
 ﻿using ImGuiNET;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
+using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
+using Titled_Gui.Data.Entity.Types;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Menu;
 
@@ -11,17 +10,23 @@ namespace Titled_Gui.Modules.Visual
 {
     internal class Flags
     {
-        public static Vector4 FlagColor = new(1, 1, 1, 1);
+        public static Vector4 TeamTextColor = new(1, 1, 1, 1);
+        public static Vector4 EnemyTextColor = new(1, 1, 1, 1);
+        public static Colors TextColors = new(TeamTextColor, EnemyTextColor, null, null, false, false, false, false);
         public static bool ScopedEnabled = false;
         public static bool FlashEnabled = false;
+        public static bool GunEnabled = false;
         private static Dictionary<string, int> enabledFlags = new();
         private static float _baseFontSize = 18f;
 
         public static void DrawFlags(Entity entity)
         {
-            Types.BoxRect? rect = entity.GetBoxRect();
+            BoxRect? rect = entity.GetBoxRect();
             if (rect == null)
                 return;
+
+            if (GunEnabled)
+                GunFlag(entity, rect);
 
             if (ScopedEnabled)
                 ScopedFlag(entity, rect);
@@ -34,10 +39,20 @@ namespace Titled_Gui.Modules.Visual
                 enabledFlags.Remove("Flash");
         }
 
-        public static void ScopedFlag(Entity entity, Types.BoxRect boxRect)
+        private static Vector4 GetFlagColor(Entity entity)
         {
-            if (entity == null || entity.PawnAddress == GameState.LocalPlayer.PawnAddress|| entity.Health <= 0 || entity.Position2D == new Vector2(-99, -99))
+            if (entity.IsTeammate)
+                return TextColors.TeamRGB ? Colors.Rgb(TextColors.TeamColor.W) : TextColors.TeamColor;
+            else
+                return TextColors.EnemyRGB ? Colors.Rgb(TextColors.EnemyColor.W) : TextColors.EnemyColor;
+        }
+
+        public static void ScopedFlag(Entity entity, BoxRect boxRect)
+        {
+            if (entity == null || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Health <= 0 || entity.Position2D == new Vector2(-99, -99))
                 return;
+
+            Vector4 color = GetFlagColor(entity);
 
             if (!enabledFlags.ContainsKey("Scoped"))
                 enabledFlags.TryAdd("Scoped", enabledFlags.Count + 1);
@@ -48,13 +63,15 @@ namespace Titled_Gui.Modules.Visual
             Vector2 textPos = new(boxRect.TopRight.X + 4, boxRect.TopRight.Y + (offsetY * 5) * 5);
             float fontSize = (float)Math.Clamp(_baseFontSize - (entity.Distance * 0.004f), 12f, _baseFontSize);
 
-            GameState.renderer.DrawList.AddText(Renderer.TextFont60, fontSize, textPos, ImGui.ColorConvertFloat4ToU32(FlagColor), scopedText);
+            GameState.renderer.DrawList.AddText(Renderer.TextFont60, fontSize, textPos, ImGui.ColorConvertFloat4ToU32(color), scopedText);
         }
 
-        public static void FlashedFlag(Entity entity, Types.BoxRect boxRect)
+        public static void FlashedFlag(Entity entity, BoxRect boxRect)
         {
             if (entity == null || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Health <= 0 || entity.Position2D == new Vector2(-99, -99))
                 return;
+
+            Vector4 color = GetFlagColor(entity);
 
             if (!enabledFlags.ContainsKey("Flash"))
                 enabledFlags.TryAdd("Flash", enabledFlags.Count + 1);
@@ -65,7 +82,23 @@ namespace Titled_Gui.Modules.Visual
             Vector2 textPos = new(boxRect.TopRight.X + 4, boxRect.TopRight.Y + offsetY * 4);
             float fontSize = (float)Math.Clamp(_baseFontSize - (entity.Distance * 0.004f), 12f, _baseFontSize);
 
-            GameState.renderer.DrawList.AddText(Renderer.TextFont60, fontSize, textPos, ImGui.ColorConvertFloat4ToU32(FlagColor), flashText);
+            GameState.renderer.DrawList.AddText(Renderer.TextFont60, fontSize, textPos, ImGui.ColorConvertFloat4ToU32(color), flashText);
+        }
+
+        public static void GunFlag(Entity? entity, BoxRect boxRect)
+        {
+            if (!GunEnabled || entity == null || entity.Health <= 0 || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.CurrentWeaponName == null || entity.Position2D == new Vector2(-99, -99)) return;
+
+            string icon = GunHelper.GetIcon(entity.CurrentWeaponName);
+            Vector4 color = GetFlagColor(entity);
+
+            if (string.IsNullOrEmpty(icon))
+                return;
+
+            Vector2 textPos = new(boxRect.BottomMiddle.X, boxRect.BottomMiddle.Y + 10f);
+            float fontSize = (float)Math.Clamp(_baseFontSize - (entity.Distance * 0.004f), 12f, _baseFontSize);
+
+            GameState.renderer.DrawList.AddText(Renderer.GunIconsFont, fontSize, textPos, ImGui.ColorConvertFloat4ToU32(TextColors.TeamColor), icon);
         }
     }
 }

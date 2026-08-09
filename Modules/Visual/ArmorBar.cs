@@ -18,7 +18,7 @@ namespace Titled_Gui.Modules.Visual
         private static Vector4 _backgroundColor = new(0.2f, 0.2f, 0.2f, 1f);
         public static void DrawArmorBar(Entity? e, Renderer renderer, float armor, float maxArmor)
         {
-            if (!EnableArmorhBar || e == null || e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.Health <= 0 ||
+            if (!EnableArmorhBar || e == null || GameState.LocalPlayer == null || e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.Health <= 0 ||
                 (BoxESP.TeamCheck && e.Team == GameState.LocalPlayer.Team) ||
                 (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || e.Armor < 1 ||
                 e.Position2D == new Vector2(-99, -99))
@@ -28,7 +28,6 @@ namespace Titled_Gui.Modules.Visual
             if (rect == null)
                 return;
 
-            Vector2 barTopRight = new(rect.TopRight.X - HealthBar.HealthBarWidth + 8, rect.TopRight.Y);
             float height = rect.BottomRight.Y - rect.TopLeft.Y;
 
             float healthPercentage = Math.Clamp(armor / maxArmor, 0f, 1f); // like percentage of box to be filled

@@ -12,9 +12,10 @@ namespace Titled_Gui.Modules.Visual
     {
         public static bool EnableTimeOverlay = false;
 
-        public static void TimeOverlay() // TODO diplay more info
+        public static void TimeOverlay() // TODO: diplay more info
         {
-            if (!EnableTimeOverlay) return;
+            if (!EnableTimeOverlay || GameState.renderer == null)
+                return;
 
             try
             {

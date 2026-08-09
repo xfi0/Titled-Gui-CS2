@@ -288,7 +288,7 @@ namespace Titled_Gui.Classes
                 },
                 ["Armor Bar"] = new JObject
                 {
-                    ["Armor Bar Enabled"] = ArmorBar.EnableArmorhBar,
+                    ["Armor Bar Enabled"] = ArmorBar.EnableArmorBar,
                     ["Armor Bar Draw On Self"] = ArmorBar.DrawOnSelf,
                     ["Armor Bar Width"] = ArmorBar.ArmorBarWidth,
                 },
@@ -632,7 +632,7 @@ namespace Titled_Gui.Classes
                 #endregion
 
                 #region Armor Bar
-                ArmorBar.EnableArmorhBar = configData["Armor Bar"]?["Armor Bar Enabled"]?.ToObject<bool>() ?? ArmorBar.EnableArmorhBar;
+                ArmorBar.EnableArmorBar = configData["Armor Bar"]?["Armor Bar Enabled"]?.ToObject<bool>() ?? ArmorBar.EnableArmorBar;
                 ArmorBar.DrawOnSelf = configData["Armor Bar"]?["Armor Bar Draw On Self"]?.ToObject<bool>() ?? ArmorBar.DrawOnSelf;
                 ArmorBar.ArmorBarWidth = configData["Armor Bar"]?["Armor Bar Width"]?.ToObject<float>() ?? ArmorBar.ArmorBarWidth;
                 #endregion

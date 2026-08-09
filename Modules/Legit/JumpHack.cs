@@ -9,7 +9,7 @@ namespace Titled_Gui.Modules.Legit
         public static int JumpHotkey = 0x20;
         public static void JumpShot()
         {
-            if (!JumpHackEnabled || GameState.LocalPlayer.Health == 0 || GameState.Entities.Count == 0) return;
+            if (!JumpHackEnabled || GameState.LocalPlayer == null || GameState.LocalPlayer.Health == 0 || GameState.Entities.Count == 0) return;
 
             if (User32.GetAsyncKeyState(JumpHotkey) < 0 && GameState.LocalPlayer.Velocity.Z > 287)
             {

@@ -45,7 +45,7 @@ namespace Titled_Gui.Modules.Visual
         {
             List<ChamsMeshDraw> draws = [];
 
-            if (GameState.renderer.Entities == null)
+            if (GameState.renderer == null || GameState.renderer.Entities == null)
                 return draws;
 
             foreach (Entity? entity in GameState.renderer.Entities)
@@ -100,7 +100,7 @@ namespace Titled_Gui.Modules.Visual
 
         private string? ReadModelName(Entity entity)
         {
-            if (entity.GameSceneNode == IntPtr.Zero || entity.PawnAddress == _modelNamePawn && _modelNameCache != null)
+            if (entity.GameSceneNode == IntPtr.Zero || entity.PawnAddress == _modelNamePawn && _modelNameCache != null || GameState.memory == null)
                 return _modelNameCache;
 
             var modelNamePointer = GameState.memory.ReadPointer(entity.GameSceneNode + Offsets.m_modelState + Offsets.m_ModelName);

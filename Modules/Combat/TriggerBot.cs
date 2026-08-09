@@ -9,14 +9,14 @@ namespace Titled_Gui.Modules.Rage
     {
         public static bool Enabled = false;
         public static int MinDelay = 0;
-        public static int MaxDelay = 10;  
+        public static int MaxDelay = 10;
         public static bool TeamCheck = true;
         public static int TriggerKey = (int)Keys.MButton;
         public static bool OnTarget = false;
         public static Stopwatch ReacquireTimer = new();
         public static Stopwatch TargetGraceTimer = new();
         public static int CurrentDelay = 0;
-        private static readonly Random random = new(); 
+        private static readonly Random random = new();
         public const int EntityListMultiplier = 0x8;
         public const int EntityEntryOffset = 0x10;
         public const int EntityStride = 120;
@@ -32,7 +32,7 @@ namespace Titled_Gui.Modules.Rage
         {
             try
             {
-                if (!Enabled || (TriggerKey != 0 && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0) || GameState.LocalPlayer.Health == 0) return;
+                if (!Enabled || GameState.LocalPlayer == null || GameState.memory == null || (TriggerKey != 0 && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0) || GameState.LocalPlayer.Health == 0) return;
 
                 int crosshairEnt = GameState.memory.ReadInt(GameState.LocalPlayerPawn + Offsets.m_iIDEntIndex);
                 if (crosshairEnt == -1 || crosshairEnt == 0)
@@ -60,7 +60,7 @@ namespace Titled_Gui.Modules.Rage
                 int entityTeam = GameState.memory.ReadInt(pawnAddress + Offsets.m_iTeamNum);
                 int health = GameState.memory.ReadInt(pawnAddress + Offsets.m_iHealth);
                 int lifeState = GameState.memory.ReadInt(pawnAddress + Offsets.m_lifeState);
-                
+
                 if ((TeamCheck && GameState.LocalPlayer.Team == entityTeam) || health == 0 || GameState.LocalPlayer.Health == 0 || lifeState != 256)
                 {
                     ClearTargetState();
@@ -104,7 +104,7 @@ namespace Titled_Gui.Modules.Rage
         {
             if (OnTarget && TargetGraceTimer.ElapsedMilliseconds < 100)
                 return;
-            
+
 
             OnTarget = false;
             ReacquireTimer.Reset();

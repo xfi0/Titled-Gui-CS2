@@ -21,7 +21,7 @@ namespace Titled_Gui.Modules.Visual
 
             C4? c4 = C4Info.C4;
 
-            if (c4 == null || !c4.Planted || c4.Position == new Vector3(0, 0, 0) || c4.Position2D == new Vector2(-99, -99))
+            if (c4 == null || !c4.Planted || c4.Position == Vector3.Zero || c4.Position2D == new Vector2(-99, -99) || GameState.memory == null || GameState.renderer == null)
                 return;
 
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);

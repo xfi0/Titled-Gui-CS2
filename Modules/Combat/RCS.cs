@@ -13,7 +13,7 @@ namespace Titled_Gui.Modules.Rage
         private static int StartBullet = 1;
         public static void RunRCS()
         {
-            if (!Enabled || GameState.LocalPlayer.Health == 0 || (User32.GetAsyncKeyState(0x01) & 0x8000) == 0)
+            if (!Enabled || GameState.LocalPlayer == null || GameState.LocalPlayer.Health <= 0 || (User32.GetAsyncKeyState(0x01) & 0x8000) == 0)
                 return;
 
             if (GameState.LocalPlayer.ShotsFired > StartBullet)
@@ -33,10 +33,10 @@ namespace Titled_Gui.Modules.Rage
             }
             else
                 OldPunch = new(0, 0, 0);
-            
+
         }
 
 
         protected override void FrameAction() => RunRCS();
     }
-} 
+}

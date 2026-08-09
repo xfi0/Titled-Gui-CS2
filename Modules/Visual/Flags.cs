@@ -49,7 +49,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void ScopedFlag(Entity entity, BoxRect boxRect)
         {
-            if (entity == null || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Health <= 0 || entity.Position2D == new Vector2(-99, -99))
+            if (entity == null || GameState.renderer == null || GameState.LocalPlayer == null || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Health <= 0 || entity.Position2D == new Vector2(-99, -99))
                 return;
 
             Vector4 color = GetFlagColor(entity);
@@ -68,7 +68,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void FlashedFlag(Entity entity, BoxRect boxRect)
         {
-            if (entity == null || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Health <= 0 || entity.Position2D == new Vector2(-99, -99))
+            if (entity == null || GameState.LocalPlayer == null || GameState.renderer == null || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Health <= 0 || entity.Position2D == new Vector2(-99, -99))
                 return;
 
             Vector4 color = GetFlagColor(entity);
@@ -87,7 +87,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void GunFlag(Entity? entity, BoxRect boxRect)
         {
-            if (!GunEnabled || entity == null || entity.Health <= 0 || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.CurrentWeaponName == null || entity.Position2D == new Vector2(-99, -99)) return;
+            if (!GunEnabled || GameState.LocalPlayer == null || entity == null || entity.Health <= 0 || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.CurrentWeaponName == null || entity.Position2D == new Vector2(-99, -99) || GameState.renderer == null) return;
 
             string icon = GunHelper.GetIcon(entity.CurrentWeaponName);
             Vector4 color = GetFlagColor(entity);

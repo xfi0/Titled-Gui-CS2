@@ -95,7 +95,7 @@ internal class Sections
             new("Player ESP", 2, () =>
             {
                 RenderBoolSetting("Enable Health Bar", () => HealthBar.EnableHealthBar, v => HealthBar.EnableHealthBar = v);
-                RenderBoolSettingWith1ColorPicker("Enable Armor Bar", () => ArmorBar.EnableArmorhBar, v => ArmorBar.EnableArmorhBar = v, ref ArmorBar.ArmorColor);
+                RenderBoolSettingWith1ColorPicker("Enable Armor Bar", () => ArmorBar.EnableArmorBar, v => ArmorBar.EnableArmorBar = v, ref ArmorBar.ArmorColor);
                 RenderBoolSetting("Eye Ray", () => EyeRay.Enabled, v => EyeRay.Enabled = v);
             }),
             new("Flags", 2, () =>

@@ -17,11 +17,11 @@ namespace Titled_Gui.Modules.Visual
             {
                 foreach (Entity? e in GameState.Entities)
                 {
-                    if (e == null || e.Bones == null || e.Health <= 0 || (!DrawOnTeam && e.Team == GameState.LocalPlayer.Team) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed)) 
+                    if (e == null || e.Bones == null || GameState.LocalPlayer == null || GameState.renderer == null || e.Health <= 0 || (!DrawOnTeam && e.Team == GameState.LocalPlayer.Team) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed))
                         continue;
 
                     Vector2 head = e.Bones[(int)BoneESP.BoneIds.Head].Position2D;
-                    if (head == Vector2.Zero || head == new Vector2(-99, -99)) 
+                    if (head == Vector2.Zero || head == new Vector2(-99, -99))
                         continue;
 
                     float yaw = e.AngEyeAngles.Y * (MathF.PI / 180.0f);
@@ -30,11 +30,11 @@ namespace Titled_Gui.Modules.Visual
                     float dy = -MathF.Sin(yaw) * Length;
 
 
-                    float clampedLength = Math.Clamp(Length, 0.3f, 0.6f); 
+                    float clampedLength = Math.Clamp(Length, 0.3f, 0.6f);
 
                     Vector2 end = new(head.X + dx * clampedLength, head.Y + dy * clampedLength);
 
-                    if (end == new Vector2(-99, -99)) 
+                    if (end == new Vector2(-99, -99))
                         continue;
 
                     GameState.renderer.DrawList.AddLine(head, end, ImGui.ColorConvertFloat4ToU32(EyeRayColor));

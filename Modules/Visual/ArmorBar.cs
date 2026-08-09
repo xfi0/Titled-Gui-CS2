@@ -9,7 +9,7 @@ namespace Titled_Gui.Modules.Visual
 {
     internal class ArmorBar
     {
-        public static bool EnableArmorhBar = false;
+        public static bool EnableArmorBar = false;
         public static bool DrawOnSelf = false;
         public static bool RGB = false;
         public static float ArmorBarWidth = 5f;
@@ -18,7 +18,7 @@ namespace Titled_Gui.Modules.Visual
         private static Vector4 _backgroundColor = new(0.2f, 0.2f, 0.2f, 1f);
         public static void DrawArmorBar(Entity? e, Renderer renderer, float armor, float maxArmor)
         {
-            if (!EnableArmorhBar || e == null || GameState.LocalPlayer == null || e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.Health <= 0 ||
+            if (!EnableArmorBar || e == null || GameState.LocalPlayer == null || e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.Health <= 0 ||
                 (BoxESP.TeamCheck && e.Team == GameState.LocalPlayer.Team) ||
                 (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || e.Armor < 1 ||
                 e.Position2D == new Vector2(-99, -99))

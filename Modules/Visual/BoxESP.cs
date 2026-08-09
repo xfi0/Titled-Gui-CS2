@@ -50,10 +50,12 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawBoxESP(Entity? entity)
         {
-            if (!EnableESP || entity == null || (TeamCheck && entity.Team == GameState.LocalPlayer.Team) ||
+            if (!EnableESP || entity == null || GameState.LocalPlayer == null ||
+                (TeamCheck && entity.Team == GameState.LocalPlayer.Team) ||
                 entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Health <= 0 ||
                 (FlashCheck && GameState.LocalPlayer.IsFlashed) || entity?.Bones?.Count < 0 ||
-                entity?.Bones == null || entity.Position2D == new Vector2(-99, -99)) return;
+                entity?.Bones == null || entity.Position2D == new Vector2(-99, -99) ||
+                GameState.renderer == null || GameState.memory == null) return;
 
             try
             {
@@ -285,9 +287,11 @@ namespace Titled_Gui.Modules.Visual
                 thickness);
         }
 
-        private static bool DrawPyramid(Entity entity, float[] viewMatrix, uint preConvertedColor,
-            uint preConvertedFillColor, float thickness)
+        private static bool DrawPyramid(Entity entity, float[] viewMatrix, uint preConvertedColor, uint preConvertedFillColor, float thickness)
         {
+            if (GameState.renderer == null)
+                return true;
+
             float yaw = entity.AngEyeAngles.Y * (MathF.PI / 180f);
             float cos = MathF.Cos(yaw);
             float sin = MathF.Sin(yaw);
@@ -305,7 +309,8 @@ namespace Titled_Gui.Modules.Visual
             for (int i = 0; i < 5; i++)
             {
                 corners2D[i] = MathUtils.WorldToScreen(viewMatrix, corners3D[i]);
-                if (corners2D[i] == new Vector2(-99, -99)) return true;
+                if (corners2D[i] == new Vector2(-99, -99))
+                    return true;
             }
 
             GameState.renderer.DrawList.AddLine(corners2D[0], corners2D[1], preConvertedColor, thickness);
@@ -431,6 +436,9 @@ namespace Titled_Gui.Modules.Visual
 
         public static void Draw3DBoxESP(Vector2[] corners2D, uint preConvertedColor, bool filled, float rounding, uint preConvertedFilledColor = 0)
         {
+            if (GameState.renderer == null)
+                return;
+
             try
             {
                 if (filled)
@@ -517,7 +525,7 @@ namespace Titled_Gui.Modules.Visual
             if (HealthBar.EnableHealthBar)
                 HealthBar.DrawHealthBarPreview(center + windowPos, entityHeight);
 
-            if (ArmorBar.EnableArmorhBar)
+            if (ArmorBar.EnableArmorBar)
                 ArmorBar.DrawArmorBarPreview(center + windowPos, entityHeight);
 
             if (NameDisplay.Enabled)
@@ -675,7 +683,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static BoxRect? GetBoxRect(Entity? entity)
         {
-            if (entity == null || entity.Position2D == Vector2.Zero || entity.ViewPosition2D == Vector2.Zero)
+            if (entity == null || entity.Position2D == Vector2.Zero || entity.Position2D == new Vector2(-99, -99) || entity.ViewPosition2D == Vector2.Zero || entity.ViewPosition2D == new Vector2(-99, -99) || GameState.memory == null)
                 return null;
 
             float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);

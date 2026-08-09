@@ -14,7 +14,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawName(Entity? e, Renderer renderer)
         {
-            if (!Enabled || e == null || e.Position2D == new Vector2(-99, -99) ||
+            if (!Enabled || e == null || e.Position2D == new Vector2(-99, -99) || GameState.LocalPlayer == null ||
                 e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.Health <= 0 ||
                 BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed || e?.Bones == null || e?.Bones?.Count < 2 ||
                 e?.Bones?[(int)BoneESP.BoneIds.Head].Position2D == new Vector2(-99, -99))

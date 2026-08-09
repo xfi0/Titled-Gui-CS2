@@ -10,7 +10,7 @@ namespace Titled_Gui.Classes
     internal class Configs : Classes.ThreadService
     {
         public static string MenuName = "Titled";
-        public static string Version = "2.2";
+        public static string Version = "2.3";
         public static string Author = "https://github.com/xfi0";
         public static string Link = "https://github.com/xfi0/Titled-Gui-CS2";
         public static string titledDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Titled", "CS2", "External");
@@ -274,7 +274,7 @@ namespace Titled_Gui.Classes
                 ["Chams"] = new JObject
                 {
                     ["Chams Enabled"] = Chams.Enabled,
-                    ["Chams Thickness"] = Chams.BoneThickness,
+                    ["Chams Style Index"] = Chams.StyleIndex,
                     ["Chams Team Check"] = Chams.TeamCheck
                 },
                 ["No Flash"] = new JObject
@@ -294,7 +294,7 @@ namespace Titled_Gui.Classes
                 },
                 ["Hit Actions"] = new JObject
                 {
-                    ["Hit Sound Enabled"] = HitStuff.Enabled,
+                    ["Hit Sound Enabled"] = HitStuff.EnableHitSounds,
                     ["Hit Sound Volume"] = HitStuff.Volume,
                     ["Current Hit Sound"] = HitStuff.CurrentHitSound,
                     ["Enable Headshot Text"] = HitStuff.EnableHeadshotText,
@@ -618,7 +618,7 @@ namespace Titled_Gui.Classes
 
                 #region Chams
                 Chams.Enabled = configData["Chams"]?["Chams Enabled"]?.ToObject<bool>() ?? Chams.Enabled;
-                Chams.BoneThickness = configData["Chams"]?["Chams Thickness"]?.ToObject<float>() ?? Chams.BoneThickness;
+                Chams.StyleIndex = configData["Chams"]?["Chams Style Index"]?.ToObject<int>() ?? Chams.StyleIndex;
                 Chams.TeamCheck = configData["Chams"]?["Chams Team Check"]?.ToObject<bool>() ?? Chams.TeamCheck;
                 #endregion
 
@@ -638,7 +638,7 @@ namespace Titled_Gui.Classes
                 #endregion
 
                 #region Hit Actions
-                HitStuff.Enabled = configData["Hit Actions"]?["Hit Sound Enabled"]?.ToObject<bool>() ?? HitStuff.Enabled;
+                HitStuff.EnableHitSounds = configData["Hit Actions"]?["Hit Sound Enabled"]?.ToObject<bool>() ?? HitStuff.EnableHitSounds;
                 HitStuff.Volume = configData["Hit Actions"]?["Hit Sound Volume"]?.ToObject<float>() ?? HitStuff.Volume;
                 HitStuff.CurrentHitSound = configData["Hit Actions"]?["Current Hit Sound"]?.ToObject<int>() ?? HitStuff.CurrentHitSound;
                 HitStuff.EnableHeadshotText = configData["Hit Actions"]?["Enable Headshot Text"]?.ToObject<bool>() ?? HitStuff.EnableHeadshotText;

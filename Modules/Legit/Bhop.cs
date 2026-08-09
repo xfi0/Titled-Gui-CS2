@@ -18,7 +18,7 @@ namespace Titled_Gui.Modules.Legit
         {
             //int now = GlobalVar.GetTickCount();
 
-            if ((User32.GetAsyncKeyState(HopKey) & 0x8000) == 0)
+            if ((User32.GetAsyncKeyState(HopKey) & 0x8000) == 0 || GameState.memory == null)
                 return;
 
             //if (now - lastJumped < random.Next(minDelay, maxDelay))
@@ -56,7 +56,9 @@ namespace Titled_Gui.Modules.Legit
         }
         protected override void FrameAction()
         {
-            if (!BhopEnable) return;
+            if (!BhopEnable || GameState.memory == null)
+                return;
+
             GameState.Fflag = GameState.memory.ReadUInt(GameState.LocalPlayerPawn, Offsets.m_fFlags);
             AutoBhop();
         }

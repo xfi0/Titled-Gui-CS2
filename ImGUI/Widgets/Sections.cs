@@ -1,8 +1,10 @@
-﻿using ImGuiNET;
+using ImGuiNET;
 using System.Numerics;
 using Titled_Gui;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
+using Titled_Gui.Data.Menu.Types;
+using Titled_Gui.ImGUI.Widgets;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
@@ -14,18 +16,11 @@ using static Titled_Gui.ImGUI.Widgets.Toggles;
 internal class Sections
 {
     public static float ChildRounding = 6f;
-    public class SectionT
+    public class SectionT(string label, int tab, Action content)
     {
-        public string label;
-        public Action content;
-        public int tab;
-
-        public SectionT(string label, int tab, Action content)
-        {
-            this.label = label;
-            this.tab = tab;
-            this.content = content;
-        }
+        public string label = label;
+        public Action content = content;
+        public int tab = tab;
     }
     public static List<SectionT> sections = InitializeSections();
 
@@ -35,126 +30,130 @@ internal class Sections
         {
             new("Misc", 0, () =>
             {
-                RenderBoolSettingWithWarning("Auto Bunny Hop", ref Bhop.BhopEnable);
-                RenderBoolSetting("Hit Sound", ref HitStuff.Enabled);
+                RenderBoolSettingWithWarning("Auto Bunny Hop", () => Bhop.BhopEnable, v => Bhop.BhopEnable = v);
+                RenderBoolSetting("Hit Sound", () => HitStuff.EnableHitSounds, v => HitStuff.EnableHitSounds = v);
                 RenderFloatSlider("Hit Sound Volume", ref HitStuff.Volume, 0, 1);
                 RenderIntCombo("Current Hit Sound", ref HitStuff.CurrentHitSound, HitStuff.HitSoundDisplays, HitStuff.HitSounds.Count, true);
-                RenderBoolSettingWith1ColorPicker("Headshot Text", ref HitStuff.EnableHeadshotText, ref HitStuff.TextColor);
+                RenderBoolSettingWith1ColorPicker("Headshot Text", () => HitStuff.EnableHeadshotText, v => HitStuff.EnableHeadshotText = v, ref HitStuff.TextColor);
             }),
             new("Gernade Helper", 0, () =>
             {
-                RenderBoolSetting("Enable Gernade Helper", ref GernadeLineup.Enabled);
-                RenderBoolSetting("Always Show", ref GernadeLineup.AlwaysShow);
+                RenderBoolSetting("Enable Gernade Helper", () => GernadeLineup.Enabled, v => GernadeLineup.Enabled = v);
+                RenderBoolSetting("Always Show", () => GernadeLineup.AlwaysShow, v => GernadeLineup.AlwaysShow = v);
                 //Render2ColorPickers("Position Circle Color", ref GernadeLineup.PositionColorInside, ref GernadeLineup.PositionColorOutside);
                 ImGui.InputText("Lineup Name", ref GernadeLineup.LineupName, 128);
                 RenderIntCombo("Linup Type", ref GernadeLineup.SelectedType, GernadeLineup.TypesList, GernadeLineup.TypesList.Count, false);
                 Titled_Gui.ImGUI.Widgets.Button.RenderButton("Save Lineup", () => {
-                    GernadeLineup.SaveLineup(GernadeLineup.LineupName, (Titled_Gui.Data.Menu.Types.GernadeLaunchType)GernadeLineup.SelectedType);
+                    GernadeLineup.SaveLineup(GernadeLineup.LineupName, (GrenadeLaunchType)GernadeLineup.SelectedType);
                 });
             }),
 
             new("Aimbot", 1, () =>
             {
-                RenderBoolSetting("Enable Aimbot", ref Aimbot.AimbotEnable);
+                RenderBoolSetting("Enable Aimbot", () => Aimbot.AimbotEnable, v => Aimbot.AimbotEnable = v);
                 RenderIntCombo("Aim Bone", ref Aimbot.CurrentBone, Aimbot.Bones.ToList(), Aimbot.Bones.Length);
-                Renderer.RenderKeybindChooser("Aimbot Keybind", ref Aimbot.AimbotKey);
-                RenderBoolSetting("Aim On Team", ref Aimbot.Team);
+                Keybind.RenderKeybindChooser("Aimbot Keybind", ref Aimbot.AimbotKey, () => Aimbot.AimbotEnable);
+                RenderBoolSetting("Aim On Team", () => Aimbot.Team, v => Aimbot.Team = v);
                 RenderFloatSlider("Smoothing X", ref Aimbot.SmoothingX, 0, 20, "%.2f");
                 RenderFloatSlider("Smoothing Y", ref Aimbot.SmoothingY, 0, 20, "%.2f");
-                RenderBoolSetting("Draw FOV", ref Aimbot.DrawFov);
-                RenderBoolSetting("Use FOV", ref Aimbot.UseFOV);
-                RenderBoolSetting("Scoped Check", ref Aimbot.ScopedOnly);
+                RenderBoolSetting("Draw FOV", () => Aimbot.DrawFov, v => Aimbot.DrawFov = v);
+                RenderBoolSetting("Use FOV", () => Aimbot.UseFOV, v => Aimbot.UseFOV = v);
+                RenderBoolSetting("Scoped Check", () => Aimbot.ScopedOnly, v => Aimbot.ScopedOnly = v);
                 RenderIntSlider("FOV Size", ref Aimbot.FovSize, 10, 1000, "%d");
                 RenderColorPicker("FOV Color", ref Aimbot.FovColor, ref Aimbot.RGB);
-                RenderBoolSetting("Visibility Check", ref Aimbot.VisibilityCheck);
-                RenderBoolSetting("Target Line", ref Aimbot.TargetLine);
+                RenderBoolSetting("Visibility Check", () => Aimbot.VisibilityCheck, v => Aimbot.VisibilityCheck = v);
+                RenderBoolSetting("Target Line", () => Aimbot.TargetLine, v => Aimbot.TargetLine = v);
             }),
             new("RCS", 1, () =>
             {
-                RenderBoolSetting("RCS", ref RCS.Enabled);
+                RenderBoolSetting("RCS", () => RCS.Enabled, v => RCS.Enabled = v);
                 RenderFloatSlider("Strength", ref RCS.Strength, 0f, 1f, "%.2f");
             }),
             new("Triggerbot", 1, () =>
             {
-                RenderBoolSetting("Triggerbot", ref TriggerBot.Enabled);
-                RenderBoolSetting("Team Check", ref TriggerBot.TeamCheck);
-                Renderer.RenderKeybindChooser("Trigger Bot Keybind", ref TriggerBot.TriggerKey);
+                RenderBoolSetting("Triggerbot", () => TriggerBot.Enabled, v => TriggerBot.Enabled = v);
+                RenderBoolSetting("Team Check", () => TriggerBot.TeamCheck, v => TriggerBot.TeamCheck = v);
+                Keybind.RenderKeybindChooser("Trigger Bot Keybind", ref TriggerBot.TriggerKey, () => TriggerBot.Enabled);
                 RenderIntSlider("Max Delay", ref TriggerBot.MaxDelay, 0, 1000, "%d");
                 RenderIntSlider("Min Delay", ref TriggerBot.MinDelay, 0, 1000, "%d");
             }),
 
             new("Box ESP", 2, () =>
             {
-                RenderBoolSetting("Enable ESP", ref BoxESP.EnableESP);
+                RenderBoolSetting("Enable ESP", () => BoxESP.EnableESP, v => BoxESP.EnableESP = v);
                 RenderIntCombo("ESP Shape", ref BoxESP.CurrentShape, BoxESP.Shapes.ToList(), BoxESP.Shapes.Length, false);
-                RenderBoolSetting("Team Check", ref BoxESP.TeamCheck);
-                RenderBoolSettingWith2ColorPickers("Box Fill Gradient", ref BoxESP.BoxFillGradient, ref BoxESP.GradientColors.TeamRGB, ref BoxESP.GradientColors.EnemyRGB, ref BoxESP.GradientColors.TeamColor, ref BoxESP.GradientColors.EnemyColor); // TODO impl rgb
-                RenderBoolSettingWith2ColorPickers("Filled Boxes", ref BoxESP.FillBox, ref BoxESP.FillColors.TeamRGB, ref BoxESP.FillColors.EnemyRGB, ref BoxESP.FillColors.TeamColor, ref BoxESP.FillColors.EnemyColor);
-                RenderBoolSettingWith1ColorPicker("Inner Outline", ref BoxESP.InnerOutline, ref BoxESP.InnerOutlineColors.TeamRGB, ref BoxESP.InnerOutlineColors.TeamColor);
+                RenderBoolSetting("Team Check", () => BoxESP.TeamCheck, v => BoxESP.TeamCheck = v);
+                RenderBoolSettingWith2ColorPickers("Box Fill Gradient", () => BoxESP.BoxFillGradient, v => BoxESP.BoxFillGradient = v, ref BoxESP.GradientColors.TeamRGB, ref BoxESP.GradientColors.EnemyRGB, ref BoxESP.GradientColors.TeamColor, ref BoxESP.GradientColors.EnemyColor); // TODO impl rgb
+                RenderBoolSettingWith2ColorPickers("Filled Boxes", () => BoxESP.FillBox, v => BoxESP.FillBox = v, ref BoxESP.FillColors.TeamRGB, ref BoxESP.FillColors.EnemyRGB, ref BoxESP.FillColors.TeamColor, ref BoxESP.FillColors.EnemyColor);
+                RenderBoolSettingWith1ColorPicker("Inner Outline", () => BoxESP.InnerOutline, v => BoxESP.InnerOutline = v, ref BoxESP.InnerOutlineColors.TeamRGB, ref BoxESP.InnerOutlineColors.TeamColor);
                 RenderFloatSlider("ESP Rounding", ref BoxESP.Rounding, 0, 5f);
                 RenderFloatSlider("ESP Glow", ref BoxESP.GlowAmount, 0f, 5f);
-                RenderBoolSettingWith2ColorPickers("Outer Outline", ref BoxESP.OuterOutline, ref BoxESP.OutlineColors.TeamRGB, ref BoxESP.OutlineColors.EnemyRGB, ref BoxESP.OutlineColors.TeamColor, ref BoxESP.OutlineColors.EnemyColor);
-                RenderBoolSettingWith2ColorPickers("Visibility Check", ref BoxESP.VisibilityCheck, ref BoxESP.OccludedColors.TeamRGB, ref BoxESP.OccludedColors.EnemyRGB, ref BoxESP.OccludedColors.TeamColor, ref BoxESP.OccludedColors.EnemyColor);
-                RenderBoolSetting("Flash Check", ref BoxESP.FlashCheck);
+                RenderBoolSettingWith2ColorPickers("Outer Outline", () => BoxESP.OuterOutline, v => BoxESP.OuterOutline = v, ref BoxESP.OutlineColors.TeamRGB, ref BoxESP.OutlineColors.EnemyRGB, ref BoxESP.OutlineColors.TeamColor, ref BoxESP.OutlineColors.EnemyColor);
+                RenderBoolSettingWith2ColorPickers("Visibility Check", () => BoxESP.VisibilityCheck, v => BoxESP.VisibilityCheck = v, ref BoxESP.OccludedColors.TeamRGB, ref BoxESP.OccludedColors.EnemyRGB, ref BoxESP.OccludedColors.TeamColor, ref BoxESP.OccludedColors.EnemyColor);
+                RenderBoolSetting("Flash Check", () => BoxESP.FlashCheck, v => BoxESP.FlashCheck = v);
             }),
             new("Player ESP", 2, () =>
             {
-                RenderBoolSetting("Enable Health Bar", ref HealthBar.EnableHealthBar);
-                RenderBoolSetting("Enable Armor Bar", ref ArmorBar.EnableArmorhBar);
-                RenderBoolSetting("Eye Ray", ref EyeRay.Enabled);
+                RenderBoolSetting("Enable Health Bar", () => HealthBar.EnableHealthBar, v => HealthBar.EnableHealthBar = v);
+                RenderBoolSetting("Enable Armor Bar", () => ArmorBar.EnableArmorhBar, v => ArmorBar.EnableArmorhBar = v);
+                RenderBoolSetting("Eye Ray", () => EyeRay.Enabled, v => EyeRay.Enabled = v);
             }),
             new("Flags", 2, () =>
             {
                 Render2ColorPickers("Text Color", ref Flags.TextColors.TeamRGB, ref Flags.TextColors.EnemyRGB, ref Flags.TextColors.TeamColor, ref Flags.TextColors.EnemyColor);
-                RenderBoolSetting("Scoped", ref Flags.ScopedEnabled);
-                RenderBoolSetting("Flashed", ref Flags.FlashEnabled);
-                RenderBoolSetting("Show Distance Text", ref DistanceText.Enabled);
-                RenderBoolSetting("Show Name", ref NameDisplay.Enabled);
-                RenderBoolSetting("Gun Icon", ref Flags.GunEnabled);
-                RenderBoolSettingWith1ColorPicker("Ping Display", ref PingDisplay.Enabled, ref PingDisplay.PingTextColor);
+                RenderBoolSetting("Scoped", () => Flags.ScopedEnabled, v => Flags.ScopedEnabled = v);
+                RenderBoolSetting("Flashed", () => Flags.FlashEnabled, v => Flags.FlashEnabled = v);
+                RenderBoolSetting("Show Distance Text", () => DistanceText.Enabled, v => DistanceText.Enabled = v);
+                RenderBoolSetting("Show Name", () => NameDisplay.Enabled, v => NameDisplay.Enabled = v);
+                RenderBoolSetting("Gun Icon", () => Flags.GunEnabled, v => Flags.GunEnabled = v);
+                RenderBoolSettingWith1ColorPicker("Ping Display", () => PingDisplay.Enabled, v => PingDisplay.Enabled = v, ref PingDisplay.PingTextColor);
             }),
             new("Bone ESP", 2, () =>
             {
-                RenderBoolSettingWith2ColorPickers("Enable Bone ESP", ref BoneESP.EnableBoneESP, ref BoneESP.VisibleColors.TeamRGB, ref BoneESP.VisibleColors.EnemyRGB, ref BoneESP.VisibleColors.TeamColor, ref BoneESP.VisibleColors.EnemyColor);
-                RenderBoolSettingWith2ColorPickers("Visibility Check", ref BoneESP.visibilityCheck, ref BoneESP.OccludedColors.TeamRGB, ref BoneESP.OccludedColors.EnemyRGB, ref BoneESP.OccludedColors.TeamColor, ref BoneESP.OccludedColors.EnemyColor);
+                RenderBoolSettingWith2ColorPickers("Enable Bone ESP", () => BoneESP.EnableBoneESP, v => BoneESP.EnableBoneESP = v, ref BoneESP.VisibleColors.TeamRGB, ref BoneESP.VisibleColors.EnemyRGB, ref BoneESP.VisibleColors.TeamColor, ref BoneESP.VisibleColors.EnemyColor);
+                RenderBoolSettingWith2ColorPickers("Visibility Check", () => BoneESP.visibilityCheck, v => BoneESP.visibilityCheck = v, ref BoneESP.OccludedColors.TeamRGB, ref BoneESP.OccludedColors.EnemyRGB, ref BoneESP.OccludedColors.TeamColor, ref BoneESP.OccludedColors.EnemyColor);
                 RenderIntCombo("Bone ESP Type", ref BoneESP.CurrentType, BoneESP.Types.ToList(), BoneESP.Types.Length);
-                RenderBoolSetting("Team Check", ref BoneESP.TeamCheck);
+                RenderBoolSetting("Team Check##BoneESP", () => BoneESP.TeamCheck, v => BoneESP.TeamCheck = v);
                 RenderFloatSlider("Bone Glow", ref BoneESP.GlowAmount, 0, 1f);
             }),
             new("Tracers", 2, () =>
             {
-                RenderBoolSettingWith2ColorPickers("Enable Tracers", ref Tracers.EnableTracers, ref Tracers.TracerColors.TeamRGB, ref Tracers.TracerColors.EnemyRGB, ref Tracers.TracerColors.TeamColor, ref Tracers.TracerColors.EnemyColor);
+                RenderBoolSettingWith2ColorPickers("Enable Tracers", () => Tracers.EnableTracers, v => Tracers.EnableTracers = v, ref Tracers.TracerColors.TeamRGB, ref Tracers.TracerColors.EnemyRGB, ref Tracers.TracerColors.TeamColor, ref Tracers.TracerColors.EnemyColor);
                 RenderIntCombo("Tracer Start Position", ref Tracers.CurrentStartPos, Tracers.StartPositions, Tracers.StartPositions.Count, false);
                 RenderIntCombo("Tracer End Position", ref Tracers.CurrentEndPos, Tracers.EndPositions.ToList(), Tracers.EndPositions.Length);
                 RenderFloatSlider("Tracer Thickness", ref Tracers.LineThickness, 0.05f, 5f);
             }),
-            new("Chams & Sound", 2, () =>
+            new("Chams", 2, () =>
             {
-                RenderBoolSettingWith2ColorPickers("Chams", ref Chams.Enabled, ref Chams.VisibleColors.TeamRGB, ref Chams.VisibleColors.EnemyRGB,  ref Chams.VisibleColors.TeamColor, ref Chams.VisibleColors.EnemyColor);
-                RenderBoolSettingWith2ColorPickers("Sound ESP", ref SoundESP.Enabled, ref SoundESP.VisibleColors.TeamRGB, ref SoundESP.VisibleColors.EnemyRGB, ref SoundESP.VisibleColors.TeamColor, ref SoundESP.VisibleColors.EnemyColor);
+                RenderBoolSettingWith2ColorPickers("Chams", () => Chams.Enabled, v => Chams.Enabled = v, ref Chams.VisibleColors.TeamRGB, ref Chams.VisibleColors.EnemyRGB,  ref Chams.VisibleColors.TeamColor, ref Chams.VisibleColors.EnemyColor);
+                RenderBoolSetting("Team Check##Chams", () => Chams.TeamCheck, v => Chams.TeamCheck = v);
+                RenderIntCombo("Chams Style", ref Chams.StyleIndex, Chams.StyleNames.ToList(), Chams.StyleNames.Length);
+                RenderBoolSetting("Pixel Perfect Depth", () => Chams.PixelPerfect, v => Chams.PixelPerfect = v);
             }),
             new("Other Visuals", 2, () =>
             {
-                RenderBoolSetting("Bomb Timer", ref BombTimerOverlay.EnableTimeOverlay);
-                RenderBoolSetting("Spectator List", ref SpectatorList.Enabled);
-                RenderBoolSettingWithWarning("Anti Flash", ref NoFlash.NoFlashEnable);
-                RenderBoolSettingWithWarning("FOV Changer", ref FovChanger.Enabled);
-                RenderBoolSettingWithWarning("Third Person", ref ThirdPerson.Enabled);
+                RenderBoolSetting("Bomb Timer", () => BombTimerOverlay.EnableTimeOverlay, v => BombTimerOverlay.EnableTimeOverlay = v);
+                RenderBoolSetting("Spectator List", () => SpectatorList.Enabled, v => SpectatorList.Enabled = v);
+                RenderBoolSettingWithWarning("Anti Flash", () => NoFlash.NoFlashEnable, v => NoFlash.NoFlashEnable = v);
+                RenderBoolSettingWithWarning("FOV Changer", () => FovChanger.Enabled, v => FovChanger.Enabled = v);
+                RenderBoolSettingWithWarning("Third Person", () => ThirdPerson.Enabled, v => ThirdPerson.Enabled = v);
                 RenderIntSlider("Desired FOV", ref FovChanger.FOV, 60, 160);
-                RenderBoolSettingWith2ColorPickers("Radar", ref Radar.IsEnabled, ref Radar.PointColors.TeamRGB, ref Radar.PointColors.EnemyRGB, ref  Radar.PointColors.TeamColor, ref Radar.PointColors.EnemyColor);
-                RenderBoolSetting("Draw Team", ref Radar.DrawOnTeam);
-                RenderBoolSetting("Draw Cross", ref Radar.DrawCrossb);
+                RenderBoolSettingWith2ColorPickers("Radar", () => Radar.IsEnabled, v => Radar.IsEnabled = v, ref Radar.PointColors.TeamRGB, ref Radar.PointColors.EnemyRGB, ref  Radar.PointColors.TeamColor, ref Radar.PointColors.EnemyColor);
+                RenderBoolSetting("Draw Team", () => Radar.DrawOnTeam, v => Radar.DrawOnTeam = v);
+                RenderBoolSetting("Draw Cross", () => Radar.DrawCrossb, v => Radar.DrawCrossb = v);
+                        RenderBoolSettingWith2ColorPickers("Sound ESP", () => SoundESP.Enabled, v => SoundESP.Enabled = v, ref SoundESP.VisibleColors.TeamRGB, ref SoundESP.VisibleColors.EnemyRGB, ref SoundESP.VisibleColors.TeamColor, ref SoundESP.VisibleColors.EnemyColor);
             }),
             new("World ESP", 2, () =>
             {
-                RenderBoolSettingWith2ColorPickers("C4 ESP", ref C4ESP.Enabled, ref C4ESP.Colors.PrimaryRGB, ref C4ESP.Colors.SecondaryRGB, ref C4ESP.Colors.PrimaryColor, ref C4ESP.Colors.SecondaryColor);
-                RenderBoolSettingWith1ColorPicker("Dropped Weapon ESP", ref WorldESP.DroppedWeaponESP, ref WorldESP.WeaponTextColor);
-                RenderBoolSettingWith1ColorPicker("Dropped Hostage ESP", ref WorldESP.HostageESP, ref WorldESP.HostageTextColor);
-                RenderBoolSettingWith1ColorPicker("Chicken ESP", ref WorldESP.ChickenESP, ref WorldESP.ChickenTextColor);
-                RenderBoolSettingWith1ColorPicker("Projectile ESP", ref WorldESP.ProjectileESP, ref WorldESP.ProjectileTextColor);
-                RenderBoolSettingWith1ColorPicker("World ESP Boxes", ref WorldESP.DrawBoxes, ref WorldESP.BoxColor);
-                RenderBoolSettingWith2ColorPickers("Molotov Bounds", ref WorldESP.MolotovBoundsESP, ref WorldESP.MolotovColors.TeamRGB, ref WorldESP.MolotovColors.EnemyRGB, ref WorldESP.MolotovColors.TeamColor, ref WorldESP.MolotovColors.EnemyColor);
-                RenderBoolSetting("World ESP Text", ref WorldESP.DrawText);
+                RenderBoolSettingWith2ColorPickers("C4 ESP", () => C4ESP.Enabled, v => C4ESP.Enabled = v, ref C4ESP.Colors.PrimaryRGB, ref C4ESP.Colors.SecondaryRGB, ref C4ESP.Colors.PrimaryColor, ref C4ESP.Colors.SecondaryColor);
+                RenderBoolSettingWith1ColorPicker("Dropped Weapon ESP", () => WorldESP.DroppedWeaponESP, v => WorldESP.DroppedWeaponESP = v, ref WorldESP.WeaponTextColor);
+                RenderBoolSettingWith1ColorPicker("Dropped Hostage ESP", () => WorldESP.HostageESP, v => WorldESP.HostageESP = v, ref WorldESP.HostageTextColor);
+                RenderBoolSettingWith1ColorPicker("Chicken ESP", () => WorldESP.ChickenESP, v => WorldESP.ChickenESP = v, ref WorldESP.ChickenTextColor);
+                RenderBoolSettingWith1ColorPicker("Projectile ESP", () => WorldESP.ProjectileESP, v => WorldESP.ProjectileESP = v, ref WorldESP.ProjectileTextColor);
+                RenderBoolSettingWith1ColorPicker("World ESP Boxes", () => WorldESP.DrawBoxes, v => WorldESP.DrawBoxes = v, ref WorldESP.BoxColor);
+                RenderBoolSettingWith2ColorPickers("Molotov Bounds", () => WorldESP.MolotovBoundsESP, v => WorldESP.MolotovBoundsESP = v, ref WorldESP.MolotovColors.PrimaryRGB, ref WorldESP.MolotovColors.SecondaryRGB, ref WorldESP.MolotovColors.PrimaryColor, ref WorldESP.MolotovColors.SecondaryColor);
+                RenderBoolSetting("World ESP Text", () => WorldESP.DrawText, v => WorldESP.DrawText = v);
+                RenderBoolSetting("World Chams", () => WorldESP.DrawChams, v => WorldESP.DrawChams = v);
             }),
 
             new("GUI", 4, () =>
@@ -165,15 +164,15 @@ internal class Sections
                 RenderFloatSlider("Particle Speed", ref Renderer.ParticleSpeed, 0, 10);
                 RenderColorPicker("Particle Color", ref Renderer.BackgroundEffectColors.PrimaryColor, ref Renderer.BackgroundEffectColors.PrimaryRGB, () =>{Renderer.ApplyColors(); });
                 RenderColorPicker("Line Color", ref Renderer.BackgroundEffectColors.SecondaryColor, ref Renderer.BackgroundEffectColors.SecondaryRGB, () =>{Renderer.ApplyColors(); });
-                Renderer.RenderKeybindChooser("Open Keybind", ref Renderer.OpenKeyInt);
-                RenderBoolSetting("Menu Sounds", ref Renderer.MenuSounds);
+                Keybind.RenderKeybindChooser("Open Keybind", ref Renderer.OpenKeyInt, () => Renderer.DrawWindow);
+                RenderBoolSetting("Menu Sounds", () => Renderer.MenuSounds, v => Renderer.MenuSounds = v);
                 RenderFloatSlider("Menu Sounds Volume", ref Renderer.MenuSoundsVolume, 0, 1);
-                RenderBoolSetting("Watermark", ref Renderer.EnableWatermark);
+                RenderBoolSetting("Watermark", () => Renderer.EnableWatermark, v => Renderer.EnableWatermark = v);
             }),
             new("Performance", 4, () =>
             {
-                RenderBoolSetting("Use Old Visibility Check", ref EntityManager.UseOldVisibilityCheck);
-                RenderBoolSetting("VSync", ref Renderer.EnableVsync);
+                RenderBoolSetting("Use Old Visibility Check", () => EntityManager.UseOldVisibilityCheck, v => EntityManager.UseOldVisibilityCheck = v);
+                RenderBoolSetting("VSync", () => Renderer.EnableVsync, v => Renderer.EnableVsync = v);
             }),
             new("About", 4, () =>
             {

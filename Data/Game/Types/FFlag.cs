@@ -1,4 +1,4 @@
-﻿namespace Titled_Gui.Data.Game
+﻿namespace Titled_Gui.Data.Game.Types
 {
     internal class FFlag
     {

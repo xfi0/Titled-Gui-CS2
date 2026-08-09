@@ -40,7 +40,11 @@ namespace Titled_Gui.Modules.Rage
         {
             try
             {
-                if (!AimbotEnable || Entities.Count == 0 || GameState.LocalPlayer.Health == 0 || (ScopedOnly && !GameState.LocalPlayer.IsScoped) || (FlashCheck && GameState.LocalPlayer.IsFlashed)) { RandomChosen = false; return; }
+                if (!AimbotEnable || Entities.Count == 0 || LocalPlayer == null || GameState.renderer == null || GameState.LocalPlayer.Health == 0 || (ScopedOnly && !GameState.LocalPlayer.IsScoped) || (FlashCheck && GameState.LocalPlayer.IsFlashed))
+                {
+                    RandomChosen = false;
+                    return;
+                }
 
                 if (AimbotKey == 0 || (User32.GetAsyncKeyState(AimbotKey) & 0x8000) != 0) // 0 == none
                 {
@@ -103,7 +107,7 @@ namespace Titled_Gui.Modules.Rage
                     }
                     else //fallback that if you're at their body flick to whatever chosen bone 
                     {
-                        newAngles2D =  CurrentBone2D;
+                        newAngles2D = CurrentBone2D;
                     }
 
                     if (float.IsNaN(newAngles2D.X) || float.IsNaN(newAngles2D.Y))
@@ -141,16 +145,21 @@ namespace Titled_Gui.Modules.Rage
 
             User32.MouseMove(ix, iy);
         }
-        public static void DrawCircle(int size, Vector4 circleColor)
+
+        public static void DrawFOVCircle(int size, Vector4 circleColor)
         {
+            if (GameState.renderer == null)
+                return;
+
             float radius = size;
             GameState.renderer.DrawList.AddCircle(new Vector2(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2), radius, ImGui.ColorConvertFloat4ToU32(circleColor), 32, 1.0f); // draw circle  
         }
+
         public static Entity? GetTarget() // aimbot function was getting long
         {
             try
             {
-                if (Entities.Count == 0) 
+                if (Entities.Count == 0 || GameState.renderer == null)
                     return null;
 
                 Vector2 screenCenter = new(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2);
@@ -159,7 +168,7 @@ namespace Titled_Gui.Modules.Rage
 
                 foreach (Entity? entity in Entities)
                 {
-                    if (entity == null || entity.Position2D == new Vector2(-99, -99) || entity.Head2D == new Vector2(-99, -99) || entity.Health == 0 || (!Team && entity.Team == GameState.LocalPlayer.Team) || (VisibilityCheck && !entity.Visible)) continue;
+                    if (entity == null || entity.Position2D == new Vector2(-99, -99) || entity.Head2D == new Vector2(-99, -99) || entity.Health == 0 || GameState.LocalPlayer == null || (!Team && entity.Team == GameState.LocalPlayer.Team) || (VisibilityCheck && !entity.Visible)) continue;
 
                     float distToBody = Vector2.Distance(screenCenter, entity.Position2D);
                     float distToHead = Vector2.Distance(screenCenter, entity.Head2D);
@@ -186,7 +195,7 @@ namespace Titled_Gui.Modules.Rage
         }
         public static void RenderTargetLine()
         {
-            if (target == null || target.Bones == null || target.Bones == null || target.Bones.Count <= CurrentBoneIndex) 
+            if (target == null || target.Bones == null || target.Bones == null || target.Bones.Count <= CurrentBoneIndex || GameState.renderer == null)
                 return;
 
             GameState.renderer.DrawList.AddLine(new(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2), target.Bones[CurrentBoneIndex].Position2D, ImGui.ColorConvertFloat4ToU32(FovColor));

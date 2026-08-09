@@ -12,6 +12,9 @@ namespace Titled_Gui.Classes.Rendering
     {
         public static void Draw3DCircle(float[] viewMatrix, Vector3 center, float radius, Vector3 normal, uint color, int segments = 32)
         {
+            if (GameState.renderer == null)
+                return;
+
             Vector3 up = MathF.Abs(normal.Z) < 0.999f ? Vector3.UnitZ : Vector3.UnitX;
             Vector3 right = Vector3.Normalize(Vector3.Cross(up, normal));
             Vector3 forward = Vector3.Normalize(Vector3.Cross(normal, right));
@@ -48,10 +51,13 @@ namespace Titled_Gui.Classes.Rendering
         }
         public static void DrawConvexHull(List<Vector2> points, uint fill, uint outline, float thickness = 2f)
         {
+            if (GameState.renderer == null)
+                return;
+
             points.Sort((a, b) => a.X != b.X ? a.X.CompareTo(b.X) : a.Y.CompareTo(b.Y));
 
-            List<Vector2> lower = new();
-            List<Vector2> upper = new();
+            List<Vector2> lower = [];
+            List<Vector2> upper = [];
 
             foreach (var p in points)
             {
@@ -82,7 +88,8 @@ namespace Titled_Gui.Classes.Rendering
             upper.RemoveAt(upper.Count - 1);
             lower.AddRange(upper);
 
-            if (lower.Count < 3) return;
+            if (lower.Count < 3)
+                return;
 
             var hullArray = lower.ToArray();
             GameState.renderer.DrawList.AddConvexPolyFilled(ref hullArray[0], hullArray.Length, fill);
@@ -91,6 +98,9 @@ namespace Titled_Gui.Classes.Rendering
         // https://www.unknowncheats.me/forum/counter-strike-2-a/732412-external-hitbox-overlay-aka-chams.html
         public static void DrawCapsule3D(Vector3 vMin, Vector3 vMax, float oRadius, Quaternion rotation, Vector3 origPos, float[] viewMatrix, uint color, int segments = 12, float thickness = 1.0f)
         {
+            if (GameState.renderer == null)
+                return;
+
             Vector3 bottom = origPos + Vector3.Transform(vMax, rotation);
             Vector3 top = origPos + Vector3.Transform(vMin, rotation);
             Vector3 point = MathUtils.Extend(top, bottom, Vector3.Distance(top, bottom) * 2);
@@ -142,7 +152,8 @@ namespace Titled_Gui.Classes.Rendering
         private static List<Vector2> ConvexHull(List<Vector2> points)
         {
             int n = points.Count;
-            if (n < 3) return points;
+            if (n < 3)
+                return points;
 
             points.Sort((a, b) => a.X != b.X ? a.X.CompareTo(b.X) : a.Y.CompareTo(b.Y));
 

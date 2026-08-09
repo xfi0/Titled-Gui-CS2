@@ -6,15 +6,15 @@ namespace Titled_Gui.Data.Game
 {
     public static class GameState
     {
-        public static Memory memory; // public swed instance to use all arround
-        public static Renderer renderer;
+        public static Memory? memory; // public swed instance to use all arround
+        public static Renderer? renderer;
         public static IntPtr client; // public client
         public static IntPtr LocalPlayerPawn { get; set; } // local player pawn pointer
         public static IntPtr EntityList { get; set; } // entity list pointer
         public static IntPtr CameraServices { get; set; } // camera services pointer
         public static uint CurrentFov { get; set; } = 60; // default FOV
         public static List<Entity.Entity?> Entities { get; set; } = [];
-        public static Entity.Entity LocalPlayer { get; set; } = new Entity.Entity(); // local player entity
+        public static Entity.Entity? LocalPlayer { get; set; } // local player entity
         public static int crosshairEnt { get; set; }
         public static uint Fflag { get; set; }
         public static uint Standing = 65665;

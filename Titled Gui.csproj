@@ -46,10 +46,17 @@
 		<None Remove="Resources\fonts\NotoSans-BoldIcons.ttf" />
 		<None Remove="Resources\fonts\undefeated.ttf" />
 		<None Remove="Resources\MenuLogo.png" />
+		<None Remove="Resources\sounds\hitsounds\CODHitmarker.wav" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Content Include="MenuLogo.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\sounds\hitsounds\CODHitmarker.wav">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -130,6 +137,7 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="SharpGLTF.Core" Version="1.0.6" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+		<PackageReference Include="ValveResourceFormat" Version="19.2.6339" />
 	</ItemGroup>
 
 	<ItemGroup>

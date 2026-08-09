@@ -4,27 +4,27 @@ namespace Titled_Gui.Classes
 {
     public abstract class ThreadService : IDisposable
     {
-        public virtual string name => nameof(ThreadService);
-        public virtual ThreadPriority threadPriority => ThreadPriority.Normal;
+        public virtual string Name => nameof(ThreadService);
+        public virtual ThreadPriority ThreadPriority => ThreadPriority.Normal;
         public virtual bool IsBackground => false;
-        public virtual Thread? thread {  get; set; }
+        public virtual Thread? Thread { get; set; }
         protected ThreadService()
         {
-            thread = new Thread(ThreadStart)
+            Thread = new Thread(ThreadStart)
             {
-                Name = name,
-                Priority = threadPriority,
+                Name = Name,
+                Priority = ThreadPriority,
                 IsBackground = IsBackground,
             };
         }
         public void Dispose()
         {
-            thread?.Interrupt();
-            thread?.Join(5);
+            Thread?.Interrupt();
+            Thread?.Join(5);
             GC.SuppressFinalize(this);
         }
-        public void Start() => thread?.Start();
-        
+        public void Start() => Thread?.Start();
+
         public void ThreadStart()
         {
             try

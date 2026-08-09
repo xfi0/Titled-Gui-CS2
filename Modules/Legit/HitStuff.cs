@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using System.Numerics;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Legit
 {
@@ -10,34 +11,25 @@ namespace Titled_Gui.Modules.Legit
         {
             { 0, ("Never Lose", "NeverLose.wav") },
             { 1, ("Skeet",      "Skeet.wav")     },
+            { 2, ("Hit Marker", "CODHitmarker.wav")},
         };
         public static List<string> HitSoundDisplays = HitSounds.Values.Select(s => s.Display).ToList();
 
         public static int CurrentHitSound = 0;
-        public static bool Enabled = false;
+        public static bool EnableHitSounds = false;
         public static bool EnableHeadshotText = false;
         public static int PreviousDamage = 0;
         public static int PreviousHeadshots = 0;
         public static float Volume = 1.0f;
         public static Vector4 TextColor = new(1f, 1f, 1f, 1f);
 
-        public class HitText
-        {
-            public string? Text { get; set; }
-            public DateTime ExpireAt { get; set; }
-            public Vector2 Position { get; set; }
-            public Vector2 BasePosition { get; set; } 
-            public float State { get; set; } = 0f;
-        }
-        public enum HitAnimation
-        {
-            Sin = 0,
-            Fade = 1,
-        }
         public static readonly List<HitText> Texts = [];
 
         public static void Update()
         {
+            if (GameState.memory == null || GameState.renderer == null)
+                return;
+
             GameState.LocalController = GameState.memory.ReadPointer(GameState.client + Offsets.dwLocalPlayerController);
             GameState.ActionTrackingServices = GameState.memory.ReadPointer(GameState.LocalController, Offsets.m_pActionTrackingServices);
             GameState.RoundHeadshots = GameState.memory.ReadInt(GameState.ActionTrackingServices + Offsets.m_iNumRoundKillsHeadshots);
@@ -52,9 +44,8 @@ namespace Titled_Gui.Modules.Legit
                     PlaySound(sound.File);
 
                 PreviousDamage = GameState.RoundDamage;
-                //Console.Write("Hit");
             }
-            if (GameState.RoundHeadshots > PreviousHeadshots)
+            if (EnableHeadshotText && GameState.RoundHeadshots > PreviousHeadshots)
             {
                 Vector2 textPos = new Vector2(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2);
                 Texts.Add(new HitText
@@ -73,17 +64,21 @@ namespace Titled_Gui.Modules.Legit
             if (!File.Exists(soundName)) // if its embedded
                 Classes.PlaySound.PlaySoundFileEmbedded(soundName, "hitsounds.", Volume);
             else // if its not embedded
-                Classes.PlaySound.PlaySoundWithCheck(soundName, Volume);  
+                Classes.PlaySound.PlaySoundWithCheck(soundName, Volume);
         }
-        
+
         public static void CreateHitText()
         {
+            if (GameState.renderer == null)
+                return;
+
             ImGui.PushFont(Renderer.TextFont48);
             foreach (HitText hitText in Texts.ToList())
             {
                 if (DateTime.Now > hitText.ExpireAt)
                 {
-                    Texts.Remove(hitText); continue;
+                    Texts.Remove(hitText);
+                    continue;
                 }
 
                 hitText.State += 1f;
@@ -107,7 +102,7 @@ namespace Titled_Gui.Modules.Legit
 
         protected override void FrameAction()
         {
-            if (!Enabled && !EnableHeadshotText) return;
+            if (!EnableHitSounds && !EnableHeadshotText) return;
 
             Update();
             Thread.Sleep(15);

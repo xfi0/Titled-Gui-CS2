@@ -15,7 +15,6 @@ namespace Titled_Gui.Data.Game
         private static readonly ulong CurrentTime2Offset = 0x38;
         //private static ulong CurrentNetchanOffset = 0x00;
         private static readonly ulong CurrentMapOffset = 0x0180;
-        private static readonly ulong CurrentMapNameOffset = 0x0188;
 
         public static void Update()
         {
@@ -29,7 +28,7 @@ namespace Titled_Gui.Data.Game
         public static int GetTickCount()
         {
             Update();
-            if (address == 0) return -1;
+            if (address == 0 || GameState.memory == null) return -1;
 
             int tickCount = GameState.memory.ReadInt((nint)(address + TickCountOffset));
             return tickCount;
@@ -38,7 +37,7 @@ namespace Titled_Gui.Data.Game
         public static float GetRealTime()
         {
             Update();
-            if (address == 0) return -1;
+            if (address == 0 || GameState.memory == null) return -1;
 
             return GameState.memory.ReadFloat((nint)(address + RealTimeOffset));
         }
@@ -46,7 +45,7 @@ namespace Titled_Gui.Data.Game
         public static int GetFrameCount()
         {
             Update();
-            if (address == 0) return -1;
+            if (address == 0 || GameState.memory == null) return -1;
 
             return GameState.memory.ReadInt((nint)(address + FrameCountOffset));
         }
@@ -54,7 +53,7 @@ namespace Titled_Gui.Data.Game
         public static int GetMaxClients()
         {
             Update();
-            if (address == 0) return -1;
+            if (address == 0 || GameState.memory == null) return -1;
 
             return GameState.memory.ReadInt((nint)(address + MaxClientsOffset));
         }
@@ -62,7 +61,7 @@ namespace Titled_Gui.Data.Game
         public static int GetIntervalPerTick()
         {
             Update();
-            if (address == 0) return -1;
+            if (address == 0 || GameState.memory == null) return -1;
 
             return GameState.memory.ReadInt((nint)(address + IntervalPerTickOffset));
         }
@@ -70,7 +69,7 @@ namespace Titled_Gui.Data.Game
         public static float GetIntervalPerTick2()
         {
             Update();
-            if (address == 0) return -1;
+            if (address == 0 || GameState.memory == null) return -1;
 
             return GameState.memory.ReadFloat((nint)(address + IntervalPerTick2Offset));
         }
@@ -78,7 +77,7 @@ namespace Titled_Gui.Data.Game
         public static float GetCurrentTime()
         {
             Update();
-            if (address == 0) return -1;
+            if (address == 0 || GameState.memory == null) return -1;
 
             return GameState.memory.ReadFloat((nint)(address + CurrentTimeOffset));
         }
@@ -86,7 +85,7 @@ namespace Titled_Gui.Data.Game
         public static float GetCurrentTime2()
         {
             Update();
-            if (address == 0) return -1;
+            if (address == 0 || GameState.memory == null) return -1;
 
             return GameState.memory.ReadFloat((nint)(address + CurrentTime2Offset));
         }
@@ -94,7 +93,7 @@ namespace Titled_Gui.Data.Game
         public static int GetCurrentMap()
         {
             Update();
-            if (address == 0) return -1;
+            if (address == 0 || GameState.memory == null) return -1;
 
             return GameState.memory.ReadChar((nint)(address + CurrentMapOffset));
         }
@@ -102,7 +101,7 @@ namespace Titled_Gui.Data.Game
         public static string GetCurrentMapName()
         {
             Update();
-            if (address == 0) return "";
+            if (address == 0 || GameState.memory == null) return "";
 
             nint mapNamePtr = GameState.memory.ReadPointer((nint)(address + CurrentMapOffset));
 

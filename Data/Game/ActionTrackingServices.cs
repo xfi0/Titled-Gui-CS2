@@ -6,10 +6,14 @@ namespace Titled_Gui.Data.Game
     {
         public static void Update()
         {
+            if (GameState.memory == null)
+                return;
+
             GameState.LocalController = GameState.memory.ReadPointer(GameState.client + Offsets.dwLocalPlayerController);
             GameState.ActionTrackingServices = GameState.memory.ReadPointer(LocalController, Offsets.m_pActionTrackingServices);
 
-            if (GameState.ActionTrackingServices == IntPtr.Zero) return;
+            if (GameState.ActionTrackingServices == IntPtr.Zero)
+                return;
 
             //Console.WriteLine(GameState.memory.ReadFloat(GameState.ActionTrackingServices + Offsets.m_iNumRoundKillsHeadshots));
         }

@@ -38,7 +38,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawTracers(Entity? entity, Renderer renderer)
         {
-            if (!EnableTracers || entity == null || entity.Health <= 0 || entity.PawnAddress == LocalPlayer.PawnAddress || (TeamCheck && entity.Team == LocalPlayer.Team) || (BoxESP.FlashCheck && LocalPlayer.IsFlashed) || entity?.Bones?.Count <= 0 || entity?.Position2D == new Vector2(-99, -99) || entity?.Bones == null) return;
+            if (!EnableTracers || entity == null || entity.Health <= 0 || LocalPlayer == null || entity.PawnAddress == LocalPlayer.PawnAddress || (TeamCheck && entity.Team == LocalPlayer.Team) || (BoxESP.FlashCheck && LocalPlayer.IsFlashed) || entity?.Bones?.Count <= 0 || entity?.Position2D == new Vector2(-99, -99) || entity?.Bones == null) return;
 
             switch (CurrentStartPos)
             {

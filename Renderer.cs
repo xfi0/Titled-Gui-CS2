@@ -6,11 +6,14 @@ using System.Numerics;
 using System.Reflection;
 using Titled_Gui.Classes;
 using Titled_Gui.Classes.Rendering;
+using Titled_Gui.Classes.Rendering.ChamsRenderer;
 using Titled_Gui.Data.Entity;
+using Titled_Gui.Data.Game;
 using Titled_Gui.ImGUI.Widgets;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
+using Vortice.Direct3D11;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace Titled_Gui
@@ -74,6 +77,8 @@ namespace Titled_Gui
         public static int OpenKeyInt = 0x2D;
 
         public static Random Random = new();
+        private static Chams _chamsRenderer = new();
+        private static WorldESP.WorldChams _worldChamsRenderer = new();
         public static List<Vector2> Positions = [];
         public static List<Vector2> Velocities = [];
         public static HashSet<Keys> KeysSet =
@@ -87,10 +92,53 @@ namespace Titled_Gui
         private readonly object _entityLock = new();
         private const string _menuImage = "iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAMAAABIw9uxAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAm1QTFRFAAAA0dDQz9DR1tXW19bV1tfW2NjY2dnX2NfX19nY19rZ2dja2drZ2dnY2NnZ2tjZ2NrZ2tvb2tnb2tra2dnZ2dnb2tnY2tnZ2dvZ2tva2NvZ2Nra2tza2trZ2tra2drZ29va2tvZ2tnY2tra2trY29rY2NrZ2dra2dva2tvb2tzb3NnZ2drZ2dvZ2tnc2Nna2drY29rb2tna29vb2tva2djZ2trY19vX19rY2NnY19jW19jW19fW2NnX19nX1tbX1dXW1tfV1NPT09XT0tHRy83NzczM1dfW2NjZ1tfZ1trY2dnZ////////2Nna2djZ19jY2NjY2dna2dfX////////29ra////19ja////////2dra////////2tjY////////////////////////////////////19jZ2NfZ////////////1tXV////////////////////////////////////////////////////////////////2Nra2tjY2drY2NjX2dnZ2dva2Nja2NjZ1tfX1tnZ1tjY19fZ2dja1tjZ1tjZ2Nna2Nva2dra2Nvb2NzZ19nZ19fX1tnY19bZ19jZ2NnZ1tfY2drb19jY19ra2NfY19nZ29jY2NjY1trZ2Nva2Nvad3d42NrY2NvY2Nrc29rZ2dnX2dvb19rZ2NnY2dvZ19na2NnZ1tja2NvZ2NbY2djY1tjX2NnW19vY2NnY1tfX1tnY1tjY19jX19XW19jX2NbX1tfX19bY1dbX1NfV1dXV1dfW1NXV1NXV0tTSzc7MbG1sYmBhXV5df4B/W1xbWFhYXV1dapVdogAAAM90Uk5TAAIBAQEBAQIBAQECAQEBAQEBAgIBAQEBAQEBAQEBAwIBAQIBAgECAwICAQIDAgEBAQEBAQICAQIBAQECAQEBAQIBAQEBAQECAgEBA/8OAgEBAgEBJSgCHwEGIwErMwI+PCkeHAQDGgEBARYUFwICBQc9OUJKRUQiLC43HSEqAgECAgIBAQECAgIBAQECAwICAgIBAQECAgMBAQIBAQMBAwIDAQEBAwEBAQEDAgMBAgECAQIBAgIEAQIBAwEBAgMB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";
 
+        public static ID3D11Device? GetDevice()
+        {
+            Renderer? overlay = GameState.renderer;
+            if (overlay == null)
+                return null;
+
+            Type? baseType = typeof(Overlay);
+            if (baseType == null)
+                return null;
+
+            return (ID3D11Device?)baseType.GetField("device", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(overlay);
+        }
+
+        public static ID3D11DeviceContext? GetDeviceContext()
+        {
+            Renderer? overlay = GameState.renderer;
+            if (overlay == null)
+                return null;
+
+            Type? baseType = typeof(Overlay);
+            if (baseType == null)
+                return null;
+
+            return (ID3D11DeviceContext?)baseType.GetField("deviceContext", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(overlay);
+        }
+
+        public static System.Collections.IDictionary? GetTextureResources()
+        {
+            Renderer? overlay = GameState.renderer;
+            if (overlay == null)
+                return null;
+
+            Type? baseType = typeof(Overlay);
+            if (baseType == null)
+                return null;
+
+            Object? renderer = baseType.GetField("renderer", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(overlay);
+            if (renderer == null)
+                return null;
+
+            return (System.Collections.IDictionary?)renderer.GetType().GetField("textureResources", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(renderer);
+        }
+
         public void UpdateEntities(IEnumerable<Entity> newEntities)
         {
             lock (_entityLock)
-                Entities = newEntities.ToList();
+                Entities = (List<Entity>)newEntities ?? newEntities.ToList();
         }
 
         public static void LoadFonts()
@@ -183,6 +231,7 @@ namespace Titled_Gui
                 RenderESPOverlay();
                 RenderMainWindow();
                 RenderWaterMark();
+                Keybind.RenderKeybindMenu();
                 SpectatorList.DrawMenu();
                 BombTimerOverlay.TimeOverlay();
                 //Library.UpdateNotifications(io.DeltaTime);
@@ -197,7 +246,7 @@ namespace Titled_Gui
 
         public void RenderWaterMark()
         {
-            if (!EnableWatermark && !IsIconFontLoaded)
+            if (!EnableWatermark)
                 return;
 
             ImGui.PushFont(TextFontNormal);
@@ -604,6 +653,8 @@ namespace Titled_Gui
                 if (Aimbot.AimbotEnable && Aimbot.TargetLine)
                     Aimbot.RenderTargetLine();
 
+                _chamsRenderer.RenderFrame();
+                _worldChamsRenderer.RenderFrame();
                 HitStuff.CreateHitText();
 
                 if (EyeRay.Enabled)
@@ -611,7 +662,7 @@ namespace Titled_Gui
 
                 List<Entity> snapshot;
                 lock (_entityLock)
-                    snapshot = Entities.ToList();
+                    snapshot = Entities;
 
                 foreach (var entity in snapshot)
                 {
@@ -621,7 +672,6 @@ namespace Titled_Gui
                     Modules.Visual.BoneESP.DrawBoneLines(entity, this);
                     NameDisplay.DrawName(entity, this);
                     PingDisplay.DrawPing(entity, this);
-                    Chams.Draw(entity);
                     BoxESP.DrawBoxESP(entity);
                     Titled_Gui.Modules.Visual.DistanceText.DrawDistance(entity);
                     Tracers.DrawTracers(entity, this);
@@ -642,7 +692,7 @@ namespace Titled_Gui
                     GernadeLineup.DrawAllLineups();
 
                 if (Aimbot.DrawFov && Aimbot.AimbotEnable && Aimbot.UseFOV)
-                    Aimbot.DrawCircle(Aimbot.FovSize, Aimbot.RGB ? Colors.Rgb(Aimbot.FovColor.W) : Aimbot.FovColor);
+                    Aimbot.DrawFOVCircle(Aimbot.FovSize, Aimbot.RGB ? Colors.Rgb(Aimbot.FovColor.W) : Aimbot.FovColor);
 
                 if (C4ESP.Enabled)
                 {
@@ -732,83 +782,6 @@ namespace Titled_Gui
 
             Classes.PlaySound.PlaySoundFileEmbedded("Creamy.wav", "ClickSounds.", MenuSoundsVolume);
         }
-
-        public static void RenderKeybindChooser(string label, ref int key)
-        {
-            ImGui.PushID(label);
-
-            if (!KeyBind.ContainsKey(label)) KeyBind[label] = false;
-
-            if (ImGui.Button(KeyBind[label] ? "Press Any Key..." : (key == (int)Keys.None ? "None" : Enum.GetName(typeof(Keys), key) ?? key.ToString()), new Vector2(100, 0))) KeyBind[label] = true;
-            ImGui.SameLine();
-
-            if (ImGui.Button("X"))
-                key = (int)Keys.None;
-
-            if (KeyBind[label])
-            {
-                foreach (Keys k in Enum.GetValues<Keys>())
-                {
-                    if (k == Keys.None) continue;
-
-                    short state = User32.GetAsyncKeyState((int)k);
-                    bool pressed = (state & 0x8000) != 0;
-
-                    if (!pressed) continue;
-                    key = (int)k;
-
-                    KeyBind[label] = false;
-                    break;
-                }
-            }
-
-            ImGui.SameLine();
-            ImGui.Text(label);
-
-            ImGui.PopID();
-        }
-
-
-        public static Dictionary<string, bool> KeyBind = [];
-
-        public static void RenderKeybindChooser(string label, ref ImGuiKey key)
-        {
-            ImGui.PushID(label);
-
-            KeyBind.TryAdd(label, false);
-
-            string keyName = KeyBind[label] ? "Press Any Key..." : (key == ImGuiKey.None ? "None" : key.ToString());
-
-            if (ImGui.Button(keyName, new Vector2(100, 0)))
-                KeyBind[label] = true;
-
-
-            if (KeyBind[label])
-            {
-                foreach (ImGuiKey imguiKey in Enum.GetValues<ImGuiKey>())
-                {
-                    if (!ImGui.IsKeyPressed(imguiKey))
-                        continue;
-                    if (imguiKey >= ImGuiKey.MouseLeft && imguiKey <= ImGuiKey.MouseWheelY) continue;
-
-                    if (imguiKey == ImGuiKey.Escape)
-                        key = ImGuiKey.Insert;
-
-                    else
-                        key = imguiKey;
-
-
-                    KeyBind[label] = false;
-                    break;
-                }
-            }
-
-            ImGui.SameLine();
-            ImGui.Text(label);
-
-            ImGui.PopID();
-        }
-
 
         public static void RenderSettingsSection(string label, Action content)
         {

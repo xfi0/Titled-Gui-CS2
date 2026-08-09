@@ -18,27 +18,23 @@ namespace Titled_Gui.ImGUI.Widgets
         private static Dictionary<string, int> _openRightClickOption = new();
         private static Dictionary<string, Func<bool>> _getters = new();
         private static Dictionary<string, Action<bool>> _setters = new();
-        private static Dictionary<string, bool> _toggleStates = new();
 
         private static List<string> _toggleLabels = new() { "Toggle", "Hold" };
 
         public static void RegisterToggle(string label, Func<bool> getter, Action<bool> setter)
         {
-            _getters[label] = getter;
+            _getters[label] = () => getter();
             _setters[label] = setter;
         }
 
-        public static void RenderBoolSettingWith1ColorPicker(string label, ref bool value, ref bool rgb, ref Vector4 color1, Action? onChanged = null)
+        public static void RenderBoolSettingWith1ColorPicker(string label, Func<bool> getter, Action<bool> setter, ref bool rgb, ref Vector4 color1, Action? onChanged = null)
         {
-            if (!_toggleStates.ContainsKey(label))
-                _toggleStates[label] = value;
-
             ImGui.PushID(label);
             Vector4 tmpColor = color1;
             bool tempRGB = rgb;
 
-            bool tmpVal = _toggleStates[label];
-            RegisterToggle(label, () => _toggleStates[label], v => _toggleStates[label] = v);
+            bool tmpVal = getter();
+            RegisterToggle(label, getter, setter);
             RenderRowRightAligned(label, () =>
             {
                 Vector2 rowStart = ImGui.GetCursorScreenPos();
@@ -62,21 +58,21 @@ namespace Titled_Gui.ImGUI.Widgets
                 onChanged?.Invoke();
             }
 
-            _toggleStates[label] = tmpVal;
-            value = _toggleStates[label];
+            if (tmpVal != getter())
+            {
+                setter(tmpVal);
+                onChanged?.Invoke();
+            }
 
             ImGui.PopID();
         }
-        public static void RenderBoolSettingWith1ColorPicker(string label, ref bool value, ref Vector4 color1, Action? onChanged = null)
+        public static void RenderBoolSettingWith1ColorPicker(string label, Func<bool> getter, Action<bool> setter, ref Vector4 color1, Action? onChanged = null)
         {
-            if (!_toggleStates.ContainsKey(label))
-                _toggleStates[label] = value;
-
             ImGui.PushID(label);
             Vector4 tmpColor = color1;
 
-            bool tmpVal = _toggleStates[label];
-            RegisterToggle(label, () => _toggleStates[label], v => _toggleStates[label] = v);
+            bool tmpVal = getter();
+            RegisterToggle(label, getter, setter);
             RenderRowRightAligned(label, () =>
             {
                 Vector2 rowStart = ImGui.GetCursorScreenPos();
@@ -95,8 +91,11 @@ namespace Titled_Gui.ImGUI.Widgets
             if (!tmpColor.Equals(color1))
                 color1 = tmpColor;
 
-            _toggleStates[label] = tmpVal;
-            value = _toggleStates[label];
+            if (tmpVal != getter())
+            {
+                setter(tmpVal);
+                onChanged?.Invoke();
+            }
 
             ImGui.PopID();
         }
@@ -112,7 +111,8 @@ namespace Titled_Gui.ImGUI.Widgets
             if (ImGui.BeginPopup("##rightclick_" + label))
             {
                 var keybind = _actions[label].Item2;
-                Renderer.RenderKeybindChooser("Keybind", ref keybind);
+                _getters.TryGetValue(label, out var moduleState);
+                Keybind.RenderKeybindChooser(label + "Keybind", ref keybind, moduleState);
 
                 var action = _actions[label].Item1;
                 Widgets.Combos.RenderIntCombo("Action", ref action, _toggleLabels, _toggleLabels.Count);
@@ -121,20 +121,17 @@ namespace Titled_Gui.ImGUI.Widgets
             }
         }
 
-        public static void RenderBoolSettingWith2ColorPickers(string label, ref bool value, ref bool teamRGB, ref bool enemyRGB, ref Vector4 color1,
+        public static void RenderBoolSettingWith2ColorPickers(string label, Func<bool> getter, Action<bool> setter, ref bool teamRGB, ref bool enemyRGB, ref Vector4 color1,
             ref Vector4 color2)
         {
-            if (!_toggleStates.ContainsKey(label))
-                _toggleStates[label] = value;
-
             ImGui.PushID(label);
             var tmpColor1 = color1;
             var tmpColor2 = color2;
-            bool tmpVal = _toggleStates[label];
+            bool tmpVal = getter();
             bool tempTeamRGB = teamRGB;
             bool tempEnemyRGB = enemyRGB;
 
-            RegisterToggle(label, () => _toggleStates[label], v => _toggleStates[label] = v);
+            RegisterToggle(label, getter, setter);
 
             RenderRowRightAligned(label, () =>
             {
@@ -167,10 +164,9 @@ namespace Titled_Gui.ImGUI.Widgets
                 color2 = tmpColor2;
             }
 
-            if (!tmpVal.Equals(value))
+            if (tmpVal != getter())
             {
-                _toggleStates[label] = tmpVal;
-                value = _toggleStates[label];
+                setter(tmpVal);
             }
             if (!tempTeamRGB.Equals(teamRGB))
                 teamRGB = tempTeamRGB;
@@ -180,15 +176,12 @@ namespace Titled_Gui.ImGUI.Widgets
 
             ImGui.PopID();
         }
-        public static void RenderBoolSetting(string label, ref bool value, Action? onChanged = null,
+        public static void RenderBoolSetting(string label, Func<bool> getter, Action<bool> setter, Action? onChanged = null,
     float widgetWidth = 0f)
         {
-            if (!_toggleStates.ContainsKey(label))
-                _toggleStates[label] = value;
+            RegisterToggle(label, getter, setter);
 
-            RegisterToggle(label, () => _toggleStates[label], v => _toggleStates[label] = v);
-
-            bool tmpVal = _toggleStates[label];
+            bool tmpVal = getter();
             RenderRowRightAligned(label, () =>
             {
                 var (knobPosition, clicked) = CreateKnob(label, ref tmpVal);
@@ -196,27 +189,23 @@ namespace Titled_Gui.ImGUI.Widgets
 
             }, widgetWidth);
 
-            if (tmpVal != value)
+            if (tmpVal != getter())
             {
-                _toggleStates[label] = tmpVal;
-                value = _toggleStates[label];
+                setter(tmpVal);
                 onChanged?.Invoke();
             }
         }
 
 
-        public static void RenderBoolSettingWithWarning(string label, ref bool value, Action? onChanged = null,
+        public static void RenderBoolSettingWithWarning(string label, Func<bool> getter, Action<bool> setter, Action? onChanged = null,
             float widgetWidth = 0f)
         {
-            if (!_toggleStates.ContainsKey(label))
-                _toggleStates[label] = value;
-
             if (!_openPopups.ContainsKey(label))
                 _openPopups[label] = false;
 
-            RegisterToggle(label, () => _toggleStates[label], v => _toggleStates[label] = v);
-            bool tmpVal = _toggleStates[label];
-            bool wasEnabled = _toggleStates[label];
+            RegisterToggle(label, getter, setter);
+            bool tmpVal = getter();
+            bool wasEnabled = getter();
 
             RenderRowRightAligned(label, () =>
             {
@@ -252,10 +241,9 @@ namespace Titled_Gui.ImGUI.Widgets
                 ImGui.EndPopup();
             }
 
-            if (tmpVal != value)
+            if (tmpVal != getter())
             {
-                _toggleStates[label] = tmpVal;
-                value = _toggleStates[label];
+                setter(tmpVal);
                 onChanged?.Invoke();
             }
         }

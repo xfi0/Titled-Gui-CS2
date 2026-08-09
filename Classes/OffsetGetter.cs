@@ -171,6 +171,7 @@ namespace Titled_Gui.Classes
             { "m_iszPlayerName", new() { new Offset("m_iszPlayerName", "CBasePlayerController") } },
             { "m_AttributeManager", new() { new Offset("m_AttributeManager", "C_EconEntity") } },
             { "m_Item", new() { new Offset("m_Item", "C_AttributeContainer") } },
+            { "m_ModelName", new() { new Offset("m_ModelName", "CModelState") } },
             //{ "m_bBombPlanted", new() { new Offset("m_bBombPlanted", "C_CSGameRules") } },
 
         };

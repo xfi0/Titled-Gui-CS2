@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Titled_Gui.Classes.Math;
+using Titled_Gui.Data.Entity.Types;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Data.Entity.WorldEntityManager;
 
@@ -9,15 +10,17 @@ namespace Titled_Gui.Data.Entity
     {
         public nint PawnAddress { get; set; }
         public Vector3 Position { get; set; }
-        public Vector2 Position2D { get; set; }
         public IntPtr ItemNode { get; set; }
+        public nint GameSceneNode { get; set; }
         public EntityKind Type { get; set; }
         public string RawType { get; set; } = "Unknown";
         public string DisplayName { get; set; } = "Unknown";
+        public string? ModelName { get; set; }
         public Vector3 VecMin { get; set; }
         public Vector3 VecMax { get; set; }
         public required float[] Matrix { get; set; }
         public required float[] Rotation { get; set; }
+        public List<Bone>? Bones { get; set; }
         public Vector3[] Get3DCorners(WorldEntity? worldEntity)
         {
             if (worldEntity == null || float.IsNaN(worldEntity.VecMin.X) || float.IsNaN(worldEntity.VecMin.Y) || float.IsNaN(worldEntity.VecMin.Z))
@@ -57,6 +60,9 @@ namespace Titled_Gui.Data.Entity
 
         public string GetSchemaName()
         {
+            if (GameState.memory == null)
+                return "";
+
             var identity = GameState.memory.ReadPointer(this.PawnAddress + Offsets.m_pEntity);
 
             return GameState.memory.ReadString(identity + Offsets.m_designerName);

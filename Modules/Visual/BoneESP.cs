@@ -161,7 +161,7 @@ namespace Titled_Gui.Modules.Visual
         private static Vector4 GetBoneColor(Entity entity)
         {
             bool occluded = visibilityCheck && !entity.Visible;
-            bool isTeam = entity.Team == GameState.LocalPlayer.Team;
+            bool isTeam = entity.IsTeammate;
             Colors c = occluded ? OccludedColors : VisibleColors;
 
             Vector4 color = (isTeam ? c.TeamRGB : c.EnemyRGB) ? Colors.Rgb(isTeam ? c.TeamColor.W : c.EnemyColor.W) : (isTeam ? c.TeamColor : c.EnemyColor);
@@ -171,9 +171,10 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawBoneLines(Entity? entity, Renderer renderer)
         {
-            if (!EnableBoneESP || entity == null || entity.Bones == null ||
+            if (!EnableBoneESP || entity == null || entity.Bones == null || GameState.LocalPlayer == null ||
                 (TeamCheck && entity.Team == GameState.LocalPlayer.Team) ||
-                entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Bones == null || entity.Health <= 0 ||
+                entity.PawnAddress == GameState.LocalPlayer.PawnAddress ||
+                entity.Bones == null || entity.Health <= 0 ||
                 (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) ||
                 entity.Position2D == new Vector2(-99, -99)) return;
 
@@ -264,22 +265,6 @@ namespace Titled_Gui.Modules.Visual
 
             renderer.DrawList.AddCircleFilled(headPos, radius, boneColor); // draw a circle at the Head bone extra big
             //DebugBones(entity, renderer);
-        }
-
-        private static void DebugBones(Entity entity, Renderer renderer)
-        {
-            for (int i = 0; i < entity.Bones.Count; i++)
-            {
-                var b = entity.Bones[i];
-                if (b.Position2D == new Vector2(-99, -99))
-                    continue;
-
-                var p = b.Position2D;
-                if (!IsValidScreenPoint(p))
-                    continue;
-
-                renderer.DrawList.AddText(p, 0xFFFFFFFF, i.ToString());
-            }
         }
 
         public static bool IsValidScreenPoint(Vector2 pt)

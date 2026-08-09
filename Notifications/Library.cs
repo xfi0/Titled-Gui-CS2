@@ -8,15 +8,6 @@ namespace Titled_Gui.Notifications
 {
     internal class Library
     {
-        public class Notification
-        {
-            public string NotificationTitle = string.Empty;
-            public string NotificationMessage = string.Empty;
-            public float DisappearDelay = 5f;
-            public float SlideInProgress = 0f;
-            public float SlideOutProgress = 0f;
-            public float PositionY = 0f;
-        }
         public static List<Notification> Notifications = new();
         private static float LastNotificationPositionY = 0f;
         private static int MaxNotifications = 10;
@@ -25,9 +16,8 @@ namespace Titled_Gui.Notifications
             lock (Notifications)
             {
                 if (Notifications.Count >= MaxNotifications && Notifications.Count > 0)
-                {
                     return;
-                }
+
 
 
                 if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(message))
@@ -42,8 +32,6 @@ namespace Titled_Gui.Notifications
                 LastNotificationPositionY += 65f;
 
                 Notifications.Add(notification);
-
-                Console.WriteLine("Notif Sent");
             }
         }
 
@@ -66,7 +54,7 @@ namespace Titled_Gui.Notifications
                     notification.DisappearDelay = Math.Max(notification.DisappearDelay, 0f);
 
                     if (notification.SlideInProgress < 5f)
-                        notification.SlideInProgress += 0.03f;  
+                        notification.SlideInProgress += 0.03f;
 
                     if (notification.SlideOutProgress < 5f)
                         notification.SlideInProgress += 0.03f;

@@ -33,7 +33,7 @@ namespace Titled_Gui.Modules.Visual
 
         public static void Update(Entity? e)
         {
-            if (!Enabled || e == null || e.Health <= 0 || e.Position2D == new Vector2(-99, -99) || (TeamCheck && e.Team == GameState.LocalPlayer.Team))
+            if (!Enabled || e == null || e.Health <= 0 || GameState.LocalPlayer == null || e.Position2D == new Vector2(-99, -99) || (TeamCheck && e.Team == GameState.LocalPlayer.Team))
                 return;
 
             if (!EmitTimes.TryGetValue(e.PawnAddress, out float last))
@@ -65,8 +65,9 @@ namespace Titled_Gui.Modules.Visual
 
         public static void Draw()
         {
-            if (!Enabled)
+            if (!Enabled || GameState.memory == null || GameState.renderer == null)
                 return;
+
             try
             {
                 float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
@@ -108,9 +109,7 @@ namespace Titled_Gui.Modules.Visual
                         {
                             fixed (Vector2* ptr = pointsArray)
                             {
-                                GameState.renderer.DrawList.AddPolyline(ref *ptr, pointsArray.Length, convertedColor,
-                                    ImDrawFlags.Closed,
-                                    2f);
+                                GameState.renderer.DrawList.AddPolyline(ref *ptr, pointsArray.Length, convertedColor, ImDrawFlags.Closed, 2f);
                             }
                         }
                     }

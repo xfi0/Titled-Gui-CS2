@@ -31,7 +31,7 @@ namespace Titled_Gui.Modules.Visual
 
         private static void ApplyPatch()
         {
-            if (patchApplied)
+            if (patchApplied || GameState.memory == null)
                 return;
 
             GameState.memory.WriteBytes(GameState.client + jnePatch, patchedJNE);
@@ -40,7 +40,7 @@ namespace Titled_Gui.Modules.Visual
 
         private static void RemovePatch()
         {
-            if (!patchApplied)
+            if (!patchApplied || GameState.memory == null)
                 return;
 
             GameState.memory.WriteBytes(GameState.client + jnePatch, originalJNE);
@@ -49,6 +49,9 @@ namespace Titled_Gui.Modules.Visual
 
         private static void SetThirdPersonState(bool enabled)
         {
+            if (GameState.memory == null)
+                return;
+
             GameState.memory.WriteInt(GameState.client + Offsets.dwCSGOInput + 0x251, enabled ? 256 : 0);
         }
 
@@ -59,7 +62,8 @@ namespace Titled_Gui.Modules.Visual
 
         protected override void FrameAction()
         {
-            if (!Enabled) return;
+            if (!Enabled)
+                return;
 
             ThirdPerson.Run(GameState.LocalPlayerPawn);
         }

@@ -57,7 +57,9 @@ namespace Titled_Gui.Data.Entity
 
                     if (currentPawn == localPlayerPawnAddress)
                     {
-                        Entity localPlayer = EntityManager.GetLocalPlayer(controller);
+                        Entity? localPlayer = EntityManager.GetLocalPlayer(controller);
+                        if (localPlayer == null || GameState.renderer == null)
+                            continue;
 
                         LocalPlayer = localPlayer;
 
@@ -81,6 +83,9 @@ namespace Titled_Gui.Data.Entity
 
         public static IntPtr GetPlayerPawn(IntPtr entitylist, IntPtr pawn)
         {
+            if (GameState.memory == null)
+                return IntPtr.Zero;
+
             IntPtr listEntry2 = memory.ReadPointer(entitylist + (0x8 * ((pawn & 0x7FFF) >> 9)) + 0x10);
             if (listEntry2 == IntPtr.Zero)
                 return IntPtr.Zero;
@@ -94,8 +99,11 @@ namespace Titled_Gui.Data.Entity
             return pPawn;
         }
 
-        public static Entity GetLocalPlayer(IntPtr controller)
+        public static Entity? GetLocalPlayer(IntPtr controller)
         {
+            if (GameState.memory == null)
+                return null;
+
             IntPtr localPlayerPawn = memory.ReadPointer(client + Offsets.dwLocalPlayerPawn);
             LocalPlayerPawn = localPlayerPawn;
             float[] viewMatrix = memory.ReadMatrix(client + Offsets.dwViewMatrix);
@@ -178,6 +186,9 @@ namespace Titled_Gui.Data.Entity
 
         public static Vector3 GetEyePosition(Entity e)
         {
+            if (GameState.memory == null)
+                return Vector3.Zero;
+
             Vector3 origin = memory.ReadVec(e.GameSceneNode + Offsets.m_vecOrigin);
             Vector3 view = memory.ReadVec(e.PawnAddress + Offsets.m_vecViewOffset);
             return origin + view;
@@ -187,6 +198,9 @@ namespace Titled_Gui.Data.Entity
         {
             try
             {
+                if (GameState.memory == null)
+                    return null;
+
                 IntPtr gameSceneNode = memory.Read<IntPtr>(pawnAddress + Offsets.m_pGameSceneNode);
                 IntPtr boneMatrix = memory.ReadPointer(gameSceneNode, Offsets.m_modelState + 0x80);
                 IntPtr dwSensitivity = memory.ReadPointer(client + Offsets.dwSensitivity);
@@ -199,7 +213,7 @@ namespace Titled_Gui.Data.Entity
 
                 short weaponDefIndex = memory.ReadShort(weaponData + Offsets.m_AttributeManager + Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
                 IntPtr collisionBase = pawnAddress + Offsets.m_Collision;
-                List<Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
+                List<Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix, true);
                 WorldEntityManager.WeaponNameMap.TryGetValue(weaponDefIndex, out string? weaponName);
                 var viewPos = Vector3.Add(memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin), memory.ReadVec(pawnAddress, Offsets.m_vecViewOffset));
                 //if (weaponNameAddress != 0)
@@ -277,7 +291,10 @@ namespace Titled_Gui.Data.Entity
                     entity.Visible = memory.ReadBool(pawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
                 }
 
-                entity.IsEnemy = entity.Team != LocalPlayer.Team;
+                if (LocalPlayer != null)
+                    entity.IsEnemy = entity.Team != LocalPlayer.Team;
+                else
+                    entity.IsEnemy = true;
 
                 return entity;
             }

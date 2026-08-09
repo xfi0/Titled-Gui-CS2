@@ -10,9 +10,6 @@ namespace Titled_Gui.Data.Game.MapParser
 {
     public class MapLoader // https://github.com/AtomicBool/cs2-map-parser  THIS TOOK 40 MINS TO CONVERT FROM CPP TO C#
     {
-        private readonly string cs2BaseFolder = @"C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\game\csgo\";
-        private readonly string _mapsFolder = "maps";
-        private readonly string _pathToTris = Path.Combine(AppContext.BaseDirectory, "Data", "Game", "MapParser", "PreExtractedMapData" , "tri");
         public string PreviousMapName = "";
 
         #region Misc Helpers
@@ -33,7 +30,7 @@ namespace Titled_Gui.Data.Game.MapParser
 
         private bool RayIntersectsKDTreeInternal(KDNode? node, Vector3 origin, Vector3 end, Vector3 invDir)
         {
-            if (node == null) 
+            if (node == null)
                 return false;
 
             if (!node.bbox.Intersect(origin, end, invDir))
@@ -62,56 +59,56 @@ namespace Titled_Gui.Data.Game.MapParser
 
             foreach (Triangle tri in triangles)
             {
-                if (tri.Point1.X < min.X) 
-                    min.X = tri.Point1.X; 
+                if (tri.Point1.X < min.X)
+                    min.X = tri.Point1.X;
 
-                else if (tri.Point1.X > max.X) 
+                else if (tri.Point1.X > max.X)
                     max.X = tri.Point1.X;
 
-                if (tri.Point1.Y < min.Y) 
-                    min.Y = tri.Point1.Y; 
+                if (tri.Point1.Y < min.Y)
+                    min.Y = tri.Point1.Y;
 
-                else if (tri.Point1.Y > max.Y) 
+                else if (tri.Point1.Y > max.Y)
                     max.Y = tri.Point1.Y;
 
-                if (tri.Point1.Z < min.Z) 
-                    min.Z = tri.Point1.Z; 
+                if (tri.Point1.Z < min.Z)
+                    min.Z = tri.Point1.Z;
 
-                else if (tri.Point1.Z > max.Z) 
+                else if (tri.Point1.Z > max.Z)
                     max.Z = tri.Point1.Z;
 
                 if (tri.Point2.X < min.X)
-                    min.X = tri.Point2.X; 
+                    min.X = tri.Point2.X;
 
                 else if (tri.Point2.X > max.X)
                     max.X = tri.Point2.X;
 
-                if (tri.Point2.Y < min.Y) 
-                    min.Y = tri.Point2.Y; 
+                if (tri.Point2.Y < min.Y)
+                    min.Y = tri.Point2.Y;
 
-                else if (tri.Point2.Y > max.Y) 
+                else if (tri.Point2.Y > max.Y)
                     max.Y = tri.Point2.Y;
 
-                if (tri.Point2.Z < min.Z) 
-                    min.Z = tri.Point2.Z; 
+                if (tri.Point2.Z < min.Z)
+                    min.Z = tri.Point2.Z;
 
-                else if (tri.Point2.Z > max.Z) 
+                else if (tri.Point2.Z > max.Z)
                     max.Z = tri.Point2.Z;
 
-                if (tri.Point3.X < min.X) 
-                    min.X = tri.Point3.X; 
+                if (tri.Point3.X < min.X)
+                    min.X = tri.Point3.X;
 
                 else if (tri.Point3.X > max.X)
                     max.X = tri.Point3.X;
 
-                if (tri.Point3.Y < min.Y) min.Y = tri.Point3.Y; 
-                else if (tri.Point3.Y > max.Y) 
+                if (tri.Point3.Y < min.Y) min.Y = tri.Point3.Y;
+                else if (tri.Point3.Y > max.Y)
                     max.Y = tri.Point3.Y;
 
                 if (tri.Point3.Z < min.Z)
-                    min.Z = tri.Point3.Z; 
+                    min.Z = tri.Point3.Z;
 
-                else if (tri.Point3.Z > max.Z) 
+                else if (tri.Point3.Z > max.Z)
                     max.Z = tri.Point3.Z;
             }
 
@@ -119,7 +116,7 @@ namespace Titled_Gui.Data.Game.MapParser
         }
         private KDNode? BuildKDTree(List<Triangle> triangles, int depth = 0)
         {
-            if (triangles.Count <= 0) 
+            if (triangles.Count <= 0)
                 return null;
 
             KDNode node = new();
@@ -177,13 +174,13 @@ namespace Titled_Gui.Data.Game.MapParser
         }
         #endregion
 
-        public List<Triangle> Triangles = new List<Triangle>();
+        public List<Triangle> Triangles = [];
 
         public bool LoadMap(string mapName)
         {
             var asm = Assembly.GetExecutingAssembly();
             var names = asm.GetManifestResourceNames();
-          
+
             var stream = asm.GetManifestResourceStream("Titled_Gui.Data.Game.MapParser.PreExtractedMapData.tri." + mapName + ".tri");
             if (stream == null)
             {
@@ -227,7 +224,7 @@ namespace Titled_Gui.Data.Game.MapParser
                 }
 
                 KDTreeRoot = BuildKDTree(Triangles);
-                
+
                 Triangles.Clear();
                 Triangles.TrimExcess();
 

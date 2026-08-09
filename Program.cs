@@ -8,8 +8,8 @@ using Titled_Gui.Modules.Visual;
 
 try
 {
-    EntityManager entityManager = new();
     GameState.renderer = new();
+    EntityManager entityManager = new();
     ImGui.CreateContext();
     Renderer.LoadFonts();
     await GameState.renderer.Start();
@@ -55,8 +55,11 @@ try
                  if (entities != null)
                  {
                      GameState.renderer.UpdateEntities(entities);
-                     GameState.Entities = [.. entities];
+#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
+                     GameState.Entities = entities;
+#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
                  }
+
                  Thread.Sleep(1);
              }
              catch (Exception e)

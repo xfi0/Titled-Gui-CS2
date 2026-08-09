@@ -21,8 +21,17 @@ namespace Titled_Gui.Classes.Memory
         [DllImport("kernel32.dll")]
         static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, out int lpBytesWritten);
 
-        public static Process process;
+        public static Process? process;
         private static IntPtr handle = IntPtr.Zero;
+
+        [ThreadStatic] private static byte[]? _buffer;
+        private static byte[] GetBuffer(int size)
+        {
+            if (_buffer == null || _buffer.Length < size)
+                _buffer = new byte[size];
+
+            return _buffer;
+        }
 
         /// <summary>
         /// Initializes the library pretty much
@@ -39,32 +48,29 @@ namespace Titled_Gui.Classes.Memory
         public IntPtr GetModuleBase(string modulename)
         {
             if (string.IsNullOrEmpty(modulename))
-            {
                 return IntPtr.Zero;
-            }
 
-            if (process == null)
-            {
+
+            if (process == null || process.MainModule == null)
                 return IntPtr.Zero;
-            }
+
 
             try
             {
                 if (modulename.Contains(".exe"))
-                {
                     return process.MainModule.BaseAddress;
-                }
+
 
                 foreach (ProcessModule module in process.Modules)
                 {
                     if (module.ModuleName == modulename)
-                    {
                         return module.BaseAddress;
-                    }
+
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Failed to get module base: " + ex.Message);
                 return IntPtr.Zero;
             }
 
@@ -74,29 +80,17 @@ namespace Titled_Gui.Classes.Memory
         public T Read<T>(IntPtr addr) where T : struct
         {
             int size = Marshal.SizeOf<T>();
-            byte[] buf = new byte[size];
-
+            byte[] buf = GetBuffer(System.Math.Max(size, 8));
             ReadProcessMemory(handle, addr, buf, size, out _);
-
-            var h = GCHandle.Alloc(buf, GCHandleType.Pinned);
-            T value = Marshal.PtrToStructure<T>(h.AddrOfPinnedObject());
-            h.Free();
-
-            return value;
+            return MemoryMarshal.Read<T>(buf.AsSpan(0, size));
         }
 
         public T Read<T>(ulong addr) where T : struct
         {
             int size = Marshal.SizeOf<T>();
-            byte[] buf = new byte[size];
-
+            byte[] buf = GetBuffer(System.Math.Max(size, 8));
             ReadProcessMemory(handle, (IntPtr)addr, buf, size, out _);
-
-            var h = GCHandle.Alloc(buf, GCHandleType.Pinned);
-            T value = Marshal.PtrToStructure<T>(h.AddrOfPinnedObject());
-            h.Free();
-
-            return value;
+            return MemoryMarshal.Read<T>(buf.AsSpan(0, size));
         }
 
         public void Write<T>(IntPtr addr, T val) where T : struct
@@ -139,6 +133,11 @@ namespace Titled_Gui.Classes.Memory
             byte[] buf = new byte[size];
             ReadProcessMemory(handle, address, buf, size, out _);
             return buf;
+        }
+
+        public void ReadBytes(IntPtr address, byte[] dest, int size)
+        {
+            ReadProcessMemory(handle, address, dest, size, out _);
         }
         public void WriteBytes(IntPtr address, byte[] buf) => WriteProcessMemory(handle, address, buf, buf.Length, out _);
 
@@ -186,7 +185,8 @@ namespace Titled_Gui.Classes.Memory
 
         public float[] ReadMatrix(IntPtr address)
         {
-            byte[] b = ReadBytes(address, 64);
+            byte[] b = GetBuffer(64);
+            ReadProcessMemory(handle, address, b, 64, out _);
             float[] m = new float[16];
             for (int i = 0; i < 16; i++)
                 m[i] = BitConverter.ToSingle(b, i * 4);

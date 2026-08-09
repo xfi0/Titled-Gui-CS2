@@ -124,5 +124,6 @@
         public static int m_hInfernoDecalsSnapshot = 0x1010; // CStrongHandle<InfoForResourceTypeIParticleSnapshot>
         public static int m_firePositions = 0x1010; // CStrongHandle<InfoForResourceTypeIParticleSnapshot>
         public static int m_fireCount = 0x1010; // CStrongHandle<InfoForResourceTypeIParticleSnapshot>
+        public static int m_ModelName = 0x0;
     }
 }

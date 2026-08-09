@@ -18,6 +18,9 @@ namespace Titled_Gui.Data.Game.C4
         /// <returns>A pointer to a C_PlantedC4. otherwise, <see cref="IntPtr.Zero"/></returns>
         public IntPtr GetC4()
         {
+            if (GameState.memory == null)
+                return IntPtr.Zero;
+
             IntPtr plantedPointer = GameState.memory.ReadPointer(GameState.client + Offsets.dwPlantedC4);
             if (plantedPointer == IntPtr.Zero)
                 return plantedPointer == IntPtr.Zero ? IntPtr.Zero : plantedPointer;
@@ -32,6 +35,9 @@ namespace Titled_Gui.Data.Game.C4
         /// <returns>A pointer to the game scene node if the C4 is planted. otherwise, <see cref="IntPtr.Zero"/>.</returns>
         private IntPtr GetNode()
         {
+            if (GameState.memory == null)
+                return IntPtr.Zero;
+
             IntPtr planted = GetC4();
             if (planted == IntPtr.Zero)
                 return IntPtr.Zero;
@@ -41,16 +47,21 @@ namespace Titled_Gui.Data.Game.C4
 
         private Vector3 GetPos()
         {
-            IntPtr node = GetNode();
+            if (GameState.memory == null)
+                return Vector3.Zero;
 
+            IntPtr node = GetNode();
             if (node == IntPtr.Zero)
-                return new Vector3(0, 0, 0);
+                return Vector3.Zero;
 
             return GameState.memory.ReadVec(node + Offsets.m_vecOrigin);
         }
 
         protected override void FrameAction()
         {
+            if (GameState.memory == null)
+                return;
+
             IntPtr c4 = GetC4();
             IntPtr node = GetNode();
             Vector3 position = GetPos();
@@ -71,7 +82,7 @@ namespace Titled_Gui.Data.Game.C4
                 Matrix = GameState.memory.ReadMatrix(node + Offsets.m_nodeToWorld)
             };
 
-            Thread.SpinWait(20);
+            Thread.Sleep(1);
         }
     }
 }

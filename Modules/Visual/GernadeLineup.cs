@@ -5,7 +5,7 @@ using Titled_Gui.Classes;
 using Titled_Gui.Classes.Math;
 using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Game;
-using Titled_Gui.Data.Menu;
+using Titled_Gui.Data.Menu.Types;
 using static Titled_Gui.Data.Game.Events;
 
 namespace Titled_Gui.Modules.Visual
@@ -26,7 +26,7 @@ namespace Titled_Gui.Modules.Visual
         private static float smoothing = 10f;
         private static float lockRadius = 50f;
         private static Vector2 remainder = Vector2.Zero;
-        private static Dictionary<string, Types.GernadeLineupType> lineupCache = new Dictionary<string, Types.GernadeLineupType>();
+        private static Dictionary<string, GrenadeLinup> lineupCache = new Dictionary<string, GrenadeLinup>();
         private static string lastMap = "";
 
         public static void Initialize()
@@ -55,7 +55,7 @@ namespace Titled_Gui.Modules.Visual
 
             foreach (string file in Directory.GetFiles(directory, "*.json"))
             {
-                var lineup = JsonConvert.DeserializeObject<Types.GernadeLineupType>(File.ReadAllText(file));
+                var lineup = JsonConvert.DeserializeObject<GrenadeLinup>(File.ReadAllText(file));
                 if (lineup == null)
                 {
                     Console.WriteLine("Lineup deserialize failed.");
@@ -76,6 +76,9 @@ namespace Titled_Gui.Modules.Visual
                     InitializeLineupCache();
                     return;
                 }
+
+                if (GameState.renderer == null || GameState.memory == null || GameState.LocalPlayer == null)
+                    return;
 
                 float[] viewMatrix = GameState.memory.ReadMatrix(GameState.client + Offsets.dwViewMatrix);
 
@@ -146,13 +149,16 @@ namespace Titled_Gui.Modules.Visual
             User32.MouseMove(ix, iy);
         }
 
-        public static void SaveLineup(string name, Types.GernadeLaunchType launchType)
+        public static void SaveLineup(string name, GrenadeLaunchType launchType)
         {
+            if (GameState.LocalPlayer == null)
+                return;
+
             Vector3 eyeOrigin = GameState.LocalPlayer.EyePosition;
             Vector3 forward = MathUtils.AngleToForward(GameState.LocalPlayer.EyeDirection);
             Vector3 circlePos = eyeOrigin + forward * 100f;
 
-            Types.GernadeLineupType lineup = new()
+            GrenadeLinup lineup = new()
             {
                 Name = name,
                 Position = GameState.LocalPlayer.Position,

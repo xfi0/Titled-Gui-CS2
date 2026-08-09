@@ -128,18 +128,21 @@ namespace Titled_Gui.Data.Entity
             { 526, "knife"} // _kukri
         };
 
-        public enum EntityKind 
-        { 
+        public enum EntityKind
+        {
             Unknown = 0,
-            Weapon, 
-            Projectile, 
-            Chicken, 
-            Hostage 
+            Weapon,
+            Projectile,
+            Chicken,
+            Hostage
         }
 
 
         public List<WorldEntity?> GetWorldEntities()
         {
+            if (GameState.memory == null)
+                return [];
+
             try
             {
                 if (GameState.EntityList == IntPtr.Zero)
@@ -182,8 +185,7 @@ namespace Titled_Gui.Data.Entity
 
                     WorldEntity? worldEntity = PopulateEntity(pawnAddress, type, itemNode, viewMatrix);
 
-                    if (worldEntity == null || worldEntity.Position2D == new Vector2(-99, -99) ||
-                        worldEntity.Position.X == 0 || worldEntity.Position.Y == 0 || worldEntity.PawnAddress == 0x0)
+                    if (worldEntity == null || worldEntity.Position.X == 0 || worldEntity.Position.Y == 0 || worldEntity.PawnAddress == 0x0)
                         continue;
 
                     worldEntities.Add(worldEntity);
@@ -201,16 +203,25 @@ namespace Titled_Gui.Data.Entity
 
         public WorldEntity? PopulateEntity(nint pawnAddress, string type, IntPtr itemNode, float[] viewMatrix)
         {
+            if (GameState.memory == null)
+                return null;
+
             Vector3 itemOrigin = GameState.memory.ReadVec((nint)itemNode + Offsets.m_vecOrigin);
             IntPtr collisionBase = pawnAddress + Offsets.m_Collision;
+            IntPtr gameSceneNode = GameState.memory.Read<IntPtr>(pawnAddress + Offsets.m_pGameSceneNode);
+            IntPtr boneMatrix = GameState.memory.ReadPointer(gameSceneNode, Offsets.m_modelState + 0x80);
+            IntPtr modelNamePtr = GameState.memory.ReadPointer(gameSceneNode + Offsets.m_modelState + Offsets.m_ModelName);
+            string? modelName = modelNamePtr != IntPtr.Zero ? GameState.memory.ReadString(modelNamePtr, 260) : "";
 
             WorldEntity newWorldEntity = new()
             {
                 PawnAddress = pawnAddress,
                 ItemNode = itemNode,
                 Position = itemOrigin,
-                Position2D = MathUtils.WorldToScreen(viewMatrix, itemOrigin),
+                GameSceneNode = gameSceneNode,
                 DisplayName = "",
+                Bones = Calculate.ReadBones(boneMatrix, viewMatrix),
+                ModelName = modelName.Replace('\\', '/').ToLowerInvariant(),
                 Type = EntityKind.Unknown,
                 RawType = type,
                 VecMax = GameState.memory.ReadVec(collisionBase, Offsets.m_vecMaxs),

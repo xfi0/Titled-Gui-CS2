@@ -34,7 +34,7 @@ namespace Titled_Gui.Modules.Visual
         {
             foreach (Entity? entity in GameState.Entities)
             {
-                if (entity == null || entity.Name == null || entity.Name.Length <= 0 || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Health > 0)
+                if (entity == null || entity.Name == null || entity.Name.Length <= 0 || GameState.LocalPlayer == null || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || entity.Health > 0)
                     continue;
 
                 var handle = EntityManager.GetPlayerPawn(GameState.EntityList, entity.Pawn);
@@ -50,7 +50,7 @@ namespace Titled_Gui.Modules.Visual
 
         private static IntPtr GetObserverTarget(IntPtr pawnAddress)
         {
-            if (pawnAddress == IntPtr.Zero)
+            if (pawnAddress == IntPtr.Zero || GameState.memory == null)
                 return IntPtr.Zero;
 
             var observerServices = GameState.memory.Read<IntPtr>(pawnAddress + Offsets.m_pObserverServices);

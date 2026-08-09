@@ -9,7 +9,7 @@ using TextRenderer = Titled_Gui.Classes.Rendering.TextRenderer;
 
 namespace Titled_Gui.Modules.Visual
 {
-    public class HealthBar 
+    public class HealthBar
     {
         public static bool EnableHealthBar = false;
         public static bool DrawOnSelf = false;
@@ -19,9 +19,9 @@ namespace Titled_Gui.Modules.Visual
         public static Vector4 HealthColor = new(0, 1, 0, 1);
         public static bool RGB = false;
 
-        public static void DrawHealthBar(Entity? e,float health, float maxHealth, Vector2 topLeft, float height)
+        public static void DrawHealthBar(Entity? e, float health, float maxHealth, Vector2 topLeft, float height)
         {
-            if (!EnableHealthBar || e == null || e.Health <= 0 || (!DrawOnSelf && e.PawnAddress == GameState.LocalPlayer.PawnAddress) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || (BoxESP.TeamCheck && e.Team == GameState.LocalPlayer.Team) || e.Position2D == new Vector2(-99, -99)) return;
+            if (!EnableHealthBar || e == null || e.Health <= 0 || GameState.LocalPlayer == null || GameState.renderer == null || (!DrawOnSelf && e.PawnAddress == GameState.LocalPlayer.PawnAddress) || (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || (BoxESP.TeamCheck && e.Team == GameState.LocalPlayer.Team) || e.Position2D == new Vector2(-99, -99)) return;
 
             float healthPercentage = Math.Clamp(health / maxHealth, 0f, 1f); // percentage of the box that is currently filled
             float filledHeight = height * healthPercentage;
@@ -32,7 +32,7 @@ namespace Titled_Gui.Modules.Visual
 
             if (RGB)
                 HealthColor = Colors.Rgb(HealthColor.W);
-            
+
             else
             {
                 if (e.Health > 80)
@@ -40,8 +40,8 @@ namespace Titled_Gui.Modules.Visual
 
                 else if (e.Health > 50)
                 {
-                    float t = (80 - e.Health) / 30f; 
-                    HealthColor = Vector4.Lerp(new(0f, 1f, 0f, 1f), new(1f, 1f, 0f, 1f), t); 
+                    float t = (80 - e.Health) / 30f;
+                    HealthColor = Vector4.Lerp(new(0f, 1f, 0f, 1f), new(1f, 1f, 0f, 1f), t);
                 }
                 else if (e.Health > 20)
                 {
@@ -49,7 +49,7 @@ namespace Titled_Gui.Modules.Visual
                     HealthColor = Vector4.Lerp(new(1f, 1f, 0f, 1f), new(1f, 0f, 0f, 1f), t);
                 }
                 else
-                    HealthColor = new(1f, 0f, 0f, 1f);   
+                    HealthColor = new(1f, 0f, 0f, 1f);
             }
 
 
@@ -58,7 +58,7 @@ namespace Titled_Gui.Modules.Visual
         public static void DrawHealthBarPreview(Vector2 position, float entityHeight)
         {
             float barWidth = 5f;
-            float healthPercent = TextRenderer.AnimateFloat("HealthBar"); 
+            float healthPercent = TextRenderer.AnimateFloat("HealthBar");
             float offset = 4;
 
             Vector2 top = position + new Vector2(-entityHeight / 3f - barWidth - offset, -entityHeight / 2);

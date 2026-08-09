@@ -16,7 +16,7 @@ namespace Titled_Gui.Modules.Visual
         public static float Proportion = 2600;
         private static List<RadarPoint> points = [];
         public static int PointType = 0; // 0 = circle, 1 = arrow, 2 = arc
-        public static Vector4 EnemyPointColor = new(1, 0, 0, 1); 
+        public static Vector4 EnemyPointColor = new(1, 0, 0, 1);
         public static Vector4 TeamPointColor = new(0, 1, 0, 1);
         public static Colors PointColors = new(TeamPointColor, EnemyPointColor);
 
@@ -46,7 +46,7 @@ namespace Titled_Gui.Modules.Visual
 
                 foreach (Entity? e in GameState.Entities)
                 {
-                    if (e == null || e.Health <= 0 || e.PawnAddress == GameState.LocalPlayer.PawnAddress) continue;
+                    if (e == null || e.Health <= 0 || GameState.LocalPlayer == null || e.PawnAddress == GameState.LocalPlayer.PawnAddress) continue;
 
                     float dx = GameState.LocalPlayer.Position.X - e.Position.X;
                     float dy = GameState.LocalPlayer.Position.Y - e.Position.Y;
@@ -85,6 +85,9 @@ namespace Titled_Gui.Modules.Visual
 
         private static void DrawPoint(RadarPoint point)
         {
+            if (GameState.renderer == null)
+                return;
+
             switch (point.Type)
             {
                 case 0:
@@ -102,6 +105,9 @@ namespace Titled_Gui.Modules.Visual
 
         private static void DrawArrow(Vector2 Position, Vector4 Color, float Yaw)
         {
+            if (GameState.renderer == null)
+                return;
+
             Vector2 a = new(Position.X, Position.Y - 10f);
             Vector2 b = new(Position.X - 10f / 2, Position.Y + 10f / 2);
             Vector2 c = new(Position.X + 10f / 2, Position.Y + 10f / 2);
@@ -115,6 +121,9 @@ namespace Titled_Gui.Modules.Visual
 
         private static void DrawArc(Vector2 position, Vector4 color)
         {
+            if (GameState.renderer == null)
+                return;
+
             GameState.renderer.DrawList.AddCircleFilled(position, 8f, ImGui.ColorConvertFloat4ToU32(color), 30);
             GameState.renderer.DrawList.AddCircle(position, 8f * 0.95f, ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 0.5f)), 0, 0.1f);
         }
@@ -133,6 +142,9 @@ namespace Titled_Gui.Modules.Visual
 
         public static void DrawCross()
         {
+            if (GameState.renderer == null)
+                return;
+
             GameState.renderer.DrawList.AddLine(new Vector2(crossPosition.X - 100, crossPosition.Y), new Vector2(crossPosition.X + 100, crossPosition.Y), ImGui.ColorConvertFloat4ToU32(EnemyPointColor), 1); // enemy color because uh i felt like it
             GameState.renderer.DrawList.AddLine(new Vector2(crossPosition.X, crossPosition.Y - 100), new Vector2(crossPosition.X, crossPosition.Y + 100), ImGui.ColorConvertFloat4ToU32(EnemyPointColor), 1);
         }

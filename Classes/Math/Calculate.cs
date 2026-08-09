@@ -10,23 +10,29 @@ namespace Titled_Gui.Classes.Math
 {
     public static class Calculate
     {
+        private static readonly HashSet<int> BonesToCheck = Enum.GetValues<BoneIds>().Select(b => (int)b).ToHashSet();
+        [ThreadStatic] private static byte[]? _boneBuffer = null;
 
-        private static readonly HashSet<int> BonesToCheck = Enum.GetValues<BoneIds>()
-            .Select(b => (int)b)
-            .ToHashSet();
-
-        public static List<Bone> ReadBones(nint boneAddress, float[] viewMatrix)
+        public static List<Bone> ReadBones(nint boneAddress, float[] viewMatrix, bool checkVisibility = false)
         {
+            if (GameState.memory == null || GameState.LocalPlayer == null)
+                return [];
 
             int maxBoneId = 102;
-            byte[] boneBytes = GameState.memory.ReadBytes(boneAddress, maxBoneId * 32);
-            List<Bone> bones = new(new Bone[maxBoneId]);
+            if (_boneBuffer == null || _boneBuffer.Length < maxBoneId * 32)
+                _boneBuffer = new byte[maxBoneId * 32];
+
+            byte[] boneBytes = _boneBuffer;
+            GameState.memory.ReadBytes(boneAddress, boneBytes, maxBoneId * 32);
+            List<Bone> bones = [.. new Bone[maxBoneId]];
+            Vector3 origin = GameState.LocalPlayer.EyePosition;
 
             for (int i = 0; i < 102; i++)
             {
                 int id = (int)i;
                 int offset = id * 32;
-                if (offset + 32 > boneBytes.Length) continue;
+                if (offset + 32 > boneBytes.Length)
+                    continue;
 
                 float x = BitConverter.ToSingle(boneBytes, offset + 0);
                 float y = BitConverter.ToSingle(boneBytes, offset + 4);
@@ -39,11 +45,9 @@ namespace Titled_Gui.Classes.Math
                 Bone bone = new()
                 {
                     Position = new Vector3(x, y, z),
-                    Rotation = new Quaternion(qx, qy, qz, qw)
+                    Rotation = new Quaternion(qx, qy, qz, qw),
+                    IsVisible = true
                 };
-
-                if (BonesToCheck.Contains(id))
-                    bone.IsVisible = VisibilityCheck.Visible(GameState.LocalPlayer.EyePosition, bone.Position);
 
                 bone.Position2D = MathUtils.WorldToScreen(viewMatrix, bone.Position);
 
@@ -55,7 +59,9 @@ namespace Titled_Gui.Classes.Math
 
         public static List<Hitbox> ReadHitboxes(Entity entity, float[] viewMatrix)
         {
-            List<Hitbox> hitboxes = new();
+            List<Hitbox> hitboxes = [];
+            if (GameState.memory == null)
+                return [];
 
             // m_modelState = 0x40
             // pCModel = 0x150
@@ -101,7 +107,7 @@ namespace Titled_Gui.Classes.Math
             IntPtr hitboxSets = GameState.memory.ReadPointer(CRenderMeshs + 0x168);
             if (hitboxSets == IntPtr.Zero)
             {
-                Console.WriteLine("[ReadHitboxes] hitboxSets is null for entity: " + entity.Name);
+                //Console.WriteLine("[ReadHitboxes] hitboxSets is null for entity: " + entity.Name);
                 return hitboxes;
             }
 
@@ -134,8 +140,7 @@ namespace Titled_Gui.Classes.Math
                     continue;
                 }
 
-                string name = GameState.memory.ReadString(pName)
-                    .Trim().Replace(" ", "").Replace("\0", "").Replace("playerfl", "");
+                string name = GameState.memory.ReadString(pName).Trim().Replace(" ", "").Replace("\0", "").Replace("playerfl", "");
 
                 if (name == "spine_3")
                     continue;
@@ -161,7 +166,7 @@ namespace Titled_Gui.Classes.Math
                 if (min2D == new Vector2(-99, -99) || max2D == new Vector2(-99, -99))
                     continue;
 
-                Hitbox hitbox = new Hitbox
+                Hitbox hitbox = new()
                 {
                     Name = name,
                     MinBounds = min,

@@ -220,7 +220,6 @@ namespace Titled_Gui.Data.Entity
                 Position = itemOrigin,
                 GameSceneNode = gameSceneNode,
                 DisplayName = "",
-                Bones = Calculate.ReadBones(boneMatrix, viewMatrix),
                 ModelName = modelName.Replace('\\', '/').ToLowerInvariant(),
                 Type = EntityKind.Unknown,
                 RawType = type,
@@ -232,21 +231,25 @@ namespace Titled_Gui.Data.Entity
 
             if (WeaponsType.TryGetValue(type, out var weaponName))
             {
+                newWorldEntity.Bones = Calculate.ReadWorldEntityBones(boneMatrix, viewMatrix);
                 newWorldEntity.Type = EntityKind.Weapon;
                 newWorldEntity.DisplayName = weaponName;
             }
             else if (ProjectilesType.TryGetValue(type, out var projectileName))
             {
+                newWorldEntity.Bones = Calculate.ReadWorldEntityBones(boneMatrix, viewMatrix);
                 newWorldEntity.Type = EntityKind.Projectile;
                 newWorldEntity.DisplayName = projectileName;
             }
             else if (type.Contains("C_Chicken"))
             {
+                newWorldEntity.Bones = Calculate.ReadWorldEntityBones(boneMatrix, viewMatrix);
                 newWorldEntity.Type = EntityKind.Chicken;
                 newWorldEntity.DisplayName = "Chicken";
             }
             else if (type.Contains("hostage_entity"))
             {
+                newWorldEntity.Bones = Calculate.ReadWorldEntityBones(boneMatrix, viewMatrix);
                 newWorldEntity.Type = EntityKind.Hostage;
                 newWorldEntity.DisplayName = "Hostage";
             }
@@ -256,7 +259,7 @@ namespace Titled_Gui.Data.Entity
 
         private readonly List<WorldEntity?> _lastSnapshot = new();
         private static readonly Stopwatch FrameTimer = Stopwatch.StartNew();
-        private const double TargetFrameMs = 0.5;
+        private const double TargetFrameMs = 5;
         protected override void FrameAction()
         {
             if (FrameTimer.Elapsed.TotalMilliseconds < TargetFrameMs)

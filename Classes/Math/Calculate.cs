@@ -12,6 +12,7 @@ namespace Titled_Gui.Classes.Math
     {
         private static readonly HashSet<int> BonesToCheck = Enum.GetValues<BoneIds>().Select(b => (int)b).ToHashSet();
         [ThreadStatic] private static byte[]? _boneBuffer = null;
+        [ThreadStatic] private static byte[]? _worldBoneBuffer = null;
 
         public static List<Bone> ReadBones(nint boneAddress, float[] viewMatrix, bool checkVisibility = false)
         {
@@ -23,6 +24,49 @@ namespace Titled_Gui.Classes.Math
                 _boneBuffer = new byte[maxBoneId * 32];
 
             byte[] boneBytes = _boneBuffer;
+            GameState.memory.ReadBytes(boneAddress, boneBytes, maxBoneId * 32);
+            List<Bone> bones = [.. new Bone[maxBoneId]];
+            Vector3 origin = GameState.LocalPlayer.EyePosition;
+
+            for (int i = 0; i < 102; i++)
+            {
+                int id = (int)i;
+                int offset = id * 32;
+                if (offset + 32 > boneBytes.Length)
+                    continue;
+
+                float x = BitConverter.ToSingle(boneBytes, offset + 0);
+                float y = BitConverter.ToSingle(boneBytes, offset + 4);
+                float z = BitConverter.ToSingle(boneBytes, offset + 8);
+                float qx = BitConverter.ToSingle(boneBytes, offset + 16);
+                float qy = BitConverter.ToSingle(boneBytes, offset + 20);
+                float qz = BitConverter.ToSingle(boneBytes, offset + 24);
+                float qw = BitConverter.ToSingle(boneBytes, offset + 28);
+
+                Bone bone = new()
+                {
+                    Position = new Vector3(x, y, z),
+                    Rotation = new Quaternion(qx, qy, qz, qw),
+                    IsVisible = true
+                };
+
+                bone.Position2D = MathUtils.WorldToScreen(viewMatrix, bone.Position);
+
+                bones[id] = bone;
+            }
+
+            return bones;
+        }
+        public static List<Bone> ReadWorldEntityBones(nint boneAddress, float[] viewMatrix, bool checkVisibility = false) // less bones probably
+        {
+            if (GameState.memory == null || GameState.LocalPlayer == null)
+                return [];
+
+            int maxBoneId = 64;
+            if (_worldBoneBuffer == null || _worldBoneBuffer.Length < maxBoneId * 32)
+                _worldBoneBuffer = new byte[maxBoneId * 32];
+
+            byte[] boneBytes = _worldBoneBuffer;
             GameState.memory.ReadBytes(boneAddress, boneBytes, maxBoneId * 32);
             List<Bone> bones = [.. new Bone[maxBoneId]];
             Vector3 origin = GameState.LocalPlayer.EyePosition;

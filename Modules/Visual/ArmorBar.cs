@@ -37,10 +37,10 @@ namespace Titled_Gui.Modules.Visual
                 ImGui.ColorConvertFloat4ToU32(_backgroundColor), Rounding);
 
             Vector2 filledTop = rect.TopRight + new Vector2(0, height - filledHeight);
-            ArmorColor = RGB ? Colors.Rgb(ArmorColor.W) : new(0.1f, 0f, 1f, 1f);
+            Vector4 armorColor = RGB ? Colors.Rgb(ArmorColor.W) : ArmorColor;
 
             renderer.DrawList.AddRectFilled(filledTop, filledTop + new Vector2(ArmorBarWidth, filledHeight),
-                ImGui.ColorConvertFloat4ToU32(ArmorColor), Rounding);
+                ImGui.ColorConvertFloat4ToU32(armorColor), Rounding);
         }
 
         public static void DrawArmorBarPreview(Vector2 position, float entityHeight)

@@ -46,10 +46,9 @@ namespace Titled_Gui.Modules.Rage
                     return;
                 }
 
+                target = GetTarget();
                 if (AimbotKey == 0 || (User32.GetAsyncKeyState(AimbotKey) & 0x8000) != 0) // 0 == none
                 {
-                    target = GetTarget();
-
                     if (target == null || target.Bones == null || target.Bones.Count <= 0 || target.Bones == null) return;
 
                     if (target != previousTarget)
@@ -89,7 +88,7 @@ namespace Titled_Gui.Modules.Rage
                             {
                                 CurrentBone2D = target.Bones[CurrentBoneIndex].Position2D;
 
-                                if (CurrentBone2D != Vector2.Zero)
+                                if (CurrentBone2D != Vector2.Zero && (!UseFOV || CurrentBone2D != new Vector2(-99, -99)))
                                     newAngles2D = CurrentBone2D;
                                 else
                                     newAngles2D = target.Position2D;
@@ -118,10 +117,8 @@ namespace Titled_Gui.Modules.Rage
                     MoveMousePos(dx, dy);
                 }
                 else
-                {
                     remainder = Vector2.Zero;
-                    target = null;
-                }
+
             }
             catch (DivideByZeroException divideByZeroException)
             {
@@ -168,7 +165,7 @@ namespace Titled_Gui.Modules.Rage
 
                 foreach (Entity? entity in Entities)
                 {
-                    if (entity == null || entity.Position2D == new Vector2(-99, -99) || entity.Head2D == new Vector2(-99, -99) || entity.Health == 0 || GameState.LocalPlayer == null || (!Team && entity.Team == GameState.LocalPlayer.Team) || (VisibilityCheck && !entity.Visible)) continue;
+                    if (entity == null || (UseFOV && entity.Position2D == new Vector2(-99, -99)) || entity.Health == 0 || GameState.LocalPlayer == null || (!Team && entity.Team == GameState.LocalPlayer.Team) || (VisibilityCheck && !entity.Visible)) continue;
 
                     float distToBody = Vector2.Distance(screenCenter, entity.Position2D);
                     float distToHead = Vector2.Distance(screenCenter, entity.Head2D);

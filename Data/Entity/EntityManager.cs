@@ -243,7 +243,7 @@ namespace Titled_Gui.Data.Entity
                     Position2D = MathUtils.WorldToScreen(viewMatrix, memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
                     ViewPosition2D = MathUtils.WorldToScreen(viewMatrix, viewPos),
                     //Visible = Visible(entity),
-                    Visible = memory.ReadBool(pawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted),
+                    Visible = false,
                     SpottedByState = memory.ReadPointer(pawnAddress + 0x2718),
                     Head = viewPos,
                     Head2D = MathUtils.WorldToScreen(viewMatrix, viewPos),

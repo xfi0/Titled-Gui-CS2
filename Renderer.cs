@@ -23,6 +23,7 @@ namespace Titled_Gui
         public static bool DrawWindow = false;
         public static bool EnableWatermark = true;
         public static bool IsTextFontNormalLoaded => !TextFontNormal.Equals(default(ImFontPtr));
+        public static bool IsTextFont24Loaded => !TextFont24.Equals(default(ImFontPtr));
         public static bool IsTextFont48Loaded => !TextFont48.Equals(default(ImFontPtr));
         public static bool IsTextFont60Loaded => !TextFont60.Equals(default(ImFontPtr));
         public static bool IsIconFontLoaded => !IconFont.Equals(default(ImFontPtr));
@@ -69,6 +70,7 @@ namespace Titled_Gui
         public static Colors BackgroundEffectColors = new Colors(primaryColor: _particleColor, secondaryColor: _lineColor);
 
         public static ImFontPtr TextFontNormal;
+        public static ImFontPtr TextFont24;
         public static ImFontPtr TextFont48;
         public static ImFontPtr TextFont60;
         public static ImFontPtr IconFont;
@@ -160,11 +162,13 @@ namespace Titled_Gui
                         byte[] d2 = (byte[])iconFontData.Clone();
                         byte[] d3 = (byte[])iconFontData.Clone();
                         byte[] d4 = (byte[])iconFontData.Clone();
+                        byte[] d5 = (byte[])iconFontData.Clone();
 
                         fixed (byte* p2 = d2) TextFontNormal = io.Fonts.AddFontFromMemoryTTF((IntPtr)p2, d2.Length, 18.0f, null, (IntPtr)pRanges);
                         fixed (byte* p1 = d1) IconFont = io.Fonts.AddFontFromMemoryTTF((IntPtr)p1, d1.Length, 24.0f, null, (IntPtr)pRanges);
-                        fixed (byte* p3 = d3) TextFont48 = io.Fonts.AddFontFromMemoryTTF((IntPtr)p3, d3.Length, 48.0f, null, (IntPtr)pRanges);
-                        fixed (byte* p4 = d4) TextFont60 = io.Fonts.AddFontFromMemoryTTF((IntPtr)p4, d4.Length, 60.0f, null, (IntPtr)pRanges);
+                        fixed (byte* p3 = d3) TextFont24 = io.Fonts.AddFontFromMemoryTTF((IntPtr)p3, d3.Length, 24.0f, null, (IntPtr)pRanges);
+                        fixed (byte* p4 = d4) TextFont48 = io.Fonts.AddFontFromMemoryTTF((IntPtr)p4, d4.Length, 48.0f, null, (IntPtr)pRanges);
+                        fixed (byte* p5 = d5) TextFont60 = io.Fonts.AddFontFromMemoryTTF((IntPtr)p5, d5.Length, 60.0f, null, (IntPtr)pRanges);
                     }
                 }
 

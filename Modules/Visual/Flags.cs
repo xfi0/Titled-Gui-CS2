@@ -4,7 +4,6 @@ using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Entity.Types;
 using Titled_Gui.Data.Game;
-using Titled_Gui.Data.Menu;
 
 namespace Titled_Gui.Modules.Visual
 {
@@ -18,6 +17,8 @@ namespace Titled_Gui.Modules.Visual
         public static bool GunEnabled = false;
         private static Dictionary<string, int> enabledFlags = new();
         private static float _baseFontSize = 18f;
+        private static float _flagPaddingX = 4f;
+        private static float _flagLineHeight = 14f;
 
         public static void DrawFlags(Entity entity)
         {
@@ -60,10 +61,8 @@ namespace Titled_Gui.Modules.Visual
             enabledFlags.TryGetValue("Scoped", out int offsetY);
 
             string scopedText = entity.IsScoped ? "Scoped" : "Not Scoped";
-            Vector2 textPos = new(boxRect.TopRight.X + 4, boxRect.TopRight.Y + (offsetY * 5) * 5);
-            float fontSize = (float)Math.Clamp(_baseFontSize - (entity.Distance * 0.004f), 12f, _baseFontSize);
-
-            GameState.renderer.DrawList.AddText(Renderer.TextFont60, fontSize, textPos, ImGui.ColorConvertFloat4ToU32(color), scopedText);
+            Vector2 textPos = new(boxRect.TopRight.X + _flagPaddingX, boxRect.TopRight.Y + (offsetY * _flagLineHeight));
+            GameState.renderer.DrawList.AddText(Renderer.TextFontNormal, _baseFontSize, textPos, ImGui.ColorConvertFloat4ToU32(color), scopedText);
         }
 
         public static void FlashedFlag(Entity entity, BoxRect boxRect)
@@ -79,10 +78,8 @@ namespace Titled_Gui.Modules.Visual
             enabledFlags.TryGetValue("Flash", out int offsetY);
 
             string flashText = entity.FlashDuration > 0.1 ? $"Flashed {MathF.Round(entity.FlashDuration, 2)}" : $"Not Flashed";
-            Vector2 textPos = new(boxRect.TopRight.X + 4, boxRect.TopRight.Y + offsetY * 4);
-            float fontSize = (float)Math.Clamp(_baseFontSize - (entity.Distance * 0.004f), 12f, _baseFontSize);
-
-            GameState.renderer.DrawList.AddText(Renderer.TextFont60, fontSize, textPos, ImGui.ColorConvertFloat4ToU32(color), flashText);
+            Vector2 textPos = new(boxRect.TopRight.X + _flagPaddingX, boxRect.TopRight.Y + (offsetY * _flagLineHeight));
+            GameState.renderer.DrawList.AddText(Renderer.TextFontNormal, _baseFontSize, textPos, ImGui.ColorConvertFloat4ToU32(color), flashText);
         }
 
         public static void GunFlag(Entity? entity, BoxRect boxRect)
@@ -96,9 +93,8 @@ namespace Titled_Gui.Modules.Visual
                 return;
 
             Vector2 textPos = new(boxRect.BottomMiddle.X, boxRect.BottomMiddle.Y + 10f);
-            float fontSize = (float)Math.Clamp(_baseFontSize - (entity.Distance * 0.004f), 12f, _baseFontSize);
 
-            GameState.renderer.DrawList.AddText(Renderer.GunIconsFont, fontSize, textPos, ImGui.ColorConvertFloat4ToU32(TextColors.TeamColor), icon);
+            GameState.renderer.DrawList.AddText(Renderer.GunIconsFont, _baseFontSize, textPos, ImGui.ColorConvertFloat4ToU32(color), icon);
         }
     }
 }

@@ -1,5 +1,3 @@
-using System.Numerics;
-using System.Runtime.InteropServices;
 using Vortice.Direct3D11;
 
 namespace Titled_Gui.Classes.VPK.Types

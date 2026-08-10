@@ -11,8 +11,8 @@ namespace Titled_Gui.Classes.Rendering
 {
     public sealed class SkinnedMeshRenderer(ID3D11Device device, ID3D11DeviceContext deviceContext) : IDisposable // w pastes
     {
-        public const int KMaxBones = 128;
-        public const int VertexStride = 56;
+        private const int _kMaxBones = 128;
+        private const int _vertexStride = 56;
         private readonly ID3D11Device _device = device;
         private readonly ID3D11DeviceContext _deviceContext = deviceContext;
         private ID3D11VertexShader? _vertexShader;
@@ -61,7 +61,7 @@ namespace Titled_Gui.Classes.Rendering
             _pixelShader = _device.CreatePixelShader(psBlob, null);
 
             _cbConstant = _device.CreateBuffer(144, BindFlags.ConstantBuffer, ResourceUsage.Dynamic, CpuAccessFlags.Write);
-            _cbBones = _device.CreateBuffer(KMaxBones * 3 * 16, BindFlags.ConstantBuffer, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            _cbBones = _device.CreateBuffer(_kMaxBones * 3 * 16, BindFlags.ConstantBuffer, ResourceUsage.Dynamic, CpuAccessFlags.Write);
 
             bool success = _vertexShader != null && _pixelShader != null && _layout != null && _cbConstant != null && _cbBones != null;
             return success;
@@ -115,9 +115,9 @@ namespace Titled_Gui.Classes.Rendering
             if (bones == null || bones.Count == 0 || _deviceContext == null || _cbBones == null)
                 return false;
 
-            int count = System.Math.Min(bones.Count, KMaxBones);
-            if (_boneScratch == null || _boneScratch.Length < KMaxBones * 12)
-                _boneScratch = new float[KMaxBones * 12];
+            int count = System.Math.Min(bones.Count, _kMaxBones);
+            if (_boneScratch == null || _boneScratch.Length < _kMaxBones * 12)
+                _boneScratch = new float[_kMaxBones * 12];
 
             var scratch = _boneScratch;
             var inv = mesh.InvBindPoses;
@@ -140,7 +140,7 @@ namespace Titled_Gui.Classes.Rendering
             }
 
             MappedSubresource mapped = _deviceContext.Map(_cbBones, MapMode.WriteDiscard, Vortice.Direct3D11.MapFlags.None);
-            Span<float> span = mapped.AsSpan<float>(KMaxBones * 12);
+            Span<float> span = mapped.AsSpan<float>(_kMaxBones * 12);
             scratch.AsSpan(0, count * 12).CopyTo(span);
             _deviceContext.Unmap(_cbBones, 0);
 
@@ -152,7 +152,7 @@ namespace Titled_Gui.Classes.Rendering
             if (_deviceContext == null)
                 return;
 
-            _deviceContext.IASetVertexBuffer(0, mesh.VertexBuffer, VertexStride, 0);
+            _deviceContext.IASetVertexBuffer(0, mesh.VertexBuffer, _vertexStride, 0);
             _deviceContext.IASetIndexBuffer(mesh.IndexBuffer, Format.R32_UInt, 0);
             _deviceContext.DrawIndexed(mesh.IndexCount, 0, 0);
         }

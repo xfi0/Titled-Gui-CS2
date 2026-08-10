@@ -368,8 +368,6 @@ namespace Titled_Gui.Classes.Rendering.ChamsRenderer
 
         protected virtual Vector3 GetCameraPosition() => GameState.renderer != null ? GameState.renderer.LocalPlayer.EyePosition : Vector3.Zero;
 
-        protected static void Diag(string msg) => Console.WriteLine(msg);
-
         public void RenderFrame()
         {
             if (!FeatureEnabled || GameState.renderer == null || GameState.memory == null || GameState.client == IntPtr.Zero)

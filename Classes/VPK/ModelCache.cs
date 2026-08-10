@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Titled_Gui.Classes.VPK.Types;
 using Vortice.Direct3D11;
 
@@ -11,8 +7,8 @@ namespace Titled_Gui.Classes.VPK
     {
         public const int VertexStride = 56;
         private readonly ID3D11Device _device = device;
-        private readonly Dictionary<string, GpuMesh> _meshes = new();
-        private readonly Dictionary<string, Task<SkinnedMeshData?>> _loading = new();
+        private readonly Dictionary<string, GpuMesh> _meshes = [];
+        private readonly Dictionary<string, Task<SkinnedMeshData?>> _loading = [];
 
         public GpuMesh? Get(string modelName)
         {
@@ -69,13 +65,14 @@ namespace Titled_Gui.Classes.VPK
 
             var vertexBuffer = _device.CreateBuffer(verts, BindFlags.VertexBuffer, ResourceUsage.Immutable, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
             var indexBuffer = _device.CreateBuffer(data.Indices, BindFlags.IndexBuffer, ResourceUsage.Immutable, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            var indexCount = data.Indices.Length;
 
             return new GpuMesh
             {
                 Data = data,
                 VertexBuffer = vertexBuffer,
                 IndexBuffer = indexBuffer,
-                IndexCount = data.Indices.Length
+                IndexCount = indexCount
             };
         }
 

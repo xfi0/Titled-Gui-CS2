@@ -59,6 +59,7 @@ try
         File.WriteAllText(sentinelPath, DateTime.UtcNow.ToString());
     });
     mapDumperThread.Start();
+    mapDumperThread.Join();
 
     Thread entityUpdateThread = new(() =>
      {

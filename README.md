@@ -23,7 +23,7 @@
 
 ## 📖 Licensing
 This project is licensed under GPL Public V3, More information in LICENSE
-**TL;DR:** You may use this source code only if your project is also open source and licensed under GPL v3.0.
+**TL;DR:** You may use this source code only if your project open sourced, and licensed under GPL v3.0.
 <hr></hr>
 
 ## 🛠 Features

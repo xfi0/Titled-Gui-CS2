@@ -35,15 +35,18 @@ namespace Titled_Gui.ImGUI.Widgets
             ImGui.PopStyleColor(2);
         }
 
-        public static void RenderColorPicker(string label, ref Vector4 color, ref bool RGB, Action? onChanged = null, float widgetWidth = 25f)
+        public static void RenderColorPicker(string label, string? id, ref Vector4 color, ref bool RGB, Action? onChanged = null, float widgetWidth = 25f)
         {
+            string widgetId = id ?? label;
             Vector4 temp = color;
             bool tempRGB = RGB;
 
             RenderRowRightAligned(label, () =>
             {
-                ColorPickerButton(label, ref temp, widgetWidth);
-                ColorEdit(label, ref temp, ref tempRGB);
+                ImGui.PushID(widgetId);
+                ColorPickerButton("##color", ref temp, widgetWidth);
+                ColorEdit("##color", ref temp, ref tempRGB);
+                ImGui.PopID();
             }, widgetWidth);
 
             if (!temp.Equals(color))
@@ -58,8 +61,9 @@ namespace Titled_Gui.ImGUI.Widgets
             }
         }
 
-        public static void Render2ColorPickers(string label, ref bool teamRGB, ref bool enemyRGB, ref Vector4 color1, ref Vector4 color2, Action? onChanged = null, float widgetWidth = 50f)
+        public static void Render2ColorPickers(string label, string? id, ref bool teamRGB, ref bool enemyRGB, ref Vector4 color1, ref Vector4 color2, Action? onChanged = null, float widgetWidth = 50f)
         {
+            string widgetId = id ?? label;
             Vector4 temp1 = color1;
             Vector4 temp2 = color2;
             bool tempTeamRGB = teamRGB;
@@ -68,13 +72,17 @@ namespace Titled_Gui.ImGUI.Widgets
 
             RenderRowRightAligned(label, () =>
             {
-                ColorPickerButton("##" + label + "_col1", ref temp1, (widgetWidth - gap) / 2f);
-                ColorEdit("##" + label + "_col1", ref temp1, ref tempTeamRGB);
+                ImGui.PushID(widgetId);
+
+                ColorPickerButton("##col1", ref temp1, (widgetWidth - gap) / 2f);
+                ColorEdit("##col1", ref temp1, ref tempTeamRGB);
 
                 ImGui.SameLine(0, gap);
 
-                ColorPickerButton("##" + label + "_col2", ref temp2, (widgetWidth - gap) / 2f);
-                ColorEdit("##" + label + "_col2", ref temp2, ref tempEnemyRGB);
+                ColorPickerButton("##col2", ref temp2, (widgetWidth - gap) / 2f);
+                ColorEdit("##col2", ref temp2, ref tempEnemyRGB);
+
+                ImGui.PopID();
             }, widgetWidth);
 
             if (!temp1.Equals(color1))

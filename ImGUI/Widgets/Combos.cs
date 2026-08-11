@@ -8,12 +8,13 @@ namespace Titled_Gui.ImGUI.Widgets
     {
         private static string? pendingUpload = null;
 
-        public static void RenderIntCombo(string label, ref int current, List<string> items, int itemCount,
+        public static void RenderIntCombo(string label, string? id, ref int current, List<string> items, int itemCount,
          bool withUpload = false, float widgetWidth = 160f)
         {
-            if (withUpload) 
-                LoadUploads(label + "Uploads", ref items);
-            
+            string widgetId = id ?? label;
+
+            if (withUpload)
+                LoadUploads(widgetId + "Uploads", ref items);
 
             int temp = current;
             if (items.Count == 0)
@@ -27,12 +28,14 @@ namespace Titled_Gui.ImGUI.Widgets
             }
             RenderRowRightAligned(label, () =>
             {
+                ImGui.PushID(widgetId);
+
                 if (pendingUpload != null)
                 {
                     Console.WriteLine($"Saving: '{pendingUpload}'");
                     string temPendingUpload = pendingUpload;
 
-                    SaveUpload(label + "Uploads", temPendingUpload);
+                    SaveUpload(widgetId + "Uploads", temPendingUpload);
                     items.Add(pendingUpload);
                     temp = items.Count - 1;
                     pendingUpload = null;
@@ -40,8 +43,11 @@ namespace Titled_Gui.ImGUI.Widgets
 
                 if (withUpload)
                 {
-                    if (!ImGui.BeginCombo("##" + label, items[temp]))
+                    if (!ImGui.BeginCombo("##combo", items[temp]))
+                    {
+                        ImGui.PopID();
                         return;
+                    }
 
                     for (int i = 0; i < items.Count; i++)
                     {
@@ -77,7 +83,10 @@ namespace Titled_Gui.ImGUI.Widgets
 
                 }
                 else
-                    ImGui.Combo("##" + label, ref temp, items.ToArray(), items.Count);
+                    ImGui.Combo("##combo", ref temp, items.ToArray(), items.Count);
+
+
+                ImGui.PopID();
             }, widgetWidth);
 
 

@@ -72,14 +72,15 @@ namespace Titled_Gui.ImGUI.Widgets
             KeyBinds.Add(update(newBind));
         }
 
-        public static void RenderKeybindChooser(string label, ref int key, Func<bool>? moduleState = null)
+        public static void RenderKeybindChooser(string label, string? id, ref int key, Func<bool>? moduleState = null)
         {
-            ImGui.PushID(label);
+            string keyId = id ?? label;
+            ImGui.PushID(keyId);
 
-            Bind bind = GetBind(label, moduleState);
+            Bind bind = GetBind(keyId, moduleState);
 
             if (ImGui.Button(bind.choosing ? "Press Any Key..." : (key == (int)Keys.None ? "None" : Enum.GetName(typeof(Keys), key) ?? key.ToString()), new Vector2(100, 0)))
-                SetBind(label, b => { b.choosing = true; return b; }, moduleState);
+                SetBind(keyId, b => { b.choosing = true; return b; }, moduleState);
 
             ImGui.SameLine();
 
@@ -98,7 +99,7 @@ namespace Titled_Gui.ImGUI.Widgets
                     if (!pressed) continue;
                     key = (int)k;
 
-                    SetBind(label, b => { b.choosing = false; return b; });
+                    SetBind(keyId, b => { b.choosing = false; return b; });
                     break;
                 }
             }
@@ -106,16 +107,17 @@ namespace Titled_Gui.ImGUI.Widgets
             ImGui.PopID();
         }
 
-        public static void RenderKeybindChooser(string label, ref ImGuiKey key, Func<bool>? moduleState = null)
+        public static void RenderKeybindChooser(string label, string? id, ref ImGuiKey key, Func<bool>? moduleState = null)
         {
-            ImGui.PushID(label);
+            string keyId = id ?? label;
+            ImGui.PushID(keyId);
 
-            Bind bind = GetBind(label, moduleState);
+            Bind bind = GetBind(keyId, moduleState);
 
             string keyName = bind.choosing ? "Press Any Key..." : (key == ImGuiKey.None ? "None" : key.ToString());
 
             if (ImGui.Button(keyName, new Vector2(100, 0)))
-                SetBind(label, b => { b.choosing = true; return b; }, moduleState);
+                SetBind(keyId, b => { b.choosing = true; return b; }, moduleState);
 
             if (bind.choosing)
             {
@@ -131,7 +133,7 @@ namespace Titled_Gui.ImGUI.Widgets
                     else
                         key = imguiKey;
 
-                    SetBind(label, b => { b.choosing = false; return b; });
+                    SetBind(keyId, b => { b.choosing = false; return b; });
                     break;
                 }
             }

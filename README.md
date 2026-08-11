@@ -121,6 +121,6 @@ This project is licensed under GPL Public V3, More information in LICENSE
 - This is the one and ONLY official repository, other ones are not maintained or verified by me. They may contain malicious releases / code.
 <hr></hr>
 
-<img src="https://github.com/xfi0/Titled-Gui-CS2/blob/master/Docs/Preview1.png">
+<img src="https://github.com/xfi0/Titled-Gui-CS2/blob/master/Docs/Previews/Preview-2.3.png">
 
 <hr></hr>

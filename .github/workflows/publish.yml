@@ -2,14 +2,15 @@ name: publish release
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 jobs:
   windows_latest:
     name: build, pack & publish
-    runs-on: windows-latest\
+    runs-on: windows-latest
     permissions:
       contents: write
-      
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -36,4 +37,4 @@ jobs:
       - name: Upload Release
         uses: softprops/action-gh-release@v2
         with:
-          files:  publish/*.exe
+          files: publish/*.exe

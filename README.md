@@ -101,19 +101,22 @@ This project is licensed under GPL Public V3, More information in LICENSE
 - Internet connection for auto-updating offsets
 
 ### Installation
-
-1. Clone the repository:
+1. Pre-compiled releases can be found in the Releases section.
+2. If you want to try a potentially non-stable, beta build you can:
    ```bash
    git clone https://github.com/xfi0/Titled-Gui-CS2.git
    cd Titled-Gui-CS2
    ```
   2. Run the solution in debug mode (x64)
 
-### Useage
+### Usage
 1. Run the compiled .exe, or run the program in Visual Studio.
 2. Click insert, or FN + L.
 3. Note, you may have to click on the watermark and then insert for the menu to open.
 4. Enjoy!
+
+### VAC
+Obfuscating the executable or DLL may reduce VAC detection rates. String obfuscation in particular may be helpful, but I am unable to verify anything about how VAC detects programs.
 
 ### Notes
 

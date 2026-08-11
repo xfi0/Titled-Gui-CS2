@@ -1,9 +1,20 @@
-# Important
-right click menu, like primordial i think where it shows keybind, toggle, always, etc.
+# Top Priority
+- [] Smoke check.
+- [] Closest bone selection.
+- [] Movement Flags.
+- [] Money ESP.
+- [] Bomb Carier ESP.
+- [] Ammo ESP.
 
 # Middle Ground
-Menu useable in game
+- [] Bhop Using Keyboard Input.
+- [] Hitmarker.
+- [] More C4 Info: Can be defused(yes, yes (with kit)), Being defused with progress.
+- [] Visualize recoil.
+- [] Discord RPC.
+- [] Crosshairs.
 
-# Least Important
-Bhop Using Keyboard Input,
-Improve color pickers,
+# Lowest (Hard to implement, or sorta pointless)
+- [] Grenade Trajectory.
+- [] Move watermark.
+- [] Trails.

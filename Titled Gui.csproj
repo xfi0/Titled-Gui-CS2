@@ -55,7 +55,7 @@
 
 	<ItemGroup>
 	  <EmbeddedResource Include="Resources\sounds\hitsounds\CODHitmarker.wav">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </EmbeddedResource>
 	</ItemGroup>
 
@@ -133,7 +133,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="ClickableTransparentOverlay" Version="9.1.0" />
-		<PackageReference Include="NAudio" Version="2.2.1" />
+		<PackageReference Include="NAudio" Version="2.3.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="SharpGLTF.Core" Version="1.0.6" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />

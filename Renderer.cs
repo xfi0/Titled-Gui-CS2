@@ -685,11 +685,8 @@ namespace Titled_Gui
                     if (rect == null)
                         continue;
 
-                    Vector2 barTopLeft = new(rect.TopLeft.X - HealthBar.HealthBarWidth - 2, rect.TopLeft.Y);
-                    float height = rect.BottomRight.Y - rect.TopLeft.Y;
-
-                    HealthBar.DrawHealthBar(entity, entity.Health, 100, barTopLeft, height);
-                    ArmorBar.DrawArmorBar(entity, this, entity.Armor, 100);
+                    HealthBar.DrawHealthBar(entity, entity.Health, 100, rect);
+                    ArmorBar.DrawArmorBar(entity, this, entity.Armor, 100, rect);
                     Flags.DrawFlags(entity);
                 }
 

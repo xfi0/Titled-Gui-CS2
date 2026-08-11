@@ -24,11 +24,7 @@ namespace Titled_Gui.Modules.Visual
         public static bool EnableESPPreview = true;
         public static bool VisibilityCheck = true;
         public static float Rounding = 0f;
-
-        public static bool
-            FlashCheck =
-                true; // THIS APPLIES TO ALL VISUALS BESIDES LIKE ONES THAT DONT HAVE ANYTHING TO DO WITH THE ENTITIES
-
+        public static bool FlashCheck = true; // THIS APPLIES TO ALL VISUALS BESIDES LIKE ONES THAT DONT HAVE ANYTHING TO DO WITH THE ENTITIES
         public static float GlowAmount = 0f;
         public static float EdgeMultiplier = 0.25f;
         public static Vector2 InnerOutlineThickness = new(1f, 1f);
@@ -501,7 +497,7 @@ namespace Titled_Gui.Modules.Visual
 
             if (OuterOutline)
             {
-                imDrawListPtr.AddRect(rectTop + OuterOutlineThickness,
+                imDrawListPtr.AddRect(rectTop - OuterOutlineThickness,
                     rectBottom + OuterOutlineThickness, preConvertedOutlineColor,
                     Rounding); // outside
             }

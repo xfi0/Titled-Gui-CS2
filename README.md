@@ -50,6 +50,7 @@ This project is licensed under GPL Public V3, More information in LICENSE
         <li>Visual Color</li>
         <li>Bomb Overlay</li>
         <li>Radar</li>
+        <li>Chams</li>
         <li>Etc.</li>
     </ul>
 </details>

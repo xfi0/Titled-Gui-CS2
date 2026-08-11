@@ -1,9 +1,9 @@
 ﻿using ImGuiNET;
 using System.Numerics;
-using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
-using static Titled_Gui.Classes.Colors;
+using static Titled_Gui.Data.Menu.Types.Colors;
 using static Titled_Gui.Data.Game.GameState;
+using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {

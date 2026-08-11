@@ -1,26 +1,30 @@
 ﻿using ImGuiNET;
+using NAudio.Gui;
 using System.Numerics;
-using Titled_Gui.Classes;
 using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {
     internal class ArmorBar
     {
         public static bool EnableArmorBar = false;
-        public static bool DrawOnSelf = false;
+        public static bool DrawOnSelf = false; // why does this exist, i would remove but its funny.
         public static bool RGB = false;
         public static float ArmorBarWidth = 5f;
         public static float Rounding = 0;
-        public static Vector4 ArmorColor = new(0.1f, 0f, 1f, 1f);
+        public static Colors ArmorColor = new(new(0.1f, 0f, 1f, 1f), new(0.1f, 0f, 1f, 1f));
         private static Vector4 _backgroundColor = new(0.2f, 0.2f, 0.2f, 1f);
+        private static Vector4 _outlineColor = new(0f, 0f, 0f, 1f);
+        private static int _outlineWidth = 1;
+
         public static void DrawArmorBar(Entity? e, Renderer renderer, float armor, float maxArmor)
         {
             if (!EnableArmorBar || e == null || GameState.LocalPlayer == null || e.PawnAddress == GameState.LocalPlayer.PawnAddress || e.Health <= 0 ||
                 (BoxESP.TeamCheck && e.Team == GameState.LocalPlayer.Team) ||
-                (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || e.Armor < 1 ||
+                (BoxESP.FlashCheck && GameState.LocalPlayer.IsFlashed) || e.Armor <= 0 ||
                 e.Position2D == new Vector2(-99, -99))
                 return;
 
@@ -30,17 +34,24 @@ namespace Titled_Gui.Modules.Visual
 
             float height = rect.BottomRight.Y - rect.TopLeft.Y;
 
-            float healthPercentage = Math.Clamp(armor / maxArmor, 0f, 1f); // like percentage of box to be filled
-            float filledHeight = height * healthPercentage;
+            float armorPercentage = Math.Clamp(armor / maxArmor, 0f, 1f); // like percentage of box to be filled
+            float filledHeight = height * armorPercentage;
 
-            renderer.DrawList.AddRectFilled(rect.TopRight, rect.TopRight + new Vector2(ArmorBarWidth, height),
-                ImGui.ColorConvertFloat4ToU32(_backgroundColor), Rounding);
+            renderer.DrawList.AddRectFilled(rect.TopRight, rect.TopRight + new Vector2(ArmorBarWidth, height), ImGui.ColorConvertFloat4ToU32(_backgroundColor), Rounding);
 
+            renderer.DrawList.AddRectFilled(new Vector2(rect.TopRight.X - _outlineWidth, rect.TopRight.Y - _outlineWidth), new Vector2(rect.TopRight.X + ArmorBarWidth + _outlineWidth, rect.TopRight.Y + height + _outlineWidth), ImGui.ColorConvertFloat4ToU32(_outlineColor), Rounding);
             Vector2 filledTop = rect.TopRight + new Vector2(0, height - filledHeight);
-            Vector4 armorColor = RGB ? Colors.Rgb(ArmorColor.W) : ArmorColor;
+            Vector4 armorColor = GetArmorColor(e.IsTeammate);
 
-            renderer.DrawList.AddRectFilled(filledTop, filledTop + new Vector2(ArmorBarWidth, filledHeight),
-                ImGui.ColorConvertFloat4ToU32(armorColor), Rounding);
+            renderer.DrawList.AddRectFilled(filledTop, filledTop + new Vector2(ArmorBarWidth, filledHeight), ImGui.ColorConvertFloat4ToU32(armorColor), Rounding);
+        }
+
+        private static Vector4 GetArmorColor(bool teammate)
+        {
+            if (teammate)
+                return ArmorColor.TeamRGB ? Colors.Rgb(ArmorColor.TeamColor.W) : ArmorColor.TeamColor;
+            else
+                return ArmorColor.EnemyRGB ? Colors.Rgb(ArmorColor.EnemyColor.W) : ArmorColor.EnemyColor;
         }
 
         public static void DrawArmorBarPreview(Vector2 position, float entityHeight)
@@ -52,9 +63,10 @@ namespace Titled_Gui.Modules.Visual
 
             Vector2 top = position + new Vector2(entityHeight / 3f + offset, -entityHeight / 2);
             Vector2 bottom = position + new Vector2(entityHeight / 3f + barWidth + offset, entityHeight / 2);
+            Vector4 color = GetArmorColor(false);
 
             ImGui.GetWindowDrawList().AddRectFilled(top, bottom, ImGui.ColorConvertFloat4ToU32(_backgroundColor));
-            ImGui.GetWindowDrawList().AddRectFilled(top + new Vector2(0, entityHeight * (1 - armorPercent)), bottom, ImGui.ColorConvertFloat4ToU32(ArmorColor));
+            ImGui.GetWindowDrawList().AddRectFilled(top + new Vector2(0, entityHeight * (1 - armorPercent)), bottom, ImGui.ColorConvertFloat4ToU32(color));
         }
     }
 }

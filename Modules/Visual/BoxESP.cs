@@ -1,10 +1,10 @@
 ﻿using ImGuiNET;
 using System.Numerics;
-using Titled_Gui.Classes;
 using Titled_Gui.Classes.Math;
 using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity.Types;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Menu.Types;
 using Entity = Titled_Gui.Data.Entity.Entity;
 
 namespace Titled_Gui.Modules.Visual

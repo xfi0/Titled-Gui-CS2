@@ -1,10 +1,10 @@
 ﻿using ImGuiNET;
 using Microsoft.VisualBasic.Logging;
 using System.Numerics;
-using Titled_Gui.Classes;
 using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Menu.Types;
 using TextRenderer = Titled_Gui.Classes.Rendering.TextRenderer;
 
 namespace Titled_Gui.Modules.Visual

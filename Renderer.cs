@@ -9,6 +9,7 @@ using Titled_Gui.Classes.Rendering;
 using Titled_Gui.Classes.Rendering.ChamsRenderer;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Menu.Types;
 using Titled_Gui.ImGUI.Widgets;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Rage;

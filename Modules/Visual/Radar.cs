@@ -1,8 +1,8 @@
 ﻿using ImGuiNET;
 using System.Numerics;
-using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {

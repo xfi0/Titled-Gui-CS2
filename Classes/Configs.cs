@@ -709,7 +709,7 @@ namespace Titled_Gui.Classes
                     configData["World ESP"]?["Box Color"]?["Z"]?.ToObject<float>() ?? WorldESP.BoxColor.Z,
                     configData["World ESP"]?["Box Color"]?["W"]?.ToObject<float>() ?? WorldESP.BoxColor.W
                 );
-                WorldESP.MolotovColors = new Colors(
+                WorldESP.MolotovColors = new Data.Menu.Types.Colors(
                     primaryColor: new Vector4(
                         configData["World ESP"]?["Molotov Bounds Filled Color"]?["X"]?.ToObject<float>() ?? WorldESP.MolotovColors.PrimaryColor.X,
                         configData["World ESP"]?["Molotov Bounds Filled Color"]?["Y"]?.ToObject<float>() ?? WorldESP.MolotovColors.PrimaryColor.Y,

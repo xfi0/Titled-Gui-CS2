@@ -80,5 +80,9 @@ namespace Titled_Gui.Data.Game.VRF
                 node?.Right = null;
             }
         }
+        public struct Edge
+        {
+            public byte Next, Twin, Origin, Face;
+        }
     }
 }

@@ -28,7 +28,7 @@ namespace Titled_Gui.Classes.VPK
             return true;
         }
 
-        private static string? FindSteamPath()
+        public static string? FindSteamPath()
         {
             using var key = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
             string? steamPath = (string?)key?.GetValue("SteamPath");
@@ -60,7 +60,7 @@ namespace Titled_Gui.Classes.VPK
             return null;
         }
 
-        private static string? FindVPKPath()
+        public static string? FindVPKPath()
         {
             string? steamPath = FindSteamPath();
 

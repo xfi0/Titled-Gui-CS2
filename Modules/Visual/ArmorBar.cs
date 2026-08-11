@@ -13,7 +13,6 @@ namespace Titled_Gui.Modules.Visual
     {
         public static bool EnableArmorBar = false;
         public static bool DrawOnSelf = false; // why does this exist, i would remove but its funny.
-        public static bool RGB = false;
         public static float ArmorBarWidth = 5f;
         public static float Rounding = 0;
         public static Colors ArmorColor = new(new(0.1f, 0f, 1f, 1f), new(0.1f, 0f, 1f, 1f));

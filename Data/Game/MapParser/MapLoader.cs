@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using Titled_Gui.Classes.Math;
 using static Titled_Gui.Data.Game.VRF.Types;
 using Vector3 = System.Numerics.Vector3;
@@ -11,6 +12,7 @@ namespace Titled_Gui.Data.Game.MapParser
     public class MapLoader // https://github.com/AtomicBool/cs2-map-parser  THIS TOOK 40 MINS TO CONVERT FROM CPP TO C#
     {
         public string PreviousMapName = "";
+        public string _trisPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Titled", "CS2", "External", "Map Data", "tri");
 
         #region Misc Helpers
         public bool RayIntersectsKDTree(KDNode? node, Vector3 origin, Vector3 end)
@@ -178,20 +180,14 @@ namespace Titled_Gui.Data.Game.MapParser
 
         public bool LoadMap(string mapName)
         {
-            var asm = Assembly.GetExecutingAssembly();
-            var names = asm.GetManifestResourceNames();
-
-            var stream = asm.GetManifestResourceStream("Titled_Gui.Data.Game.MapParser.PreExtractedMapData.tri." + mapName + ".tri");
-            if (stream == null)
+            string triPath = Path.Combine(_trisPath, mapName) + ".tri";
+            if (!File.Exists(triPath))
             {
-                Console.WriteLine("Failed To Find Current Map And Or The Tri File. filePath: " + "Titled_Gui.Game.MapParser.PreExtractedMapData.tri." + mapName + ".tri");
+                Console.WriteLine("Failed to find map.");
                 return false;
             }
-
-            var triData = new byte[stream.Length];
-            stream.ReadExactly(triData);
-
-            if (!LoadTri(triData, mapName))
+            byte[] tri = File.ReadAllBytes(Path.Combine(_trisPath, mapName) + ".tri");
+            if (!LoadTri(tri, mapName))
             {
                 Console.WriteLine("Failed to load .tri: " + "Titled_Gui.Game.MapParser.PreExtractedMapData.tri." + mapName + ".tri");
                 return false;

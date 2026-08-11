@@ -4,8 +4,10 @@ using Titled_Gui;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
+using Titled_Gui.Data.Game.MapParser;
 using Titled_Gui.Modules.Visual;
 
+string triPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Titled", "CS2", "External", "Map Data", "tri");
 try
 {
     GameState.renderer = new();
@@ -25,6 +27,7 @@ try
 
     GameState.memory = new("cs2");
     GameState.client = GameState.memory.GetModuleBase("client.dll");
+    await Task.Delay(200);
     await OffsetGetter.UpdateOffsetsAsync();
 
     while (GameState.memory != null && !OffsetGetter.Updated)
@@ -42,6 +45,21 @@ try
     }
 
     OffsetGetter.ApplySecondarySources();
+    Thread mapDumperThread = new(() =>
+    {
+        string sentinelPath = Path.Combine(triPath, ".complete");
+        if (File.Exists(sentinelPath))
+        {
+            Console.WriteLine("Tris already exist.");
+            return;
+        }
+
+        Console.WriteLine("Map data has not been dumped, dumping.");
+        MapParser.Main();
+        File.WriteAllText(sentinelPath, DateTime.UtcNow.ToString());
+    });
+    mapDumperThread.Start();
+
     Thread entityUpdateThread = new(() =>
      {
          while (true)

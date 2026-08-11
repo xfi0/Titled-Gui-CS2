@@ -214,7 +214,7 @@ namespace Titled_Gui.Classes
 
             if (GameState.CS2Open() && (GameState.memory.ReadPointer(GameState.client, Offsets.dwViewMatrix) == IntPtr.Zero || GameState.memory.ReadPointer(GameState.client, Offsets.dwEntityList) == IntPtr.Zero))
             {
-                Console.WriteLine("[OFFSET FINDER] ERROR: a2x didnt NOT update correctly, trying secondary source");
+                Console.WriteLine("[OFFSET FINDER] ERROR: dom has not updated yet, trying secondary source");
                 offsets.Clear();
                 await FetchSecondarySource();
 

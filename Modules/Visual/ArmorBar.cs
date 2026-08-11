@@ -18,7 +18,7 @@ namespace Titled_Gui.Modules.Visual
         public static Colors ArmorColor = new(new(0.1f, 0f, 1f, 1f), new(0.1f, 0f, 1f, 1f));
         private static Vector4 _backgroundColor = new(0.2f, 0.2f, 0.2f, 1f);
         private static Vector4 _outlineColor = new(0f, 0f, 0f, 1f);
-        private static int _outlineWidth = 1;
+        private static int _outlineThickness = 1;
 
         public static void DrawArmorBar(Entity? e, Renderer renderer, float armor, float maxArmor)
         {
@@ -39,7 +39,7 @@ namespace Titled_Gui.Modules.Visual
 
             renderer.DrawList.AddRectFilled(rect.TopRight, rect.TopRight + new Vector2(ArmorBarWidth, height), ImGui.ColorConvertFloat4ToU32(_backgroundColor), Rounding);
 
-            renderer.DrawList.AddRectFilled(new Vector2(rect.TopRight.X - _outlineWidth, rect.TopRight.Y - _outlineWidth), new Vector2(rect.TopRight.X + ArmorBarWidth + _outlineWidth, rect.TopRight.Y + height + _outlineWidth), ImGui.ColorConvertFloat4ToU32(_outlineColor), Rounding);
+            renderer.DrawList.AddRectFilled(new Vector2(rect.TopRight.X - _outlineThickness, rect.TopRight.Y - _outlineThickness), new Vector2(rect.TopRight.X + ArmorBarWidth + _outlineThickness, rect.TopRight.Y + height + _outlineThickness), ImGui.ColorConvertFloat4ToU32(_outlineColor), Rounding);
             Vector2 filledTop = rect.TopRight + new Vector2(0, height - filledHeight);
             Vector4 armorColor = GetArmorColor(e.IsTeammate);
 

@@ -6,7 +6,10 @@ on:
 jobs:
   windows_latest:
     name: build, pack & publish
-    runs-on: windows-latest
+    runs-on: windows-latest\
+    permissions:
+      contents: write
+      
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4

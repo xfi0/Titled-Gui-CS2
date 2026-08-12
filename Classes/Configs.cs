@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.Numerics;
+using System.Reflection;
+using Titled_Gui.Modules;
 using Titled_Gui.Modules.Combat;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Visual;
@@ -26,6 +28,28 @@ namespace Titled_Gui.Classes
         {
             if (!fileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
                 fileName += ".json";
+
+            //var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.GetInterfaces().Contains(typeof(IModule)));
+            //var keys = new List<string>();
+            // 0 = namespace (e.g. Titled_Gui)
+            // 1 = 2nd namespace (e.g. Combat)
+            // 2 = class (e.g. Aimbot)
+
+
+            //foreach (Type? type in types)
+            //{
+            //    var str = type.ToString();
+            //    var strings = str.Split(".");
+            //    if (type == null || string.IsNullOrEmpty(str))
+            //        return;
+
+            //    for (int i = 0; i < str.Split(".").Length; i++)
+            //    {
+            //        Console.WriteLine(str);
+            //        if (strings.Length > 0)
+            //            keys.Add(strings[1]);
+            //    }
+            //}
 
             JObject configData = new()
             {
@@ -769,9 +793,8 @@ namespace Titled_Gui.Classes
         protected override void FrameAction()
         {
             if (!Directory.Exists(Configs.ConfigDirPath))
-            {
                 Directory.CreateDirectory(Configs.ConfigDirPath);
-            }
+
             var files = Directory.EnumerateFiles(Configs.ConfigDirPath).Select(Path.GetFileName).Where(f => f != null).ToHashSet(); // refresh so if any thing changes the disc updates
             foreach (var file in files)
             {

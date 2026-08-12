@@ -18,15 +18,7 @@ try
     Renderer.LoadFonts();
     await GameState.renderer.Start();
     GernadeLineup.Initialize();
-    //var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.GetInterfaces().Contains(typeof(IModule)));
 
-    //foreach (Type type in types)
-    //{
-    //    foreach (var str in type.ToString().Split("."))
-    //    {
-    //        Console.WriteLine(str);
-    //    }
-    //}
     // entities
     List<Entity>? entities = [];
     while (!GameState.CS2Open())

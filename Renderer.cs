@@ -592,6 +592,27 @@ namespace Titled_Gui
                                     Sections.sections.Clear();
                                     Sections.sections = Sections.InitializeSections(); // we re-init sections because all the refs would be pointing to the old values.
                                 }
+                                if (ImGui.Button("Delete Config", new Vector2(-1, 30)))
+                                {
+                                    try
+                                    {
+                                        if (string.IsNullOrEmpty(Configs.SelectedConfig) || !Configs.SavedConfigs.ContainsKey(Configs.SelectedConfig))
+                                            return;
+
+                                        string filePath = Path.Combine(Configs.ConfigDirPath, Configs.SelectedConfig);
+                                        Console.WriteLine(filePath);
+                                        if (!File.Exists(filePath))
+                                            return;
+
+                                        File.Delete(filePath);
+                                        Configs.SavedConfigs.Remove(Configs.SelectedConfig, out _);
+                                        Configs.SelectedConfig = "";
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine("Exception deleting config: " + ex);
+                                    }
+                                }
                             }, new Vector2(wiodthy, 200));
 
                             break;

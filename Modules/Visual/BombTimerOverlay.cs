@@ -18,22 +18,7 @@ namespace Titled_Gui.Modules.Visual
                 return;
 
             try
-            {
-                // overlay
-                var style = ImGui.GetStyle();
-                style.WindowRounding = 5f;
-                style.Colors[(int)ImGuiCol.WindowBg] = new Vector4(0.09f, 0.09f, 0.10f, 1);
-                style.Colors[(int)ImGuiCol.ChildBg] = new Vector4(0.11f, 0.11f, 0.12f, 1);
-                style.Colors[(int)ImGuiCol.TitleBg] = new Vector4(0.08f, 0.08f, 0.09f, 1);
-                style.Colors[(int)ImGuiCol.TitleBgActive] = new Vector4(0.11f, 0.11f, 0.12f, 1);
-                style.Colors[(int)ImGuiCol.Border] = new Vector4(0.15f, 0.15f, 0.16f, 1);
-                style.Colors[(int)ImGuiCol.Button] = new Vector4(0.18f, 0.18f, 0.19f, 1);
-                style.Colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.22f, 0.22f, 0.23f, 1);
-                style.Colors[(int)ImGuiCol.ButtonActive] = Renderer.MenuColors.SecondaryColor;
-                style.Colors[(int)ImGuiCol.Header] = new Vector4(Renderer.MenuColors.SecondaryColor.X, Renderer.MenuColors.SecondaryColor.Y, Renderer.MenuColors.SecondaryColor.Z, 0.4f);
-                style.Colors[(int)ImGuiCol.HeaderHovered] =
-                    new Vector4(Renderer.MenuColors.SecondaryColor.X, Renderer.MenuColors.SecondaryColor.Y, Renderer.MenuColors.SecondaryColor.Z, 0.6f);
-                style.Colors[(int)ImGuiCol.HeaderActive] = Renderer.MenuColors.SecondaryColor;
+            {             
                 Vector2 windowSize = new(240f, 100f);
                 ImGui.SetNextWindowSize(windowSize,
                     ImGuiCond.Once); // ensure that the size doesn't reset to the default on resize

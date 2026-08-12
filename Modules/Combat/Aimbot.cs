@@ -7,9 +7,9 @@ using Titled_Gui.Data.Game;
 using Titled_Gui.Modules.Visual;
 using static Titled_Gui.Data.Game.GameState;
 
-namespace Titled_Gui.Modules.Rage
+namespace Titled_Gui.Modules.Combat
 {
-    public class Aimbot : Classes.ThreadService
+    public class Aimbot : Classes.ThreadService, IModule
     {
         public static bool AimbotEnable = false;
         public static bool Team = false;
@@ -32,9 +32,9 @@ namespace Titled_Gui.Modules.Rage
         public static string[] Bones = ["Head", "Neck", "Right Shoulder", "Left Shoulder", "Waist", "Random"];
         public static Vector2 CurrentBone2D = Vector2.Zero;
         private static Vector2 remainder = Vector2.Zero;
-        public static Random random = new();
-        private static Entity? target = null;
-        private static Entity? previousTarget = null;
+        private static Random _random = new();
+        private static Entity? _target = null;
+        private static Entity? _previousTarget = null;
 
         public static void EnableAimbot() // TODO: return to old pos setting #7
         {
@@ -46,15 +46,16 @@ namespace Titled_Gui.Modules.Rage
                     return;
                 }
 
-                target = GetTarget();
+                _target = GetTarget();
                 if (AimbotKey == 0 || (User32.GetAsyncKeyState(AimbotKey) & 0x8000) != 0) // 0 == none
                 {
-                    if (target == null || target.Bones == null || target.Bones.Count <= 0 || target.Bones == null) return;
+                    if (_target == null || _target.Bones == null || _target.Bones.Count <= 0 || _target.Bones == null)
+                        return;
 
-                    if (target != previousTarget)
+                    if (_target != _previousTarget)
                     {
                         RandomChosen = false;
-                        previousTarget = target;
+                        _previousTarget = _target;
                     }
                     Vector2 screenCenter = new(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2);
                     Vector2 newAngles2D = Vector2.Zero;
@@ -67,9 +68,9 @@ namespace Titled_Gui.Modules.Rage
                         case 3: CurrentBoneIndex = (int)BoneESP.BoneIds.LeftShoulder; break;
                         case 4: CurrentBoneIndex = (int)BoneESP.BoneIds.Pelvis; break;
                         case 5:
-                            if (!RandomChosen && target.Bones != null && target.Bones.Count > 0)
+                            if (!RandomChosen && _target.Bones != null && _target.Bones.Count > 0)
                             {
-                                CurrentBoneIndex = random.Next(target.Bones.Count);
+                                CurrentBoneIndex = _random.Next(_target.Bones.Count);
                                 RandomChosen = true;
                             }
                             break;
@@ -79,19 +80,19 @@ namespace Titled_Gui.Modules.Rage
                     if (CurrentBone != 5 && RandomChosen)
                         RandomChosen = false;
 
-                    bool useHeadPosition = target?.Bones?[CurrentBoneIndex].Position != Vector3.Zero;
+                    bool useHeadPosition = _target?.Bones?[CurrentBoneIndex].Position != Vector3.Zero;
                     if (useHeadPosition) //bone pos first
                     {
-                        if (target?.Bones?[CurrentBoneIndex] != null && target.Bones.Count > CurrentBoneIndex)
+                        if (_target?.Bones?[CurrentBoneIndex] != null && _target.Bones.Count > CurrentBoneIndex)
                         {
                             try
                             {
-                                CurrentBone2D = target.Bones[CurrentBoneIndex].Position2D;
+                                CurrentBone2D = _target.Bones[CurrentBoneIndex].Position2D;
 
                                 if (CurrentBone2D != Vector2.Zero && (!UseFOV || CurrentBone2D != new Vector2(-99, -99)))
                                     newAngles2D = CurrentBone2D;
                                 else
-                                    newAngles2D = target.Position2D;
+                                    newAngles2D = _target.Position2D;
                             }
                             catch (Exception e)
                             {
@@ -100,8 +101,8 @@ namespace Titled_Gui.Modules.Rage
                         }
                         else
                         {
-                            if (target != null)
-                                newAngles2D = target.Head2D;
+                            if (_target != null)
+                                newAngles2D = _target.Head2D;
                         }
                     }
                     else //fallback that if you're at their body flick to whatever chosen bone 
@@ -192,10 +193,10 @@ namespace Titled_Gui.Modules.Rage
         }
         public static void RenderTargetLine()
         {
-            if (target == null || target.Bones == null || target.Bones == null || target.Bones.Count <= CurrentBoneIndex || GameState.renderer == null)
+            if (_target == null || _target.Bones == null || _target.Bones == null || _target.Bones.Count <= CurrentBoneIndex || GameState.renderer == null || _target.Health <= 0)
                 return;
 
-            GameState.renderer.DrawList.AddLine(new(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2), target.Bones[CurrentBoneIndex].Position2D, ImGui.ColorConvertFloat4ToU32(FovColor));
+            GameState.renderer.DrawList.AddLine(new(GameState.renderer.ScreenSize.X / 2, GameState.renderer.ScreenSize.Y / 2), _target.Bones[CurrentBoneIndex].Position2D, ImGui.ColorConvertFloat4ToU32(FovColor));
         }
 
         protected override void FrameAction()

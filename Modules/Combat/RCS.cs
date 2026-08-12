@@ -3,9 +3,9 @@ using Titled_Gui.Classes;
 using Titled_Gui.Classes.Math;
 using Titled_Gui.Data.Game;
 
-namespace Titled_Gui.Modules.Rage
+namespace Titled_Gui.Modules.Combat
 {
-    public class RCS : Classes.ThreadService
+    public class RCS : Classes.ThreadService, IModule
     {
         public static bool Enabled = false;
         public static float Strength = 1.0f;

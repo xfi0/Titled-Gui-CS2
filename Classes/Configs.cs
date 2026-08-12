@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.Numerics;
+using Titled_Gui.Modules.Combat;
 using Titled_Gui.Modules.Legit;
-using Titled_Gui.Modules.Rage;
 using Titled_Gui.Modules.Visual;
 
 namespace Titled_Gui.Classes
@@ -10,7 +10,7 @@ namespace Titled_Gui.Classes
     internal class Configs : Classes.ThreadService
     {
         public static string MenuName = "Titled";
-        public static string Version = "2.3.2";
+        public static string Version = "2.3.3";
         public static string Author = "https://github.com/xfi0";
         public static string Link = "https://github.com/xfi0/Titled-Gui-CS2";
         public static string titledDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Titled", "CS2", "External");

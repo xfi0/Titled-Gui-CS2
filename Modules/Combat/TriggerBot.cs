@@ -3,7 +3,7 @@ using Titled_Gui.Classes;
 using Titled_Gui.Data.Game;
 using static Titled_Gui.Classes.User32;
 
-namespace Titled_Gui.Modules.Rage
+namespace Titled_Gui.Modules.Combat
 {
     public class TriggerBot : Classes.ThreadService
     {

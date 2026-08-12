@@ -1,10 +1,12 @@
 ﻿using ImGuiNET;
 using System.Diagnostics;
+using System.Reflection;
 using Titled_Gui;
 using Titled_Gui.Classes;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Game;
 using Titled_Gui.Data.Game.MapParser;
+using Titled_Gui.Modules;
 using Titled_Gui.Modules.Visual;
 
 string triPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Titled", "CS2", "External", "Map Data", "tri");
@@ -16,7 +18,15 @@ try
     Renderer.LoadFonts();
     await GameState.renderer.Start();
     GernadeLineup.Initialize();
+    //var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.GetInterfaces().Contains(typeof(IModule)));
 
+    //foreach (Type type in types)
+    //{
+    //    foreach (var str in type.ToString().Split("."))
+    //    {
+    //        Console.WriteLine(str);
+    //    }
+    //}
     // entities
     List<Entity>? entities = [];
     while (!GameState.CS2Open())
@@ -47,6 +57,7 @@ try
     OffsetGetter.ApplySecondarySources();
     Thread mapDumperThread = new(() =>
     {
+        Directory.CreateDirectory(triPath);
         string sentinelPath = Path.Combine(triPath, ".complete");
         if (File.Exists(sentinelPath))
         {

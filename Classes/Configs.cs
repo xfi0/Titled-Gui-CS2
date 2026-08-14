@@ -17,7 +17,7 @@ namespace Titled_Gui.Classes
     internal class Configs : Classes.ThreadService
     {
         public static string MenuName = "Titled";
-        public static string Version = "2.3.5";
+        public static string Version = "2.3.6";
         public static string Author = "https://github.com/xfi0";
         public static string Link = "https://github.com/xfi0/Titled-Gui-CS2";
         public static string titledDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Titled", "CS2", "External");
@@ -28,7 +28,7 @@ namespace Titled_Gui.Classes
 
         public static readonly string ConfigDirPath = Path.Combine(titledDocumentsFolder, "Configs");
         public static string JsonString = "";
-        private static string PreLegacyVersion = "2.3.6"; // anything before is legacy
+        private static string PreLegacyVersion = "2.3.5"; // anything before is legacy
 
         public static void SaveConfig(string fileName) // variable names are actually horrible here, shh.
         {

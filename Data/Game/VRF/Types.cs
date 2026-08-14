@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.DirectoryServices.ActiveDirectory;
+using System.Numerics;
 
 namespace Titled_Gui.Data.Game.VRF
 {
@@ -29,8 +30,9 @@ namespace Titled_Gui.Data.Game.VRF
         {
             public Vector3 Point1, Point2, Point3;
 
-            public bool Intersect(Vector3 origin, Vector3 dir)
+            public bool Intersect(Vector3 origin, Vector3 dir, out Vector3 intersectPoint)
             {
+                intersectPoint = Vector3.Zero;
                 Vector3 edge1, edge2, h, s, q;
                 float a, f, u, v, t;
                 edge1 = Point2 - Point1;
@@ -54,6 +56,7 @@ namespace Titled_Gui.Data.Game.VRF
                     return false;
 
                 t = f * Vector3.Dot(edge2, q);
+                intersectPoint = origin + t * dir;
 
                 if (t > Epsilon && t < 1f)
                     return true;

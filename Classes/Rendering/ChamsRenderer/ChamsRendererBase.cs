@@ -366,7 +366,7 @@ namespace Titled_Gui.Classes.Rendering.ChamsRenderer
 
         protected virtual bool UsePixelPerfect => false;
 
-        protected virtual Vector3 GetCameraPosition() => GameState.renderer != null ? GameState.renderer.LocalPlayer.EyePosition : Vector3.Zero;
+        protected virtual Vector3 GetCameraPosition() => GameState.renderer != null && GameState.LocalPlayer != null ? GameState.LocalPlayer.EyePosition : Vector3.Zero;
 
         public void RenderFrame()
         {

@@ -118,18 +118,19 @@ internal class Sections
             }),
             new("Tracers", 2, () =>
             {
-                RenderBoolSettingWith2ColorPickers("Enable Tracers", "Tracers.Enabled", () => Tracers.EnableTracers, v => Tracers.EnableTracers = v, ref Tracers.TracerColors.TeamRGB, ref Tracers.TracerColors.EnemyRGB, ref Tracers.TracerColors.TeamColor, ref Tracers.TracerColors.EnemyColor);
+                RenderBoolSettingWith2ColorPickers("Enabled", "Tracers.Enabled", () => Tracers.EnableTracers, v => Tracers.EnableTracers = v, ref Tracers.TracerColors.TeamRGB, ref Tracers.TracerColors.EnemyRGB, ref Tracers.TracerColors.TeamColor, ref Tracers.TracerColors.EnemyColor);
                 RenderIntCombo("Tracer Start Position", "Tracers.StartPosition", ref Tracers.CurrentStartPos, Tracers.StartPositions, Tracers.StartPositions.Count, false);
                 RenderIntCombo("Tracer End Position", "Tracers.EndPosition", ref Tracers.CurrentEndPos, Tracers.EndPositions.ToList(), Tracers.EndPositions.Length);
                 RenderFloatSlider("Tracer Thickness", "Tracers.Thickness", ref Tracers.LineThickness, 0.05f, 5f);
             }),
-            new("Chams", 2, () =>
+            new("Bullet Tracers", 2, () =>
             {
-                RenderBoolSettingWith2ColorPickers("Chams", "Chams.Enabled", () => Chams.Enabled, v => Chams.Enabled = v, ref Chams.VisibleColors.TeamRGB, ref Chams.VisibleColors.EnemyRGB,  ref Chams.VisibleColors.TeamColor, ref Chams.VisibleColors.EnemyColor);
-                RenderBoolSetting("Team Check", "Chams.TeamCheck", () => Chams.TeamCheck, v => Chams.TeamCheck = v);
-                RenderIntCombo("Chams Style", "Chams.Style", ref Chams.StyleIndex, Chams.StyleNames.ToList(), Chams.StyleNames.Length);
-                RenderBoolSetting("Pixel Perfect Depth", "Chams.PixelPerfect", () => Chams.PixelPerfect, v => Chams.PixelPerfect = v);
+                RenderBoolSettingWith1ColorPicker("Enabled", "BulletTracers.Enabled", () => BulletTracers.Enabled, v => BulletTracers.Enabled = v, ref BulletTracers.TracerColors.PrimaryRGB, ref Tracers.TracerColors.PrimaryColor);
+                RenderFloatSlider("Tracer Radius", "BulletTracers.Radius", ref BulletTracers.Radius, 0.5f, 5f);
+                RenderFloatSlider("Tracer Thickness", "BulletTracers.Thickness", ref BulletTracers.Thickness, 0.5f, 10f);
+                RenderFloatSlider("Tracer Duration", "BulletTracers.Duration", ref BulletTracers.Duration, 0.5f, 15f);
             }),
+            
             new("Other Visuals", 2, () =>
             {
                 RenderBoolSetting("Bomb Timer", "BombTimerOverlay.Enabled", () => BombTimerOverlay.EnableTimeOverlay, v => BombTimerOverlay.EnableTimeOverlay = v);

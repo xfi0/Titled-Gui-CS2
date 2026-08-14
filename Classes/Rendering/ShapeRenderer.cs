@@ -148,6 +148,45 @@ namespace Titled_Gui.Classes.Rendering
             drawList.AddConvexPolyFilled(ref hullArr[0], hull.Count, fillColor);
             drawList.AddPolyline(ref hullArr[0], hull.Count, outlineColor, ImDrawFlags.Closed, thickness);
         }
+        public static void DrawCylinder3D(float[] viewMatrix, Vector3 start, Vector3 end, Vector4 color, int segments = 12, float radius = 2f, float thickness = 1f)
+        {
+            if (GameState.renderer == null)
+                return;
+
+            List<Vector3> startCircle = [];
+            List<Vector3> endCircle = [];
+
+            CreateCircle(start, end, radius, startCircle, segments);
+            CreateCircle(end, start, radius, endCircle, segments);
+
+            List<Vector3> worldPoints = new(segments * 2);
+            worldPoints.AddRange(startCircle);
+            worldPoints.AddRange(endCircle);
+
+            List<Vector2> positions2D = new(worldPoints.Count);
+            foreach (var worldPoint in worldPoints)
+            {
+                Vector2 position2D = MathUtils.WorldToScreen(viewMatrix, worldPoint);
+                if (position2D == new Vector2(-99, -99))
+                    continue;
+
+                positions2D.Add(position2D);
+            }
+
+            if (positions2D.Count < 3)
+                return;
+
+            var hull = ConvexHull(positions2D);
+            if (hull.Count < 3)
+                return;
+
+            uint converted = ImGui.ColorConvertFloat4ToU32(color);
+            uint fillColor = converted & 0x00FFFFFF | ((((converted >> 24) & 0xFF) / 2) << 24);
+            Vector2[] hullArray = [.. hull];
+
+            GameState.renderer.DrawList.AddConvexPolyFilled(ref hullArray[0], hull.Count, fillColor);
+            GameState.renderer.DrawList.AddPolyline(ref hullArray[0], hull.Count, ImGui.ColorConvertFloat4ToU32(color), ImDrawFlags.Closed, thickness);
+        }
 
         private static List<Vector2> ConvexHull(List<Vector2> points)
         {
@@ -204,6 +243,32 @@ namespace Titled_Gui.Classes.Rendering
             uint topColor = ImGui.ColorConvertFloat4ToU32(colorStart);
             uint bottomColor = ImGui.ColorConvertFloat4ToU32(colorEnd);
             drawList.AddRectFilledMultiColor(rectTop, rectBottom, topColor, topColor, bottomColor, bottomColor);
+        }
+
+        public static void Draw3DLine(float[] viewMatrix, Vector3 start, Vector3 end, Vector4 color, float thickness = 1f)
+        {
+            if (GameState.renderer == null)
+                return;
+
+            Vector2 screenStart = MathUtils.WorldToScreen(viewMatrix, start);
+            Vector2 screenEnd = MathUtils.WorldToScreen(viewMatrix, end);
+            if (screenStart == new Vector2(-99, -99) || screenEnd == new Vector2(-99, -99))
+                return;
+
+            GameState.renderer.DrawList.AddLine(screenStart, screenEnd, ImGui.ColorConvertFloat4ToU32(color));
+        }
+
+        public static void Draw3DLine(float[] viewMatrix, Vector3 start, Vector3 end, uint color, float thickness = 1f)
+        {
+            if (GameState.renderer == null)
+                return;
+
+            Vector2 screenStart = MathUtils.WorldToScreen(viewMatrix, start);
+            Vector2 screenEnd = MathUtils.WorldToScreen(viewMatrix, end);
+            if (screenStart == new Vector2(-99, -99) || screenEnd == new Vector2(-99, -99))
+                return;
+
+            GameState.renderer.DrawList.AddLine(screenStart, screenEnd, color);
         }
     }
 }

@@ -28,6 +28,7 @@ namespace Titled_Gui.Classes
 
         public static readonly string ConfigDirPath = Path.Combine(titledDocumentsFolder, "Configs");
         public static string JsonString = "";
+        private static string PreLegacyVersion = "2.3.5"; // anything before is legacy
 
         public static void SaveConfig(string fileName) // variable names are actually horrible here, shh.
         {
@@ -126,8 +127,9 @@ namespace Titled_Gui.Classes
             if (configData["0"]?["Version"] != null)
                 version = configData["0"]?["Version"]?.ToString();
 
-            if (System.Version.Parse(version ?? "2.4.5") < System.Version.Parse("2.4.5"))
+            if (System.Version.Parse(version ?? PreLegacyVersion) < System.Version.Parse(PreLegacyVersion))
             {
+                Console.WriteLine("Legacy Config");
                 LoadLegacyConfig(configData);
                 return;
             }
@@ -143,7 +145,7 @@ namespace Titled_Gui.Classes
                         if (split.Length < 4)
                             continue;
 
-                        if (type.ToString().Split(".")[3].ToString() == className.Key)
+                        if (split[3].ToString() == className.Key)
                         {
                             var idk = keyValuePair.Value[className.Key.Trim()];
                             if (idk == null)
@@ -151,7 +153,7 @@ namespace Titled_Gui.Classes
 
                             foreach (var field in idk)
                             {
-                                foreach (var field2 in type.GetFields())
+                                foreach (var field2 in type.GetFields(BindingFlags.Public | BindingFlags.Static))
                                 {
                                     if (field2 == null || field2.IsInitOnly || field2.IsPrivate || field2.IsLiteral) // i know i already filter these out, but if i change a field to const and the config is oldddd might break, idk.
                                         continue;

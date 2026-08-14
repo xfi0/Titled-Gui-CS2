@@ -33,7 +33,6 @@ namespace Titled_Gui
         public static bool EnableVsync = true;
         public bool ShouldDraw = false;
         public List<Entity> Entities = [];
-        public Entity LocalPlayer = new();
         public ImDrawListPtr DrawList;
         public ImDrawListPtr BgDrawList;
         public ImDrawListPtr FgDrawList;
@@ -198,14 +197,6 @@ namespace Titled_Gui
             stream.ReadExactly(fontData);
 
             return fontData;
-        }
-
-        public void UpdateLocalPlayer(Entity newEntity) // update local player
-        {
-            lock (_entityLock)
-            {
-                LocalPlayer = newEntity;
-            }
         }
 
         protected override Task PostInitialized()
@@ -685,6 +676,7 @@ namespace Titled_Gui
 
                 if (EyeRay.Enabled)
                     EyeRay.DrawEyeRay();
+                BulletTracers.Render();
 
                 List<Entity> snapshot;
                 lock (_entityLock)

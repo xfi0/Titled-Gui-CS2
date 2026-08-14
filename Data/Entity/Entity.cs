@@ -33,7 +33,6 @@ namespace Titled_Gui.Data.Entity
         public int Armor { get; set; }
         public Vector3 Velocity { get; set; }
         public Vector3 ViewAngles { get; set; }
-        public Vector3 EyeDirection { get; set; }
         public Vector3 ViewDirection { get; set; }
         public Vector3 AimPunchAngle { get; set; }
         public Vector3 AimPunchAngleVel { get; set; }

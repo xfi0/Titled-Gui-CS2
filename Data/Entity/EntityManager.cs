@@ -57,13 +57,11 @@ namespace Titled_Gui.Data.Entity
 
                     if (currentPawn == localPlayerPawnAddress)
                     {
-                        Entity? localPlayer = EntityManager.GetLocalPlayer(controller);
+                        Entity? localPlayer = EntityManager.PopulateEntity(localPlayerPawnAddress, viewMatrix, pawn, pawnHandle, controller, EntityList);
                         if (localPlayer == null || GameState.renderer == null)
                             continue;
 
                         LocalPlayer = localPlayer;
-
-                        renderer.UpdateLocalPlayer(localPlayer);
                     }
 
                     Entity? entity = PopulateEntity(currentPawn, viewMatrix, pawn, pawnHandle, controller, EntityList);
@@ -97,91 +95,6 @@ namespace Titled_Gui.Data.Entity
 
 
             return pPawn;
-        }
-
-        public static Entity? GetLocalPlayer(IntPtr controller)
-        {
-            if (GameState.memory == null)
-                return null;
-
-            IntPtr localPlayerPawn = memory.ReadPointer(client + Offsets.dwLocalPlayerPawn);
-            LocalPlayerPawn = localPlayerPawn;
-            float[] viewMatrix = memory.ReadMatrix(client + Offsets.dwViewMatrix);
-            IntPtr gameSceneNode = memory.ReadPointer(LocalPlayerPawn, Offsets.m_pGameSceneNode);
-            IntPtr boneMatrix = memory.ReadPointer(gameSceneNode, Offsets.m_modelState + 0x80);
-            IntPtr dwSensitivity = memory.ReadPointer(client + Offsets.dwSensitivity);
-            float sensitivity = memory.ReadFloat(dwSensitivity + Offsets.dwSensitivity_sensitivity);
-            IntPtr clippingWeapon = memory.ReadPointer(localPlayerPawn + Offsets.m_hActiveWeapon
-                );
-            IntPtr weaponData = memory.ReadPointer(clippingWeapon + 0x10);
-            IntPtr weaponNameAddress = memory.ReadPointer(weaponData + 0x20);
-            IntPtr collisionBase = localPlayerPawn + Offsets.m_Collision;
-            IntPtr aimPunchServices = memory.ReadPointer(localPlayerPawn + Offsets.m_pAimPunchServices);
-            List<Bone> bones = Calculate.ReadBones(boneMatrix, viewMatrix);
-
-            string weaponName = "Invalid Weapon Name";
-            if (weaponNameAddress != 0)
-            {
-                byte[] buffer = memory.ReadBytes(weaponNameAddress, 32);
-                int len = Array.IndexOf<byte>(buffer, 0);
-                if (len < 0)
-                    len = buffer.Length;
-
-                string raw = System.Text.Encoding.UTF8.GetString(buffer, 0, len);
-
-                if (raw.Length > 7)
-                    weaponName = raw.Substring(7);
-                else
-                    weaponName = raw;
-            }
-
-            Entity localPlayer = new()
-            {
-                PawnAddress = localPlayerPawn,
-                Origin = memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
-                View = memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset),
-                AimPunchAngle = memory.ReadVec(aimPunchServices + Offsets.m_predictableBaseAngle),
-                Position = memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin),
-                IsFlashed = memory.ReadFloat(localPlayerPawn, Offsets.m_flFlashScreenshotAlpha) > 1.5,
-                Ping = memory.ReadInt(localPlayerPawn, Offsets.m_iPing),
-                Health = memory.ReadInt(localPlayerPawn, Offsets.m_iHealth),
-                Team = memory.ReadInt(localPlayerPawn + Offsets.m_iTeamNum),
-                LifeState = memory.ReadInt(localPlayerPawn, Offsets.m_lifeState),
-                Position2D = MathUtils.WorldToScreen(viewMatrix, memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin)),
-                ViewPosition2D = MathUtils.WorldToScreen(viewMatrix, Vector3.Add(memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset))),
-                //Visible => ,
-                Head = Vector3.Add(memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset)),
-                Head2D = MathUtils.WorldToScreen(viewMatrix, Vector3.Add(memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vecViewOffset))),
-                Distance = Vector3.Distance(memory.ReadVec(LocalPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(localPlayerPawn, Offsets.m_vOldOrigin)),
-                Bones = bones,
-                Name = memory.ReadString(controller + Offsets.m_iszPlayerName),
-                Velocity = memory.ReadVec(LocalPlayerPawn, Offsets.m_vecAbsVelocity),
-                ViewAngles = memory.ReadVec(client, Offsets.dwViewAngles),
-                Armor = memory.ReadInt(localPlayerPawn, Offsets.m_ArmorValue),
-                IsScoped = memory.ReadBool(localPlayerPawn, Offsets.m_bIsScoped),
-                IsBuyMenuOpen = memory.ReadBool(localPlayerPawn, Offsets.m_bIsBuyMenuOpen),
-                CurrentWeaponName = weaponName,
-                Account = memory.ReadInt(GameState.MoneyServices, Offsets.m_iAccount),
-                CashSpent = memory.ReadInt(GameState.MoneyServices, Offsets.m_iCashSpentThisRound),
-                CashSpentTotal = memory.ReadInt(GameState.MoneyServices, Offsets.m_iTotalCashSpent),
-                ShotsFired = memory.ReadInt(localPlayerPawn, Offsets.m_iShotsFired),
-                IsAttacking = memory.ReadBool(client, Offsets.attack),
-                Ammo = memory.ReadInt(client, Offsets.m_iAmmo),
-                EyeDirection = memory.ReadVec(localPlayerPawn, Offsets.m_angEyeAngles),
-                IsWalking = memory.ReadBool(localPlayerPawn, Offsets.m_bIsWalking),
-                //HasBomb = memory.ReadBool(localPlayer, Offsets.)
-                IsDefusing = memory.ReadBool(localPlayerPawn, Offsets.m_bIsDefusing),
-                InBombZone = memory.ReadBool(localPlayerPawn, Offsets.m_bInBombZone),
-                Sensitivity = sensitivity,
-                GameSceneNode = memory.ReadPointer(localPlayerPawn, Offsets.m_pGameSceneNode),
-                Pawn = memory.ReadPointer(controller, Offsets.m_hPawn),
-
-            };
-            //localPlayer.Visible = Visible(localPlayer);
-            localPlayer.ObserverServices = memory.ReadPointer(localPlayer.Pawn + Offsets.m_pObserverServices);
-
-            localPlayer.EyePosition = GetEyePosition(localPlayer);
-            return localPlayer;
         }
 
         public static Vector3 GetEyePosition(Entity e)
@@ -263,7 +176,6 @@ namespace Titled_Gui.Data.Entity
                     IsAttacking = memory.ReadBool(client, Offsets.attack),
                     FlashDuration = memory.ReadFloat(pawnAddress, Offsets.m_flFlashScreenshotAlpha),
                     Ammo = memory.ReadInt(pawnAddress, Offsets.m_iAmmo),
-                    EyeDirection = memory.ReadVec(pawnAddress, Offsets.m_angEyeAngles),
                     Ping = (int)memory.ReadUInt(controller, Offsets.m_iPing),
                     IsWalking = memory.ReadBool(pawnAddress, Offsets.m_bIsWalking),
                     AngEyeAngles = memory.ReadVec(pawnAddress, Offsets.m_angEyeAngles),

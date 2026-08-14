@@ -50,7 +50,7 @@ namespace Titled_Gui.Modules.Visual
 
             foreach (Entity? entity in GameState.renderer.Entities)
             {
-                if (entity == null || entity.Bones == null || entity.Bones.Count == 0 || entity.PawnAddress == GameState.renderer.LocalPlayer.PawnAddress || Chams.TeamCheck && entity.Team == GameState.renderer.LocalPlayer.Team)
+                if (entity == null || GameState.LocalPlayer == null || entity.Bones == null || entity.Bones.Count == 0 || entity.PawnAddress == GameState.LocalPlayer.PawnAddress || Chams.TeamCheck && entity.Team == GameState.LocalPlayer.Team)
                     continue;
 
                 GpuMesh? mesh = GetMesh(entity);

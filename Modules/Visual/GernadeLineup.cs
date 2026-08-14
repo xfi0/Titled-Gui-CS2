@@ -155,7 +155,7 @@ namespace Titled_Gui.Modules.Visual
                 return;
 
             Vector3 eyeOrigin = GameState.LocalPlayer.EyePosition;
-            Vector3 forward = MathUtils.AngleToForward(GameState.LocalPlayer.EyeDirection);
+            Vector3 forward = MathUtils.AngleToForward(GameState.LocalPlayer.AngEyeAngles);
             Vector3 circlePos = eyeOrigin + forward * 100f;
 
             GrenadeLinup lineup = new()

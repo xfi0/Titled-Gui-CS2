@@ -15,8 +15,9 @@ namespace Titled_Gui.Data.Game.MapParser
         public string _trisPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Titled", "CS2", "External", "Map Data", "tri");
 
         #region Misc Helpers
-        public bool RayIntersectsKDTree(KDNode? node, Vector3 origin, Vector3 end)
+        public bool RayIntersectsKDTree(KDNode? node, Vector3 origin, Vector3 end, out Vector3 intersectPoint)
         {
+            intersectPoint = Vector3.Zero;
             if (node == null)
                 return false;
 
@@ -27,11 +28,12 @@ namespace Titled_Gui.Data.Game.MapParser
                 dir.Z == 0f ? float.MaxValue : 1f / dir.Z
             );
 
-            return RayIntersectsKDTreeInternal(node, origin, end, invDir);
+            return RayIntersectsKDTreeInternal(node, origin, end, invDir, out intersectPoint);
         }
 
-        private bool RayIntersectsKDTreeInternal(KDNode? node, Vector3 origin, Vector3 end, Vector3 invDir)
+        private bool RayIntersectsKDTreeInternal(KDNode? node, Vector3 origin, Vector3 end, Vector3 invDir, out Vector3 intersectPoint)
         {
+            intersectPoint = Vector3.Zero;
             if (node == null)
                 return false;
 
@@ -42,16 +44,16 @@ namespace Titled_Gui.Data.Game.MapParser
             {
                 Vector3 dir = end - origin;
                 foreach (Triangle tri in node.Triangles)
-                    if (tri.Intersect(origin, dir))
+                    if (tri.Intersect(origin, dir, out intersectPoint))
                         return true;
 
                 return false;
             }
 
-            if (RayIntersectsKDTreeInternal(node.Left, origin, end, invDir))
+            if (RayIntersectsKDTreeInternal(node.Left, origin, end, invDir, out intersectPoint))
                 return true;
 
-            return RayIntersectsKDTreeInternal(node.Right, origin, end, invDir);
+            return RayIntersectsKDTreeInternal(node.Right, origin, end, invDir, out intersectPoint);
         }
         private BoundingBox CalculateBoundingBox(List<Triangle> triangles)
         {
@@ -103,7 +105,9 @@ namespace Titled_Gui.Data.Game.MapParser
                 else if (tri.Point3.X > max.X)
                     max.X = tri.Point3.X;
 
-                if (tri.Point3.Y < min.Y) min.Y = tri.Point3.Y;
+                if (tri.Point3.Y < min.Y)
+                    min.Y = tri.Point3.Y;
+
                 else if (tri.Point3.Y > max.Y)
                     max.Y = tri.Point3.Y;
 
@@ -235,9 +239,15 @@ namespace Titled_Gui.Data.Game.MapParser
                 return false;
             }
         }
+
         public bool IsVisible(Vector3 origin, Vector3 end)
         {
-            return !RayIntersectsKDTree(KDTreeRoot, origin, end);
+            return !RayIntersectsKDTree(KDTreeRoot, origin, end, out _);
+        }
+
+        public bool Intersects(Vector3 origin, Vector3 end, out Vector3 intersectPoint)
+        {
+            return RayIntersectsKDTree(KDTreeRoot, origin, end, out intersectPoint);
         }
     }
 }

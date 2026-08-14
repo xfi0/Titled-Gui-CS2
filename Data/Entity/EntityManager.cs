@@ -283,13 +283,8 @@ namespace Titled_Gui.Data.Entity
                 entity.IsFlashed = entity.FlashDuration > 0.4f;
                 entity.EyePosition = GetEyePosition(entity);
                 entity.HitBoxes = Calculate.ReadHitboxes(entity, viewMatrix);
-                if (entity.Position2D != new Vector2(-99, -99) && !UseOldVisibilityCheck)
+                if (entity.Position2D != new Vector2(-99, -99))
                     entity.Visible = VisibilityCheck.IsEntityVisible(entity);
-
-                if (UseOldVisibilityCheck)
-                {
-                    entity.Visible = memory.ReadBool(pawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
-                }
 
                 if (LocalPlayer != null)
                     entity.IsEnemy = entity.Team != LocalPlayer.Team;

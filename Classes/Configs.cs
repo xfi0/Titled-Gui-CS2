@@ -122,7 +122,7 @@ namespace Titled_Gui.Classes
                 Console.WriteLine($"Error loading config: {ex.Message}");
                 return;
             }
-            string? version = "0";
+            string? version = "0.0";
             if (configData["0"]?["Version"] != null)
                 version = configData["0"]?["Version"]?.ToString();
 

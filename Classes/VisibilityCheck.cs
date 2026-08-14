@@ -15,10 +15,12 @@ namespace Titled_Gui.Classes
             if (e == null || GameState.LocalPlayer?.Bones == null || e.Health <= 0 || e.Position2D == new Vector2(-99, -99) || e.Bones == null || mapLoaderInstance == null || e.IsDormant || GameState.renderer == null || GameState.memory == null)
                 return false;
 
-            Vector3 origin = GameState.LocalPlayer.EyePosition;
-            Vector3 target = e.Bones[(int)BoneESP.BoneIds.Head].Position; // head
             if (!EntityManager.UseOldVisibilityCheck)
+            {
+                Vector3 origin = GameState.LocalPlayer.EyePosition;
+                Vector3 target = e.Bones[(int)BoneESP.BoneIds.Head].Position; // head
                 return mapLoaderInstance.IsVisible(origin, target);
+            }
 
             return GameState.memory.ReadBool(e.PawnAddress, Offsets.m_entitySpottedState + Offsets.m_bSpotted);
         }

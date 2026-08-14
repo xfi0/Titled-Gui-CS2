@@ -123,6 +123,7 @@ namespace Titled_Gui.Data.Entity
                 IntPtr weaponServices = memory.ReadPointer(pawnAddress + Offsets.m_pWeaponServices);
                 uint hActiveWeapon = memory.ReadUInt(weaponServices + Offsets.m_hActiveWeapon);
                 IntPtr weaponData = GetPlayerPawn(entityList, (nint)hActiveWeapon);
+                IntPtr aimPunchServices = memory.ReadPointer(pawnAddress + Offsets.m_pAimPunchServices);
 
                 short weaponDefIndex = memory.ReadShort(weaponData + Offsets.m_AttributeManager + Offsets.m_Item + Offsets.m_iItemDefinitionIndex);
                 IntPtr collisionBase = pawnAddress + Offsets.m_Collision;
@@ -153,6 +154,7 @@ namespace Titled_Gui.Data.Entity
                     LifeState = memory.ReadInt(pawnAddress, Offsets.m_lifeState),
                     Position = memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin),
                     View = memory.ReadVec(pawnAddress, Offsets.m_vecViewOffset),
+                    AimPunchAngle = memory.ReadVec(aimPunchServices + Offsets.m_predictableBaseAngle),
                     Position2D = MathUtils.WorldToScreen(viewMatrix, memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
                     ViewPosition2D = MathUtils.WorldToScreen(viewMatrix, viewPos),
                     //Visible = Visible(entity),

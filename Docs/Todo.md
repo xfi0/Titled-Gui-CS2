@@ -13,7 +13,6 @@
 - [] Visualize recoil.
 - [] Discord RPC.
 - [] Crosshairs.
-- [] Bullet Tracers.
 
 # Lowest (Hard to implement, or sorta pointless)
 - [] Grenade Trajectory.

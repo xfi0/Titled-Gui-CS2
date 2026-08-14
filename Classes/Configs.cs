@@ -28,7 +28,7 @@ namespace Titled_Gui.Classes
 
         public static readonly string ConfigDirPath = Path.Combine(titledDocumentsFolder, "Configs");
         public static string JsonString = "";
-        private static string PreLegacyVersion = "2.3.5"; // anything before is legacy
+        private static string PreLegacyVersion = "2.3.6"; // anything before is legacy
 
         public static void SaveConfig(string fileName) // variable names are actually horrible here, shh.
         {

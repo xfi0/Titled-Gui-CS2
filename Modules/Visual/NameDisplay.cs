@@ -6,7 +6,7 @@ using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class NameDisplay
+    internal class NameDisplay : IModule
     {
         public static bool Enabled = false;
         public static float Offset = 100f;

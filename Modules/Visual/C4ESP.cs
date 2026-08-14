@@ -8,7 +8,7 @@ using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class C4ESP
+    internal class C4ESP : IModule
     {
         public static bool Enabled = false;
         public static bool TextEnabled = false;

@@ -5,7 +5,7 @@ using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Legit
 {
-    internal class HitStuff : Classes.ThreadService // could use some settings
+    internal class HitStuff : Classes.ThreadService, IModule // could use some settings
     {
         public static Dictionary<int, (string Display, string File)> HitSounds = new()
         {

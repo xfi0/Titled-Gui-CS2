@@ -11,7 +11,7 @@ using TextRenderer = Titled_Gui.Classes.Rendering.TextRenderer;
 
 namespace Titled_Gui.Modules.Visual
 {
-    public class HealthBar
+    public class HealthBar : IModule
     {
         public static bool EnableHealthBar = false;
         public static bool DrawOnSelf = false;

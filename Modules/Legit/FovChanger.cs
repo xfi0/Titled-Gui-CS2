@@ -2,7 +2,7 @@
 
 namespace Titled_Gui.Modules.Legit
 {
-    public class FovChanger : Classes.ThreadService // hella detected
+    public class FovChanger : Classes.ThreadService, IModule // hella detected
     {
         public static uint DesiredFov = 60;
         public static int FOV = 60;

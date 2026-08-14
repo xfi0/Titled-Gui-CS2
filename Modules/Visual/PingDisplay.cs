@@ -5,7 +5,7 @@ using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class PingDisplay
+    internal class PingDisplay : IModule
     {
         public static bool Enabled = false;
         public static Vector4 PingTextColor = new(1, 1, 1, 1);

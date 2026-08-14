@@ -7,7 +7,7 @@ using static Titled_Gui.Modules.Legit.HitStuff;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class DistanceText
+    internal class DistanceText : IModule
     {
         public static bool Enabled = false;
         public static void DrawDistance(Entity? e)

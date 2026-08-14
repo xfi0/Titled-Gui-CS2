@@ -2,7 +2,7 @@
 
 namespace Titled_Gui.Modules.Visual
 {
-    public class NoFlash : Classes.ThreadService
+    public class NoFlash : Classes.ThreadService, IModule
     {
         public static bool NoFlashEnable = false;
         public static void RemoveFlash()

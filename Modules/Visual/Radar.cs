@@ -6,7 +6,7 @@ using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class Radar
+    internal class Radar : IModule
     {
         public static bool IsEnabled = false;
         public static bool DrawOnTeam = true;

@@ -10,7 +10,7 @@ using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class WorldESP
+    internal class WorldESP : IModule
     {
         #region Bools/Toggles
         public static bool ChickenESP = false;

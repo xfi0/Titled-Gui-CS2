@@ -5,7 +5,7 @@ using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class EyeRay
+    internal class EyeRay : IModule
     {
         public static float Length = 50f;
         public static bool DrawOnTeam = true;

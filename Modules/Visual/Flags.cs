@@ -7,7 +7,7 @@ using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class Flags
+    internal class Flags : IModule
     {
         public static Vector4 TeamTextColor = new(1, 1, 1, 1);
         public static Vector4 EnemyTextColor = new(1, 1, 1, 1);

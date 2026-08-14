@@ -5,7 +5,7 @@ using static Titled_Gui.Classes.User32;
 
 namespace Titled_Gui.Modules.Combat
 {
-    public class TriggerBot : Classes.ThreadService
+    public class TriggerBot : Classes.ThreadService, IModule
     {
         public static bool Enabled = false;
         public static int MinDelay = 0;
@@ -13,16 +13,15 @@ namespace Titled_Gui.Modules.Combat
         public static bool TeamCheck = true;
         public static int TriggerKey = (int)Keys.MButton;
         public static bool OnTarget = false;
-        public static Stopwatch ReacquireTimer = new();
-        public static Stopwatch TargetGraceTimer = new();
         public static int CurrentDelay = 0;
-        private static readonly Random random = new();
-        public const int EntityListMultiplier = 0x8;
-        public const int EntityEntryOffset = 0x10;
-        public const int EntityStride = 120;
-        public const int EntityIndexMask = 0x1FF;
-        public const int EntityIndexShift = 9;
-
+        private static readonly Random _random = new();
+        private const int _entityListMultiplier = 0x8;
+        private const int _entityEntryOffset = 0x10;
+        private const int _entityStride = 120;
+        private const int _entityIndexMask = 0x1FF;
+        private const int _entityIndexShift = 9;
+        private static Stopwatch _reacquireTimer = new();
+        private static Stopwatch _targetGraceTimer = new();
         protected override void FrameAction()
         {
             RunTriggerBot();
@@ -41,9 +40,9 @@ namespace Titled_Gui.Modules.Combat
                     return;
                 }
                 int indexHigh = (crosshairEnt & 0x7FFF) >> 9;
-                int indexLow = (crosshairEnt & EntityIndexMask);
+                int indexLow = (crosshairEnt & _entityIndexMask);
 
-                IntPtr entityEntry = GameState.memory.ReadPointer(GameState.EntityList, EntityListMultiplier * indexHigh + EntityEntryOffset);
+                IntPtr entityEntry = GameState.memory.ReadPointer(GameState.EntityList, _entityListMultiplier * indexHigh + _entityEntryOffset);
                 if (entityEntry == IntPtr.Zero)
                 {
                     ClearTargetState();
@@ -69,24 +68,24 @@ namespace Titled_Gui.Modules.Combat
 
                 if (!OnTarget)
                 {
-                    if (!ReacquireTimer.IsRunning)
+                    if (!_reacquireTimer.IsRunning)
                     {
-                        ReacquireTimer.Start();
-                        CurrentDelay = random.Next(MinDelay, MaxDelay + 1);
+                        _reacquireTimer.Start();
+                        CurrentDelay = _random.Next(MinDelay, MaxDelay + 1);
                     }
 
-                    if (ReacquireTimer.ElapsedMilliseconds >= CurrentDelay)
+                    if (_reacquireTimer.ElapsedMilliseconds >= CurrentDelay)
                     {
                         Shoot();
                         OnTarget = true;
-                        ReacquireTimer.Reset();
-                        TargetGraceTimer.Restart();
+                        _reacquireTimer.Reset();
+                        _targetGraceTimer.Restart();
                     }
                 }
                 else
                 {
                     Shoot();
-                    TargetGraceTimer.Restart();
+                    _targetGraceTimer.Restart();
                 }
             }
             catch (Exception ex)
@@ -102,13 +101,13 @@ namespace Titled_Gui.Modules.Combat
 
         private static void ClearTargetState()
         {
-            if (OnTarget && TargetGraceTimer.ElapsedMilliseconds < 100)
+            if (OnTarget && _targetGraceTimer.ElapsedMilliseconds < 100)
                 return;
 
 
             OnTarget = false;
-            ReacquireTimer.Reset();
-            TargetGraceTimer.Reset();
+            _reacquireTimer.Reset();
+            _targetGraceTimer.Reset();
             CurrentDelay = 0;
         }
     }

@@ -1,18 +1,23 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using ImGuiNET;
+using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
+using System.Text.Json.Nodes;
 using Titled_Gui.Modules;
 using Titled_Gui.Modules.Combat;
 using Titled_Gui.Modules.Legit;
 using Titled_Gui.Modules.Visual;
+using static ValveResourceFormat.Blocks.ResourceIntrospectionManifest.ResourceDiskStruct;
 
 namespace Titled_Gui.Classes
 {
     internal class Configs : Classes.ThreadService
     {
         public static string MenuName = "Titled";
-        public static string Version = "2.3.4";
+        public static string Version = "2.3.5";
         public static string Author = "https://github.com/xfi0";
         public static string Link = "https://github.com/xfi0/Titled-Gui-CS2";
         public static string titledDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Titled", "CS2", "External");
@@ -24,398 +29,65 @@ namespace Titled_Gui.Classes
         public static readonly string ConfigDirPath = Path.Combine(titledDocumentsFolder, "Configs");
         public static string JsonString = "";
 
-        public static void SaveConfig(string fileName)
+        public static void SaveConfig(string fileName) // variable names are actually horrible here, shh.
         {
             if (!fileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
                 fileName += ".json";
 
-            //var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.GetInterfaces().Contains(typeof(IModule)));
-            //var keys = new List<string>();
-            // 0 = namespace (e.g. Titled_Gui)
-            // 1 = 2nd namespace (e.g. Combat)
-            // 2 = class (e.g. Aimbot)
+            var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.GetInterfaces().Contains(typeof(IModule)));
+            var catagories = new Dictionary<string, (string catagories, FieldInfo[] fields)>();
 
-
-            //foreach (Type? type in types)
-            //{
-            //    var str = type.ToString();
-            //    var strings = str.Split(".");
-            //    if (type == null || string.IsNullOrEmpty(str))
-            //        return;
-
-            //    for (int i = 0; i < str.Split(".").Length; i++)
-            //    {
-            //        Console.WriteLine(str);
-            //        if (strings.Length > 0)
-            //            keys.Add(strings[1]);
-            //    }
-            //}
-
-            JObject configData = new()
+            foreach (Type? type in types)
             {
-                ["0"] = new JObject
+                if (type == null)
+                    return;
+
+                var strings = type.ToString().Split(".");
+
+                if (strings.Length < 4)
+                    continue;
+
+
+                var catagory = strings[2];
+                var className = strings[3];
+
+                if (catagories.ContainsKey(className))
+                    continue;
+
+                catagories[className] = (catagory, type.GetFields().Where(field => field != null && field.IsStatic && field.IsPublic && !field.IsLiteral && !field.IsInitOnly).ToArray());
+            }
+
+            var configFata = new JObject()
+            {
+                ["0"] = new JObject()
                 {
                     ["Name"] = MenuName,
                     ["Version"] = Version,
                     ["Author"] = Author,
                     ["Link"] = Link,
                 },
-                ["ESP"] = new JObject
-                {
-                    ["ESP Enabled"] = BoxESP.EnableESP,
-                    ["ESP Current Shape"] = BoxESP.CurrentShape,
-                    ["ESP Rounding"] = BoxESP.Rounding,
-                    ["ESP Outline"] = BoxESP.InnerOutline,
-                    ["ESP Team Check"] = BoxESP.TeamCheck,
-                    ["Outline Team RGB"] = BoxESP.OutlineColors.TeamRGB,
-                    ["Outline Enemy RGB"] = BoxESP.OutlineColors.EnemyRGB,
-                    ["Fill Team RGB"] = BoxESP.FillColors.TeamRGB,
-                    ["Fill Enemy RGB"] = BoxESP.FillColors.EnemyRGB,
-                    ["Occluded Team RGB"] = BoxESP.OccludedColors.TeamRGB,
-                    ["Occluded Enemy RGB"] = BoxESP.OccludedColors.EnemyRGB,
-                    ["Gradient Team RGB"] = BoxESP.GradientColors.TeamRGB,
-                    ["Gradient Enemy RGB"] = BoxESP.GradientColors.EnemyRGB,
-                    ["Outline Thickness"] = new JObject
-                    {
-                        ["X"] = BoxESP.InnerOutlineThickness.X,
-                        ["Y"] = BoxESP.InnerOutlineThickness.Y
-                    },
-                    ["ESP Glow Amount"] = BoxESP.GlowAmount,
-                    ["ESP Gradient"] = BoxESP.BoxFillGradient,
-                    ["ESP Gradient Top"] = new JObject
-                    {
-                        ["X"] = BoxESP.GradientColors.TeamColor.X,
-                        ["Y"] = BoxESP.GradientColors.TeamColor.Y,
-                        ["Z"] = BoxESP.GradientColors.TeamColor.Z,
-                        ["W"] = BoxESP.GradientColors.TeamColor.W,
-                    },
-                    ["ESP Gradient Bottom"] = new JObject
-                    {
-                        ["X"] = BoxESP.GradientColors.EnemyColor.X,
-                        ["Y"] = BoxESP.GradientColors.EnemyColor.Y,
-                        ["Z"] = BoxESP.GradientColors.EnemyColor.Z,
-                        ["W"] = BoxESP.GradientColors.EnemyColor.W,
-                    },
-                    ["ESP Flash Check"] = BoxESP.FlashCheck,
-                    ["Outer Outline"] = BoxESP.OuterOutline,
-                    ["Inner Outline Color"] = new JObject
-                    {
-                        ["X"] = BoxESP.InnerOutlineColors.TeamColor.X,
-                        ["Y"] = BoxESP.InnerOutlineColors.TeamColor.Y,
-                        ["Z"] = BoxESP.InnerOutlineColors.TeamColor.Z,
-                        ["W"] = BoxESP.InnerOutlineColors.TeamColor.W,
-                    },
-                    ["Outline Enemy Color"] = new JObject
-                    {
-                        ["X"] = BoxESP.OutlineColors.EnemyColor.X,
-                        ["Y"] = BoxESP.OutlineColors.EnemyColor.Y,
-                        ["Z"] = BoxESP.OutlineColors.EnemyColor.Z,
-                        ["W"] = BoxESP.OutlineColors.EnemyColor.W,
-                    },
-                    ["Outline Team Color"] = new JObject
-                    {
-                        ["X"] = BoxESP.OutlineColors.TeamColor.X,
-                        ["Y"] = BoxESP.OutlineColors.TeamColor.Y,
-                        ["Z"] = BoxESP.OutlineColors.TeamColor.Z,
-                        ["W"] = BoxESP.OutlineColors.TeamColor.W,
-                    },
-                    ["Fill Team Color"] = new JObject
-                    {
-                        ["X"] = BoxESP.FillColors.TeamColor.X,
-                        ["Y"] = BoxESP.FillColors.TeamColor.Y,
-                        ["Z"] = BoxESP.FillColors.TeamColor.Z,
-                        ["W"] = BoxESP.FillColors.TeamColor.W
-                    },
-                    ["Fill Enemy Color"] = new JObject
-                    {
-                        ["X"] = BoxESP.FillColors.EnemyColor.X,
-                        ["Y"] = BoxESP.FillColors.EnemyColor.Y,
-                        ["Z"] = BoxESP.FillColors.EnemyColor.Z,
-                        ["W"] = BoxESP.FillColors.EnemyColor.W
-                    },
-                    ["Occluded Team Color"] = new JObject
-                    {
-                        ["X"] = BoxESP.OccludedColors.TeamColor.X,
-                        ["Y"] = BoxESP.OccludedColors.TeamColor.Y,
-                        ["Z"] = BoxESP.OccludedColors.TeamColor.Z,
-                        ["W"] = BoxESP.OccludedColors.TeamColor.W
-                    },
-                    ["Occluded Enemy Color"] = new JObject
-                    {
-                        ["X"] = BoxESP.OccludedColors.EnemyColor.X,
-                        ["Y"] = BoxESP.OccludedColors.EnemyColor.Y,
-                        ["Z"] = BoxESP.OccludedColors.EnemyColor.Z,
-                        ["W"] = BoxESP.OccludedColors.EnemyColor.W
-                    },
-                },
-                ["Flags"] = new JObject
-                {
-                    ["Name Display Enabled"] = NameDisplay.Enabled,
-                    ["Enable Distance Tracker"] = DistanceText.Enabled,
-                    ["Gun Display Enabled"] = Flags.GunEnabled,
-                    ["Scoped Enabled"] = Flags.ScopedEnabled,
-                    ["Flash Enabled"] = Flags.FlashEnabled,
-                    ["Flags Text Color Team"] = new JObject
-                    {
-                        ["X"] = Flags.TextColors.TeamColor.X,
-                        ["Y"] = Flags.TextColors.TeamColor.Y,
-                        ["Z"] = Flags.TextColors.TeamColor.Z,
-                        ["W"] = Flags.TextColors.TeamColor.W,
-                    },
-
-                    ["Flags Text Color Enemy"] = new JObject
-                    {
-                        ["X"] = Flags.TextColors.EnemyColor.X,
-                        ["Y"] = Flags.TextColors.EnemyColor.Y,
-                        ["Z"] = Flags.TextColors.EnemyColor.Z,
-                        ["W"] = Flags.TextColors.EnemyColor.W,
-                    },
-                    ["Ping Display Enabled"] = PingDisplay.Enabled,
-                    ["Ping Display Color"] = new JObject
-                    {
-                        ["X"] = PingDisplay.PingTextColor.X,
-                        ["Y"] = PingDisplay.PingTextColor.Y,
-                        ["Z"] = PingDisplay.PingTextColor.Z,
-                        ["W"] = PingDisplay.PingTextColor.W,
-                    },
-                },
-                ["Tracers"] = new JObject
-                {
-                    ["Tracers Enabled"] = Tracers.EnableTracers,
-                    ["Tracers Thickness"] = Tracers.LineThickness,
-                    ["Tracers Team Check"] = Tracers.TeamCheck,
-                    ["Tracers Current Start"] = Tracers.CurrentStartPos,
-                    ["Tracers Current End"] = Tracers.CurrentEndPos,
-                    ["Tracers Team Color"] = new JObject
-                    {
-                        ["X"] = Tracers.TeamColor.X,
-                        ["Y"] = Tracers.TeamColor.Y,
-                        ["Z"] = Tracers.TeamColor.Z,
-                        ["W"] = Tracers.TeamColor.W,
-                    },
-                    ["Tracers Enemy Color"] = new JObject
-                    {
-                        ["X"] = Tracers.EnemyColor.X,
-                        ["Y"] = Tracers.EnemyColor.Y,
-                        ["Z"] = Tracers.EnemyColor.Z,
-                        ["W"] = Tracers.EnemyColor.W,
-                    }
-                },
-                ["Bone ESP"] = new JObject
-                {
-                    ["Bone ESP Enabled"] = BoneESP.EnableBoneESP,
-                    ["Bone ESP Thickness"] = BoneESP.BoneThickness,
-                    ["Bone ESP Team Check"] = BoneESP.TeamCheck,
-                    ["Bone ESP Glow Amount"] = BoneESP.GlowAmount,
-                    ["Bone ESP Team Colors Visible"] = new JObject
-                    {
-                        ["X"] = BoneESP.VisibleColors.TeamColor.X,
-                        ["Y"] = BoneESP.VisibleColors.TeamColor.Y,
-                        ["Z"] = BoneESP.VisibleColors.TeamColor.Z,
-                        ["W"] = BoneESP.VisibleColors.TeamColor.W,
-                    },
-                    ["Bone ESP Enemy Colors Visible"] = new JObject
-                    {
-                        ["X"] = BoneESP.VisibleColors.EnemyColor.X,
-                        ["Y"] = BoneESP.VisibleColors.EnemyColor.Y,
-                        ["Z"] = BoneESP.VisibleColors.EnemyColor.Z,
-                        ["W"] = BoneESP.VisibleColors.EnemyColor.W,
-                    },
-                    ["Bone ESP Team Colors Occluded"] = new JObject
-                    {
-                        ["X"] = BoneESP.OccludedColors.TeamColor.X,
-                        ["Y"] = BoneESP.OccludedColors.TeamColor.Y,
-                        ["Z"] = BoneESP.OccludedColors.TeamColor.Z,
-                        ["W"] = BoneESP.OccludedColors.TeamColor.W,
-                    },
-                    ["Bone ESP Enemy Colors Occluded"] = new JObject
-                    {
-                        ["X"] = BoneESP.OccludedColors.EnemyColor.X,
-                        ["Y"] = BoneESP.OccludedColors.EnemyColor.Y,
-                        ["Z"] = BoneESP.OccludedColors.EnemyColor.Z,
-                        ["W"] = BoneESP.OccludedColors.EnemyColor.W,
-                    },
-                    ["Bone ESP Visible Team RGB"] = BoneESP.VisibleColors.TeamRGB,
-                    ["Bone ESP Visible Enemy RGB"] = BoneESP.VisibleColors.EnemyRGB,
-                    ["Bone ESP Occluded Team RGB"] = BoneESP.OccludedColors.TeamRGB,
-                    ["Bone ESP Occluded Enemy RGB"] = BoneESP.OccludedColors.EnemyRGB,
-                },
-                ["HealthBar"] = new JObject
-                {
-                    ["HealthBar Enabled"] = HealthBar.EnableHealthBar,
-                    ["HealthBar Rounding"] = HealthBar.Rounding,
-                    ["HealthBar Width"] = HealthBar.HealthBarWidth,
-                },
-                ["Aimbot"] = new JObject
-                {
-                    ["Aimbot Enabled"] = Aimbot.AimbotEnable,
-                    ["Aimbot Aim On Team"] = Aimbot.Team,
-                    ["Aimbot Selected Bone"] = Aimbot.CurrentBoneIndex,
-                    ["Aimbot Aim Method"] = Aimbot.CurrentAimMethod,
-                    ["Aimbot FOV Size"] = Aimbot.FovSize,
-                    ["Aimbot Use FOV"] = Aimbot.UseFOV,
-                    ["Aimbot Draw FOV"] = Aimbot.DrawFov,
-                    ["Aimbot Scoped Only"] = Aimbot.ScopedOnly,
-                    ["Aimbot Smoothing X"] = Aimbot.SmoothingX,
-                    ["Aimbot Smoothing Y"] = Aimbot.SmoothingY,
-                    ["Aimbot Key"] = Aimbot.AimbotKey,
-                    ["Aimbot FOV Color"] = new JObject
-                    {
-                        ["Aimbot FOV Color X"] = Aimbot.FovColor.X,
-                        ["Aimbot FOV Color Y"] = Aimbot.FovColor.Y,
-                        ["Aimbot FOV Color Z"] = Aimbot.FovColor.Z,
-                        ["Aimbot FOV Color W"] = Aimbot.FovColor.W,
-                    }
-                },
-                ["RCS"] = new JObject
-                {
-                    ["RCS Enabled"] = RCS.Enabled,
-                    ["RCS Strength"] = RCS.Strength
-                },
-                ["Trigger Bot"] = new JObject
-                {
-                    ["Trigger Bot Enabled"] = TriggerBot.Enabled,
-                    ["Trigger Bot Max Delay"] = TriggerBot.MaxDelay,
-                    ["Trigger Bot Min Delay"] = TriggerBot.MinDelay,
-                    ["Trigger Bot Shoot At Team"] = TriggerBot.TeamCheck,
-                    ["Trigger Bot Key"] = TriggerBot.TriggerKey
-                },
-                ["Bhop"] = new JObject
-                {
-                    ["Bhop Enabled"] = Bhop.BhopEnable,
-                    ["Bhop Keybind"] = Bhop.HopKey,
-                },
-                ["Jump Hack"] = new JObject
-                {
-                    ["Jump Hack Enabled"] = JumpHack.JumpHackEnabled,
-                    ["Jump Hack Keybind"] = JumpHack.JumpHotkey
-                },
-                ["Eye Ray"] = new JObject
-                {
-                    ["Eye Ray Enabled"] = EyeRay.Enabled,
-                    ["Eye Ray Length"] = EyeRay.Length,
-                },
-                ["Chams"] = new JObject
-                {
-                    ["Chams Enabled"] = Chams.Enabled,
-                    ["Chams Style Index"] = Chams.StyleIndex,
-                    ["Chams Team Check"] = Chams.TeamCheck
-                },
-                ["No Flash"] = new JObject
-                {
-                    ["No Flash Enabled"] = NoFlash.NoFlashEnable,
-                },
-                ["FOV Changer"] = new JObject
-                {
-                    ["FOV Changer Enabled"] = FovChanger.Enabled,
-                    ["FOV Changer FOV"] = FovChanger.FOV,
-                },
-                ["Armor Bar"] = new JObject
-                {
-                    ["Armor Bar Enabled"] = ArmorBar.EnableArmorBar,
-                    ["Armor Bar Draw On Self"] = ArmorBar.DrawOnSelf,
-                    ["Armor Bar Width"] = ArmorBar.ArmorBarWidth,
-                },
-                ["Hit Actions"] = new JObject
-                {
-                    ["Hit Sound Enabled"] = HitStuff.EnableHitSounds,
-                    ["Hit Sound Volume"] = HitStuff.Volume,
-                    ["Current Hit Sound"] = HitStuff.CurrentHitSound,
-                    ["Enable Headshot Text"] = HitStuff.EnableHeadshotText,
-                    ["Headshot Text Color"] = new JObject
-                    {
-                        ["Headshot Text Color X"] = HitStuff.TextColor.X,
-                        ["Headshot Text Color Y"] = HitStuff.TextColor.Y,
-                        ["Headshot Text Color Z"] = HitStuff.TextColor.Z,
-                        ["Headshot Text Color W"] = HitStuff.TextColor.W,
-                    }
-                },
-                ["Bomb Timer Overlay"] = new JObject
-                {
-                    ["Bomb Timer Enabled"] = BombTimerOverlay.EnableTimeOverlay
-                },
-                ["Radar"] = new JObject
-                {
-                    ["Radar Enabled"] = Radar.IsEnabled,
-                    ["Radar Draw On Team"] = Radar.DrawOnTeam,
-                    ["Radar Draw Cross"] = Radar.DrawCrossb,
-                    ["Radar Enemy Point Color"] = new JObject
-                    {
-                        ["X"] = Radar.EnemyPointColor.X,
-                        ["Y"] = Radar.EnemyPointColor.Y,
-                        ["Z"] = Radar.EnemyPointColor.Z,
-                        ["W"] = Radar.EnemyPointColor.W
-                    },
-                    ["Radar Team Point Color"] = new JObject
-                    {
-                        ["X"] = Radar.TeamPointColor.X,
-                        ["Y"] = Radar.TeamPointColor.Y,
-                        ["Z"] = Radar.TeamPointColor.Z,
-                        ["W"] = Radar.TeamPointColor.W
-                    }
-                },
-                ["Spectator List"] = new JObject
-                {
-                    ["Spectator List Enabled"] = SpectatorList.Enabled
-                },
-                ["World ESP"] = new JObject()
-                {
-                    ["Draw Boxes"] = WorldESP.DrawBoxes,
-                    ["Draw Text"] = WorldESP.DrawText,
-                    ["Chicken ESP Enabled"] = WorldESP.ChickenESP,
-                    ["Hostage ESP Enabled"] = WorldESP.HostageESP,
-                    ["Dropped Weapon ESP Enabled"] = WorldESP.DroppedWeaponESP,
-                    ["Thrown Projectile ESP Enabled"] = WorldESP.ProjectileESP,
-                    ["Molotov ESP Enabled"] = WorldESP.MolotovBoundsESP,
-                    ["Chicken Text Color"] = new JObject
-                    {
-                        ["X"] = WorldESP.ChickenTextColor.X,
-                        ["Y"] = WorldESP.ChickenTextColor.Y,
-                        ["Z"] = WorldESP.ChickenTextColor.Z,
-                        ["W"] = WorldESP.ChickenTextColor.W
-                    },
-                    ["Dropped Weapon Text Color"] = new JObject
-                    {
-                        ["X"] = WorldESP.WeaponTextColor.X,
-                        ["Y"] = WorldESP.WeaponTextColor.Y,
-                        ["Z"] = WorldESP.WeaponTextColor.Z,
-                        ["W"] = WorldESP.WeaponTextColor.W
-                    },
-                    ["Thrown Projectile Text Color"] = new JObject
-                    {
-                        ["X"] = WorldESP.ProjectileTextColor.X,
-                        ["Y"] = WorldESP.ProjectileTextColor.Y,
-                        ["Z"] = WorldESP.ProjectileTextColor.Z,
-                        ["W"] = WorldESP.ProjectileTextColor.W
-                    },
-                    ["Box Color"] = new JObject
-                    {
-                        ["X"] = WorldESP.BoxColor.X,
-                        ["Y"] = WorldESP.BoxColor.Y,
-                        ["Z"] = WorldESP.BoxColor.Z,
-                        ["W"] = WorldESP.BoxColor.W
-                    },
-                    ["Molotov Bounds Filled Color"] = new JObject
-                    {
-                        ["X"] = WorldESP.MolotovColors.PrimaryColor.X,
-                        ["Y"] = WorldESP.MolotovColors.PrimaryColor.Y,
-                        ["Z"] = WorldESP.MolotovColors.PrimaryColor.Z,
-                        ["W"] = WorldESP.MolotovColors.PrimaryColor.W
-                    },
-                    ["Molotov Bounds Outline Color"] = new JObject
-                    {
-                        ["X"] = WorldESP.MolotovColors.SecondaryColor.X,
-                        ["Y"] = WorldESP.MolotovColors.SecondaryColor.Y,
-                        ["Z"] = WorldESP.MolotovColors.SecondaryColor.Z,
-                        ["W"] = WorldESP.MolotovColors.SecondaryColor.W
-                    },
-                }
             };
+
+            foreach (var (className, (catagory, fields)) in catagories)
+            {
+                if (configFata[catagory] is not JObject obj) // is not is kinda tuff
+                {
+                    obj = new();
+                    configFata[catagory] = obj;
+                }
+
+                var jObject = new JObject();
+                foreach (var field in fields)
+                {
+                    var value = field.GetValue(null);
+                    jObject[field.Name] = value != null ? JToken.FromObject(value) : JValue.CreateNull();
+                }
+                obj[className] = jObject;
+            }
 
             Directory.CreateDirectory(ConfigDirPath);
             string fullPath = Path.Combine(ConfigDirPath, fileName);
-            File.WriteAllText(fullPath, configData.ToString());
-
+            File.WriteAllText(fullPath, configFata.ToString());
             Console.WriteLine($"Wrote {fileName} at {fullPath}");
 
             SavedConfigs.TryAdd(fileName, true);
@@ -423,35 +95,88 @@ namespace Titled_Gui.Classes
 
         public static void LoadConfig(string fileName)
         {
+            if (!fileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                fileName += ".json";
+
+            string fullPath = Path.Combine(ConfigDirPath, fileName);
+            if (!File.Exists(fullPath))
+            {
+                Console.WriteLine($"Config Not Found at {fullPath}");
+                return;
+            }
+
+            JsonString = File.ReadAllText(fullPath);
+            if (string.IsNullOrWhiteSpace(JsonString))
+            {
+                Console.WriteLine("Config Is Empty.");
+                return;
+            }
+
+            JObject configData;
             try
             {
-                if (!fileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
-                    fileName += ".json";
+                configData = JObject.Parse(JsonString);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading config: {ex.Message}");
+                return;
+            }
+            string? version = "0";
+            if (configData["0"]?["Version"] != null)
+                version = configData["0"]?["Version"]?.ToString();
 
-                string fullPath = Path.Combine(ConfigDirPath, fileName);
-                if (!File.Exists(fullPath))
-                {
-                    Console.WriteLine($"Config Not Found at {fullPath}");
-                    return;
-                }
+            if (System.Version.Parse(version ?? "2.4.5") < System.Version.Parse("2.4.5"))
+            {
+                LoadLegacyConfig(configData);
+                return;
+            }
 
-                JsonString = File.ReadAllText(fullPath);
-                if (string.IsNullOrWhiteSpace(JsonString))
+            var types = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.GetInterfaces().Contains(typeof(IModule)));
+            foreach (var keyValuePair in configData)
+            {
+                foreach (var className in (JObject)keyValuePair.Value!)
                 {
-                    Console.WriteLine("Config Is Empty.");
-                    return;
-                }
+                    foreach (var type in types)
+                    {
+                        var split = type.ToString().Split(".");
+                        if (split.Length < 4)
+                            continue;
 
-                JObject configData;
-                try
-                {
-                    configData = JObject.Parse(JsonString);
+                        if (type.ToString().Split(".")[3].ToString() == className.Key)
+                        {
+                            var idk = keyValuePair.Value[className.Key.Trim()];
+                            if (idk == null)
+                                continue;
+
+                            foreach (var field in idk)
+                            {
+                                foreach (var field2 in type.GetFields())
+                                {
+                                    if (field2 == null || field2.IsInitOnly || field2.IsPrivate || field2.IsLiteral) // i know i already filter these out, but if i change a field to const and the config is oldddd might break, idk.
+                                        continue;
+
+                                    var property = ((JProperty)(field));
+                                    if (property.Name == field2.Name)
+                                    {
+                                        object? value = property.Value.ToObject(field2.FieldType);
+                                        if (value == null)
+                                            continue;
+
+                                        field2.SetValue(null, value);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error loading config: {ex.Message}");
-                    return;
-                }
+            }
+        }
+
+        public static void LoadLegacyConfig(JObject configData) // pre 2.3.5
+        {
+            try
+            {
 
                 #region Shape ESP
                 BoxESP.EnableESP = configData["ESP"]?["ESP Enabled"]?.ToObject<bool>() ?? BoxESP.EnableESP;
@@ -803,12 +528,11 @@ namespace Titled_Gui.Classes
             foreach (var key in Configs.SavedConfigs.Keys)
             {
                 if (!files.Contains(key))
-                {
                     Configs.SavedConfigs.TryRemove(key, out _);
-                }
+
             }
 
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
         }
     }
 }

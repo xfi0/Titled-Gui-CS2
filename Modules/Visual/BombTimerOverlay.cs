@@ -8,7 +8,7 @@ using static Titled_Gui.Renderer;
 
 namespace Titled_Gui.Modules.Visual
 {
-    public class BombTimerOverlay
+    public class BombTimerOverlay : IModule
     {
         public static bool EnableTimeOverlay = false;
 

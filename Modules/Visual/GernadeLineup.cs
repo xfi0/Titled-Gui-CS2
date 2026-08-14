@@ -10,7 +10,7 @@ using static Titled_Gui.Data.Game.Events;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class GernadeLineup
+    internal class GernadeLineup : IModule
     {
         public static bool Enabled = false;
         public static bool AlwaysShow = false;

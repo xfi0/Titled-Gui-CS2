@@ -3,7 +3,7 @@ using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Legit
 {
-    internal class JumpHack
+    internal class JumpHack : IModule
     {
         public static bool JumpHackEnabled = false;
         public static int JumpHotkey = 0x20;

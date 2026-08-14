@@ -5,7 +5,7 @@ using Titled_Gui.Data.Game;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class SpectatorList
+    internal class SpectatorList : IModule
     {
         public static bool Enabled = false;
         private static Vector2 _windowSize = new(200, 300);

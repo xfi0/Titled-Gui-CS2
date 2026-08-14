@@ -9,7 +9,7 @@ using Entity = Titled_Gui.Data.Entity.Entity;
 
 namespace Titled_Gui.Modules.Visual
 {
-    public class BoxESP
+    public class BoxESP : IModule
     {
         public static bool TeamCheck = false;
         public static bool EnableESP = false;

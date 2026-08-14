@@ -7,7 +7,7 @@ using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {
-    public class Tracers
+    public class Tracers : IModule
     {
         public static bool EnableTracers = false;
         public static bool TeamCheck = false;

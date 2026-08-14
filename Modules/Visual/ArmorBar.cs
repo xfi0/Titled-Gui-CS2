@@ -9,7 +9,7 @@ using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class ArmorBar
+    internal class ArmorBar : IModule
     {
         public static bool EnableArmorBar = false;
         public static bool DrawOnSelf = false; // why does this exist, i would remove but its funny.

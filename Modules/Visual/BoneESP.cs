@@ -8,7 +8,7 @@ using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {
-    public static class BoneESP
+    public class BoneESP : IModule
     {
         public static float BoneThickness = 4.5f;
         public static bool EnableBoneESP = false;

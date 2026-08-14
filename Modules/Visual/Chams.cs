@@ -10,11 +10,11 @@ using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class Chams : ChamsRendererBase
+    internal class Chams : ChamsRendererBase, IModule
     {
         public static bool Enabled = false;
         public static bool TeamCheck = true;
-        private int _nameReadFailCount;
+        private int _nameReadFailCount = 0;
         private bool _nameReadFailLogged;
         private IntPtr _modelNamePawn;
         private string? _modelNameCache;

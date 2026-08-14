@@ -10,7 +10,7 @@ using Titled_Gui.Data.Menu.Types;
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class SoundESP : ThreadService
+    internal class SoundESP : ThreadService, IModule
     {
         public static bool Enabled = false;
         private static Vector4 _teamColor = new(0, 1, 0, 1);

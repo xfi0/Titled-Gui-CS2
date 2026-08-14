@@ -4,7 +4,7 @@ using static Titled_Gui.Data.Game.GameState;
 
 namespace Titled_Gui.Modules.Legit
 {
-    public class Bhop : Classes.ThreadService // TODO make it use the jump action, i tried wouldnt work well
+    public class Bhop : Classes.ThreadService, IModule // TODO make it use the jump action, i tried wouldnt work well
     {
         public static bool BhopEnable = false;
         public static float Chance = 100;
@@ -12,7 +12,6 @@ namespace Titled_Gui.Modules.Legit
         public static int maxDelay = 35;
         public static int HopKey = 0x20; // space
         private static Random random = new();
-        private static int lastJumped = GlobalVar.GetTickCount();
 
         public static void AutoBhop()
         {

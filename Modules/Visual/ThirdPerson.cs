@@ -2,7 +2,7 @@
 
 namespace Titled_Gui.Modules.Visual
 {
-    internal class ThirdPerson : Classes.ThreadService // THIS WILL GET YOU BANNED USE AT YOUR OWN RISK https://www.unknowncheats.me/forum/counter-strike-2-a/710298-third-person-external.html
+    internal class ThirdPerson : Classes.ThreadService, IModule // THIS WILL GET YOU BANNED USE AT YOUR OWN RISK https://www.unknowncheats.me/forum/counter-strike-2-a/710298-third-person-external.html
     {
         public static bool Enabled = false;
         private static bool patchApplied;

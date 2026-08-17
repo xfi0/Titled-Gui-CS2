@@ -51,7 +51,7 @@ internal class Sections
             new("Aimbot", 1, () =>
             {
                 RenderBoolSetting("Enable", "Aimbot.Enabled", () => Aimbot.AimbotEnable, v => Aimbot.AimbotEnable = v);
-                RenderIntCombo("Aim Bone", "Aimbot.AimBone", ref Aimbot.CurrentBone, Aimbot.Bones.ToList(), Aimbot.Bones.Length);
+                RenderIntCombo("Aim Bone", "Aimbot.AimBone", ref Aimbot.CurrentBone, [.. Aimbot.Bones], Aimbot.Bones.Length);
                 Keybind.RenderKeybindChooser("Aimbot Keybind", "Aimbot.Keybind", ref Aimbot.AimbotKey, () => Aimbot.AimbotEnable);
                 RenderBoolSetting("Aim On Team", "Aimbot.AimOnTeam", () => Aimbot.Team, v => Aimbot.Team = v);
                 RenderFloatSlider("Smoothing X", "Aimbot.SmoothingX", ref Aimbot.SmoothingX, 0, 20, "%.2f");

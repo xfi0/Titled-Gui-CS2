@@ -62,10 +62,10 @@ namespace Titled_Gui.Modules.Visual
 
         protected override void FrameAction()
         {
-            if (!Enabled)
+            if (!Enabled || GameState.LocalPlayer == null || GameState.LocalPlayer.PawnAddress == IntPtr.Zero)
                 return;
 
-            ThirdPerson.Run(GameState.LocalPlayerPawn);
+            ThirdPerson.Run(GameState.LocalPlayer.PawnAddress);
         }
     }
 }

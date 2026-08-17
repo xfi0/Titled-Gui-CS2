@@ -34,9 +34,10 @@ namespace Titled_Gui.Modules.Combat
                 if (!Enabled || GameState.LocalPlayer == null || GameState.memory == null || (TriggerKey != 0 && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0) || GameState.LocalPlayer.Health <= 0)
                     return;
 
-                int crosshairEnt = GameState.memory.ReadInt(GameState.LocalPlayerPawn + Offsets.m_iIDEntIndex);
+                int crosshairEnt = GameState.memory.ReadInt(GameState.LocalPlayer.PawnAddress + Offsets.m_iIDEntIndex);
                 if (crosshairEnt == -1 || crosshairEnt == 0)
                 {
+                    Console.WriteLine("No ent");
                     ClearTargetState();
                     return;
                 }
@@ -46,6 +47,7 @@ namespace Titled_Gui.Modules.Combat
                 IntPtr entityEntry = GameState.memory.ReadPointer(GameState.EntityList, _entityListMultiplier * indexHigh + _entityEntryOffset);
                 if (entityEntry == IntPtr.Zero)
                 {
+                    Console.WriteLine("No ent entry");
                     ClearTargetState();
                     return;
                 }

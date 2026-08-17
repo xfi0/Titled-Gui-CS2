@@ -30,8 +30,8 @@ namespace Titled_Gui.Modules.Combat
         public static int CurrentBoneIndex = 2;
         public static int CurrentAimMethod = 0;
         public static string[] Bones = ["Head", "Neck", "Right Shoulder", "Left Shoulder", "Waist", "Random"];
-        public static Vector2 CurrentBone2D = Vector2.Zero;
-        private static Vector2 remainder = Vector2.Zero;
+        private static Vector2 _currentBone2D = Vector2.Zero;
+        private static Vector2 _remainder = Vector2.Zero;
         private static Random _random = new();
         private static Entity? _target = null;
         private static Entity? _previousTarget = null;
@@ -87,10 +87,10 @@ namespace Titled_Gui.Modules.Combat
                         {
                             try
                             {
-                                CurrentBone2D = _target.Bones[CurrentBoneIndex].Position2D;
+                                _currentBone2D = _target.Bones[CurrentBoneIndex].Position2D;
 
-                                if (CurrentBone2D != Vector2.Zero && (!UseFOV || CurrentBone2D != new Vector2(-99, -99)))
-                                    newAngles2D = CurrentBone2D;
+                                if (_currentBone2D != Vector2.Zero && (!UseFOV || _currentBone2D != new Vector2(-99, -99)))
+                                    newAngles2D = _currentBone2D;
                                 else
                                     newAngles2D = _target.Position2D;
                             }
@@ -107,7 +107,7 @@ namespace Titled_Gui.Modules.Combat
                     }
                     else //fallback that if you're at their body flick to whatever chosen bone 
                     {
-                        newAngles2D = CurrentBone2D;
+                        newAngles2D = _currentBone2D;
                     }
 
                     if (float.IsNaN(newAngles2D.X) || float.IsNaN(newAngles2D.Y))
@@ -118,7 +118,7 @@ namespace Titled_Gui.Modules.Combat
                     MoveMousePos(dx, dy);
                 }
                 else
-                    remainder = Vector2.Zero;
+                    _remainder = Vector2.Zero;
 
             }
             catch (DivideByZeroException divideByZeroException)
@@ -132,14 +132,14 @@ namespace Titled_Gui.Modules.Combat
         }
         private static void MoveMousePos(float dx, float dy)
         {
-            dx = (SmoothingX > 0 ? dx / SmoothingX : dx) + remainder.X;
-            dy = (SmoothingY > 0 ? dy / SmoothingY : dy) + remainder.Y;
+            dx = (SmoothingX > 0 ? dx / SmoothingX : dx) + _remainder.X;
+            dy = (SmoothingY > 0 ? dy / SmoothingY : dy) + _remainder.Y;
 
             int ix = (int)dx;
             int iy = (int)dy;
 
-            remainder.X = dx - ix;
-            remainder.Y = dy - iy;
+            _remainder.X = dx - ix;
+            _remainder.Y = dy - iy;
 
             User32.MouseMove(ix, iy);
         }

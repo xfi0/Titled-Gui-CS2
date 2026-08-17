@@ -55,10 +55,10 @@ namespace Titled_Gui.Modules.Legit
         }
         protected override void FrameAction()
         {
-            if (!BhopEnable || GameState.memory == null)
+            if (!BhopEnable || GameState.memory == null || GameState.LocalPlayer == null || GameState.LocalPlayer.PawnAddress == IntPtr.Zero)
                 return;
 
-            GameState.Fflag = GameState.memory.ReadUInt(GameState.LocalPlayerPawn, Offsets.m_fFlags);
+            GameState.Fflag = GameState.memory.ReadUInt(GameState.LocalPlayer.PawnAddress, Offsets.m_fFlags);
             AutoBhop();
         }
     }

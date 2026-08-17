@@ -162,7 +162,6 @@ namespace Titled_Gui.Data.Entity
                     SpottedByState = memory.ReadPointer(pawnAddress + 0x2718),
                     Head = viewPos,
                     Head2D = MathUtils.WorldToScreen(viewMatrix, viewPos),
-                    Distance = Vector3.Distance(memory.ReadVec(LocalPlayerPawn, Offsets.m_vOldOrigin), memory.ReadVec(pawnAddress, Offsets.m_vOldOrigin)),
                     Bones = bones,
                     Name = memory.ReadString(controller + Offsets.m_iszPlayerName),
                     Velocity = memory.ReadVec(pawnAddress, Offsets.m_vecAbsVelocity),
@@ -194,6 +193,7 @@ namespace Titled_Gui.Data.Entity
                     Controller = controller,
                 };
 
+                entity.Distance = Vector3.Distance(LocalPlayer != null ? LocalPlayer.Position : Vector3.Zero, entity.Position);
                 entity.IsFlashed = entity.FlashDuration > 0.4f;
                 entity.EyePosition = GetEyePosition(entity);
                 entity.HitBoxes = Calculate.ReadHitboxes(entity, viewMatrix);

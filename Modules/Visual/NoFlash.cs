@@ -7,13 +7,13 @@ namespace Titled_Gui.Modules.Visual
         public static bool NoFlashEnable = false;
         public static void RemoveFlash()
         {
-            if (!NoFlashEnable || GameState.memory == null)
+            if (!NoFlashEnable || GameState.memory == null || GameState.LocalPlayer == null || GameState.LocalPlayer.PawnAddress == IntPtr.Zero)
                 return;
 
             float flashBangDuration = GameState.memory.ReadFloat(GameState.client, Offsets.m_flFlashBangTime);
 
             if (flashBangDuration > 0)
-                GameState.memory.WriteInt(GameState.LocalPlayerPawn, Offsets.m_flFlashBangTime, 0);
+                GameState.memory.WriteInt(GameState.LocalPlayer.PawnAddress, Offsets.m_flFlashBangTime, 0);
 
         }
         protected override void FrameAction()

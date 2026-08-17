@@ -26,7 +26,7 @@
         public static int m_iHealth = 0x344;
         public static int m_entitySpottedState = 0x1B58;
         public static int m_bSpotted = 0x8;
-        public static int m_iIDEntIndex = 0x1458;
+        public static int m_iIDEntIndex = 0x342C;
         public static int m_pSceneNode = 0x8;
         public static int m_vecViewOffset = 0xCB0;
         public static int m_lifeState = 0x348;

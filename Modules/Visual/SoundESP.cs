@@ -16,7 +16,7 @@ namespace Titled_Gui.Modules.Visual
         private static Vector4 _teamColor = new(0, 1, 0, 1);
         private static Vector4 _enemyColor = new(1, 0, 0, 1);
         public static Colors VisibleColors = new(_teamColor, _enemyColor);
-        public static float MaxLifetime = 1.5f;
+        public static float MaxLifetime = 15f;
         public static float MaxRadius = 20f;
         public static bool TeamCheck = false;
         private static readonly Dictionary<IntPtr, float> EmitTimes = []; // pawn address and emit time
@@ -76,14 +76,14 @@ namespace Titled_Gui.Modules.Visual
 
                 lock (Lock)
                 {
-                    ActiveRings.RemoveAll(r => now - r.StartTime > MaxLifetime);
+                    ActiveRings.RemoveAll(r => now - r.StartTime > (MaxLifetime * 0.1f));
 
                     foreach (var ring in ActiveRings)
                     {
-                        Vector4 teamColor = VisibleColors.TeamRGB ? Colors.Rgb(1f) : _teamColor;
-                        Vector4 enemyColor = VisibleColors.EnemyRGB ? Colors.Rgb(1f) : _enemyColor;
+                        Vector4 teamColor = VisibleColors.TeamRGB ? Colors.Rgb(VisibleColors.TeamColor.W) : VisibleColors.TeamColor;
+                        Vector4 enemyColor = VisibleColors.EnemyRGB ? Colors.Rgb(VisibleColors.TeamColor.W) : VisibleColors.EnemyColor;
                         float elapsed = now - ring.StartTime;
-                        float t = elapsed / MaxLifetime;
+                        float t = elapsed / (MaxLifetime * 0.1f);
                         float radius = MaxRadius * t;
                         float alpha = 1f - t;
                         Vector4 color = ring.IsTeam ? teamColor : enemyColor;

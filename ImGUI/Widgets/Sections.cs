@@ -130,7 +130,14 @@ internal class Sections
                 RenderFloatSlider("Tracer Thickness", "BulletTracers.Thickness", ref BulletTracers.Thickness, 0.5f, 10f);
                 RenderFloatSlider("Tracer Duration", "BulletTracers.Duration", ref BulletTracers.Duration, 0.5f, 15f);
             }),
-            
+            new("Sound ESP", 2, () =>
+            {
+                RenderBoolSettingWith2ColorPickers("Enabled", "SoundESP.Enabled", () => SoundESP.Enabled, v => SoundESP.Enabled = v, ref SoundESP.VisibleColors.TeamRGB, ref SoundESP.VisibleColors.EnemyRGB, ref SoundESP.VisibleColors.TeamColor, ref SoundESP.VisibleColors.EnemyColor);
+                RenderBoolSetting("Team Check", "SoundESP.TeamCheck", () => SoundESP.TeamCheck, v => SoundESP.TeamCheck = v);
+                RenderFloatSlider("Radius", "SoundESP.Radius", ref SoundESP.MaxRadius, 1, 50);
+                RenderFloatSlider("Duration", "SoundESP.Duration", ref SoundESP.MaxLifetime, 1, 25);
+            }),
+
             new("Other Visuals", 2, () =>
             {
                 RenderBoolSetting("Bomb Timer", "BombTimerOverlay.Enabled", () => BombTimerOverlay.EnableTimeOverlay, v => BombTimerOverlay.EnableTimeOverlay = v);
@@ -142,7 +149,6 @@ internal class Sections
                 RenderBoolSettingWith2ColorPickers("Radar", "Radar.Enabled", () => Radar.IsEnabled, v => Radar.IsEnabled = v, ref Radar.PointColors.TeamRGB, ref Radar.PointColors.EnemyRGB, ref  Radar.PointColors.TeamColor, ref Radar.PointColors.EnemyColor);
                 RenderBoolSetting("Draw Team", "Radar.DrawTeam", () => Radar.DrawOnTeam, v => Radar.DrawOnTeam = v);
                 RenderBoolSetting("Draw Cross", "Radar.DrawCross", () => Radar.DrawCrossb, v => Radar.DrawCrossb = v);
-                        RenderBoolSettingWith2ColorPickers("Sound ESP", "SoundESP.Enabled", () => SoundESP.Enabled, v => SoundESP.Enabled = v, ref SoundESP.VisibleColors.TeamRGB, ref SoundESP.VisibleColors.EnemyRGB, ref SoundESP.VisibleColors.TeamColor, ref SoundESP.VisibleColors.EnemyColor);
             }),
             new("World ESP", 2, () =>
             {

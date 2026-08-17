@@ -31,7 +31,8 @@ namespace Titled_Gui.Modules.Combat
         {
             try
             {
-                if (!Enabled || GameState.LocalPlayer == null || GameState.memory == null || (TriggerKey != 0 && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0) || GameState.LocalPlayer.Health == 0) return;
+                if (!Enabled || GameState.LocalPlayer == null || GameState.memory == null || (TriggerKey != 0 && (GetAsyncKeyState(TriggerKey) & 0x8000) == 0) || GameState.LocalPlayer.Health <= 0)
+                    return;
 
                 int crosshairEnt = GameState.memory.ReadInt(GameState.LocalPlayerPawn + Offsets.m_iIDEntIndex);
                 if (crosshairEnt == -1 || crosshairEnt == 0)

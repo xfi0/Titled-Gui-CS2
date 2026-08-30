@@ -16,6 +16,7 @@ try
     EntityManager entityManager = new();
     ImGui.CreateContext();
     Renderer.LoadFonts();
+    Titled_Gui.Classes.DiscordRPC.DiscordRPC.Initialize();
     await GameState.renderer.Start();
     GernadeLineup.Initialize();
 
@@ -97,7 +98,7 @@ try
     entityUpdateThread.Start();
 
     ThreadService.StartAllThreadServices();
-
+    Titled_Gui.Classes.DiscordRPC.DiscordRPC.Update();
     while (true)
     {
         Thread.Sleep(20);

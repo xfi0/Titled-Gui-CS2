@@ -101,7 +101,8 @@ namespace Titled_Gui.Data.Game
         public static string GetCurrentMapName()
         {
             Update();
-            if (address == 0 || GameState.memory == null) return "";
+            if (address == 0 || GameState.memory == null)
+                return "";
 
             nint mapNamePtr = GameState.memory.ReadPointer((nint)(address + CurrentMapOffset));
 

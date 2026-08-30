@@ -37,8 +37,11 @@ namespace Titled_Gui.Classes
         protected override void FrameAction()
         {
             string map = GlobalVar.GetCurrentMapName().Replace("maps/", "").Replace(".vpk", "");
+            if (map == "Unknown")
+                return;
 
-            if (string.IsNullOrEmpty(map) || map == "<empty>") return;
+            if (string.IsNullOrEmpty(map) || map == "<empty>") 
+                return;
 
             if (mapLoaderInstance == null)
             {

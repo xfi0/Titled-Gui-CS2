@@ -2,6 +2,7 @@ using ImGuiNET;
 using System.Numerics;
 using Titled_Gui;
 using Titled_Gui.Classes;
+using Titled_Gui.Classes.DiscordRPC;
 using Titled_Gui.Data.Entity;
 using Titled_Gui.Data.Menu.Types;
 using Titled_Gui.ImGUI.Widgets;
@@ -175,6 +176,7 @@ internal class Sections
                 RenderBoolSetting("Menu Sounds", "Renderer.MenuSounds", () => Renderer.MenuSounds, v => Renderer.MenuSounds = v);
                 RenderFloatSlider("Menu Sounds Volume", "Renderer.MenuSoundsVolume", ref Renderer.MenuSoundsVolume, 0, 1);
                 RenderBoolSetting("Watermark", "Renderer.Watermark", () => Renderer.EnableWatermark, v => Renderer.EnableWatermark = v);
+                RenderBoolSetting("Discord RPC", "Menu.Misc.DiscordRPC", () => Titled_Gui.Classes.DiscordRPC.DiscordRPC.Enabled, v => Titled_Gui.Classes.DiscordRPC.DiscordRPC.Enabled = v, () => Titled_Gui.Classes.DiscordRPC.DiscordRPC.Update());
             }),
             new("Performance", 4, () =>
             {

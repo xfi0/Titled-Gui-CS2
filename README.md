@@ -97,7 +97,7 @@ This project is licensed under GPL Public V3, More information in LICENSE
 
 - Windows 10/11 (x64)
 - Visual Studio 2026
-- .NET 10.0.X
+- [.NET 10.0.X](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 - Internet connection for auto-updating offsets
 
 ### Installation
